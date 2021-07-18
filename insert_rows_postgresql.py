@@ -76,7 +76,8 @@ URL = 'https://data.linz.govt.nz/layer/101292-nz-building-outlines-all-sources/'
 url_update_date = url_last_updated(URL)       
 api = "https://lris.scinfo.org.nz/services;key=YOUR_API_TOKEN/wfs?service=WFS&version=2.0.0&\
 request=GetFeature&typeNames=layer-104400&outputFormat=json&\
-SRSName=EPSG:2193&cql_filter=bbox(GEOMETRY,5169354.082, 1559525.958, 5167380.381, 1558247.433)"   
+SRSName=EPSG:2193&cql_filter=Within(GEOMETRY,POLYGON((5180274 1753281, 5180274 1753233,\
+5874503 1573326, 5180274 1569166, 5186699 1573326,5186704 1568632,5180274 1753281)))"   
 query_dictionary, source_apis = api_query_dictionary(api)
 source_name = "testing"  
 url = "testing"  
