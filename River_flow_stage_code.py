@@ -64,6 +64,7 @@ if __name__ == '__main__':
     #reading all the site numbers from Environment Canterbury's Gaugings Database
     final_df = pd.DataFrame()
     for i in df_river_gauge['SITENUMBER']:
-            final_df = final_df.append(river_stage_flow(url_river, i, 'River Flow')) #change the values as per the requirements
+            final_df = final_df.append(river_stage_flow(url_river, i, 'River Flow'))
+            #final_df = final_df.append(river_stage_flow(url_river, i, 'River Stage'))
 
 final_df.to_excel(r"C:\Users\pkh35\Dropbox\Digital_Twin_Pooja_Greg_Matt_Purvi\River_flow_stage_data\riverstage.xlsx")  
