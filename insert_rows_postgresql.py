@@ -65,6 +65,7 @@ def url_last_updated(URL):
         url_update_date = soup.find("th", text="Last updated").find_next_sibling("td").text
         print(url_update_date)
         def mdy_to_ymd(d):
+            """to change the format of the date type variable"""
             return datetime.strptime(d, '%d %b %Y').strftime('%Y-%m-%d')
         url_update_date = mdy_to_ymd(url_update_date)
         return url_update_date
