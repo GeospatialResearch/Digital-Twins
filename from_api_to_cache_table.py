@@ -53,9 +53,9 @@ def data_from_apis(url, key, params, geometry_col_name,geometry):
         gdf = gpd.read_file(response.text)
         engine = create_engine(r'postgresql://postgres:username@localhost:port/db_name?gssencmode=disable')
         gdf.to_postgis("road_centerlines_data", engine, index = False, if_exists = 'replace')
-        print("Pull request successful")
+        print("API fetch successful")
     except:
-        print("Pull request failed, Please enter a valid polygon")
+        print("API fetch failed, Please enter a valid polygon")
 
               
 #Get the source name whose api user wants to access                
@@ -83,7 +83,6 @@ query_param = selected_api[0][1] # access query part of api
 geometry_col_name = selected_api[0][2] # access column name where geometry is stored in the source database
 
 data_from_apis(base_url,api_key,query_param,geometry_col_name,geometry)
-
 
 
 
