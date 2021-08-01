@@ -5,7 +5,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-- pip:
   - psycopg2
   - urllib
   - json
