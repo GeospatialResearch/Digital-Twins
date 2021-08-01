@@ -30,4 +30,4 @@ dependencies:
   - numpy
   - scipy
 
-prefix: C:\Users\pkh35\Anaconda3\envs\digitaltwin
+prefix: C:\ProgramData\Anaconda3\envs\digitaltwin
