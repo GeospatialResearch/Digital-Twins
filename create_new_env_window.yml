@@ -29,5 +29,6 @@ dependencies:
   - pytest
   - numpy
   - scipy
+  - dotenv
 
 prefix: C:\ProgramData\Anaconda3\envs\digitaltwin
