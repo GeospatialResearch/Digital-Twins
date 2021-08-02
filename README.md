@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The digitaltwin package allows the creation of tables on the posgresql database. Currently the package supports vector data only but will be exteded to LiDAR and raster data.
+The digitaltwin package allows the creation of tables in PostgreSQL. Currently the package supports vector data only but will be extended to LiDAR and raster data.
 
 The digitaltwin package allows user to download the vector data from different data providers where data is publicly available and store data from an area of interest into a database. Currently data is fetched from LINZ and LRIS but will be extended to other sources.
 
