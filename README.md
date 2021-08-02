@@ -19,8 +19,8 @@ pip install git+https://github.com/Pooja3894/Digital-Twins.git
 
 1. Open Anaconda Powershell Prompt
 2. run the command ```bash 
-   conda activate digitaltwin
-   spyder
-   ```
+conda activate digitaltwin
+spyder
+```
 3. In Spyder IDE: Go to 'Run>Configuration per file>Working directory settings
    Select 'The following directory:' option and speicify the root of the directory 
