@@ -18,7 +18,8 @@ pip install git+https://github.com/Pooja3894/Digital-Twins.git
 ### run codes locally
 
 1. Open Anaconda Powershell Prompt
-2. run the command ```bash 
+2. run the command 
+```bash 
 conda activate digitaltwin
 spyder
 ```
