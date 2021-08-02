@@ -6,13 +6,9 @@ channels:
   - defaults
 dependencies:
   - psycopg2
-  - urllib
-  - json
   - bs4
-  - datetime
   - pandas
   - sqlalchemy
-  - geoalchemy
   - python-dotenv
   - pyproj
   - pip
@@ -29,6 +25,10 @@ dependencies:
   - pytest
   - numpy
   - scipy
-  - dotenv
+  - python-dateutil
+  - python-dotenv
+  - geoalchemy2
+
+  
 
 prefix: C:\ProgramData\Anaconda3\envs\digitaltwin
