@@ -28,6 +28,7 @@ dependencies:
   - python-dateutil
   - python-dotenv
   - geoalchemy2
+  - validators
 
   
 
