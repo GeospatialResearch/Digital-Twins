@@ -68,7 +68,7 @@ class apiSourcesDb:
 
 
 # load in the instructions
-file_path = pathlib.Path().cwd() / pathlib.Path("personal_instructions.json")
+file_path = pathlib.Path().cwd() / pathlib.Path("instructions.json")
 with open(file_path, 'r') as file_pointer:
     instructions = json.load(file_pointer)
 
