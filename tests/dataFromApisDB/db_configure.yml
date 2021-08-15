@@ -1,5 +1,0 @@
-PGHOST: localhost
-PGDATABASE: datafromapis
-PGUSER: postgres
-PGPASSWORD: Pooja
-PGPORT: 5432
