@@ -24,7 +24,6 @@ try:
         UPDATE apilinks SET geometry =(SELECT geom FROM nz_polygons WHERE apilinks.geomid = nz_polygons.geomid)"
     
     engine.execute(insert_query, record)
-    print("Very Good")
 except Exception as error:
     print ("Oops! An exception has occured:", error)
     print ("Exception TYPE:", type(error))
