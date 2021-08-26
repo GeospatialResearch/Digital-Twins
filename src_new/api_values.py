@@ -28,18 +28,20 @@ def url_validator(url):
     valid = validators.url(url)
     return url if valid is True else print("Invalid url")
 
-def api_data_modified_date(url):
+def api_data_modified_date(url=None):
     """to get the modified date of the data source"""
-    content = requests.get(url)
-    soup = BeautifulSoup(content.text, 'html.parser')
-    url_update_date = soup.find(
+    try:
+        content = requests.get(url)
+        soup = BeautifulSoup(content.text, 'html.parser')
+        url_update_date = soup.find(
             "th", text="Last updated").find_next_sibling("td").text
-
-    def mdy_to_ymd(url_date):
-        """to change the format of the date type variable"""
-        return datetime.strptime(url_date, '%d %b %Y').strftime('%Y-%m-%d')
-    url_update_date = mdy_to_ymd(url_update_date)
-    return url_update_date
+        def mdy_to_ymd(url_date):
+            """to change the format of the date type variable"""
+            return datetime.strptime(url_date, '%d %b %Y').strftime('%Y-%m-%d')
+        url_update_date = mdy_to_ymd(url_update_date)
+        return url_update_date
+    except:
+        pass
     
 def api_records():
     # load in the instructions

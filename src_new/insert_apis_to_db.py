@@ -21,11 +21,10 @@ try:
         
     insert_query = "INSERT INTO apilinks (source_name,source_apis, url,region_name,query_dictionary,api_modified_date,geometry_col_name) \
         VALUES (%(source_name)s,%(source_apis)s,%(url)s,%(region_name)s,%(query_dictionary)s,%(api_modified_date)s,%(geometry_col_name)s);\
-        UPDATE apilinks SET geometry =(SELECT geom FROM nz_polygons WHERE apilinks.geomid = nz_polygons.geomid)"
+        UPDATE apilinks SET geometry =(SELECT geom FROM region_geometry WHERE apilinks.region_name = region_geometry.regc2018_1)"
     
     engine.execute(insert_query, record)
-    print("Very Good")
 except Exception as error:
-    print ("Oops! An exception has occured:", error)
+    print (error)
     print ("Exception TYPE:", type(error))
 
