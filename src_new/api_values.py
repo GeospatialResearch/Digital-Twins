@@ -26,7 +26,7 @@ def extract_api_params(api):
 def url_validator(url):
     """check if the url entered by the user is valid"""
     valid = validators.url(url)
-    return url if valid is True else print("Invalid url")
+    return url if valid else f"Invalid URL: {url}"
 
 def api_data_modified_date(url=None):
     """to get the modified date of the data source"""
