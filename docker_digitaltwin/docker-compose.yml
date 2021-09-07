@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  db_postgres:
+    image: postgis/postgis
+    container_name: postgres
+    ports:
+        - "5432:5432"
+    volumes:
+        - postgres_db_vol:/var/lib/postgresql/data
+
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: db     
+  python-app:
+    network_mode: host
+    build: ./python_postgis
+    depends_on:
+        - db_postgres
+
+volumes:
+    postgres_db_vol:
