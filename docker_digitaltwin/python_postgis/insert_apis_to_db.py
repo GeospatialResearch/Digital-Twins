@@ -11,8 +11,6 @@ import pyproj
 import setup_environment
 from api_values import api_records
 import tables
-pyproj.datadir.set_data_dir('C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj')
-pyproj.datadir.get_data_dir()
 
 def main():
     engine = setup_environment.get_connection_from_profile(config_file_name="db_configure.yml")
@@ -22,14 +20,14 @@ def main():
     insp = sqlalchemy.inspect(engine)
     table_exist = insp.has_table("region_geometry", schema="public")
     if table_exist == False: 
-        try:
-            response_data = tables.region_geometry(key = '197ba507238a41dea33c3be746bd9f56')
+        try: 
+            # insert the api key from stas NZ data portal
+            response_data = tables.region_geometry(key = YOUR_KEY)
             response_data.to_postgis('region_geometry', engine, index = True, if_exists = 'replace')
         except Exception as error:
             print ("An exception has occured:", error, type(error))
     else:
         pass
-    
     
     try:
         Apilink = tables.Apilink
