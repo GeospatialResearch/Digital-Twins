@@ -23,7 +23,7 @@ def extract_api_params(api):
         (parsed_api.scheme, parsed_api.netloc, parsed_api.path, "", "", ""))
     return json.dumps(params), base_url
 
-def url_validator(url):
+def url_validator(url) -> str:  # currently this function is expected to return a value of type string
     """check if the url entered by the user is valid"""
     valid = validators.url(url)
     return url if valid else f"Invalid URL: {url}"
