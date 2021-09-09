@@ -1,5 +1,0 @@
-PGHOST: localhost
-PGDATABASE: datasourceapis
-PGUSER: gis
-PGPASSWORD: Pooja
-PGPORT: 5432
