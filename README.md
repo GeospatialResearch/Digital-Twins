@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The digitaltwin repository is designed to create tables and store APIs provided by LINZ, ECAN, Stats NZ, KiwiRail, and LRIS in PostgreSQL.
+The digitaltwin repository is designed to store APIs and local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, and LRIS in PostgreSQL.
 User needs to pass values to the api_records function: 
 1. Name of the dataset e.g. 104400-lcdb-v50-land-cover, 101292-nz-building-outlines. **Note:** make sure the names are unique.
 2. name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago, etc. (regions can be further extended to other countries in future)
@@ -12,6 +12,14 @@ User needs to pass values to the api_records function:
 ![image](https://user-images.githubusercontent.com/86580534/133012962-86d117f9-7ee7-4701-9497-c50484d5cdc7.png)
 
 Currently the tables store vector data only but will be extended to LiDAR and raster data.It allows a user to download the vector data from different data providers where data is publicly available and store data from an area of interest (Polygon) into a database. Currently data is fetched from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
+
+## Requirements
+* [Python3](https://www.python.org/downloads/)
+* [pip](https://pypi.org/project/pip/) (**P**ip **I**nstalls **P**ackages - Python package manager)
+* [PostgreSQL](https://www.postgresql.org/download/) 
+
+## Required Credentials:
+* Stats NZ API KEY: https://datafinder.stats.govt.nz/my/api/
 
 ## Create environment to run the packages
 
