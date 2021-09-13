@@ -21,6 +21,15 @@ Currently the tables store vector data only but will be extended to LiDAR and ra
 ## Required Credentials:
 * Stats NZ API KEY: https://datafinder.stats.govt.nz/my/api/
 
+## Create extensions in PostgreSQL:
+* Install Postgresql and selet PostGIS application to install along with PostgreSQL 
+![image](https://user-images.githubusercontent.com/86580534/133153382-3a5c1069-2e65-4938-933f-5c305515fc58.png)
+* Open pgAdmin 4 and set your password which will be used for connecting to PostgreSQL using Python
+* Create Database 'datasourceapis' as shown below:
+![image](https://user-images.githubusercontent.com/86580534/133153639-3b21aec0-1eb3-45de-8f73-b5caa5b102ee.png) ![image](https://user-images.githubusercontent.com/86580534/133153696-fc992bbb-2de4-443a-beaa-a92a5c176bc1.png)
+
+ 
+
 ## Create environment to run the packages
 
 In order to run the codes, run the following command in your Anaconda Powershell Prompt. 
