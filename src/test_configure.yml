@@ -1,0 +1,5 @@
+PGHOST: localhost
+PGDATABASE: tester
+PGUSER: postgres
+PGPASSWORD: Pooja
+PGPORT: 5432
