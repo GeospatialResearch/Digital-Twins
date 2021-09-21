@@ -1,5 +1,6 @@
 FROM python:3.8.8
 
+WORKDIR app/
 COPY setup_environment.py .
 COPY requirements.txt .
 COPY db_configure.yml .
