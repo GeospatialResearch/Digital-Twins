@@ -5,15 +5,30 @@ Created on Mon Sep 13 15:21:34 2021
 @author: pkh35
 """
 import insert_api_to_table
+import pathlib
+import json
+import pyproj
+path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
+pyproj.datadir.set_data_dir(path)
+pyproj.datadir.get_data_dir()
 
-#inputs to store in a row of apilinks table
-DATA_PROVIDER = "LINZ"    
-SOURCE = "101292-nz-building-outlines"
-API = 'https://data.linz.govt.nz/services;key=API_KEY/wfs?service=WFS&version=2.0.0&request=GetFeature&\
-    typeNames=layer-101292&outputFormat=json&SRSName=EPSG:2193&cql_filter=bbox(shape,5169354.082, 1559525.958, 5167380.381, 1558247.433 )'
-URL = "https://data.linz.govt.nz/layer/101292-nz-building-outlines-all-sources/"
-REGION = "New Zealand"
-GEOMETRY_COLUMN = "shape"
-Stats_NZ_KEY = 'your_key'
 
-insert_api_to_table.insert_records(DATA_PROVIDER,SOURCE,API, URL, REGION,GEOMETRY_COLUMN ,Stats_NZ_KEY)
+# load in the instructions to add building outlines api from LINZ
+file_path = pathlib.Path().cwd() / pathlib.Path("instructions_statsnz.json")
+with open(file_path, 'r') as file_pointer:
+    instructions = json.load(file_pointer)
+
+SOURCE = instructions['instructions']['source_name']
+REGION = instructions['instructions']['region_name']
+GEOMETRY_COLUMN = instructions['instructions']['geometry_col_name']
+URL = instructions['instructions']['url']
+API = instructions['instructions']['api']
+DATA_PROVIDER = instructions['instructions']['data_provider']
+LAYER = instructions['instructions']['layer']
+"""get stats NZ key from:
+    https://datafinder.stats.govt.nz/layer/105133-regional-council-2021-generalised/webservices/"""
+Stats_NZ_KEY = 'YOUR_KEY'
+
+# call the function to insert record in apilinks table
+insert_api_to_table.insert_records(DATA_PROVIDER, SOURCE, API, REGION,
+                                   GEOMETRY_COLUMN, URL, LAYER, Stats_NZ_KEY)
