@@ -1,5 +1,5 @@
 PGHOST: localhost
-PGDATABASE: datasourceapis
+PGDATABASE: db
 PGUSER: postgres
-PGPASSWORD: Pooja
+PGPASSWORD: postgres
 PGPORT: 5432

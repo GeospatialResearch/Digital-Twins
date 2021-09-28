@@ -9,6 +9,7 @@ COPY tables.py .
 COPY insert_api_to_table.py .
 COPY instructions_linz.json . 
 COPY instructions_lris.json . 
+COPY instructions_statsnz.json . 
 COPY run.py .
 
 CMD ["python", "./run.py", "--host=0.0.0.0"]
