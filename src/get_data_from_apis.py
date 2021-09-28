@@ -5,13 +5,15 @@ Created on Thu Sep 16 14:44:11 2021
 @author: pkh35
 """
 
-import pathlib
 import json
+import pathlib
+
 import geopandas as gpd
 from geopandas import GeoSeries
+
+import polygon_Intersection as pi
 import setup_environment
 import sources_from_db
-import polygon_Intersection as pi
 import tables
 import wfs_request
 
@@ -59,7 +61,7 @@ if poly_not_available is not None:
                                = %(data_provider)s", ({'data_provider': data_provider}))
         key = ""
         for k in keys:
-            key = key+k[0]
+            key = key + k[0]
         table_name = df.loc[i, 'source_name']
         wfs_request.data_from_apis(engine1, key, base_url, layer,
                                    geometry_name, table_name, polygon)

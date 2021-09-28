@@ -4,17 +4,20 @@ Created on Mon Sep 13 14:13:34 2021
 
 @author: pkh35
 """
-from urllib.parse import urlparse, parse_qs
 import json
 import urllib
 from datetime import datetime
-from bs4 import BeautifulSoup
-import requests
-import validators
-import tables
-import setup_environment
-import sqlalchemy
+from urllib.parse import urlparse, parse_qs
+
 import pyproj
+import requests
+import sqlalchemy
+import validators
+from bs4 import BeautifulSoup
+
+import setup_environment
+import tables
+
 path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
 pyproj.datadir.set_data_dir(path)
 pyproj.datadir.get_data_dir()
@@ -46,6 +49,7 @@ def api_data_modified_date(url=None):
         def mdy_to_ymd(url_date):
             """to change the format of the date type variable"""
             return datetime.strptime(url_date, '%d %b %Y').strftime('%Y-%m-%d')
+
         url_update_date = mdy_to_ymd(url_update_date)
         return url_update_date
     except Exception as error:
@@ -55,7 +59,7 @@ def api_data_modified_date(url=None):
 
 
 def insert_records(data_provider: str, source_name: str, api: str, region: str,
-                   geometry_column: str = None, url=None, layer=None,YOUR_KEY=None):
+                   geometry_column: str = None, url=None, layer=None, YOUR_KEY=None):
     if source_name[0].isalpha() or source_name[0].startswith("_"):
         valid_url = url_validator(url)
         modified_date = api_data_modified_date(valid_url)
@@ -73,7 +77,7 @@ def insert_records(data_provider: str, source_name: str, api: str, region: str,
         }
 
         engine = setup_environment.get_database()
-    
+
         # check if the region_geometry table exists in the database
         insp = sqlalchemy.inspect(engine)
         table_exist = insp.has_table("region_geometry", schema="public")

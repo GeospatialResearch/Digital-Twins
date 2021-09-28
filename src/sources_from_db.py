@@ -12,7 +12,7 @@ def get_source_from_db(engine1, source_list):
     """check table present for requested sources"""
     query = engine1.execute("Select source_name, api_modified_date from\
                           apilinks where source_name IN %(source_list)s", (
-                          {'source_list': source_list}))
+        {'source_list': source_list}))
     sources = []
     for source in query:
         sources.append(source)

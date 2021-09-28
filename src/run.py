@@ -4,14 +4,16 @@ Created on Mon Sep 13 15:21:34 2021
 
 @author: pkh35
 """
-import insert_api_to_table
-import pathlib
 import json
+import pathlib
+
 import pyproj
+
+import insert_api_to_table
+
 path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
 pyproj.datadir.set_data_dir(path)
 pyproj.datadir.get_data_dir()
-
 
 # load in the instructions to add building outlines api from LINZ
 file_path = pathlib.Path().cwd() / pathlib.Path("instructions_statsnz.json")

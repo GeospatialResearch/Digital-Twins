@@ -5,16 +5,17 @@ Created on Fri Aug 13 09:37:50 2021
 @author: pkh35
 """
 from urllib.parse import urlparse
-import pandas as pd
+
 import geoapis.vector
+import pandas as pd
 
 
 def data_from_apis(engine, key, base_url, layer, geometry_name, table_name, geom):
     """Using geoapis module to request data from the stored apis"""
     base_url = urlparse(base_url)
     vector_fetcher = geoapis.vector.WfsQuery(
-            key=key, netloc_url=base_url.netloc, geometry_names=geometry_name,
-            bounding_polygon=geom, verbose=True)
+        key=key, netloc_url=base_url.netloc, geometry_names=geometry_name,
+        bounding_polygon=geom, verbose=True)
     response_data = vector_fetcher.run(layer)
     try:
         response_data.to_postgis(table_name, engine, index=False, if_exists='append')
@@ -28,6 +29,7 @@ def data_from_apis(engine, key, base_url, layer, geometry_name, table_name, geom
     except Exception as error:
         print(error)
         print("Exception TYPE:", type(error))
+
 
 def access_api_info(engine, source_name):
     queries = engine.execute("select data_provider, source_apis,query_dictionary,layer,\

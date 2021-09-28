@@ -5,9 +5,10 @@ Created on Thu Aug  5 17:09:13 2021
 @author: pkh35
 """
 
+import logging
+
 import yaml
 from sqlalchemy import create_engine
-import logging
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +41,6 @@ def get_connection_from_profile(config_file_name="db_configure.yml"):
             'PGDATABASE' in vals.keys() and
             'PGPORT' in vals.keys()):
         raise Exception('Bad config file: ' + config_file_name)
-        
 
     return get_engine(vals['PGDATABASE'], vals['PGUSER'],
                       vals['PGHOST'], vals['PGPORT'],
@@ -62,5 +62,6 @@ def get_engine(db, user, host, port, passwd):
         user=user, passwd=passwd, host=host, port=port, db=db)
     engine = create_engine(url)
     return engine
+
 
 get_database()

@@ -4,15 +4,17 @@ Created on Tue Aug 10 13:29:55 2021
 
 @author: pkh35
 """
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, DateTime, Unicode, Date
+from datetime import datetime
+
+import geopandas as gpd
+import requests
 from geoalchemy2 import Geometry
+from sqlalchemy import Column, Integer, DateTime, Unicode, Date
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
-from datetime import datetime
-import requests
-import geopandas as gpd
+
 Base = declarative_base()
 
 
