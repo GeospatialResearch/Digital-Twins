@@ -9,29 +9,28 @@
 		[
 			[
             [
-              5196505,
-			  1570540
+              1570540,
+			  5196505
             ],
             [
-              5195916,
-			  1570560
+              1570560,
+			  5195916
             ],
             [
-              5196000,
-			  1572326
+              1572326,
+			  5196000
             ],
             [
-		      5196453,
-              1572231
+		      1572231,
+			  5196453
               
             ],
             [
-			  5196505,
-              1570540
-              
+			  1570540,
+			  5196505
             ]
           ]
 		] 
  }}],
- "source_name":["101292-nz-building-outlines", "50329-nz-road-centrelines", "50319-nz-railway-centrelines"]
+ "source_name":["_101292-nz-building-outlines", "_50329-nz-road-centrelines", "_50319-nz-railway-centrelines"]
  }

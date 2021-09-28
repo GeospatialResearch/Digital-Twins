@@ -1,0 +1,35 @@
+ {
+ "type": "FeatureCollection", 
+ "features": 
+ [{"type": "Feature", 
+ "properties": {}, 
+ "geometry": 
+ {"type": "Polygon", 
+  "coordinates": [
+[
+      [
+        1571244,
+		5196982      
+	],
+      [
+        1571104,
+		5196327
+      ],
+      [
+        1571869,
+		5196258
+      ],
+      [
+        1571808,
+		5196902
+      ],
+      [
+        1571244,
+		5196982
+      ]
+    ]
+
+  ] 
+ }}],
+ "source_name":["_101292-nz-building-outlines", "_50329-nz-road-centrelines", "_50319-nz-railway-centrelines"]
+ }
