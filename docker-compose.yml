@@ -14,7 +14,7 @@ services:
         POSTGRES_DB: ${POSTGRES_DB}     
   python-app:
     network_mode: host
-    build: ./api_data
+    build: ./src
     depends_on:
         - db_postgres
 
