@@ -8,19 +8,12 @@ import json
 import urllib
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
-
-import pyproj
 import requests
 import sqlalchemy
 import validators
 from bs4 import BeautifulSoup
-
 import setup_environment
 import tables
-
-path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
-pyproj.datadir.set_data_dir(path)
-pyproj.datadir.get_data_dir()
 
 
 def extract_api_params(api):

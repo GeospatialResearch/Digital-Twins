@@ -1,5 +1,0 @@
-PGHOST: 127.0.0.1
-PGDATABASE: db
-PGUSER: postgres
-PGPASSWORD: postgres
-PGPORT: 5432

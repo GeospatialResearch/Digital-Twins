@@ -6,14 +6,7 @@ Created on Mon Sep 13 15:21:34 2021
 """
 import json
 import pathlib
-
-import pyproj
-
 import insert_api_to_table
-
-path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
-pyproj.datadir.set_data_dir(path)
-pyproj.datadir.get_data_dir()
 
 # load in the instructions to add building outlines api from LINZ
 file_path = pathlib.Path().cwd() / pathlib.Path("instructions_statsnz.json")
@@ -28,7 +21,7 @@ API = instructions['instructions']['api']
 DATA_PROVIDER = instructions['instructions']['data_provider']
 LAYER = instructions['instructions']['layer']
 """get stats NZ key from:
-    https://datafinder.stats.govt.nz/layer/105133-regional-council-2021-generalised/webservices/"""
+https://datafinder.stats.govt.nz/layer/105133-regional-council-2021-generalised/webservices/"""
 Stats_NZ_KEY = 'YOUR_KEY'
 
 # call the function to insert record in apilinks table

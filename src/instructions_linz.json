@@ -1,0 +1,11 @@
+{"instructions": 
+  {
+	"data_provider": "LINZ",
+	"region_name": "New Zealand",
+	"url": "https://data.linz.govt.nz/layer/101292-nz-building-outlines-all-sources/",
+	"api" : "https://data.linz.govt.nz/services;key=API_KEY/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=layer-50329&outputFormat=json&SRSName=EPSG:2193&cql_filter=bbox(shape,5169354.082, 1559525.958, 5167380.381, 1558247.433 )",
+	"source_name": "_101292-nz-building-outlines",
+	"layer": 101292,
+	"geometry_col_name": "shape"
+}
+}
