@@ -1,11 +1,11 @@
-{
-  "instructions": {
-    "data_provider": "StatsNZ",
-    "region_name": "New Zealand",
-    "url": "https://datafinder.stats.govt.nz/layer/105133-regional-council-2021-generalised/",
-    "api": "https://datafinder.stats.govt.nz/services;key=API_KEY/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=layer-105133&outputFormat=json&SRSName=EPSG:2193&cql_filter=bbox(Shape,5169354.082, 1559525.958, 5167380.381, 1558247.433 )",
-    "source_name": "testing",
-    "layer": 105133,
-    "geometry_col_name": "Shape"
-  }
+{"instructions": 
+  {
+	"data_provider": "StatsNZ",
+	"region_name": "New Zealand",
+	"url": "https://datafinder.stats.govt.nz/layer/105133-regional-council-2021-generalised/",
+	"api" : "https://datafinder.stats.govt.nz/services;key=API_KEY/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=layer-105133&outputFormat=json&SRSName=EPSG:2193&cql_filter=bbox(Shape,5169354.082, 1559525.958, 5167380.381, 1558247.433 )",
+	"source_name": "_105133-regional-council",
+	"layer": 105133,
+	"geometry_col_name": "Shape"
+}
 }
