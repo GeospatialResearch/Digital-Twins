@@ -8,10 +8,12 @@ import json
 import urllib
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
+
 import requests
 import sqlalchemy
 import validators
 from bs4 import BeautifulSoup
+
 import setup_environment
 import tables
 

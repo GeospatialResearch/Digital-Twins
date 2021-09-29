@@ -30,6 +30,6 @@ dependencies:
   - geoalchemy2
   - validators
   - pip:
-    - git+https://github.com/niwa/geoapis.git
+      - git+https://github.com/niwa/geoapis.git
 
 prefix: C:\ProgramData\Anaconda3\envs\digitaltwin

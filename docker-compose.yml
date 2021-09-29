@@ -4,19 +4,19 @@ services:
     image: postgis/postgis
     container_name: postgres
     ports:
-        - "5432:5432"
+      - "5432:5432"
     volumes:
-        - postgres_db_vol:/var/lib/postgresql/data
+      - postgres_db_vol:/var/lib/postgresql/data
 
     environment:
-        POSTGRES_USER: ${POSTGRES_USER}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-        POSTGRES_DB: ${POSTGRES_DB}     
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
   python-app:
     network_mode: host
     build: ./src
     depends_on:
-        - db_postgres
+      - db_postgres
 
 volumes:
-    postgres_db_vol:
+  postgres_db_vol:
