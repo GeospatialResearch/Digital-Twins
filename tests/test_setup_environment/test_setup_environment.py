@@ -2,19 +2,21 @@ import unittest
 
 from sqlalchemy.exc import OperationalError
 
-from src.digitaltwin.setup_environment import get_connection_from_profile
+from src.digitaltwin import setup_environment
 
 
 class SetupEnvironmentTest(unittest.TestCase):
 
     def test_connection(self):
-        engine = get_connection_from_profile()
+        """Check a connection to the database can be made with the default parameters of get_connection_from_profile"""
+        engine = setup_environment.get_connection_from_profile()
         engine.connect()
 
     def test_incorrect_password(self):
+        """Ensure that when a bad password is given to the database, the connection fails and an exception is raised"""
         incorrect_password_config_path = 'tests/test_setup_environment/mock_db_configuration.yml'
         with self.assertRaises(OperationalError):
-            get_connection_from_profile(incorrect_password_config_path)
+            setup_environment.get_connection_from_profile(incorrect_password_config_path)
 
 
 if __name__ == '__main__':
