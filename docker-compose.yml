@@ -2,6 +2,7 @@ version: '3.8'
 services:
   db_postgres:
     image: postgis/postgis
+    restart: always
     container_name: postgres
     ports:
       - "5432:5432"
