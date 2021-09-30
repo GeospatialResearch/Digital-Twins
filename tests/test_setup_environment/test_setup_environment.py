@@ -12,7 +12,7 @@ class SetupEnvironmentTest(unittest.TestCase):
         engine.connect()
 
     def test_incorrect_password(self):
-        incorrect_password_config_path = 'tests/setup_environment_test/mock_db_configuration.yml'
+        incorrect_password_config_path = 'tests/test_setup_environment/mock_db_configuration.yml'
         with self.assertRaises(OperationalError):
             get_connection_from_profile(incorrect_password_config_path)
 
