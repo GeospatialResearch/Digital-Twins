@@ -32,14 +32,10 @@ def get_connection_from_profile(config_file_name="db_configure.yml"):
                       credentials for the PostgreSQL database
     """
 
-    with open(config_file_name, 'r') as f:
-        vals = yaml.safe_load(f)
+    with open(config_file_name, 'r') as config_vals:
+        vals = yaml.safe_load(config_vals)
 
-    if not ('PGHOST' in vals.keys() and
-            'PGUSER' in vals.keys() and
-            'PGPASSWORD' in vals.keys() and
-            'PGDATABASE' in vals.keys() and
-            'PGPORT' in vals.keys()):
+    if not all (key in vals.keys for key in ['PGHOST', 'PGUSER', 'PGPASSWORD', 'PGDATABASE', 'PGPORT']):
         raise Exception('Bad config file: ' + config_file_name)
 
     return get_engine(vals['PGDATABASE'], vals['PGUSER'],
@@ -58,7 +54,6 @@ def get_engine(db, user, host, port, passwd):
     passwd: Password for the database
     """
 
-    url = 'postgresql://{user}:{passwd}@{host}:{port}/{db}'.format(
-        user=user, passwd=passwd, host=host, port=port, db=db)
+    url = f'postgresql://{user}:{passwd}@{host}:{port}/{db}'
     engine = create_engine(url)
     return engine
