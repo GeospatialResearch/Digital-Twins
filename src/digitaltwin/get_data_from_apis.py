@@ -21,7 +21,7 @@ import wfs_request
 engine1 = setup_environment.get_database()
 
 # load in the instructions, get the source list and polygon from the user
-FILE_PATH = pathlib.Path().cwd() / pathlib.Path("test6.json")
+FILE_PATH = pathlib.Path().cwd() / pathlib.Path("tes6.json")
 with open(FILE_PATH, 'r') as file_pointer:
     instructions = json.load(file_pointer)
 

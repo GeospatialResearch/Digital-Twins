@@ -14,8 +14,8 @@ import sqlalchemy
 import validators
 from bs4 import BeautifulSoup
 
-import setup_environment
-import tables
+from . import tables
+from .setup_environment import get_database
 
 
 def extract_api_params(api):
@@ -71,7 +71,7 @@ def insert_records(data_provider: str, source_name: str, api: str, region: str,
             "geometry_col_name": geometry_column
         }
 
-        engine = setup_environment.get_database()
+        engine = get_database()
 
         # check if the region_geometry table exists in the database
         insp = sqlalchemy.inspect(engine)
