@@ -16,3 +16,4 @@ SQLAlchemy==1.4.22
 urllib3==1.26.6
 validators==0.18.2
 PyYAML==5.4.1
+geoapis @ git+https://github.com/niwa/geoapis@674463c8766097df81c10a853c232166b0d129a5
