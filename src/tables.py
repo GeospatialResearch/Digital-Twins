@@ -60,7 +60,6 @@ class dbsession():
 
 def table_exists(engine, name):
     ret = engine.dialect.has_table(engine, name)
-    print('Table "{}" exists: {}'.format(name, ret))
     return ret
 
 
