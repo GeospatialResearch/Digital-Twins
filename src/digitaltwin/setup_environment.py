@@ -6,7 +6,7 @@ Created on Thu Aug  5 17:09:13 2021
 """
 
 import logging
-
+import sys
 import yaml
 from sqlalchemy import create_engine
 
@@ -19,7 +19,7 @@ def get_database():
         log.info("Connected to PostgreSQL database!")
     except IOError:
         log.exception("Failed to get database connection!")
-        return None, 'fail'
+        sys.exit()
     return engine
 
 

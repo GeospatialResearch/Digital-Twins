@@ -47,7 +47,7 @@ to other sources.
 
 ## Create environment to run the packages
 
-In order to run the codes, run the following command in your Anaconda Powershell Prompt.
+In order to run the code, run the following command in your Anaconda Powershell Prompt:
 
 ```bash
 conda env create -f create_new_env_window.yml
@@ -65,8 +65,8 @@ conda activate digitaltwin
 spyder
 ```
 
-3. In Spyder IDE: Go to 'Run>Configuration per file>Working directory settings Select 'The following directory:' option
-   and speicify the root of the directory
+3. In Spyder IDE: Go to `Run`>`Configuration per file`>`Working directory settings` Select `The following directory:` option
+   and specify the root of the directory
 
    ![image](https://user-images.githubusercontent.com/86580534/133013167-c7e4541a-5723-4a76-9344-25f9f835b986.png)
 

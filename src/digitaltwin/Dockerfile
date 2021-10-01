@@ -12,4 +12,4 @@ COPY instructions_lris.json .
 COPY instructions_statsnz.json . 
 COPY ../run.py .
 
-CMD ["python", "./run.py", "--host=0.0.0.0"]
+CMD ["python", "./run.py"]
