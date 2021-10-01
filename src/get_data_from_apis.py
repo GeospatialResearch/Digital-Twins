@@ -42,9 +42,7 @@ for source in instructions['source_name']:
 if tables_in_db != []:
     stored_list = engine.execute("select source_list, ST_AsText(geometry) from\
                                   user_log_information")
-    stored_srces = []
-    for src in stored_list:
-        stored_srces.append(src)
+    stored_srces = stored_list.fetchall()
     for i in range(len(stored_srces)):
         geom = stored_srces[i][1]
         srcList = stored_srces[i][0]
