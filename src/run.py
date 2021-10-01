@@ -6,8 +6,8 @@ Created on Mon Sep 13 15:21:34 2021
 """
 import json
 import pathlib
-import insert_api_to_table
-import setup_environment
+
+from digitaltwin import setup_environment, insert_api_to_table
 
 engine = setup_environment.get_database()
 key = engine.execute(
