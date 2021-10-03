@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+# Creates an image of both the src and tests folders and runs all unit tests
 FROM python:3 as base
 WORKDIR app/
 
