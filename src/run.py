@@ -7,15 +7,15 @@ Created on Mon Sep 13 15:21:34 2021
 import json
 import pathlib
 import insert_api_to_table
-import setup_environment
+from dotenv import load_dotenv
+import os
 
-engine = setup_environment.get_database()
-key = engine.execute(
-    "select key from api_keys where data_provider = 'StatsNZ'")
-Stats_NZ_KEY = key.fetchone()[0]
+load_dotenv()
+Stats_NZ_KEY = os.getenv('KEY')
 
 
 def input_data(file):
+    """Read json instruction file to store record i.e. api details to the database."""
     # load in the instructions to add building outlines api from LINZ
     file_path = pathlib.Path().cwd() / pathlib.Path(file)
     with open(file_path, 'r') as file_pointer:
@@ -40,10 +40,13 @@ def input_data(file):
     return record
 
 
-record = input_data("instructions_linz.json")
+if __name__ == "__main__":
+    record = input_data("instructions_linz.json")
 
-# call the function to insert record in apilinks table
-insert_api_to_table.insert_records(record['data_provider'], record['source'],
-                                   record['api'], record['region'],
-                                   record['geometry_column'], record['url'],
-                                   record['layer'], Stats_NZ_KEY)
+    # call the function to insert record in apilinks table
+    insert_api_to_table.insert_records(record['data_provider'],
+                                       record['source'],
+                                       record['api'], record['region'],
+                                       record['geometry_column'],
+                                       record['url'],
+                                       record['layer'], Stats_NZ_KEY)
