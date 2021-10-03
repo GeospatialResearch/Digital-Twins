@@ -11,6 +11,7 @@ dependencies:
   - sqlalchemy
   - python-dotenv
   - pyproj
+  - pytest
   - pip
   - gdal
   - geopandas
