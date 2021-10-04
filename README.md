@@ -85,7 +85,7 @@ When the installation finishes, Docker starts automatically. The whale   in the 
    ```
 2. Save this file in the directory where docker-compose file is stored.
 3. Open the command prompt, you can use `Windows Key + X` to open it.
-4. In the commad prompt switch to the directory where docker-compose file is stored
+4. In the commad prompt switch to the directory where docker-compose file is stored.
    For instance:  ![image](https://user-images.githubusercontent.com/86580534/135922576-25644dc3-ef32-4f59-8b5c-8c5778242cc8.png)
 6. Run the command: 
    ```bash
