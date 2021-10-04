@@ -18,8 +18,12 @@ The digitaltwin repository is designed to store APIs and local copy of data for 
 2. name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago, etc. (regions can be further extended to other countries in future)
 3. Geometry column name of the dateset, if required. for isntance, for all LDS property and ownership, street address and geodetic data the geometry column is ‘shape’. For most other layers including Hydrographic and Topographic data, the column name is 'GEOMETRY'. For more info: https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/wfs-spatial-filtering
 4. If user is interested in a recent copy of the data, name of website must be specified to get the recent modified date of the dataset. See instructions.json
-5. finally enter the api which you want to store in a database.
+5. Enter the api data which you want to store in a database.
    ![image](https://user-images.githubusercontent.com/86580534/133012962-86d117f9-7ee7-4701-9497-c50484d5cdc7.png)
+6. Call the function:
+![image](https://user-images.githubusercontent.com/86580534/135927747-0bff7da4-f30a-4858-add5-2e9bbb93d880.png)
+
+This way data will be stored in the database which then will be used to make api requests for the desired Area of Interest.
 
 Currently the tables store vector data only but will be extended to LiDAR and raster data.It allows a user to download the vector data from different data providers where data is publicly available and store data from an area of interest (Polygon) into a database. Currently data is fetched from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
 
