@@ -98,19 +98,24 @@ Now your docker is up and running
 1. Get the container name by running the command: `docker ps`
 
 ![image](https://user-images.githubusercontent.com/86580534/135923023-c11a04bd-5bf0-4ad7-992b-783f0cbc2c50.png)
+
 2. Run the container in the terminal using bash command, then using psql command to enter the database:
 ```bash
    docker exec -it [container id] bash
    psql -U [username]
 ```
 ![image](https://user-images.githubusercontent.com/86580534/135923113-de2579eb-9993-48df-9481-58241f648390.png)
+
 3. By default user will be connected to postgres database. You can change the database using the command: 
 `\c db `
+
 4. We can also check the list of tables stored in our database using the command: `\dt`
 
 ![image](https://user-images.githubusercontent.com/86580534/135923541-9bd0b2a7-f6f6-4c32-b40e-c2130050f258.png)
+
 5. To check the data stored in the table:
 run the command: ```bash select * from apilinks;```
+
 ![image](https://user-images.githubusercontent.com/86580534/135923860-d10a2323-100c-446e-bec3-6010cca2ba8b.png)
 
 ## Use a database server running as a container
