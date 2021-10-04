@@ -69,6 +69,11 @@ spyder
    and specify the root of the directory
 
    ![image](https://user-images.githubusercontent.com/86580534/133013167-c7e4541a-5723-4a76-9344-25f9f835b986.png)
+   
+## Running docker on your machine
+
+Install [docker](https://docs.docker.com/desktop/windows/install/)
+When the installation finishes, Docker starts automatically. The whale   in the notification area indicates that Docker is running, and accessible from a terminal.
 
 ## Use a database server running as a container
 
