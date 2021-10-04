@@ -10,7 +10,7 @@ import pathlib
 
 from dotenv import load_dotenv
 
-from digitaltwin import insert_api_to_table
+import insert_api_to_table
 
 load_dotenv()
 Stats_NZ_KEY = os.getenv('KEY')
@@ -23,7 +23,8 @@ def input_data(file):
     with open(file_path, 'r') as file_pointer:
         instructions = json.load(file_pointer)
     instruction_node = instructions['instructions']
-    source = instruction_node['source_name']
+    #source = instruction_node['source_name']
+    source = 'testing'
     region = instruction_node['region_name']
     geometry_column = instruction_node['geometry_col_name']
     url = instruction_node['url']
