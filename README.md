@@ -2,26 +2,26 @@
 
 ## Introduction
 
-The digitaltwin repository is designed to store APIs and local copy of data for the required Area of Interest provided
-by LINZ, ECAN, Stats NZ, KiwiRail, and LRIS in PostgreSQL. User needs to pass values to the api_records function:
+According to the National Emergency Management Agency, flooding is the greatest hazard in New Zealand, in terms of frequency, losses and civil defence emergencies. With major flood events occurring on average every 8 months [(New Zealand – FloodList)](https://floodlist.com/tag/new-zealand), it is necessary to produce high precision flood models and in order to do better planning, risk assessment and response to flood events, making plans in advance can make all the difference, not just to property owners at risks, it will also help insurance companies who make underwriting decisions on properties, the banks supplying the property finance, the telecommunications and utilities companies providing vital services to homes and offices, and the government agencies tasked with protecting communities and their assets. Digital Twin can provide a better understanding of the degree of impact flood events can have on physical assets like buildings, roads, railways, transmission lines, etc.
+Digital Twin is a real-time digital clone of a physical device.  Anyone looking at the digital twin can see crucial information about how the physical thing is doing out there in the real world. Digital Twin not only represents the current status of the visualised assets but also how they will perform/react to future situations. The build twin when used to run flood models combined with other sources of information can allow us to make predictions. 
+The first step of building a Digital Twin is data. Data is collected from an open data portal provided by multiple organisations or data providers such as LINZ, LRIS, stat NZ, ECAN, etc.
+The collected data is stored in the local database using PostgreSQL which is an open-source relational database system and supports both SQL (relational) and JSON (non-relational) querying. PostgreSQL is a highly stable database backed by more than 20 years of development by the open-source community.
+Spatial data is the primary data used for implementing the Digital Twin model. Therefore, PostgreSQL with the PostGIS extension which supports geospatial databases for geographic information systems (GIS) is the most preferable DBMS for this project. Also, it provides support for Python, C/C++ and JavaScript, the programming languages used for building Digital Twin. The spatial boundaries are currently limited to New Zealand with the potential of getting extended further.
+The reason for creating a database are:
+1.	Avoid unnecessary network overhead on the data providers
+2.	To avoid delays in fetching the same data from the API when required again and again to run the models.
+3.	To store the data only for the Area of Interest.
 
-1. Name of the dataset e.g. 104400-lcdb-v50-land-cover, 101292-nz-building-outlines. **Note:** make sure the names are
-   unique.
-2. name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago,
-   etc. (regions can be further extended to other countries in future)
-3. Geometry column name of the dateset, if required. for isntance, for all LDS property and ownership, street address
-   and geodetic data the geometry column is ‘shape’. For most other layers including Hydrographic and Topographic data,
-   the column name is 'GEOMETRY'. For more
-   info: https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/wfs-spatial-filtering
-4. If user is interested in a recent copy of the data, name of website must be specified to get the recent modified date
-   of the dataset. See instructions.json
+The digitaltwin repository is designed to store APIs and local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, and LRIS in PostgreSQL. User needs to pass values to the api_records function:
+
+1. Name of the dataset e.g. 104400-lcdb-v50-land-cover, 101292-nz-building-outlines. **Note:** make sure the names are unique.
+2. name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago, etc. (regions can be further extended to other countries in future)
+3. Geometry column name of the dateset, if required. for isntance, for all LDS property and ownership, street address and geodetic data the geometry column is ‘shape’. For most other layers including Hydrographic and Topographic data, the column name is 'GEOMETRY'. For more info: https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/wfs-spatial-filtering
+4. If user is interested in a recent copy of the data, name of website must be specified to get the recent modified date of the dataset. See instructions.json
 5. finally enter the api which you want to store in a database.
    ![image](https://user-images.githubusercontent.com/86580534/133012962-86d117f9-7ee7-4701-9497-c50484d5cdc7.png)
 
-Currently the tables store vector data only but will be extended to LiDAR and raster data.It allows a user to download
-the vector data from different data providers where data is publicly available and store data from an area of interest (
-Polygon) into a database. Currently data is fetched from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended
-to other sources.
+Currently the tables store vector data only but will be extended to LiDAR and raster data.It allows a user to download the vector data from different data providers where data is publicly available and store data from an area of interest (Polygon) into a database. Currently data is fetched from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
 
 ## Requirements
 
