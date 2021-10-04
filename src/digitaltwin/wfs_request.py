@@ -9,9 +9,9 @@ import geoapis.vector
 import pandas as pd
 
 
-def get_source_from_db(engine1, source_list):
+def get_source_from_db(engine, source_list):
     """Get the requested source data from the tables and return the pandas dataframe."""
-    query = engine1.execute("Select source_name, api_modified_date from\
+    query = engine.execute("Select source_name, api_modified_date from\
                           apilinks where source_name IN %(source_list)s", (
         {'source_list': source_list}))
     sources = []
