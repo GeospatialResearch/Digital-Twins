@@ -76,6 +76,19 @@ Install [docker](https://docs.docker.com/desktop/windows/install/)
 
 When the installation finishes, Docker starts automatically. The whale   in the notification area indicates that Docker is running, and accessible from a terminal.
 
+### Instructions to run docker
+1. Create an .env file with variables in the following format, each on a new line:
+   ```POSTGRES_USER=postgres
+      POSTGRES_PASSWORD=postgres
+      POSTGRES_DB=db```
+2. Save this file in the directory where docker-compose file is stored.
+3. Open the command prompt, you can use `Windows Key + X` to open it.
+4. Change the path of the command prompt to the path where docker-compose file is stored
+5. Run the command: 
+   ```docker-compose build
+      docker-compose up```
+Now your docker is up and running
+
 ## Use a database server running as a container
 
 Work in Progess. To deploy PostgreSQL database on a server.
