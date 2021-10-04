@@ -60,7 +60,7 @@ conda activate digitaltwin
 pip install git+https://github.com/Pooja3894/Digital-Twins.git
 ```
 
-### run codes locally
+### Run codes locally
 
 1. Open Anaconda Powershell Prompt
 2. run the command
