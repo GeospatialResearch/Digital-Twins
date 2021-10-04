@@ -73,6 +73,7 @@ spyder
 ## Running docker on your machine
 
 Install [docker](https://docs.docker.com/desktop/windows/install/)
+
 When the installation finishes, Docker starts automatically. The whale   in the notification area indicates that Docker is running, and accessible from a terminal.
 
 ## Use a database server running as a container
