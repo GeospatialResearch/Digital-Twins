@@ -12,10 +12,6 @@ from geopandas import GeoSeries
 import setup_environment
 import tables
 import wfs_request
-import pyproj
-path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
-pyproj.datadir.set_data_dir(path)
-pyproj.datadir.get_data_dir()
 
 
 def check_table_exist(engine, instructions):
