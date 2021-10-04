@@ -31,7 +31,7 @@ to other sources.
 
 ## Required Credentials:
 
-* Stats NZ API KEY: https://datafinder.stats.govt.nz/my/api/
+* [Stats NZ API KEY](https://datafinder.stats.govt.nz/my/api/)
 
 ## Create extensions in PostgreSQL:
 
