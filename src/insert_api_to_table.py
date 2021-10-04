@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep 13 14:13:34 2021
+Created on Mon Sep 13 14:13:34 2021.
 
 @author: pkh35
 """
@@ -8,22 +8,16 @@ import json
 import urllib
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
-
 import requests
 import sqlalchemy
 import validators
 from bs4 import BeautifulSoup
-
 import setup_environment
 import tables
-import pyproj
-path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
-pyproj.datadir.set_data_dir(path)
-pyproj.datadir.get_data_dir()
 
 
 def extract_api_params(api):
-    """to parse the api, to get the base url and params"""
+    """To parse the api, to get the base url and params."""
     parsed_api = urlparse(api)
     params = parse_qs(parsed_api.query)
     base_url = urllib.parse.urlunparse(
@@ -32,13 +26,13 @@ def extract_api_params(api):
 
 
 def url_validator(url=None):
-    """check if the url entered by the user is valid"""
+    """Check if the url entered by the user is valid."""
     valid = validators.url(url)
     return url if valid else print(f"Invalid URL: {url}")
 
 
 def api_data_modified_date(data_provider: str, url=None):
-    """to get the modified date of the data source"""
+    """To get the modified date of the data source."""
     try:
         content = requests.get(url)
         soup = BeautifulSoup(content.text, 'html.parser')

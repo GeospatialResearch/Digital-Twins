@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Aug  5 17:09:13 2021
+Created on Thu Aug  5 17:09:13 2021.
 
 @author: pkh35
 """
@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 
 def get_database():
+    """Exit the program if connection fails."""
     try:
         engine = get_connection_from_profile()
         log.info("Connected to PostgreSQL database!")
@@ -25,13 +26,12 @@ def get_database():
 
 def get_connection_from_profile(config_file_name="db_configure.yml"):
     """
-    Sets up database connection from config file.
+    Set up database connection from config file.
     Input:
-    config_file_name: File containing PGHOST, PGUSER,
+    config_file_name:File containing PGHOST, PGUSER,
                       PGPASSWORD, PGDATABASE, PGPORT, which are the
                       credentials for the PostgreSQL database
     """
-
     with open(config_file_name, 'r') as config_vals:
         vals = yaml.safe_load(config_vals)
 
@@ -53,7 +53,6 @@ def get_engine(db, user, host, port, passwd):
     port: Port number
     passwd: Password for the database
     """
-
     url = f'postgresql://{user}:{passwd}@{host}:{port}/{db}'
     engine = create_engine(url)
     return engine
