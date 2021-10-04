@@ -43,12 +43,15 @@ def input_data(file):
 
 
 if __name__ == "__main__":
-    record = input_data("instructions_linz.json")
+    # create region_geometry table if it doesn't exist in the db.
+    # no need to call region_geometry_table if region_geometry table exist in the db
+    insert_api_to_table.region_geometry_table(Stats_NZ_KEY)
 
+    record = input_data("instructions_statsnz.json")
     # call the function to insert record in apilinks table
     insert_api_to_table.insert_records(record['data_provider'],
                                        record['source'],
                                        record['api'], record['region'],
                                        record['geometry_column'],
                                        record['url'],
-                                       record['layer'], Stats_NZ_KEY)
+                                       record['layer'])

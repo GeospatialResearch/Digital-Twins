@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 10 13:29:55 2021
+Created on Tue Aug 10 13:29:55 2021.
 
 @author: pkh35
 """
 from datetime import datetime
-
-import geopandas as gpd
-import requests
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, DateTime, Unicode, Date
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
-
+import geoapis.vector
 Base = declarative_base()
 
 
 class User_log_info(Base):
-    """Class to create tables"""
+    """Class to create tables."""
+
     __tablename__ = 'user_log_information'
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_list = Column(JSON())
@@ -64,15 +62,10 @@ def table_exists(engine, name):
 
 
 def region_geometry(key):
-    # get the regional polygons data from Stats NZ
-    api = f"https://datafinder.stats.govt.nz/services;key={key}/wfs?\
-        service=WFS&version=2.0.0&request=GetFeature&typeNames=\
-            layer-105133&&outputFormat=json"
-    try:
-        response = requests.get(api)
-    except Exception as error:
-        print("An exception has occured:", error, type(error))
-    response_data = gpd.read_file(response.text)
+    """get the regional polygons data from Stats NZ
+    and creating a polygon of complete NZ"""
+    vector_fetcher = geoapis.vector.StatsNz(key, verbose=True)
+    response_data = vector_fetcher.run(105133)
     response_data.columns = response_data.columns.str.lower()
     response_data['geometry'] = response_data.geometry.to_crs("EPSG:2193")
     nz_polygon = response_data.dissolve().explode()
