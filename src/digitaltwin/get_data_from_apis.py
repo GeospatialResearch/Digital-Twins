@@ -72,7 +72,7 @@ def get_data_from_apis():
     engine = setup_environment.get_database()
 
     # load in the instructions, get the source list and polygon from the user
-    FILE_PATH = pathlib.Path().cwd() / pathlib.Path("test1.json")
+    FILE_PATH = pathlib.Path().cwd() / pathlib.Path("../test1.json")
     with open(FILE_PATH, 'r') as file_pointer:
         instructions = json.load(file_pointer)
 
