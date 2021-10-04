@@ -114,7 +114,10 @@ Now your docker is up and running
 ![image](https://user-images.githubusercontent.com/86580534/135923541-9bd0b2a7-f6f6-4c32-b40e-c2130050f258.png)
 
 5. To check the data stored in the table:
-run the command: ```bash select * from apilinks;```
+run the command: 
+```bash 
+select * from apilinks;
+```
 
 ![image](https://user-images.githubusercontent.com/86580534/135923860-d10a2323-100c-446e-bec3-6010cca2ba8b.png)
 
