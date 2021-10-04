@@ -16,6 +16,10 @@ from bs4 import BeautifulSoup
 
 import setup_environment
 import tables
+import pyproj
+path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
+pyproj.datadir.set_data_dir(path)
+pyproj.datadir.get_data_dir()
 
 
 def extract_api_params(api):
@@ -33,16 +37,22 @@ def url_validator(url=None):
     return url if valid else print(f"Invalid URL: {url}")
 
 
-def api_data_modified_date(url=None):
+def api_data_modified_date(data_provider: str, url=None):
     """to get the modified date of the data source"""
     try:
         content = requests.get(url)
         soup = BeautifulSoup(content.text, 'html.parser')
-        url_update_date = soup.find(
-            "th", text="Last updated").find_next_sibling("td").text
+        if data_provider == 'LINZ' or data_provider == 'LRIS':
+            url_update_date = soup.find(
+                "th", text="Last updated").find_next_sibling("td").text
+        elif data_provider == 'StatsNZ':
+            url_update_date = soup.find(
+                "th", text="Added").find_next_sibling("td").text
+        else:
+            return None
 
         def mdy_to_ymd(url_date):
-            """to change the format of the date type variable"""
+            """To change the format of the date type variable."""
             return datetime.strptime(url_date, '%d %b %Y').strftime('%Y-%m-%d')
 
         url_update_date = mdy_to_ymd(url_update_date)
@@ -53,11 +63,31 @@ def api_data_modified_date(url=None):
         pass
 
 
+def region_geometry_table(YOUR_KEY):
+    """Create region_geometry table which is used to create the geometry column in the apilinks table."""
+    engine = setup_environment.get_database()
+
+    # check if the region_geometry table exists in the database
+    insp = sqlalchemy.inspect(engine)
+    table_exist = insp.has_table("region_geometry", schema="public")
+    if table_exist is False:
+        try:
+            # insert the api key from stas NZ data portal
+            response_data = tables.region_geometry(key=YOUR_KEY)
+            response_data.to_postgis('region_geometry', engine, index=True,
+                                     if_exists='replace')
+        except Exception as error:
+            print("An exception has occured:", error, type(error))
+    else:
+        pass
+
+
 def insert_records(data_provider: str, source_name: str, api: str, region: str,
-                   geometry_column: str = None, url=None, layer=None, YOUR_KEY=None):
+                   geometry_column: str = None, url=None, layer=None):
+    """Insert user inputs as a row in the apilinks table."""
     if source_name[0].isalpha() or source_name[0].startswith("_"):
         valid_url = url_validator(url)
-        modified_date = api_data_modified_date(valid_url)
+        modified_date = api_data_modified_date(data_provider, valid_url)
         query_dictionary, source_apis = extract_api_params(api)
         record = {
             "data_provider": data_provider,
@@ -70,23 +100,7 @@ def insert_records(data_provider: str, source_name: str, api: str, region: str,
             "layer": layer,
             "geometry_col_name": geometry_column
         }
-
         engine = setup_environment.get_database()
-
-        # check if the region_geometry table exists in the database
-        insp = sqlalchemy.inspect(engine)
-        table_exist = insp.has_table("region_geometry", schema="public")
-        if table_exist is False:
-            try:
-                # insert the api key from stas NZ data portal
-                response_data = tables.region_geometry(key=YOUR_KEY)
-                response_data.to_postgis('region_geometry', engine, index=True,
-                                         if_exists='replace')
-            except Exception as error:
-                print("An exception has occured:", error, type(error))
-        else:
-            pass
-
         try:
             Apilink = tables.Apilink
             dbsession = tables.dbsession()
@@ -103,7 +117,7 @@ def insert_records(data_provider: str, source_name: str, api: str, region: str,
                 layer=record['layer'],
                 geometry_col_name=record['geometry_col_name'])
             dbsession.runQuery(engine, api_query)
-
+            # add geomerty column from region_geomerty table.
             query = "UPDATE apilinks SET geometry =(SELECT geometry FROM\
                 region_geometry WHERE region_geometry.regc2021_v1_00_name\
                     = apilinks.region_name)"
