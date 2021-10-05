@@ -5,10 +5,12 @@ Created on Mon Sep 13 15:21:34 2021
 @author: pkh35
 """
 import json
-import pathlib
-import insert_api_to_table
-from dotenv import load_dotenv
 import os
+import pathlib
+
+from dotenv import load_dotenv
+
+from digitaltwin import insert_api_to_table
 
 load_dotenv()
 Stats_NZ_KEY = os.getenv('KEY')

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep 13 14:13:34 2021.
+Created on Mon Sep 13 14:13:34 2021
 
 @author: pkh35
 """
@@ -12,8 +12,13 @@ import requests
 import sqlalchemy
 import validators
 from bs4 import BeautifulSoup
-import setup_environment
-import tables
+
+import pyproj
+path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
+pyproj.datadir.set_data_dir(path)
+pyproj.datadir.get_data_dir()
+from . import tables
+from .setup_environment import get_database
 
 
 def extract_api_params(api):
@@ -59,7 +64,7 @@ def api_data_modified_date(data_provider: str, url=None):
 
 def region_geometry_table(YOUR_KEY):
     """Create region_geometry table which is used to create the geometry column in the apilinks table."""
-    engine = setup_environment.get_database()
+    engine = get_database()
 
     # check if the region_geometry table exists in the database
     insp = sqlalchemy.inspect(engine)
@@ -94,7 +99,7 @@ def insert_records(data_provider: str, source_name: str, api: str, region: str,
             "layer": layer,
             "geometry_col_name": geometry_column
         }
-        engine = setup_environment.get_database()
+        engine = get_database()
         try:
             Apilink = tables.Apilink
             dbsession = tables.dbsession()
