@@ -8,16 +8,10 @@ import json
 import urllib
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
-
-import pyproj
 import requests
 import sqlalchemy
 import validators
 from bs4 import BeautifulSoup
-
-path = 'C:\\Users\\pkh35\\Anaconda3\\envs\\digitaltwin\\Library\\share\\proj'
-pyproj.datadir.set_data_dir(path)
-pyproj.datadir.get_data_dir()
 from . import tables
 from .setup_environment import get_database
 
