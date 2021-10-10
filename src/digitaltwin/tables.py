@@ -52,7 +52,8 @@ class dbsession():
         try:
             session.add(query)
             session.commit()
-        except:
+        except Exception as error:
+            print(error)
             session.rollback()
 
 
