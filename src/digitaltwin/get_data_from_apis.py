@@ -63,12 +63,12 @@ def get_geometry_info(engine):
         return srcList.update(geom)
 
 
-def get_data_from_apis():
+def get_data_from_apis(file):
     # connect to the database where apis are stored
     engine = setup_environment.get_database()
 
     # load in the instructions, get the source list and polygon from the user
-    FILE_PATH = pathlib.Path().cwd() / pathlib.Path("../test1.json")
+    FILE_PATH = pathlib.Path().cwd() / pathlib.Path(file)
     with open(FILE_PATH, 'r') as file_pointer:
         instructions = json.load(file_pointer)
 
@@ -115,4 +115,4 @@ def get_data_from_apis():
 
 
 if __name__ == "__main__":
-    get_data_from_apis()
+    get_data_from_apis("../test1.json")
