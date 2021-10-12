@@ -18,6 +18,7 @@ def get_database():
     """Exit the program if connection fails."""
     try:
         engine = get_connection_from_profile()
+
         log.info("Connected to PostgreSQL database!")
     except IOError:
         log.exception("Failed to get database connection!")
@@ -37,14 +38,11 @@ def get_connection_from_profile(config_file_name="db_configure.yml"):
         vals = yaml.safe_load(config_vals)
     try:
 
-        if not all(key in vals.keys() for key in ['PGHOST', 'PGUSER', 'PGPASSWORD', 'PGDATABASE', 'PGPORT']):
-            raise Exception('Bad config file: ' + config_file_name)
-
         return get_engine(vals['PGDATABASE'], vals['PGUSER'],
                           vals['PGHOST'], vals['PGPORT'],
                           vals['PGPASSWORD'])
-    except OperationalError:
-        print("Error occured")
+    except KeyError:
+        print(KeyError)
 
 
 def get_engine(db, user, host, port, passwd):
@@ -60,3 +58,6 @@ def get_engine(db, user, host, port, passwd):
     url = f'postgresql://{user}:{passwd}@{host}:{port}/{db}'
     engine = create_engine(url)
     return engine
+
+
+get_connection_from_profile()
