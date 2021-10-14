@@ -63,20 +63,11 @@ def get_geometry_info(engine):
         return srcList.update(geom)
 
 
-def get_data_from_apis(file):
-    # connect to the database where apis are stored
-    engine = setup_environment.get_database()
-
-    # load in the instructions, get the source list and polygon from the user
-    FILE_PATH = pathlib.Path().cwd() / pathlib.Path(file)
-    with open(FILE_PATH, 'r') as file_pointer:
-        instructions = json.load(file_pointer)
-
-    source_list = tuple(instructions['source_name'])
-    geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
+def get_data_from_apis(engine, geometry_df, source_list):
+    source_list = tuple(source_list)
     geometry_df.set_crs(crs='epsg:2193', inplace=True)
     user_geometry = geometry_df.iloc[0, 0]
-    tables_in_db, tables_not_in_db = check_table_exist(engine, instructions)
+    tables_in_db, tables_not_in_db = check_table_exist(engine, source_list)
 
     if tables_in_db != []:
         srcList = get_geometry_info(engine)
@@ -87,7 +78,6 @@ def get_data_from_apis(file):
                 not_in_db_polygon = user_geometry.difference(
                     srcList['geometry'])
                 if not_in_db_polygon.is_empty:
-                    # adding spatial query function later
                     print("data available in the database")
                 else:
                     polygon = gpd.GeoDataFrame(
@@ -101,7 +91,6 @@ def get_data_from_apis(file):
         wfs_request_from_db(engine, tables_not_in_db, geometry_df)
 
     else:
-        # adding spatial query function later
         print("data avilable in the database")
 
     User_log_info = tables.User_log_info
@@ -112,7 +101,3 @@ def get_data_from_apis(file):
                                                  sort_keys=True, default=str),
                           geometry=str(user_geometry))
     dbsession.runQuery(engine, query)
-
-
-if __name__ == "__main__":
-    get_data_from_apis("../test1.json")
