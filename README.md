@@ -59,15 +59,15 @@ get_data_from_db module allows the user to download the vector data from differe
 
 1. Install Postgresql and selet PostGIS application to install along with PostgreSQL
 
-2. ![image](https://user-images.githubusercontent.com/86580534/133153382-3a5c1069-2e65-4938-933f-5c305515fc58.png)
+   ![image](https://user-images.githubusercontent.com/86580534/133153382-3a5c1069-2e65-4938-933f-5c305515fc58.png)
 
-3. Open pgAdmin 4 and set your password which will be used for connecting to PostgreSQL using Python
-5. Create Database 'vector' as shown below:
-6. ![image](https://user-images.githubusercontent.com/86580534/133153639-3b21aec0-1eb3-45de-8f73-b5caa5b102ee.png)          ![image](https://user-images.githubusercontent.com/86580534/137420617-705ff552-94f7-4b71-940d-1cb1a16d0719.png)
-7. Within a created a database, create PostGIS extension as shown below:
-8. ![image](https://user-images.githubusercontent.com/86580534/133153968-0d65230f-2b5d-4686-b115-2c354f66f04e.png)          ![image](https://user-images.githubusercontent.com/86580534/133154073-4e1702f8-866c-45a3-a8aa-4c1a505cf9b4.png)
-9. Once the extension is created, spatial_ref_sys table will appear under tables as shown below:
-10. ![image](https://user-images.githubusercontent.com/86580534/133154207-a8e5c181-7a8d-4a4a-81ce-aeae930e9593.png)
+2. Open pgAdmin 4 and set your password which will be used for connecting to PostgreSQL using Python
+3. Create Database 'vector' as shown below:
+4. ![image](https://user-images.githubusercontent.com/86580534/133153639-3b21aec0-1eb3-45de-8f73-b5caa5b102ee.png)          ![image](https://user-images.githubusercontent.com/86580534/137420617-705ff552-94f7-4b71-940d-1cb1a16d0719.png)
+5. Within a created a database, create PostGIS extension as shown below:
+6. ![image](https://user-images.githubusercontent.com/86580534/133153968-0d65230f-2b5d-4686-b115-2c354f66f04e.png)          ![image](https://user-images.githubusercontent.com/86580534/133154073-4e1702f8-866c-45a3-a8aa-4c1a505cf9b4.png)
+7. Once the extension is created, spatial_ref_sys table will appear under tables as shown below:
+8. ![image](https://user-images.githubusercontent.com/86580534/133154207-a8e5c181-7a8d-4a4a-81ce-aeae930e9593.png)
 
 ## Create environment to run the packages
 
