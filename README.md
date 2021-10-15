@@ -17,9 +17,9 @@ To store apis in the database,
 The following inputs are required:
 
 1. Name of the dataset e.g. 104400-lcdb-v50-land-cover, 101292-nz-building-outlines. **Note:** make sure the names are unique.
-2. name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago, etc. (regions can be further extended to other countries in future)
-3. Geometry column name of the dateset, if required. for isntance, for all LDS property and ownership, street address and geodetic data the geometry column is ‘shape’. For most other layers including Hydrographic and Topographic data, the column name is 'GEOMETRY'. For more info: https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/wfs-spatial-filtering
-4. url i.e website from where the api is accessed.
+2. Name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago, etc. (regions can be further extended to other countries in future)
+3. Geometry column name of the dateset, if required. for instance, for all LDS property and ownership, street address and geodetic data the geometry column is ‘shape’. For most other layers including Hydrographic and Topographic data, the column name is 'GEOMETRY'. For more info: https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/wfs-spatial-filtering
+4. Url i.e website from where the api is accessed.
 5. Layer name of the dataset
 6. Data provider name. For example: LINZ, LRIS, StatsNZ, etc.
 For more details on the format and structure of the inputs check out [instructions_linz.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/instructions_linz.json)
@@ -42,7 +42,8 @@ To get the data from the database:
    
    ![image](https://user-images.githubusercontent.com/86580534/137419448-919a4372-0d69-4a79-98b0-0046f4b4edfc.png)
 
-Currently the tables store vector data only but will be extended to LiDAR and raster data.It allows a user to download the vector data from different data providers where data is publicly available and store data from an area of interest (Polygon) into a database. Currently data is fetched from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
+Currently the tables store vector data only but will be extended to LiDAR and raster data.
+get_data_from_db module allows the user to download the vector data from different data providers where data is publicly available and store data from an area of interest (Polygon) into a database. Currently data is collected from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
 
 ## Requirements
 
