@@ -12,19 +12,35 @@ The reason for creating a database are:
 2.	To avoid delays in fetching the same data from the API when required again and again to run the models.
 3.	To store the data only for the Area of Interest.
 
-The digitaltwin repository is designed to store APIs and local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, and LRIS in PostgreSQL. User needs to pass values to the api_records function:
+The digitaltwin repository is designed to store APIs and local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, and LRIS in PostgreSQL. 
+To store apis in the database,
+The following inputs are required:
 
 1. Name of the dataset e.g. 104400-lcdb-v50-land-cover, 101292-nz-building-outlines. **Note:** make sure the names are unique.
 2. name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago, etc. (regions can be further extended to other countries in future)
 3. Geometry column name of the dateset, if required. for isntance, for all LDS property and ownership, street address and geodetic data the geometry column is ‘shape’. For most other layers including Hydrographic and Topographic data, the column name is 'GEOMETRY'. For more info: https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/wfs-spatial-filtering
-4. If user is interested in a recent copy of the data, name of website must be specified to get the recent modified date of the dataset. See instructions.json
-5. Enter the api data which you want to store in a database.
+4. url i.e website from where the api is accessed.
+5. Layer name of the dataset
+6. Data provider name. For example: LINZ, LRIS, StatsNZ, etc.
+For more details on the format and structure of the inputs check out [instructions_linz.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/instructions_linz.json)
+Enter the api data which you want to store in a database.
    ![image](https://user-images.githubusercontent.com/86580534/133012962-86d117f9-7ee7-4701-9497-c50484d5cdc7.png)
-6. Call the function:
+
+Run run.py file from your IDE:
 
 ![image](https://user-images.githubusercontent.com/86580534/135927747-0bff7da4-f30a-4858-add5-2e9bbb93d880.png)
 
 This way data will be stored in the database which then will be used to make api requests for the desired Area of Interest.
+geometry column's name, url and layer name are not required if the data provider is not LINZ, LRIS or StatsNZ:
+
+To get the data from the database:
+
+1. Make sure [db_configure.yml](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/db_configure.yml) file has the correct information        stored in it. 
+   
+2. The geometry and source list needs to passed as an argument to get_data_from_db() function. Check [test1.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/test1.json) for more details on the format and structure of the arguments.
+3. Run get_data_from_db.py file from your IDE:
+   
+   ![image](https://user-images.githubusercontent.com/86580534/137419448-919a4372-0d69-4a79-98b0-0046f4b4edfc.png)
 
 Currently the tables store vector data only but will be extended to LiDAR and raster data.It allows a user to download the vector data from different data providers where data is publicly available and store data from an area of interest (Polygon) into a database. Currently data is fetched from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
 
