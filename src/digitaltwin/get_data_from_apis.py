@@ -14,7 +14,7 @@ import tables
 import wfs_request
 
 
-def check_table_exist(engine, instructions):
+def check_table_exist(engine, source_list):
     """To check if tables already exists in the db for the requetsed sources."""
     table = engine.execute("select table_name from information_schema.tables")
     tables_name = []
@@ -23,7 +23,7 @@ def check_table_exist(engine, instructions):
 
     tables_not_in_db = []
     tables_in_db = []
-    for source in instructions['source_name']:
+    for source in source_list:
         if source not in tables_name:
             tables_not_in_db.append(source)
         else:
@@ -39,8 +39,8 @@ def wfs_request_from_db(engine, tables, polygon):
         base_url = db_tbl.loc[i, 'source_apis']
         layer = db_tbl.loc[i, 'layer']
         geometry_name = db_tbl.loc[i, 'geometry_col_name']
-        keys = engine.execute("select key from api_keys where data_provider\
-                                    = %(data_provider)s", ({'data_provider': data_provider}))
+        keys = engine.execute("select key from api_keys where data_provider = %(data_provider)s", ({
+                              'data_provider': data_provider}))
         key = ""
         for k in keys:
             key = key + k[0]
@@ -54,22 +54,25 @@ def get_geometry_info(engine):
     stored_list = engine.execute("select source_list, ST_AsText(geometry) from\
                                       user_log_information")
     stored_srces = stored_list.fetchall()
+
     for i in range(len(stored_srces)):
         geom = stored_srces[i][1]
         srcList = stored_srces[i][0]
         srcList = json.loads(srcList)
-        geom = {'geometry': stored_srces[i][1]}
         # added geometry column to the sorce_list dictionary
-        return srcList.update(geom)
+        srcList['geometry'] = geom
+        return srcList
 
 
 def get_data_from_apis(engine, geometry_df, source_list):
-    source_list = tuple(source_list)
+
     geometry_df.set_crs(crs='epsg:2193', inplace=True)
     user_geometry = geometry_df.iloc[0, 0]
-    tables_in_db, tables_not_in_db = check_table_exist(engine, source_list)
 
-    if tables_in_db != []:
+    tables_in_db, tables_not_in_db = check_table_exist(engine, source_list)
+    source_list = tuple(source_list)
+
+    if tables_in_db is not []:
         srcList = get_geometry_info(engine)
         for table in tables_in_db:
             if table in srcList['source_name']:
