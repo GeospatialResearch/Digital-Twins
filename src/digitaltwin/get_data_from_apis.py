@@ -5,8 +5,8 @@ Created on Thu Sep 23 08:13:42 2021.
 @author: pkh35
 """
 import shapely.wkt
-import pathlib
 import json
+import pandas as pd
 import geopandas as gpd
 from geopandas import GeoSeries
 import setup_environment
@@ -64,8 +64,9 @@ def get_geometry_info(engine):
         return srcList
 
 
-def get_data_from_apis(engine, geometry_df, source_list):
-
+def get_data_from_apis(geometry_df, source_list):
+    # connect to the database where apis are stored
+    engine = setup_environment.get_database()
     geometry_df.set_crs(crs='epsg:2193', inplace=True)
     user_geometry = geometry_df.iloc[0, 0]
 
@@ -81,7 +82,7 @@ def get_data_from_apis(engine, geometry_df, source_list):
                 not_in_db_polygon = user_geometry.difference(
                     srcList['geometry'])
                 if not_in_db_polygon.is_empty:
-                    print("data available in the database")
+                    pass
                 else:
                     polygon = gpd.GeoDataFrame(
                         GeoSeries(not_in_db_polygon))
@@ -104,3 +105,17 @@ def get_data_from_apis(engine, geometry_df, source_list):
                                                  sort_keys=True, default=str),
                           geometry=str(user_geometry))
     dbsession.runQuery(engine, query)
+
+
+def get_data_from_db(geometry, source_list):
+    # connect to the database where apis are stored
+    engine = setup_environment.get_database()
+    """Query data from the database for the requested polygon."""
+    user_geometry = geometry.iloc[0, 0]
+    get_data_from_apis.get_data_from_apis(engine, geometry, source_list)
+    poly = "'{}'".format(user_geometry)
+    for source in source_list:
+        query = 'select * from "%(source)s" where ST_Intersects(geometry, ST_GeomFromText({}, 2193))' % (
+            {'source': source})
+        output_data = pd.read_sql_query(query.format(poly), engine)
+        print(output_data)

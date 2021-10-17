@@ -16,7 +16,9 @@ pyproj.datadir.set_data_dir(PATH)
 pyproj.datadir.get_data_dir()
 
 
-def get_data_from_db(engine, geometry, source_list):
+def get_data_from_db(geometry, source_list):
+    # connect to the database where apis are stored
+    engine = setup_environment.get_database()
     """Query data from the database for the requested polygon."""
     user_geometry = geometry.iloc[0, 0]
     get_data_from_apis.get_data_from_apis(engine, geometry, source_list)
@@ -35,6 +37,4 @@ if __name__ == "__main__":
         instructions = json.load(file_pointer)
     source_list = tuple(instructions['source_name'])
     geometry = gpd.GeoDataFrame.from_features(instructions["features"])
-    # connect to the database where apis are stored
-    engine = setup_environment.get_database()
-    get_data_from_db(engine, geometry, source_list)
+    get_data_from_db(geometry, source_list)
