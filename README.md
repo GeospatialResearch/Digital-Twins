@@ -12,21 +12,40 @@ The reason for creating a database are:
 2.	To avoid delays in fetching the same data from the API when required again and again to run the models.
 3.	To store the data only for the Area of Interest.
 
-The digitaltwin repository is designed to store APIs and local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, and LRIS in PostgreSQL. User needs to pass values to the api_records function:
+The digitaltwin repository is designed to store APIs and local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, and LRIS in PostgreSQL. 
+To store apis in the database,
+The following inputs are required:
 
 1. Name of the dataset e.g. 104400-lcdb-v50-land-cover, 101292-nz-building-outlines. **Note:** make sure the names are unique.
-2. name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago, etc. (regions can be further extended to other countries in future)
-3. Geometry column name of the dateset, if required. for isntance, for all LDS property and ownership, street address and geodetic data the geometry column is ‘shape’. For most other layers including Hydrographic and Topographic data, the column name is 'GEOMETRY'. For more info: https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/wfs-spatial-filtering
-4. If user is interested in a recent copy of the data, name of website must be specified to get the recent modified date of the dataset. See instructions.json
-5. Enter the api data which you want to store in a database.
+2. Name of the region which is by default set to New Zealand but can be changed to regions e.g. Canterbury, Otago, etc. (regions can be further extended to other countries in future)
+3. Geometry column name of the dateset, if required. for instance, for all LDS property and ownership, street address and geodetic data the geometry column is ‘shape’. For most other layers including Hydrographic and Topographic data, the column name is 'GEOMETRY'. For more info: https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/wfs-spatial-filtering
+4. Url i.e website from where the api is accessed.
+5. Layer name of the dataset
+6. Data provider name. For example: LINZ, LRIS, StatsNZ, etc.
+For more details on the format and structure of the inputs check out [instructions_linz.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/instructions_linz.json)
+Enter the api data which you want to store in a database.
    ![image](https://user-images.githubusercontent.com/86580534/133012962-86d117f9-7ee7-4701-9497-c50484d5cdc7.png)
-6. Call the function:
+
+Run run.py file from your IDE:
 
 ![image](https://user-images.githubusercontent.com/86580534/135927747-0bff7da4-f30a-4858-add5-2e9bbb93d880.png)
 
 This way data will be stored in the database which then will be used to make api requests for the desired Area of Interest.
+geometry column's name, url and layer name are not required if the data provider is not LINZ, LRIS or StatsNZ:
 
-Currently the tables store vector data only but will be extended to LiDAR and raster data.It allows a user to download the vector data from different data providers where data is publicly available and store data from an area of interest (Polygon) into a database. Currently data is fetched from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
+To get the data from the database:
+
+1. Make sure [db_configure.yml](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/db_configure.yml) file has the correct information        stored in it. 
+   
+2. The geometry and source list needs to passed as an argument to get_data_from_db() function. Check [test1.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/test1.json) for more details on the format and structure of the arguments.
+3. Run get_data_from_db.py file from your IDE:
+   
+   ![image](https://user-images.githubusercontent.com/86580534/137419448-919a4372-0d69-4a79-98b0-0046f4b4edfc.png)
+
+Currently the tables store vector data only but will be extended to LiDAR and raster data.
+
+get_data_from_db module allows the user to get data from the multiple sources within the required Area of Interest from the database and if data is not available in the database for the desired area of Interest, wfs request is made from the stored APIs, data is stored in the database and spatial query is done within the database to get the data for the desired Area of Interest. 
+Currently data is collected from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
 
 ## Requirements
 
@@ -41,14 +60,16 @@ Currently the tables store vector data only but will be extended to LiDAR and ra
 ## Create extensions in PostgreSQL:
 
 1. Install Postgresql and selet PostGIS application to install along with PostgreSQL
-2. ![image](https://user-images.githubusercontent.com/86580534/133153382-3a5c1069-2e65-4938-933f-5c305515fc58.png)
-3. Open pgAdmin 4 and set your password which will be used for connecting to PostgreSQL using Python
-4. Create Database 'datasourceapis' as shown below:
-5. ![image](https://user-images.githubusercontent.com/86580534/133153639-3b21aec0-1eb3-45de-8f73-b5caa5b102ee.png)          ![image](https://user-images.githubusercontent.com/86580534/133153696-fc992bbb-2de4-443a-beaa-a92a5c176bc1.png)
-6. Within a created a database, create PostGIS extension as shown below:
-7. ![image](https://user-images.githubusercontent.com/86580534/133153968-0d65230f-2b5d-4686-b115-2c354f66f04e.png)          ![image](https://user-images.githubusercontent.com/86580534/133154073-4e1702f8-866c-45a3-a8aa-4c1a505cf9b4.png)
-8. Once the extension is created, spatial_ref_sys table will appear under tables as shown below:
-9. ![image](https://user-images.githubusercontent.com/86580534/133154207-a8e5c181-7a8d-4a4a-81ce-aeae930e9593.png)
+
+   ![image](https://user-images.githubusercontent.com/86580534/133153382-3a5c1069-2e65-4938-933f-5c305515fc58.png)
+
+2. Open pgAdmin 4 and set your password which will be used for connecting to PostgreSQL using Python
+3. Create Database 'vector' as shown below:
+4. ![image](https://user-images.githubusercontent.com/86580534/133153639-3b21aec0-1eb3-45de-8f73-b5caa5b102ee.png)          ![image](https://user-images.githubusercontent.com/86580534/137420617-705ff552-94f7-4b71-940d-1cb1a16d0719.png)
+5. Within a created a database, create PostGIS extension as shown below:
+   ![image](https://user-images.githubusercontent.com/86580534/133153968-0d65230f-2b5d-4686-b115-2c354f66f04e.png)          ![image](https://user-images.githubusercontent.com/86580534/133154073-4e1702f8-866c-45a3-a8aa-4c1a505cf9b4.png)
+5. Once the extension is created, spatial_ref_sys table will appear under tables as shown below:
+   ![image](https://user-images.githubusercontent.com/86580534/133154207-a8e5c181-7a8d-4a4a-81ce-aeae930e9593.png)
 
 ## Create environment to run the packages
 
