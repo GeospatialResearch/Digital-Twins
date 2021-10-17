@@ -43,7 +43,9 @@ To get the data from the database:
    ![image](https://user-images.githubusercontent.com/86580534/137419448-919a4372-0d69-4a79-98b0-0046f4b4edfc.png)
 
 Currently the tables store vector data only but will be extended to LiDAR and raster data.
-get_data_from_db module allows the user to download the vector data from different data providers where data is publicly available and store data from an area of interest (Polygon) into a database. Currently data is collected from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
+
+get_data_from_db module allows the user to get data from the multiple sources within the required Area of Interest from the database and if data is not available in the database for the desired area of Interest, wfs request is made from the stored APIs, data is stored in the database and spatial query is done within the database to get the data for the desired Area of Interest. 
+Currently data is collected from LINZ, ECAN, Stats NZ, KiwiRail, and LRIS but will be extended to other sources.
 
 ## Requirements
 
