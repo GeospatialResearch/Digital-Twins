@@ -1,0 +1,20 @@
+beautifulsoup4==4.9.3
+Fiona==1.8.20
+GeoAlchemy2==0.6.3
+geopandas==0.9.0
+matplotlib==3.4.2
+matplotlib-inline==0.1.2
+numpy==1.21.1
+psycopg2==2.9.1
+pyproj==3.1.0
+requests==2.26.0
+scikit-learn>=0.24.2
+scipy==1.7.0
+Shapely==1.7.1
+sklearn==0.0
+SQLAlchemy==1.4.22
+urllib3==1.26.6
+validators==0.18.2
+python-dotenv==0.19.0
+PyYAML==5.4.1
+geoapis @ git+https://github.com/niwa/geoapis@674463c8766097df81c10a853c232166b0d129a5

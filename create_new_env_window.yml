@@ -1,0 +1,34 @@
+#YML file to create a new environent and install required packages to process vector data, raster data and other GIS data using anaconda
+
+name: digitaltwin
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - psycopg2
+  - bs4
+  - pandas
+  - sqlalchemy
+  - python-dotenv
+  - pyproj
+  - pytest
+  - pip
+  - gdal
+  - geopandas
+  - requests
+  - matplotlib
+  - ipykernel
+  - ipython
+  - jupyter_client
+  - jupyter_core
+  - spyder
+  - spyder-kernels
+  - pytest
+  - numpy
+  - scipy
+  - geoalchemy2
+  - validators
+  - pip:
+      - git+https://github.com/niwa/geoapis.git
+
+prefix: C:\ProgramData\Anaconda3\envs\digitaltwin

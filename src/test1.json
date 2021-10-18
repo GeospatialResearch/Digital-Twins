@@ -1,0 +1,40 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1570792,
+              5196184
+            ],
+            [
+              1570730,
+              5195134
+            ],
+            [
+              1572337,
+              5195117
+            ],
+            [
+              1572264,
+              5196045
+            ],
+            [
+              1570792,
+              5196184
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "source_name": [
+    "_50329-nz-road-centrelines",
+    "_50319-nz-railway-centrelines"
+  ]
+}
