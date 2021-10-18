@@ -31,6 +31,11 @@ def url_validator(url=None):
     return url if valid else print(f"Invalid URL: {url}")
 
 
+def mdy_to_ymd(url_date):
+    """To change the format of the date type variable."""
+    return datetime.strptime(url_date, '%d %b %Y').strftime('%Y-%m-%d')
+
+
 def api_data_modified_date(data_provider: str, url=None):
     """To get the modified date of the data source."""
     try:
@@ -44,11 +49,6 @@ def api_data_modified_date(data_provider: str, url=None):
                 "th", text="Added").find_next_sibling("td").text
         else:
             return None
-
-        def mdy_to_ymd(url_date):
-            """To change the format of the date type variable."""
-            return datetime.strptime(url_date, '%d %b %Y').strftime('%Y-%m-%d')
-
         url_update_date = mdy_to_ymd(url_update_date)
         return url_update_date
     except Exception as error:
