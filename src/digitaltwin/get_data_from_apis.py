@@ -82,7 +82,7 @@ def get_data_from_apis(geometry_df, source_list):
                 not_in_db_polygon = user_geometry.difference(
                     srcList['geometry'])
                 if not_in_db_polygon.is_empty:
-                    pass
+                    print("data avilable in the database")
                 else:
                     polygon = gpd.GeoDataFrame(
                         GeoSeries(not_in_db_polygon))

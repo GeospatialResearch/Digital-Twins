@@ -38,7 +38,7 @@ def get_connection_from_profile(config_file_name="db_configure.yml"):
     with open(config_file_name, 'r') as config_vals:
         vals = yaml.safe_load(config_vals)
     if not all(key in vals.keys() for key in ['PGHOST', 'PGUSER', 'PGPASSWORD', 'PGDATABASE', 'PGPORT']):
-        raise Exception('Bad config file: ' + config_file_name)
+        raise KeyError('Bad config file: ' + config_file_name)
     else:
 
         return get_engine(vals['PGDATABASE'], vals['PGUSER'],

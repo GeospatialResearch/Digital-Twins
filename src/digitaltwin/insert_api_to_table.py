@@ -52,7 +52,7 @@ def api_data_modified_date(data_provider: str, url=None):
         url_update_date = mdy_to_ymd(url_update_date)
         return url_update_date
     except Exception as error:
-        print("An exception has occured:", error, type(error))
+        print(error, type(error))
     finally:
         pass
 
@@ -71,9 +71,9 @@ def region_geometry_table(YOUR_KEY):
             response_data.to_postgis('region_geometry', engine, index=True,
                                      if_exists='replace')
         except Exception as error:
-            print("An exception has occured:", error, type(error))
+            print(error, type(error))
     else:
-        pass
+        print('region_geometry table exists')
 
 
 def insert_records(data_provider: str, source_name: str, api: str, region: str,
@@ -118,6 +118,6 @@ def insert_records(data_provider: str, source_name: str, api: str, region: str,
             engine.execute(query)
 
         except Exception as error:
-            print("An exception has occured:", error, type(error))
+            print(error, type(error))
     else:
         print("source_name should start with _ or a letter")
