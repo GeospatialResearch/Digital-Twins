@@ -73,7 +73,7 @@ def get_data_from_apis(geometry_df, source_list):
     tables_in_db, tables_not_in_db = check_table_exist(engine, source_list)
     source_list = tuple(source_list)
 
-    if tables_in_db is not []:
+    if tables_in_db != []:
         srcList = get_geometry_info(engine)
         for table in tables_in_db:
             if table in srcList['source_name']:
