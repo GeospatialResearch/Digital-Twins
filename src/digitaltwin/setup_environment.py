@@ -9,7 +9,9 @@ import logging
 import sys
 import yaml
 from sqlalchemy import create_engine
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 log = logging.getLogger(__name__)
 
@@ -26,8 +28,8 @@ def get_database():
 
 
 def get_connection_from_profile(config_file_name="db_configure.yml"):
-    """
-    Set up database connection from config file.
+    """Set up database connection from config file.
+
     Input:
     config_file_name:File containing PGHOST, PGUSER,
                       PGPASSWORD, PGDATABASE, PGPORT, which are the
@@ -35,18 +37,20 @@ def get_connection_from_profile(config_file_name="db_configure.yml"):
     """
     with open(config_file_name, 'r') as config_vals:
         vals = yaml.safe_load(config_vals)
-    try:
+    if not all(key in vals.keys() for key in ['PGHOST', 'PGUSER', 'PGPASSWORD', 'PGDATABASE', 'PGPORT']):
+        raise Exception('Bad config file: ' + config_file_name)
+    else:
+
         return get_engine(vals['PGDATABASE'], vals['PGUSER'],
                           vals['PGHOST'], vals['PGPORT'],
                           vals['PGPASSWORD'])
-    except OperationalError:
-        print("Error occured")
 
 
 def get_engine(db, user, host, port, passwd):
-    """
-    Get SQLalchemy engine using credentials.
+    """Get SQLalchemy engine using credentials.
+
     Input:
+
     db: database name
     user: Username
     host: Hostname of the database server
@@ -55,4 +59,8 @@ def get_engine(db, user, host, port, passwd):
     """
     url = f'postgresql://{user}:{passwd}@{host}:{port}/{db}'
     engine = create_engine(url)
+    Base.metadata.create_all(engine)
     return engine
+
+
+get_database()
