@@ -12,10 +12,7 @@ import pandas as pd
 
 
 def get_data_from_db(engine, geometry, source_list):
-    """Perform spatial query within the database."""
-    # connect to the database where apis are stored
-    engine = setup_environment.get_database()
-    """Query data from the database for the requested polygon."""
+    """Perform spatial query within the database for the requested polygon."""
     user_geometry = geometry.iloc[0, 0]
     get_data_from_apis.get_data_from_apis(engine, geometry, source_list)
     poly = "'{}'".format(user_geometry)
