@@ -24,8 +24,8 @@ class Raster(Base):
     __tablename__ = 'raster'
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     filepath = Column(String)
-    Filename = Column(String)
-    Filename_no_format = Column(String)
+    filename = Column(String)
+    filename_no_format = Column(String)
     geometry = Column(Geometry('POLYGON'))
 
 
@@ -39,7 +39,7 @@ def pointcloud_to_raster():
     Then tif files metadata is stored in the raster table in database.
     """
     filepaths = engine.execute(
-        'SELECT t.Filename, l.filepath FROM tileindex t INNER JOIN lidar l ON t.Filename = l.Filename')
+        'SELECT t."Filename", l.filepath FROM tileindex t INNER JOIN lidar l ON t."Filename" = l.filename')
 
     filepaths = filepaths.fetchall()
 
@@ -77,13 +77,13 @@ def raster_to_db():
         file_name = os.path.basename(file)
         file_name = file_name.replace("'", "")
         file_name_no_format = file_name.rsplit('.', 1)[0]
-        raster = Raster(filepath=file, Filename=file_name,
-                        Filename_no_format=file_name_no_format)
+        raster = Raster(filepath=file, filename=file_name,
+                        filename_no_format=file_name_no_format)
         Session = sessionmaker(bind=engine)
         session = Session()
         session.add(raster)
         session.commit()
-        query = 'UPDATE raster SET geometry =(SELECT geometry FROM lidar WHERE lidar.Filename_no_format = raster.Filename_no_format)'
+        query = 'UPDATE raster SET geometry =(SELECT geometry FROM lidar WHERE lidar.filename_no_format = raster.filename_no_format)'
         engine.execute(query)
 
 

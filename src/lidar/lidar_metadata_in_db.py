@@ -25,8 +25,8 @@ class Lidar(Base):
     __tablename__ = 'lidar'
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     filepath = Column(String)
-    Filename = Column(String)
-    Filename_no_format = Column(String)
+    filename = Column(String)
+    filename_no_format = Column(String)
     geometry = Column(Geometry('POLYGON'))
 
 
@@ -57,8 +57,8 @@ def store_lidar_path(filetype, folder):
         file_name = os.path.basename(file)
         file_name = file_name.replace("'", "")
         file_name_no_format = file_name.rsplit('.', 1)[0]
-        lidar = Lidar(filepath=file, Filename=file_name,
-                      Filename_no_format=file_name_no_format)
+        lidar = Lidar(filepath=file, filename=file_name,
+                      filename_no_format=file_name_no_format)
         Session = sessionmaker(bind=engine)
         session = Session()
         session.add(lidar)
@@ -72,7 +72,7 @@ def remove_duplicate_rows(table_name):
     engine.execute('ALTER TABLE \"%(table_name)s\" ADD COLUMN IF NOT EXISTS tbl_id SERIAL' % (
         {'table_name': table_name}))
     # delete duplicate rows from the newly created tables if exists
-    engine.execute('DELETE FROM \"%(table_name)s\" a USING \"%(table_name)s\" b WHERE a.tbl_id < b.tbl_id AND a.Filename = b.Filename;' % (
+    engine.execute('DELETE FROM \"%(table_name)s\" a USING \"%(table_name)s\" b WHERE a.tbl_id < b.tbl_id AND a.filename = b.filename;' % (
         {'table_name': table_name}))
 
 
@@ -96,7 +96,7 @@ def store_tileindex(filetype, folder):
         gdf = gpd.read_file(i)
         gdf.to_postgis("tileindex", engine, index=False, if_exists='append')
     remove_duplicate_rows("tileindex")
-    query = 'UPDATE lidar SET geometry =(SELECT geometry FROM tileindex WHERE tileindex.Filename = lidar.Filename)'
+    query = 'UPDATE lidar SET geometry =(SELECT geometry FROM tileindex WHERE tileindex."Filename" = lidar.filename)'
     engine.execute(query)
 
 
