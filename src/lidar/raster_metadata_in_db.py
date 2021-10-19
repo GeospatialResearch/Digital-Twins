@@ -70,9 +70,9 @@ def pointcloud_to_raster():
             pipeline.arrays[0]
 
 
-def raster_to_db():
+def raster_to_db(folder):
     """Store metadata of converted tiff file in database."""
-    tif_list = lidar_metadata_in_db.get_files(".tif")
+    tif_list = lidar_metadata_in_db.get_files(".tif", folder)
     for file in tif_list:
         file_name = os.path.basename(file)
         file_name = file_name.replace("'", "")
@@ -90,4 +90,5 @@ def raster_to_db():
 
 if __name__ == "__main__":
     import lidar_metadata_in_db
-    raster_to_db()
+    path = "YOU_DIR_PATH"
+    raster_to_db(path)
