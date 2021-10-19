@@ -39,7 +39,7 @@ def pointcloud_to_raster():
     Then tif files metadata is stored in the raster table in database.
     """
     filepaths = engine.execute(
-        'SELECT t."Filename", l.filepath FROM tileindex t INNER JOIN lidar l ON t."Filename" = l."Filename"')
+        'SELECT t.Filename, l.filepath FROM tileindex t INNER JOIN lidar l ON t.Filename = l.Filename')
 
     filepaths = filepaths.fetchall()
 
@@ -83,7 +83,7 @@ def raster_to_db():
         session = Session()
         session.add(raster)
         session.commit()
-        query = 'UPDATE raster SET geometry =(SELECT geometry FROM lidar WHERE lidar."Filename_no_format" = raster."Filename_no_format")'
+        query = 'UPDATE raster SET geometry =(SELECT geometry FROM lidar WHERE lidar.Filename_no_format = raster.Filename_no_format)'
         engine.execute(query)
 
 
