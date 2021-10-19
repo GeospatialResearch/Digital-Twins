@@ -14,8 +14,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
-import setup_environment
-
+from src.digitaltwin import setup_environment
 
 Base = declarative_base()
 
@@ -35,9 +34,8 @@ engine = setup_environment.get_database()
 Lidar.__table__.create(bind=engine, checkfirst=True)
 
 
-def get_files(filetype):
+def get_files(filetype, folder):
     """To get the path of the downloaded point cloud files."""
-    folder = r'P:\GRI_codes\lidar_data'
     file_list = []
     files_path = []
     for (paths, dirs, files) in os.walk(folder):
@@ -54,7 +52,7 @@ def get_files(filetype):
 
 def store_lidar_path(filetype, folder):
     """To store the path of downloaded point cloud data."""
-    laz_files = get_files(filetype)
+    laz_files = get_files(filetype, folder)
     for file in laz_files:
         file_name = os.path.basename(file)
         file_name = file_name.replace("'", "")
@@ -93,7 +91,7 @@ def store_tileindex(filetype, folder):
     for i in zip_files:
         zip_file = zipfile.ZipFile(i)
         zip_file.extractall(folder)
-    shp_files = get_files(filetype)
+    shp_files = get_files(filetype, folder)
     for i in shp_files:
         gdf = gpd.read_file(i)
         gdf.to_postgis("tileindex", engine, index=False, if_exists='append')

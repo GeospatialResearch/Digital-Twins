@@ -5,7 +5,6 @@ Created on Tue Oct 12 13:29:01 2021.
 @author: pkh35
 """
 
-import setup_environment
 import pdal
 import json
 import os
@@ -13,7 +12,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
-import lidar_metadata_in_db
+from src.digitaltwin import setup_environment
 
 engine = setup_environment.get_database()
 Base = declarative_base()
@@ -89,4 +88,5 @@ def raster_to_db():
 
 
 if __name__ == "__main__":
+    import lidar_metadata_in_db
     raster_to_db()
