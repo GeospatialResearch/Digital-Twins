@@ -72,7 +72,7 @@ def remove_duplicate_rows(table_name):
     engine.execute('ALTER TABLE \"%(table_name)s\" ADD COLUMN IF NOT EXISTS tbl_id SERIAL' % (
         {'table_name': table_name}))
     # delete duplicate rows from the newly created tables if exists
-    engine.execute('DELETE FROM \"%(table_name)s\" a USING \"%(table_name)s\" b WHERE a.tbl_id < b.tbl_id AND a."Filename" = b."Filename";' % (
+    engine.execute('DELETE FROM \"%(table_name)s\" a USING \"%(table_name)s\" b WHERE a.tbl_id < b.tbl_id AND a.Filename = b.Filename;' % (
         {'table_name': table_name}))
 
 
@@ -96,7 +96,7 @@ def store_tileindex(filetype, folder):
         gdf = gpd.read_file(i)
         gdf.to_postgis("tileindex", engine, index=False, if_exists='append')
     remove_duplicate_rows("tileindex")
-    query = 'UPDATE lidar SET geometry =(SELECT geometry FROM tileindex WHERE tileindex."Filename" = lidar."Filename")'
+    query = 'UPDATE lidar SET geometry =(SELECT geometry FROM tileindex WHERE tileindex.Filename = lidar.Filename)'
     engine.execute(query)
 
 
