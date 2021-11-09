@@ -7,7 +7,7 @@ Created on Tue Aug 10 13:29:55 2021.
 from datetime import datetime
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, DateTime, Unicode, Date
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSONB, JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
@@ -20,7 +20,7 @@ class User_log_info(Base):
 
     __tablename__ = 'user_log_information'
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    source_list = Column(JSON())
+    source_list = Column(JSONB)
     geometry = Column(Geometry('POLYGON'))
     accessed_date = Column(DateTime(timezone=True), default=func.now())
 

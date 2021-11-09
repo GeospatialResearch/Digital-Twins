@@ -49,7 +49,7 @@ def wfs_request_from_db(engine, tables, polygon):
 
 def get_geometry_info(engine):
     """Get the geometry of the tables that exist in the database."""
-    stored_list = engine.execute("select source_list, ST_AsText(geometry) from\
+    stored_list = engine.execute("select distinct source_list, ST_AsText(geometry) from\
                                       user_log_information")
     stored_srces = stored_list.fetchall()
 
