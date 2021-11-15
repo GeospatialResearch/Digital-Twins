@@ -72,16 +72,22 @@ def flow_data_to_db(engine,gauging_sites,url_river,flow):
     flow_df.to_sql(table_name, engine, index=False, if_exists='append')
     
     # convert text column to timestamp
-    query = 'ALTER TABLE public.stageflow ADD COLUMN create_time_holder TIMESTAMP without time zone NULL;\
-        UPDATE public.stageflow SET create_time_holder = "DateTime"::TIMESTAMP;\
-        ALTER TABLE public.stageflow ALTER COLUMN "DateTime" TYPE TIMESTAMP without time zone USING create_time_holder;\
-        ALTER TABLE public.stageflow DROP COLUMN create_time_holder'
-    engine.execute(query)
+    query = 'ALTER TABLE public.%(table_name)s ADD COLUMN create_time_holder TIMESTAMP without time zone NULL;\
+        UPDATE public.%(table_name)s SET create_time_holder = "DateTime"::TIMESTAMP;\
+        ALTER TABLE public.%(table_name)s ALTER COLUMN "DateTime" TYPE TIMESTAMP without time zone USING create_time_holder;\
+        ALTER TABLE public.%(table_name)s DROP COLUMN create_time_holder;\
+        ALTER TABLE public.%(table_name)s ALTER COLUMN "Site_no" TYPE bigint USING ("Site_no"::bigint)'
+    engine.execute(query % ({'table_name': table_name}))
     # delete duplicate rows from the newly created tables if exists
-    engine.execute('DELETE FROM public.riverflow WHERE  ctid NOT IN (SELECT\
-                    min(ctid) FROM public.riverflow GROUP BY "Site_no","DateTime")' )        
+    engine.execute('DELETE FROM public.%(table_name)s WHERE  ctid NOT IN (SELECT\
+                    min(ctid) FROM public.riverflow GROUP BY "Site_no","DateTime")' % ({'table_name': table_name}) )        
   
-    
+def flow_data_from_db(polygon, start_time, end_time, flow, engine):
+    query = 'select * from public.riverflow e,public.river_gauging_sites f\
+        where "DateTime" >="2021-10-15 16:00:00" and e."Site_no"=f."SITENUMBER"\
+            and ST_Intersects(geometry, ST_GeomFromText({}, 2193))'
+    output_data = pd.read_sql_query(query.format(polygon), engine)
+    return output_data
 
 if __name__ == '__main__':  
     engine = setup_environment.get_database()
