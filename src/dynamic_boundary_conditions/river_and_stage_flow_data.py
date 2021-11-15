@@ -13,6 +13,14 @@ import pandas as pd
 import datetime 
 import dateutil.relativedelta
 from src.digitaltwin import setup_environment
+import sys
+
+def check_inputs(flow):
+    if flow == 'Stage Flow' or flow == 'River Flow':
+        return flow
+    else:
+        print('request_flow_data function only accepts flow as "River Flow" or "Stage Flow"')
+        sys.exit()
 
 
 def sites_info_to_db(engine,df_river_gauge):
@@ -20,7 +28,7 @@ def sites_info_to_db(engine,df_river_gauge):
         df_river_gauge.to_postgis("river_gauging_sites", engine, index=False, if_exists='replace')
         
 
-def filter_gauging_sites(url, engine):
+def filter_gauging_sites(url, engine, flow):
     """Filter the gauging sites which have a past month data stored in it."""
     now = datetime.datetime.now()
     prev_month = now + dateutil.relativedelta.relativedelta(months=-1)
@@ -51,7 +59,8 @@ def request_flow_data(url_river, SiteNo, Flow, Period = '1_Month'):
 
         
 def flow_data_to_db(engine,gauging_sites,url_river,flow):
-    df_river_gauge = filter_gauging_sites(gauging_sites, engine) #pass url to the defined function
+    flow = check_inputs(flow)
+    df_river_gauge = filter_gauging_sites(gauging_sites, engine, flow) #pass url to the defined function
     #reading all the site numbers from Environment Canterbury's Gaugings Database
     flow_df = pd.DataFrame()
     for i in df_river_gauge['SITENUMBER']:
@@ -60,8 +69,6 @@ def flow_data_to_db(engine,gauging_sites,url_river,flow):
         table_name = 'stageflow'
     elif flow == 'River Flow':
         table_name = 'riverflow'
-    else:
-        print('request_flow_data function only accepts flow as "River Flow" or "Stage Flow"')
     flow_df.to_sql(table_name, engine, index=False, if_exists='append')
     
     # convert text column to timestamp
