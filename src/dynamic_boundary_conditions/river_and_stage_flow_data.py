@@ -49,7 +49,13 @@ def request_flow_data(url_river, SiteNo, Flow, Period = '1_Month'):
       print(error, type(error))
       return None
 
-def flow_data_to_db(flow, flow_df):
+        
+def flow_data_to_db(engine,gauging_sites,url_river,flow):
+    df_river_gauge = filter_gauging_sites(gauging_sites, engine) #pass url to the defined function
+    #reading all the site numbers from Environment Canterbury's Gaugings Database
+    flow_df = pd.DataFrame()
+    for i in df_river_gauge['SITENUMBER']:
+        flow_df = flow_df.append(request_flow_data(url_river, i, flow )) #change the values as per the requirements
     if flow == 'Stage Flow':
         table_name = 'stageflow'
     elif flow == 'River Flow':
@@ -66,16 +72,8 @@ def flow_data_to_db(flow, flow_df):
     engine.execute(query)
     # delete duplicate rows from the newly created tables if exists
     engine.execute('DELETE FROM public.riverflow WHERE  ctid NOT IN (SELECT\
-                    min(ctid) FROM public.riverflow GROUP BY "Site_no","DateTime")' )
-        
-def flow_data_to_db(engine,gauging_sites,url_river,flow):
-    df_river_gauge = filter_gauging_sites(gauging_sites, engine) #pass url to the defined function
-    #reading all the site numbers from Environment Canterbury's Gaugings Database
-    flow_df = pd.DataFrame()
-    for i in df_river_gauge['SITENUMBER']:
-        flow_df = flow_df.append(request_flow_data(url_river, i, flow )) #change the values as per the requirements
-         
-    flow_data_to_db(flow, flow_df)   
+                    min(ctid) FROM public.riverflow GROUP BY "Site_no","DateTime")' )        
+  
     
 
 if __name__ == '__main__':  
