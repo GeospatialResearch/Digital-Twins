@@ -11,19 +11,19 @@ import requests as rq
 import pandas as pd
 import datetime
 import dateutil.relativedelta
-from src.digitaltwin import setup_environment
 import sys
 import pathlib
 import json
+from src.digitaltwin import setup_environment
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def check_inputs(flow):
+    """Check if the correct arguments are passed."""
     if flow == 'Stage Flow' or flow == 'River Flow':
         return flow
     else:
-        print(
-            'request_flow_data function only accepts flow as "River Flow" or "Stage Flow"')
+        print('request_flow_data function only accepts flow as "River Flow" or "Stage Flow"')
         sys.exit()
 
 
