@@ -107,7 +107,8 @@ def flow_data_from_db(polygon, flow, engine, start_time=None, end_time=None):
     return output_data
 
 
-if __name__ == '__main__':
+def main():
+    """Store and query data from database."""
     engine = setup_environment.get_database()
     # Gauging sites url
     gauging_sites = 'https://opendata.arcgis.com/datasets/1591f4b1fc03410eb7b76cde0cf1ad85_4.geojson'  # river
@@ -125,3 +126,7 @@ if __name__ == '__main__':
     geometry = gpd.GeoDataFrame.from_features(instructions["features"])
     flow_data = flow_data_from_db(geometry, flow, engine)
     print(flow_data)
+
+
+if __name__ == '__main__':
+    main()
