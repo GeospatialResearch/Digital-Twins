@@ -10,10 +10,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
-from digitaltwin import setup_environment
-import json
+from src.digitaltwin import setup_environment
 import os
 import geopandas as gpd
+import sys
 
 Base = declarative_base()
 
@@ -30,6 +30,7 @@ class DEM(Base):
 
 def check_dem_exist(instructions, engine):
     """Only generate DEM if it doesn't exist in the database."""
+    dem_table(engine)
     catchment_boundary = gpd.read_file(
         instructions['instructions']['data_paths']['catchment_boundary'])
     geometry = str(catchment_boundary['geometry'][0])
@@ -38,9 +39,13 @@ def check_dem_exist(instructions, engine):
     return row.fetchone()[0]
 
 
+def dem_table(engine):
+    """Create hydrological_dem table if doesn't exists."""
+    DEM.__table__.create(bind=engine, checkfirst=True)
+
+
 def dem_metadata_to_db(instructions, engine):
     """Store metadata of the generated DEM in database."""
-    DEM.__table__.create(bind=engine, checkfirst=True)
     filepath = instructions['instructions']['data_paths']['result_dem']
     filename = os.path.basename(filepath)
     catchment_boundary = gpd.read_file(
@@ -63,11 +68,8 @@ def dem_metadata_from_db(instructions, engine):
     return dem.fetchone()[0]
 
 
-def main():
-    """Call the functions."""
-    with open(r'file.json', 'r') as file_pointer:
-        instructions = json.load(file_pointer)
-
+def get_dem_path(instructions):
+    """Pass dem information to other functions."""
     engine = setup_environment.get_database()
     if check_dem_exist(instructions, engine) is False:
         try:
@@ -76,11 +78,6 @@ def main():
             dem_metadata_to_db(instructions, engine)
         except Exception as error:
             print(error, type(error))
-    else:
-        print('DEM exist in the database')
-        dem_filepath = dem_metadata_from_db(instructions, engine)
-        print(dem_filepath)
-
-
-if __name__ == '__main__':
-    main()
+            sys.exit()
+    dem_filepath = dem_metadata_from_db(instructions, engine)
+    return dem_filepath
