@@ -1,4 +1,3 @@
-/** Sets up and mounts Vue app to #app element */
 import Vue from 'vue'
 
 import App from '@/App.vue'

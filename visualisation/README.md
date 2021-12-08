@@ -1,22 +1,24 @@
-## Getting Started
+# visualisation
 
-### Requirements
+## Project setup
+```
+npm install
+```
 
-#### Required Software
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
 
-* [Node.JS / npm](https://nodejs.org) (**N**ode **P**ackage **M**anager)
+### Compiles and minifies for production
+```
+npm run build
+```
 
-#### Required Credentials
+### Lints and fixes files
+```
+npm run lint
+```
 
-* [Cesium access token](https://cesium.com/ion/tokens) (API token to retrieve map data from Cesium)
-
-### Running the visualisation server in development mode:
-1. Install dependencies:
-   ```bash
-   npm run serve
-   ```
-2. Serve application:
-   ```bash
-   npm run serve
-   ```
-3. Access website: [localhost:8080](https://localhost:8080)
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).

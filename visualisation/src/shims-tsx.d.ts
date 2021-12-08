@@ -1,4 +1,3 @@
-/** Shim to allow JSX/TSX files to be read by TypeScript */
 import Vue, { VNode } from 'vue'
 
 declare global {
