@@ -50,8 +50,23 @@ def get_files(filetype, folder):
     return files_path
 
 
-def store_lidar_path(filetype, folder):
+def get_lidar_data(folder, instruction_file):
+    """To get the LiDAR data from opentopography using geoapis.
+
+    https://github.com/niwa/geoapis
+    """
+    with open(instruction_file, 'r') as file_pointer:
+        instructions = json.load(file_pointer)
+    geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
+    geometry_df.set_crs(crs='epsg:2193', inplace=True)
+    lidar_fetcher = geoapis.lidar.OpenTopography(cache_path=file_path_to_store,
+                                                 search_polygon=geometry_df, verbose=True)
+    lidar_fetcher.run()
+
+
+def store_lidar_path(folder, instruction_file, filetype=".laz"):
     """To store the path of downloaded point cloud data."""
+    get_lidar_data(folder, instruction_file)
     laz_files = get_files(filetype, folder)
     for file in laz_files:
         file_name = os.path.basename(file)
@@ -76,7 +91,7 @@ def remove_duplicate_rows(table_name):
                    a."Filename" = b."Filename";' % ({'table_name': table_name}))
 
 
-def store_tileindex(filetype, folder):
+def store_tileindex(folder, filetype=".shp"):
     """Store tile information of each point in the point cloud data.
 
     Function extracts the zip files where tile index files are stored as shape
@@ -101,15 +116,7 @@ def store_tileindex(filetype, folder):
 
 
 if __name__ == "__main__":
-    FILE_PATH = "lidar_test.json"
-    with open(FILE_PATH, 'r') as file_pointer:
-        instructions = json.load(file_pointer)
-    geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
-    geometry_df.set_crs(crs='epsg:2193', inplace=True)
-
-    folder = "YOUR_PATH"
-    lidar_fetcher = geoapis.lidar.OpenTopography(cache_path=folder,
-                                                 search_polygon=geometry_df, verbose=True)
-    lidar_fetcher.run()
-    store_lidar_path(".laz", folder)
-    store_tileindex(".shp", folder)
+    instruction_file = r"P:\GRI_codes\DigitalTwin2\src\lidar\lidar_test.json"
+    file_path_to_store = r"\\file\Research\FloodRiskResearch\LiDAR\lidar_data"
+    store_lidar_path(file_path_to_store, instruction_file)
+    store_tileindex(file_path_to_store, instruction_file)
