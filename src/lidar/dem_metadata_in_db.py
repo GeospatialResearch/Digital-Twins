@@ -14,6 +14,7 @@ from src.digitaltwin import setup_environment
 import os
 import geopandas as gpd
 import sys
+import json
 
 Base = declarative_base()
 
@@ -68,13 +69,18 @@ def dem_metadata_from_db(instructions, engine):
     return dem.fetchone()[0]
 
 
-def get_dem_path(instructions):
+def generate_dem(instructions):
+    """Use geofabrics to generate the hydrologically conditioned DEM."""
+    runner = geofabrics.processor.DemGenerator(instructions)
+    runner.run()
+
+
+def get_dem_path(instructions, engine):
     """Pass dem information to other functions."""
     engine = setup_environment.get_database()
     if check_dem_exist(instructions, engine) is False:
         try:
-            runner = geofabrics.processor.DemGenerator(instructions)
-            runner.run()
+            generate_dem(instructions)
             dem_metadata_to_db(instructions, engine)
         except Exception as error:
             print(error, type(error))
