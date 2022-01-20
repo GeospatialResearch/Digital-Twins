@@ -46,7 +46,7 @@ def hyetograph(ari, duration, site, rain_depth):
 
 if __name__ == "__main__":
     engine = setup_environment.get_database()
-    file = r'P:\Data\catch4.shp'
+    file = 'catch4.shp'
     path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
     ari = 100
     duration = 24
