@@ -167,7 +167,7 @@ def add_all_sites_hirds_data_to_db(path, site_ids):
 def hirds_depths_to_db(engine, file, path, ari, duration, rcp=None, time_period=None):
     """Take inputs from the user, check if the data exists in the database.
 
-    If data is not avaibale, it is downloaded first.
+    If data is not available, it is downloaded first.
     """
     catchment_area = catchment_area_geometry_info(file)
     table_exits = check_table_exists(engine)

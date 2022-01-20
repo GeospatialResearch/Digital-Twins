@@ -8,8 +8,8 @@ Created on Mon Jan 17 09:32:16 2022.
 import numpy
 import pandas as pd
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import hirds_data_to_db_version2
-engine = setup_environment.get_database()
+from src.dynamic_boundary_conditions import hirds_depth_data_from_db
+from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 
 
 def hyetograph(ari, duration, site, rain_depth):
@@ -46,13 +46,16 @@ def hyetograph(ari, duration, site, rain_depth):
 
 if __name__ == "__main__":
     engine = setup_environment.get_database()
-    file = r'P:\Data\catch5.shp'
-    path = r"\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data"
+    file = r'P:\Data\catch4.shp'
+    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
     ari = 100
     duration = 24
     rcp = "2.6"
     time_period = "2031-2050"
-    depths_data = hirds_data_to_db_version2.hirds_depths_from_db(engine, file, path, ari, duration, rcp, time_period)
+    catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
+    hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
+    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, path, ari, duration, rcp, time_period)
+    print(depths_data)
     for site_id, depth in zip(depths_data.site_id, depths_data.depth):
         hyt = hyetograph(ari, duration, site_id, depth)
         hyt.plot.bar(x='time', y='prcp_prop', rot=0)
