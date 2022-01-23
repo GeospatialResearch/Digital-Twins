@@ -15,6 +15,7 @@ from shapely.ops import transform
 import sys
 from src.dynamic_boundary_conditions import hirds_gauges
 
+
 def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polygon: geopandas.GeoDataFrame):
     """Calculate the area covered by each gauging site and store it in the database.
 
