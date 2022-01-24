@@ -7,11 +7,6 @@ Created on Mon Jan 17 09:32:16 2022.
 
 import numpy
 import pandas as pd
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import hirds_depth_data_from_db
-from src.dynamic_boundary_conditions import hirds_depth_data_to_db
-from src.dynamic_boundary_conditions import hirds_gauges
-from src.dynamic_boundary_conditions import theissen_polygon_calculator
 
 
 def hyetograph(ari, duration, site, total_rain_depth):
@@ -49,6 +44,11 @@ def hyetograph(ari, duration, site, total_rain_depth):
 
 
 if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import hirds_depth_data_from_db
+    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+    from src.dynamic_boundary_conditions import hirds_gauges
+    from src.dynamic_boundary_conditions import theissen_polygon_calculator
     engine = setup_environment.get_database()
     file = r'P:\Data\catch5.shp'
     path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
