@@ -64,7 +64,6 @@ if __name__ == "__main__":
     catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
     hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
     depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, path, ari, duration, rcp, time_period)
-    print(depths_data)
     for site_id, depth in zip(depths_data.site_id, depths_data.depth):
         hyt = hyetograph(ari, duration, site_id, depth)
         hyt.plot.bar(x='time', y='rainfall', rot=0)
