@@ -7,13 +7,11 @@ Created on Thu Jan 20 11:36:07 2022
 
 import pandas as pd
 import geopandas as gpd
-from src.digitaltwin import setup_environment
 from geovoronoi import voronoi_regions_from_coords, points_to_coords
 import geopandas
 import pyproj
 from shapely.ops import transform
 import sys
-from src.dynamic_boundary_conditions import hirds_gauges
 
 
 def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polygon: geopandas.GeoDataFrame):
@@ -58,6 +56,8 @@ def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polyg
 
 
 if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import hirds_gauges
     engine = setup_environment.get_database()
     catchment = hirds_gauges.get_new_zealand_boundary(engine)
     gauges_in_polygon = hirds_gauges.get_guages_location(engine, catchment)

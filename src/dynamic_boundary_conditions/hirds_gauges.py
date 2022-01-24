@@ -10,7 +10,6 @@ from requests.structures import CaseInsensitiveDict
 import pandas as pd
 from shapely.geometry import Point
 import geopandas as gpd
-from src.digitaltwin import setup_environment
 import sqlalchemy
 from geoalchemy2 import Geometry
 import geopandas
@@ -83,6 +82,7 @@ def get_guages_location(engine, catchment: geopandas.GeoDataFrame):
 
 
 if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
     guages = get_hirds_gauges_data()
     hirds_gauges_to_db(engine, guages)
