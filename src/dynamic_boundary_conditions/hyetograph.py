@@ -39,12 +39,13 @@ def hyetograph(ari, duration, site, total_rain_depth):
         duration, proportion_rain = t, Pt
         time_list.append(duration)
         prcp_list.append(proportion_rain)
-    df = pd.DataFrame({'time': time_list, 'prcp': prcp_list})
+    hyetograph_data = pd.DataFrame({'time': time_list, 'prcp': prcp_list})
     del time_list, prcp_list
-    df = df.astype({"time": int, "prcp": float})
-    df['prcp_prop'] = df['prcp'].diff()
-    df['prcp_prop'] = df['prcp_prop'].fillna(0)
-    return df
+    hyetograph_data = hyetograph_data.astype({"time": int, "prcp": float})
+    hyetograph_data['prcp_prop'] = hyetograph_data['prcp'].diff()
+    # prcp_prop is the proportion of the total rainfall.
+    hyetograph_data['prcp_prop'] = hyetograph_data['prcp_prop'].fillna(0)
+    return hyetograph_data
 
 
 if __name__ == "__main__":
@@ -66,4 +67,4 @@ if __name__ == "__main__":
     print(depths_data)
     for site_id, depth in zip(depths_data.site_id, depths_data.depth):
         hyt = hyetograph(ari, duration, site_id, depth)
-        hyt.plot.bar(x='time', y='prcp_prop', rot=0)
+        hyt.plot.bar(x='time', y='rainfall', rot=0)
