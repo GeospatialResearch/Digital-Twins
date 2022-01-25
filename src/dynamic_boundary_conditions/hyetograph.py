@@ -11,10 +11,11 @@ import pandas as pd
 
 def hyetograph(ari, duration, site, total_rain_depth):
     """Take inputs from the database to create a design storm."""
-    # m and n are the ordinate of (proportion of rain fallen at) and abscissa of (propotion of time past at) the peak rainfall depth
+    # m is the ordinate of (proportion of rain fallen at) the peak rainfall depth
     m = 0.53
+    # n is the abscissa of (propotion of time past at) the peak rainfall depth
     n = 0.55
-    #wl and wr are warp or shape factors left and right of the point of contraflexure or peak rainfall depth
+    # wl and wr are warp or shape factors left and right of the point of contraflexure or peak rainfall depth
     wl = 4.00
     wr = 4.61
     R = total_rain_depth
@@ -63,7 +64,8 @@ if __name__ == "__main__":
     theissen_polygon_calculator.theissen_polygons(engine, catchment, gauges_in_polygon)
     catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
     hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
-    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, path, ari, duration, rcp, time_period)
+    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, path, ari, duration, rcp,
+                                                                time_period)
     for site_id, depth in zip(depths_data.site_id, depths_data.depth):
         hyt = hyetograph(ari, duration, site_id, depth)
         hyt.plot.bar(x='time', y='rainfall', rot=0)

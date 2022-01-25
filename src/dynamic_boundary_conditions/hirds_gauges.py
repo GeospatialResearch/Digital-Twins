@@ -24,7 +24,8 @@ def get_hirds_gauges_data() -> pd.DataFrame:
     headers["sec-ch-ua"] = '"" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96""'
     headers["Accept"] = "application/json, text/plain, */*"
     headers["sec-ch-ua-mobile"] = "?0"
-    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
+    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
+        Chrome/96.0.4664.45 Safari/537.36"
     headers["sec-ch-ua-platform"] = "Windows"
     headers["Origin"] = "https://hirds.niwa.co.nz"
     headers["Sec-Fetch-Site"] = "same-site"
@@ -76,7 +77,7 @@ def get_guages_location(engine, catchment: geopandas.GeoDataFrame):
     gauges_in_catchment = gpd.GeoDataFrame(gauges_in_catchment, geometry='geometry')
     gauges = gauges_in_catchment.geometry
     gauges_in_catchment['exists'] = gauges.within(catchment_area)
-    gauges_in_polygon = gauges_in_catchment.loc[gauges_in_catchment['exists'] == True]
+    gauges_in_polygon = gauges_in_catchment.loc[gauges_in_catchment['exists'] is True]
     gauges_in_polygon['order'] = np.arange(len(gauges_in_polygon))
     return gauges_in_polygon
 

@@ -19,7 +19,8 @@ def get_url_id(site_id: str) -> str:
     headers["Accept"] = "application/json, text/plain, */*"
     headers["Content-Type"] = "application/json"
     headers["sec-ch-ua-mobile"] = "?0"
-    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
+        Chrome/96.0.4664.110 Safari/537.36"
     headers["sec-ch-ua-platform"] = '""Windows""'
     headers["Origin"] = "https://hirds.niwa.co.nz"
     headers["Sec-Fetch-Site"] = "same-site"
@@ -55,7 +56,8 @@ def get_data_from_hirds(site_id: str, path: str):
     headers["sec-ch-ua"] = '"" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96""'
     headers["Accept"] = "application/json, text/plain, */*"
     headers["sec-ch-ua-mobile"] = "?0"
-    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
+        Chrome/96.0.4664.110 Safari/537.36"
     headers["sec-ch-ua-platform"] = '""Windows""'
     headers["Origin"] = "https://hirds.niwa.co.nz"
     headers["Sec-Fetch-Site"] = "same-site"
