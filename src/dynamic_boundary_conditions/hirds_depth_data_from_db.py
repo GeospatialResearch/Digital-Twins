@@ -8,11 +8,7 @@ Created on Thu Jan 20 16:36:59 2022.
 import sys
 import pandas as pd
 import geopandas
-import numpy as np
-import sqlalchemy
-from shapely.geometry import Polygon
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
-from src.digitaltwin import setup_environment
 
 
 def catchment_area_geometry_info(file):
@@ -33,9 +29,11 @@ def get_each_site_hirds_depth_data(ari, duration, site, engine, rcp=None, time_p
         sys.exit()
     else:
         if rcp is not None and time_period is not None:
-            query = f"""select site_id, "{duration}h" from hirds_rain_depth where site_id='{site}' and ari={ari} and rcp='{rcp}' and time_period='{time_period}'"""
+            query = f"""select site_id, "{duration}h" from hirds_rain_depth where site_id='{site}' and ari={ari} and\
+                rcp='{rcp}' and time_period='{time_period}'"""
         else:
-            query = f"""select site_id, "{duration}h" from hirds_rain_depth where site_id='{site}' and ari={ari} and rcp is null and time_period is null"""
+            query = f"""select site_id, "{duration}h" from hirds_rain_depth where site_id='{site}' and ari={ari} and\
+                rcp is null and time_period is null"""
         rain_depth = engine.execute(query)
         rain_depth = list(rain_depth.fetchone())
         return rain_depth
