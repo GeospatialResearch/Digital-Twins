@@ -14,7 +14,6 @@ from src.digitaltwin import setup_environment
 import os
 import geopandas as gpd
 import sys
-import json
 
 Base = declarative_base()
 
