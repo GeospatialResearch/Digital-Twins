@@ -76,7 +76,6 @@ def generate_dem(instructions):
 
 def get_dem_path(instructions, engine):
     """Pass dem information to other functions."""
-    engine = setup_environment.get_database()
     if check_dem_exist(instructions, engine) is False:
         try:
             generate_dem(instructions)
