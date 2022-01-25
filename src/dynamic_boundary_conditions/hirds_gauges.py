@@ -78,7 +78,6 @@ def get_guages_location(engine, catchment: geopandas.GeoDataFrame):
     gauges = gauges_in_catchment.geometry
     gauges_in_catchment['exists'] = gauges.within(catchment_area)
     gauges_in_polygon = gauges_in_catchment[gauges_in_catchment.all(axis=1)]
-    # gauges_in_polygon = gauges_in_catchment.loc[gauges_in_catchment['exists'] is True]
     gauges_in_polygon['order'] = np.arange(len(gauges_in_polygon))
     return gauges_in_polygon
 
