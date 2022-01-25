@@ -52,8 +52,8 @@ def dem_metadata_to_db(instructions, engine):
         instructions['instructions']['data_paths']['catchment_boundary'])
     geometry = str(catchment_boundary['geometry'][0])
     lidar = DEM(filepath=filepath, Filename=filename, geometry=geometry)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    session = sessionmaker(bind=engine)
+    session = session()
     session.add(lidar)
     session.commit()
 

@@ -41,7 +41,7 @@ def get_sites_not_in_db(engine, sites_in_catchment):
     return sites
 
 
-def get_data_from_csv(filename: str, site_id: str, rcp: float, time_period: str, n: int):
+def get_data_from_csv(filename: str, site_id: str, rcp, time_period, n: int):
     """Read data of the diffrent time period and return a dataframe."""
     hirds_data = pd.read_csv(filename, skiprows=n, nrows=12, index_col=None, quotechar='"')
     hirds_data['site_id'] = site_id
@@ -83,7 +83,6 @@ def hirds_depths_to_db(engine, catchment_area: Polygon, path):
         site_ids = sites_not_in_db
         if site_ids.size != 0:
             for site_id in site_ids:
-                # filename = fr'{path}\{site_id}_depth.csv'
                 rain_depth_data_from_hirds.get_data_from_hirds(site_id, path)
                 add_hirds_depth_data_to_db(path, site_id, engine)
         else:
@@ -92,7 +91,6 @@ def hirds_depths_to_db(engine, catchment_area: Polygon, path):
         site_ids = sites_in_catchment
         if site_ids != 0:
             for site_id in site_ids:
-                # filename = fr'{path}\{site_id}_depth.csv'
                 rain_depth_data_from_hirds.get_data_from_hirds(site_id, path)
                 add_hirds_depth_data_to_db(path, site_id, engine)
         else:

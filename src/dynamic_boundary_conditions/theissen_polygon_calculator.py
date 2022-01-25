@@ -29,7 +29,6 @@ def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polyg
         region_polys, region_pts = voronoi_regions_from_coords(coords, catchment_area, per_geom=False)
 
         sites_list = []
-        sites_in_catchment = pd.DataFrame()
         for key, value in region_pts.items():
             site = gauges_in_polygon.loc[(gauges_in_polygon['order'] == value[0])]
             sites_list.append(site)

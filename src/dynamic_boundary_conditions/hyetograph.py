@@ -23,16 +23,16 @@ def hyetograph(ari, duration, site, total_rain_depth):
     time_list = []
     prcp_list = []
     for t in range(N+1):
-        Dt = t/N  # Dt is the proportion of the duration
-        if Dt <= n:
+        dt = t/N  # dt is the proportion of the duration
+        if dt <= n:
             x = (((t)/N)-n)*wl
         else:
             x = (((t)/N)-n)*wr
         tan = numpy.tanh(x)
         s = (m*tan)+m
-        Pt = R*s  # Pt is the proportion of total rainfall depth of a hyetograph,
-        Pt = "{:.2f}".format(Pt)
-        duration, proportion_rain = t, Pt
+        pt = R*s  # Pt is the proportion of total rainfall depth of a hyetograph,
+        pt = "{:.2f}".format(pt)
+        duration, proportion_rain = t, pt
         time_list.append(duration)
         prcp_list.append(proportion_rain)
     hyetograph_data = pd.DataFrame({'time': time_list, 'prcp': prcp_list})

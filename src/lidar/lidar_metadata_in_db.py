@@ -68,8 +68,8 @@ def store_lidar_path(file_path_to_store, instruction_file, filetype=".laz"):
         file_name_no_format = file_name.rsplit('.', 1)[0]
         lidar = Lidar(filepath=file, Filename=file_name,
                       filename_no_format=file_name_no_format)
-        Session = sessionmaker(bind=engine)
-        session = Session()
+        session = sessionmaker(bind=engine)
+        session = session()
         session.add(lidar)
         session.commit()
         remove_duplicate_rows("lidar")
