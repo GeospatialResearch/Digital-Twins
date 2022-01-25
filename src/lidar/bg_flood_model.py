@@ -24,7 +24,8 @@ from src.lidar import dem_metadata_in_db
 Base = declarative_base()
 
 
-def bg_model_inputs(bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep, mask=15, gpudevice=0, smallnc=0):
+def bg_model_inputs(bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep, mask=15, gpudevice=0,
+                    smallnc=0):
     """Set parameters to run the flood model.
 
     mask is used for visualising all the values larger than 15.
