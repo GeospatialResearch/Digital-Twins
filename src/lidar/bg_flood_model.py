@@ -80,8 +80,8 @@ def model_ouput_to_db(outfile, catchment_boundary):
     filename = os.path.basename(filepath)
     geometry = str(catchment_boundary['geometry'][0])
     flood_dem = BGDEM(filepath=filepath, Filename=filename, geometry=geometry)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    session = sessionmaker(bind=engine)
+    session = session()
     session.add(flood_dem)
     session.commit()
 
