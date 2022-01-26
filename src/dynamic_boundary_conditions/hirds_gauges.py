@@ -17,7 +17,7 @@ import numpy as np
 
 
 def get_hirds_gauges_data() -> pd.DataFrame:
-    """Get gauges information from the hirds website using curl command."""
+    """Get gauges information from the hirds website using HTTP request."""
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
     headers["Connection"] = "keep-alive"
@@ -44,7 +44,7 @@ def get_hirds_gauges_data() -> pd.DataFrame:
 
 def hirds_gauges_to_db(engine, hirds_gauges: geopandas.GeoDataFrame):
     """Get gauges information from the hirds website and store it in the database."""
-    if sqlalchemy.inspect(engine).has_table("hirds_gauges") is False:
+    if not sqlalchemy.inspect(engine).has_table("hirds_gauges"):
         print("Storing gauges data from hirds in the database.")
         hirds_gauges.to_postgis('hirds_gauges', engine, if_exists='replace',
                                 index=False, dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
