@@ -12,7 +12,7 @@ The reason for creating a database are:
 2.	To avoid delays in fetching the same data from the API when required again and again to run the models.
 3.	To store the data only for the Area of Interest.
 
-The digitaltwin repository is designed to store APIs and local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, LRIS, opentopography, and NIWA in PostgreSQL. 
+The digital twin stores API details and a local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, LRIS, opentopography, and NIWA in PostgreSQL. 
 
 ## Vector Database
 To store apis of the vector in the database,
