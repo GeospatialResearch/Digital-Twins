@@ -51,7 +51,6 @@ def hirds_depths_from_db(engine, catchment_area, ari, duration, rcp=None, time_p
 
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
     engine = setup_environment.get_database()
     file = r'P:\Data\catch5.shp'
     path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
