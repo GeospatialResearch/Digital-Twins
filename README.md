@@ -15,7 +15,7 @@ The reason for creating a database are:
 The digital twin stores API details and a local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, LRIS, opentopography, and NIWA in PostgreSQL. 
 
 ## Vector Database
-To store apis of the vector in the database,
+To store api details of vector data in the database,
 The following inputs are required:
 
 1. Name of the dataset e.g. 104400-lcdb-v50-land-cover, 101292-nz-building-outlines. **Note:** make sure the names are unique.
