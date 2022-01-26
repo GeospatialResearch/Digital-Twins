@@ -60,6 +60,84 @@ The data source for the LiDAR data is [opentopography]( https://portal.opentopog
 
 ![image](https://user-images.githubusercontent.com/86580534/145321190-9bf60d8b-95e0-4fee-9cda-5613e18d24e3.png)
 
+## BoundaryConditions data
+
+### Rain gauges location
+
+The rain gauages location is accessed from [HIRDS](https://hirds.niwa.co.nz/) which is tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The gauges information can be stored in the database using **hirds_gauges.py** script as shown below:
+
+![image](https://user-images.githubusercontent.com/86580534/151071987-8efa0fe6-c1fa-418e-8562-37cb43a6ebce.png)
+
+### To get the rainfall data of the gauging sites within the desired catchment area from HIRDS and store in the database, use **hirds_depth_data_to_db.py** script.
+
+**hirds_depths_to_db(engine, catchment_area, path)** function requires three arguments,
+1. engine: information about the database to interact with.
+2. catchment_area: Polygon type 
+3. path: hirds depth data is first downloaded as csv files in the local directory before getting stored in the database, so user needs to provide the path where the depth data will be stored as csv files.
+The example is as shown below:
+
+![image](https://user-images.githubusercontent.com/86580534/151073978-674f029e-9dca-4928-9c7a-3b86125ff664.png)
+
+### To get the rainfall depth data from the database, **hirds_depth_data_from_db.py** script is used. 
+
+**hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)** function requires six arguments,
+1. engine: information about the database to interact with.
+2. catchment_area: Polygon type 
+3. ari:  Average Recurrence Interval (ARI) i.e. the average or expected value of the periods between exceedances of a given rainfall total accumulated over a given duration.
+4. duration: total rainfall depth for a particular duration i.e. 1,2,6,12,24,48,72,96 and 120 hr 
+5. rcp: there are different Representative Concentration Pathway (RCP) which is a greenhouse gas concentration (not emissions) trajectory adopted by the IPCC. There values are 2.6, 4.5, 6, and 8.5 also called radiative forcing values. 
+6. time_period: different rcp's are associated  with different time periods.
+
+For more details on ari, duration, rcp and time_period go to [HIRDS](https://hirds.niwa.co.nz/)
+
+![image](https://user-images.githubusercontent.com/86580534/151084770-582a75b6-bff0-414c-b035-b8f54f52f7d8.png)
+
+### Theissen Polygons
+Each gauge is associated for a particular area. To get the size of the area assoicated wih each gauge, **theissen_polygon_calculator.py** script is used. 
+
+theissen_polygons(engine, catchment, gauges_in_polygon) function is used to calculate the area. It takes three arguments:
+1. engine: information about the database to interact with.
+2. catchment_area: Polygon type 
+3. gauges_in_polygon: get the gauges information which are within the desired catchment area.
+ to get the get the gauges within the catchment area, **get_guages_location(engine, catchment)** function is used from **hirds_gauges.py** script.
+ 
+ ![image](https://user-images.githubusercontent.com/86580534/151086490-1f2f0bf4-53a7-4a0a-a595-803a0fecf61c.png)
+ 
+ ### Hyetographs
+ 
+ A hyetograph is a graphical representation of the distribution of rainfall intensity over time. For instance, in the 24-hour rainfall distributions, rainfall intensity progressively increases until it reaches a maximum and then gradually decreases. Where this maximum occurs and how fast the maximum is reached is what differentiates one distribution from another. One important aspect to understand is that the distributions are for design storms, not necessarily actual storms. In other words, a real storm may not behave in this same fashion
+To generate a hyetograph, **hyetograph.py** script is used.
+hyetograph(duration, site, total_rain_depth) function takes 3 arguments:
+1. duration: how many hours rainfall distributions is required i.e. 1,2,6,12,24,48,72,96 and 120 hr 
+2. site: site id of a site for which hyetograph is required
+3. total_rain_depth: total rainfal depth at a given duration
+
+![image](https://user-images.githubusercontent.com/86580534/151091023-fa680851-1f68-4f94-9490-6777f5a0918c.png)  ![image](https://user-images.githubusercontent.com/86580534/151091040-91050e83-79a4-4436-8b78-d61d516ff9dd.png)
+
+
+### Run BG Flood model
+
+To run the model, **bg_flood_model.py** script is used which takes DEM informationfrom the database, runs the model and stores the output back to the database.
+run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
+
+![image](https://user-images.githubusercontent.com/86580534/151091915-fc5b3829-0951-4cb0-986a-90ff87d8325b.png)
+
+The function requires 9 arguments, of which 3 are set as default values and can be changed later:
+
+![image](https://user-images.githubusercontent.com/86580534/151092395-ab6e62a9-96ea-4d55-be39-25aaeb5d3aa0.png)
+
+The arguments are explained below:
+1. bg_path: path where BG Flood exe file is saved.
+2. instructions: json file used to generate DEM.
+The script uses geofabrics to generate a hydrologically conditioned DEM if it doesn't exist in the database therefore instruction file is required as an argument. 
+3. catchment_boundary: geopandas type
+4. resolution: resolution value of the DEM. In the example above, resolution value is taken from the instruction file itself.
+5. endtime: Saving the outputs till given time (in seconds)
+6. outputtimestep: Saving the outputs after every given time (in seconds)
+7. mask: take values above the given number from DEM.
+8. gpudevice: if using GPU to run the model, set value as 0 else -1.
+9. smallnc: Level of refinement to apply to resolution based on the adaptive resolution trigger
+
 
 ## Requirements
 
