@@ -17,7 +17,7 @@ import numpy as np
 
 
 def get_hirds_gauges_data() -> pd.DataFrame:
-    """Get gauges information from the hirds website using curl command."""
+    """Get gauges information from the hirds website using HTTP request."""
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
     headers["Connection"] = "keep-alive"
