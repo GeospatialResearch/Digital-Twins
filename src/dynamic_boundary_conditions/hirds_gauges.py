@@ -69,8 +69,8 @@ def get_gauges_location(engine, catchment: geopandas.GeoDataFrame):
     """
     # Get gauges within the catchment area.
     catchment_area = catchment.geom[0]
-    query = f'''select * from public.hirds_gauges f
-        where ST_Intersects(f.geometry, ST_GeomFromText('{catchment_area}', 4326))'''
+    query = f'''select * from public.hirds_gauges hg
+        where ST_Intersects(hg.geometry, ST_GeomFromText('{catchment_area}', 4326))'''
     gauges_in_catchment = pd.read_sql_query(query, engine)
 
     gauges_in_catchment['geometry'] = gpd.GeoSeries.from_wkb(gauges_in_catchment['geometry'])
