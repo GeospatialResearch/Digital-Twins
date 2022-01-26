@@ -37,7 +37,7 @@ def get_each_site_hirds_depth_data(ari, duration, site, engine, rcp=None, time_p
         return rain_depth
 
 
-def hirds_depths_from_db(engine, catchment_area, path, ari, duration, rcp=None, time_period=None):
+def hirds_depths_from_db(engine, catchment_area, ari, duration, rcp=None, time_period=None):
     """Get the list of depths and site's id of each sites and return in the dataframe format."""
     sites_in_catchment = hirds_depth_data_to_db.get_sites_in_catchment(catchment_area, engine)
 
@@ -47,3 +47,17 @@ def hirds_depths_from_db(engine, catchment_area, path, ari, duration, rcp=None, 
         depths_list.append(rain_depth)
     rain_depth_data = pd.DataFrame((depths_list), columns=['site_id', 'depth'])
     return rain_depth_data
+
+
+if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+    engine = setup_environment.get_database()
+    file = r'P:\Data\catch5.shp'
+    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
+    ari = 100
+    duration = 24
+    rcp = "2.6"
+    time_period = "2031-2050"
+    catchment_area = catchment_area_geometry_info(file)
+    depths_data = hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)

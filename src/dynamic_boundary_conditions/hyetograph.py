@@ -9,7 +9,7 @@ import numpy
 import pandas as pd
 
 
-def hyetograph(ari, duration, site, total_rain_depth):
+def hyetograph(duration, site, total_rain_depth):
     """Take inputs from the database to create a design storm."""
     # m is the ordinate of (proportion of rain fallen at) the peak rainfall depth
     m = 0.53
@@ -46,10 +46,10 @@ def hyetograph(ari, duration, site, total_rain_depth):
 
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hirds_depth_data_from_db
-    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
     from src.dynamic_boundary_conditions import hirds_gauges
     from src.dynamic_boundary_conditions import theissen_polygon_calculator
+    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+    from src.dynamic_boundary_conditions import hirds_depth_data_from_db
     engine = setup_environment.get_database()
     file = r'P:\Data\catch5.shp'
     path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
@@ -64,8 +64,8 @@ if __name__ == "__main__":
     theissen_polygon_calculator.theissen_polygons(engine, catchment, gauges_in_polygon)
     catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
     hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
-    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, path, ari, duration, rcp,
+    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, ari, duration, rcp,
                                                                 time_period)
     for site_id, depth in zip(depths_data.site_id, depths_data.depth):
-        hyt = hyetograph(ari, duration, site_id, depth)
-        hyt.plot.bar(x='time', y='rainfall', rot=0)
+        hyt = hyetograph(duration, site_id, depth)
+        hyt.plot.bar(x='time', y='prcp_prop', rot=0)

@@ -29,8 +29,8 @@ def bg_model_inputs(bg_path, dem_path, catchment_boundary, resolution, endtime, 
     """Set parameters to run the flood model.
 
     mask is used for visualising all the values larger than 15.
-    If we are using the gpu thenset to 0 (if no gpu type -1).
-    smallnc = 0 means Level of refinement to apply to dx based on the adaptive resolution trigger
+    If we are using the gpu then set to 0 (if no gpu type -1).
+    smallnc = 0 means Level of refinement to apply to resolution based on the adaptive resolution trigger
     """
     now = datetime.now()
     dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
