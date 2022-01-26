@@ -60,7 +60,7 @@ if __name__ == "__main__":
     guages = hirds_gauges.get_hirds_gauges_data()
     hirds_gauges.hirds_gauges_to_db(engine, guages)
     catchment = hirds_gauges.get_new_zealand_boundary(engine)
-    gauges_in_polygon = hirds_gauges.get_guages_location(engine, catchment)
+    gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
     theissen_polygon_calculator.theissen_polygons(engine, catchment, gauges_in_polygon)
     catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
     hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)

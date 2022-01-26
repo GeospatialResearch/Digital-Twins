@@ -59,5 +59,5 @@ if __name__ == "__main__":
     from src.dynamic_boundary_conditions import hirds_gauges
     engine = setup_environment.get_database()
     catchment = hirds_gauges.get_new_zealand_boundary(engine)
-    gauges_in_polygon = hirds_gauges.get_guages_location(engine, catchment)
+    gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
     theissen_polygons(engine, catchment, gauges_in_polygon)

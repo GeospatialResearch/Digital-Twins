@@ -60,7 +60,7 @@ def get_new_zealand_boundary(engine) -> geopandas.GeoDataFrame:
     return catchment
 
 
-def get_guages_location(engine, catchment: geopandas.GeoDataFrame):
+def get_gauges_location(engine, catchment: geopandas.GeoDataFrame):
     """
     Get the gauges location witihin the catchment area from the database and return in the geopandas format.
 
