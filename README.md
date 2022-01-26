@@ -56,7 +56,7 @@ The [instruction file](https://github.com/GeospatialResearch/Digital-Twins/blob/
 
 ## LiDAR Database
 
-The data source for the LiDAR data is [opentopography]( https://portal.opentopography.org/dataCatalog). The data for the requested catchment area is downloaded using [geopais] (https://github.com/niwa/geoapis ) in the local directory set by the user. To store the LiDAR metadata in the database, lidar_metadata_in_db script is used. The [instruction file](https://github.com/GeospatialResearch/Digital-Twins/blob/lidar_to_db/src/lidar/file.json ) and path to the local directory where user wants to store the LiDAR data is passed as an argument to store_lidar_path(file_path_to_store, instruction_file) function as shown below:
+The data source for the LiDAR data is [opentopography]( https://portal.opentopography.org/dataCatalog). The data for the requested catchment area is downloaded using [geoapis](https://github.com/niwa/geoapis ) in the local directory set by the user. To store the LiDAR metadata in the database, **lidar_metadata_in_db.py** script is used. The [instruction file](/lidar_to_db/src/lidar/file.json ) and path to the local directory where user wants to store the LiDAR data is passed as an argument to **store_lidar_path(file_path_to_store, instruction_file) function as shown below:**
 
 ![image](https://user-images.githubusercontent.com/86580534/145321190-9bf60d8b-95e0-4fee-9cda-5613e18d24e3.png)
 
