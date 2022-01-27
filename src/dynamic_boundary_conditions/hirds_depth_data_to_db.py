@@ -59,26 +59,20 @@ def add_hirds_depth_data_to_db(path: str, site_id: str, engine):
     there are rainfall depths for diffrent RCP Scenarios.
     To understand the structure of the CSV file, download the spreadsheet.
     """
+    the_values = [(None, None, 12),
+                  (2.6, '2031-2050', 40),
+                  (2.6, '2081-2100', 54),
+                  (4.5, '2031-2050', 68),
+                  (4.5, '2081-2100', 82),
+                  (6, '2031-2050', 96),
+                  (6, '2081-2100', 110),
+                  (8.5, '2031-2050', 124),
+                  (8.5, '2081-2100', 138)]
     filename = fr'{path}\{site_id}_depth.csv'
-    # Here n means start from 12th row of the CSV file, n varies for different RCP's
-    site_data = get_data_from_csv(filename, site_id, rcp=None, time_period=None, n=12)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
-    site_data = get_data_from_csv(filename, site_id, rcp=2.6, time_period='2031-2050', n=40)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
-    site_data = get_data_from_csv(filename, site_id, rcp=2.6, time_period='2081-2100', n=54)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
-    site_data = get_data_from_csv(filename, site_id, rcp=4.5, time_period='2031-2050', n=68)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
-    site_data = get_data_from_csv(filename, site_id, rcp=4.5, time_period='2081-2100', n=82)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
-    site_data = get_data_from_csv(filename, site_id, rcp=6, time_period='2031-2050', n=96)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
-    site_data = get_data_from_csv(filename, site_id, rcp=6, time_period='2081-2100', n=110)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
-    site_data = get_data_from_csv(filename, site_id, rcp=8.5, time_period='2031-2050', n=124)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
-    site_data = get_data_from_csv(filename, site_id, rcp=8.5, time_period='2081-2100', n=138)
-    site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
+    print("Adding data for site", site_id)
+    for (rcp, time_period, n) in the_values:
+        site_data = get_data_from_csv(filename, site_id, rcp=rcp, time_period=time_period, n=n)
+        site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
 
 
 def hirds_depths_to_db(engine, catchment_area: Polygon, path):
@@ -94,7 +88,7 @@ def hirds_depths_to_db(engine, catchment_area: Polygon, path):
             print("sites for the requested catchment available in the database.")
     else:
         site_ids = sites_in_catchment
-        if site_ids.size != 0:
+        if site_ids != 0:
             for site_id in site_ids:
                 rain_depth_data_from_hirds.get_data_from_hirds(site_id, path)
                 add_hirds_depth_data_to_db(path, site_id, engine)
@@ -105,7 +99,7 @@ def hirds_depths_to_db(engine, catchment_area: Polygon, path):
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
-    file = r'P:\Data\catch5.shp'
+    file = r'P:\Data\catch4.shp'
     path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
     catchment = geopandas.read_file(file)
     catchment = catchment.to_crs(4326)

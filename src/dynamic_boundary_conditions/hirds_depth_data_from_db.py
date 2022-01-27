@@ -23,7 +23,7 @@ def get_each_site_hirds_depth_data(ari, duration, site, engine, rcp=None, time_p
     """Get hirds rainfall depth data from the database."""
     if rcp is None or time_period is None:
         print("check the arguments of get_hirds_depth_data if rcp is None,time period should be None and vice-versa")
-        sys.exit()
+        raise ValueError
     else:
         if rcp is not None and time_period is not None:
             query = f"""select site_id, "{duration}h" from hirds_rain_depth where site_id='{site}' and ari={ari} and\
@@ -33,7 +33,6 @@ def get_each_site_hirds_depth_data(ari, duration, site, engine, rcp=None, time_p
                 rcp is null and time_period is null"""
         rain_depth = engine.execute(query)
         rain_depth = list(rain_depth.fetchone())
-        print(rain_depth)
         return rain_depth
 
 
