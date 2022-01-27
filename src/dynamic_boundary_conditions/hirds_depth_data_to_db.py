@@ -6,6 +6,7 @@ Created on Thu Jan 20 15:09:11 2022
 """
 
 import pandas as pd
+import geopandas
 import numpy as np
 import sqlalchemy
 from shapely.geometry import Polygon
@@ -95,3 +96,14 @@ def hirds_depths_to_db(engine, catchment_area: Polygon, path):
                 add_hirds_depth_data_to_db(path, site_id, engine)
         else:
             print("There are no sites within the requested catchment area, select a wider area")
+
+
+if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    engine = setup_environment.get_database()
+    file = r'P:\Data\catch5.shp'
+    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
+    catchment = geopandas.read_file(file)
+    catchment = catchment.to_crs(4326)
+    catchment_area = catchment.geometry[0]
+    hirds_depths_to_db(engine, catchment_area, path)

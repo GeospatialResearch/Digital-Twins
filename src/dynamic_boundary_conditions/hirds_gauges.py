@@ -16,7 +16,7 @@ import geopandas
 import numpy as np
 
 
-def get_hirds_gauges_data() -> pd.DataFrame:
+def get_hirds_gauges_data() -> geopandas.GeoDataFrame:
     """Get gauges information from the hirds website using HTTP request."""
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
