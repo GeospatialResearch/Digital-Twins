@@ -5,7 +5,6 @@ Created on Thu Jan 20 16:36:59 2022.
 @author: pkh35
 """
 
-import sys
 import pandas as pd
 import geopandas
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
