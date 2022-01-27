@@ -170,7 +170,7 @@ In order to run the code, run the following command in your Anaconda Powershell 
 ```bash
 conda env create -f create_new_env_window.yml
 conda activate digitaltwin
-pip install git+https://github.com/Pooja3894/Digital-Twins.git
+pip install git+https://github.com/GeospatialResearch/Digital-Twins.git
 ```
 
 ### Run codes locally
