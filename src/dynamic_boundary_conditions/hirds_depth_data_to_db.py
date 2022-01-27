@@ -52,8 +52,15 @@ def get_data_from_csv(filename: str, site_id: str, rcp, time_period, n: int):
 
 
 def add_hirds_depth_data_to_db(path: str, site_id: str, engine):
-    """Store each site's depth data in the database."""
+    """Store each site's depth data in the database.
+
+    each csv file file conatins data for historical rainfall depth, and for various rcp and time period.
+    To view the csv file, go to : https://hirds.niwa.co.nz/, select a site and generate a report,
+    there are rainfall depths for diffrent RCP Scenarios.
+    To understand the structure of the CSV file, download the spreadsheet.
+    """
     filename = fr'{path}\{site_id}_depth.csv'
+    # Here n means start from 12th row of the CSV file, n varies for different RCP's
     site_data = get_data_from_csv(filename, site_id, rcp=None, time_period=None, n=12)
     site_data.to_sql('hirds_rain_depth', engine, index=False, if_exists='append')
     site_data = get_data_from_csv(filename, site_id, rcp=2.6, time_period='2031-2050', n=40)
