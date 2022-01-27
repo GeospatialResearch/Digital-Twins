@@ -87,7 +87,7 @@ def hirds_depths_to_db(engine, catchment_area: Polygon, path):
             print("sites for the requested catchment available in the database.")
     else:
         site_ids = sites_in_catchment
-        if site_ids != 0:
+        if site_ids.size != 0:
             for site_id in site_ids:
                 rain_depth_data_from_hirds.get_data_from_hirds(site_id, path)
                 add_hirds_depth_data_to_db(path, site_id, engine)
