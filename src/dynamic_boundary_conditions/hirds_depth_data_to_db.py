@@ -16,8 +16,7 @@ from src.dynamic_boundary_conditions import rain_depth_data_from_hirds
 def check_table_exists(engine):
     """Check if the region_geometry table exists in the database."""
     insp = sqlalchemy.inspect(engine)
-    table_exist = insp.has_table("hirds_rain_depth", schema="public")
-    return table_exist
+    return insp.has_table("hirds_rain_depth", schema="public")
 
 
 def get_sites_in_catchment(catchment_area: Polygon, engine):
@@ -77,11 +76,9 @@ def add_hirds_depth_data_to_db(path: str, site_id: str, engine):
 
 def hirds_depths_to_db(engine, catchment_area: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
-    table_exits = check_table_exists(engine)
     sites_in_catchment = get_sites_in_catchment(catchment_area, engine)
-    if table_exits is True:
-        sites_not_in_db = get_sites_not_in_db(engine, sites_in_catchment)
-        site_ids = sites_not_in_db
+    if check_table_exists(engine):
+        site_ids = get_sites_not_in_db(engine, sites_in_catchment)
         if site_ids.size != 0:
             for site_id in site_ids:
                 rain_depth_data_from_hirds.get_data_from_hirds(site_id, path)
