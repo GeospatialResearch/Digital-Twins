@@ -21,8 +21,8 @@ def catchment_area_geometry_info(file):
 
 def get_each_site_hirds_depth_data(ari, duration, site, engine, rcp=None, time_period=None):
     """Get hirds rainfall depth data from the database."""
-    if rcp is None and time_period is not None or rcp is not None and time_period is None:
-        print("check the arguments of get_hirds_depth_data\n if rcp is None,time period should be None and vice-versa")
+    if rcp is None or time_period is None:
+        print("check the arguments of get_hirds_depth_data if rcp is None,time period should be None and vice-versa")
         sys.exit()
     else:
         if rcp is not None and time_period is not None:
