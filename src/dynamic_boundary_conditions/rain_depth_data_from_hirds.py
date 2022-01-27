@@ -29,7 +29,10 @@ def get_url_id(site_id: str) -> str:
     headers["Referer"] = "https://hirds.niwa.co.nz/"
     headers["Accept-Language"] = "en-GB,en-US;q=0.9,en;q=0.8"
     data = f'{{"site_id":"{site_id}","idf":false}}'
-    resp = requests.post(url, headers=headers, data=data)
+    try:
+        resp = requests.post(url, headers=headers, data=data)
+    except requests.exceptions.HTTPError as error:
+        print("Request Failed", error)
     hirds = pd.read_json(resp.text)  # get each sites url.
     site_url = hirds['url'][0]
     start = site_url.find("/asset/") + len("/asset/")
@@ -65,7 +68,9 @@ def get_data_from_hirds(site_id: str, path: str):
     headers["Sec-Fetch-Dest"] = "empty"
     headers["Referer"] = "https://hirds.niwa.co.nz/"
     headers["Accept-Language"] = "en-GB,en-US;q=0.9,en;q=0.8"
-
-    response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(url, headers=headers)
+    except requests.exceptions.HTTPError as error:
+        print("Request Failed", error)
     hirds_data = response.text
     add_hirds_data_to_csv(site_id, hirds_data, path)
