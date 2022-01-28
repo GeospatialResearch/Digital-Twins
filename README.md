@@ -25,12 +25,31 @@ The following inputs are required:
 5. Layer name of the dataset
 6. Data provider name. For example: LINZ, LRIS, StatsNZ, etc.
 For more details on the format and structure of the inputs check out [instructions_linz.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/instructions_linz.json)
-Enter the api data which you want to store in a database.
-   ![image](https://user-images.githubusercontent.com/86580534/133012962-86d117f9-7ee7-4701-9497-c50484d5cdc7.png)
+
 
 Run run.py file from your IDE:
+1. Creating [json file](https://github.com/GeospatialResearch/Digital-Twins/blob/master/src/instructions_linz.json)
+   ```
+   if __name__ == "__main__":
+    from src.digitaltwin import insert_api_to_table
+    from src.digitaltwin import setup_environment
+    engine = setup_environment.get_database()
+    load_dotenv()
+    Stats_NZ_KEY = os.getenv('KEY')
+    # create region_geometry table if it doesn't exist in the db.
+    # no need to call region_geometry_table function if region_geometry table exist in the db
+    insert_api_to_table.region_geometry_table(engine, Stats_NZ_KEY)
 
-![image](https://user-images.githubusercontent.com/86580534/135927747-0bff7da4-f30a-4858-add5-2e9bbb93d880.png)
+    record = input_data("src/instructions_linz.json")
+    # call the function to insert record in apilinks table
+    insert_api_to_table.insert_records(engine, record['data_provider'],
+                                       record['source'],
+                                       record['api'], record['region'],
+                                       record['geometry_column'],
+                                       record['url'],
+                                       record['layer'])
+                                       ```
+StatsNZ Api key is only required if the region_geomerty table doesn't exist in the database otherwise you can skip lines 5-9 of the above script.
 
 This way data will be stored in the database which then will be used to make api requests for the desired Area of Interest.
 geometry column's name, url and layer name are not required if the data provider is not LINZ, LRIS or StatsNZ:
@@ -39,11 +58,22 @@ To get the data from the database:
 
 1. Make sure [db_configure.yml](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/db_configure.yml) file has the correct information        stored in it. 
    
-2. The geometry and source list needs to passed as an argument to get_data_from_db() function. Check [test1.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/test1.json) for more details on the format and structure of the arguments.
+2. The geometry (geopandas dataframe type) and source list (tuple data type) needs to passed as an argument to get_data_from_db() function. Check [test1.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/test1.json) for more details on the format and structure of the arguments.
 3. Run get_data_from_db.py file from your IDE:
    
-   ![image](https://user-images.githubusercontent.com/86580534/137419448-919a4372-0d69-4a79-98b0-0046f4b4edfc.png)
-
+   ```
+   if __name__ == "__main__":
+    from src.digitaltwin import get_data_from_apis
+    from src.digitaltwin import setup_environment
+    engine = setup_environment.get_database()
+    # load in the instructions, get the source list and polygon from the user
+    FILE_PATH = pathlib.Path().cwd() / pathlib.Path(r"P:\GRI_codes\DigitalTwin2\src\test3.json")
+    with open(FILE_PATH, 'r') as file_pointer:
+        instructions = json.load(file_pointer)
+    source_list = tuple(instructions['source_name'])
+    geometry = gpd.GeoDataFrame.from_features(instructions["features"])
+    get_data_from_db(engine, geometry, source_list)
+    ```
 
 get_data_from_db module allows the user to get data from the multiple sources within the required Area of Interest from the database and if data is not available in the database for the desired area of Interest, wfs request is made from the stored APIs, data is stored in the database and spatial query is done within the database to get the data for the desired Area of Interest. 
 Currently data is collected from LINZ, ECAN, Stats NZ, KiwiRail, LRIS, NIWa and opentopography but will be extended to other sources.
@@ -58,7 +88,27 @@ The [instruction file](https://github.com/GeospatialResearch/Digital-Twins/blob/
 
 The data source for the LiDAR data is [opentopography]( https://portal.opentopography.org/dataCatalog). The data for the requested catchment area is downloaded using [geoapis](https://github.com/niwa/geoapis ) in the local directory set by the user. To store the LiDAR metadata in the database, **lidar_metadata_in_db.py** script is used. The [instruction file](/lidar_to_db/src/lidar/file.json ) and path to the local directory where user wants to store the LiDAR data is passed as an argument to **store_lidar_path(file_path_to_store, instruction_file) function as shown below:**
 
-![image](https://user-images.githubusercontent.com/86580534/145321190-9bf60d8b-95e0-4fee-9cda-5613e18d24e3.png)
+   ```
+   if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    instruction_file = "src/lidar_test.json"
+    file_path_to_store = "your_path/lidar_data"
+    with open(instruction_file, 'r') as file_pointer:
+        instructions = json.load(file_pointer)
+    engine = setup_environment.get_database()
+    Lidar.__table__.create(bind=engine, checkfirst=True)
+    geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
+    store_lidar_path(engine, file_path_to_store, geometry_df)
+    store_tileindex(engine, file_path_to_store)
+    lidar_file = get_lidar_path(engine, geometry_df)
+    
+   ```
+
+ 
+ To get the path of the lidar file within the given catchment area:
+**store_lidar_path()** fucntion is used first in case data is not available in the database, user needs to provide database information to connect to the database, the path where Lidar data will be stored and geopandas dataframe to get the geometry information.   
+Then **store_tileindex()** function is used to store the corresponding tiles information, user needs to provide database information to connect to the database and the path where Lidar data will be stored and finally
+**get_lidar_path function()** is used which requires two arguments i.e. engine to connect to the database and geopandas dataframe to get the geometry information to get the path of the files within the catchment area. 
 
 ## BoundaryConditions data
 
@@ -66,7 +116,13 @@ The data source for the LiDAR data is [opentopography]( https://portal.opentopog
 
 The rain gauages location is accessed from [HIRDS](https://hirds.niwa.co.nz/) which is tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The gauges information can be stored in the database using **hirds_gauges.py** script as shown below:
 
-![image](https://user-images.githubusercontent.com/86580534/151071987-8efa0fe6-c1fa-418e-8562-37cb43a6ebce.png)
+```
+if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    engine = setup_environment.get_database()
+    guages = get_hirds_gauges_data()
+    hirds_gauges_to_db(engine, guages)
+```
 
 ### To get the rainfall data of the gauging sites within the desired catchment area from HIRDS and store in the database, use **hirds_depth_data_to_db.py** script.
 
@@ -76,7 +132,17 @@ The rain gauages location is accessed from [HIRDS](https://hirds.niwa.co.nz/) wh
 3. path: hirds depth data is first downloaded as csv files in the local directory before getting stored in the database, so user needs to provide the path where the depth data will be stored as csv files.
 The example is as shown below:
 
-![image](https://user-images.githubusercontent.com/86580534/151073978-674f029e-9dca-4928-9c7a-3b86125ff664.png)
+```
+if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    engine = setup_environment.get_database()
+    file = r'P:\Data\catch4.shp'
+    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
+    catchment = geopandas.read_file(file)
+    catchment = catchment.to_crs(4326)
+    catchment_area = catchment.geometry[0]
+    hirds_depths_to_db(engine, catchment_area, path)
+```
 
 ### To get the rainfall depth data from the database, **hirds_depth_data_from_db.py** script is used. 
 
@@ -90,7 +156,19 @@ The example is as shown below:
 
 For more details on ari, duration, rcp and time_period go to [HIRDS](https://hirds.niwa.co.nz/)
 
-![image](https://user-images.githubusercontent.com/86580534/151084770-582a75b6-bff0-414c-b035-b8f54f52f7d8.png)
+```
+if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    engine = setup_environment.get_database()
+    file = r'P:\Data\catch5.shp'
+    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
+    ari = 100
+    duration = 24
+    rcp = "2.6"
+    time_period = "2031-2050"
+    catchment_area = catchment_area_geometry_info(file)
+    depths_data = hirds_depths_from_db(engine, catchment_area, ari, duration, time_period)
+```
 
 ### Theissen Polygons
 Each gauge is associated for a particular area. To get the size of the area assoicated wih each gauge, **theissen_polygon_calculator.py** script is used. 
@@ -101,7 +179,15 @@ theissen_polygons(engine, catchment, gauges_in_polygon) function is used to calc
 3. gauges_in_polygon: get the gauges information which are within the desired catchment area.
  to get the get the gauges within the catchment area, **get_guages_location(engine, catchment)** function is used from **hirds_gauges.py** script.
  
- ![image](https://user-images.githubusercontent.com/86580534/151086490-1f2f0bf4-53a7-4a0a-a595-803a0fecf61c.png)
+```
+if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import hirds_gauges
+    engine = setup_environment.get_database()
+    catchment = hirds_gauges.get_new_zealand_boundary(engine)
+    gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
+    theissen_polygons(engine, catchment, gauges_in_polygon)
+```
  
  ### Hyetographs
  
@@ -112,7 +198,33 @@ hyetograph(duration, site, total_rain_depth) function takes 3 arguments:
 2. site: site id of a site for which hyetograph is required
 3. total_rain_depth: total rainfal depth at a given duration
 
-![image](https://user-images.githubusercontent.com/86580534/151091023-fa680851-1f68-4f94-9490-6777f5a0918c.png)  ![image](https://user-images.githubusercontent.com/86580534/151091040-91050e83-79a4-4436-8b78-d61d516ff9dd.png)
+```
+if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import hirds_gauges
+    from src.dynamic_boundary_conditions import theissen_polygon_calculator
+    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+    from src.dynamic_boundary_conditions import hirds_depth_data_from_db
+    engine = setup_environment.get_database()
+    file = r'P:\Data\catch5.shp'
+    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
+    ari = 100
+    duration = 24
+    rcp = "2.6"
+    time_period = "2031-2050"
+    guages = hirds_gauges.get_hirds_gauges_data()
+    hirds_gauges.hirds_gauges_to_db(engine, guages)
+    catchment = hirds_gauges.get_new_zealand_boundary(engine)
+    gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
+    theissen_polygon_calculator.theissen_polygons(engine, catchment, gauges_in_polygon)
+    catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
+    hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
+    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, ari, duration, rcp,
+                                                                time_period)
+    for site_id, depth in zip(depths_data.site_id, depths_data.depth):
+        hyt = hyetograph(duration, site_id, depth)
+        hyt.plot.bar(x='time', y='prcp_prop', rot=0)
+```
 
 
 ### Run BG Flood model
@@ -120,7 +232,22 @@ hyetograph(duration, site, total_rain_depth) function takes 3 arguments:
 To run the model, **bg_flood_model.py** script is used which takes DEM informationfrom the database, runs the model and stores the output back to the database.
 run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
 
-![image](https://user-images.githubusercontent.com/86580534/151091915-fc5b3829-0951-4cb0-986a-90ff87d8325b.png)
+```
+if __name__ == '__main__':
+    engine = setup_environment.get_database()
+    instruction_file = r"P:\GRI_codes\DigitalTwin2\src\file.json"
+    with open(instruction_file, 'r') as file_pointer:
+        instructions = json.load(file_pointer)
+    catchment_boundary = gpd.read_file(
+        instructions['instructions']['data_paths']['catchment_boundary'])
+    bg_path = r'P:\BG-Flood_Win10_v0.6-a'
+    # Saving the outputs after each 100 seconds
+    outputtimestep = 100.0
+    # Saving the outputs till 14400 seconds (or the output after 14400 seconds is the last one)
+    endtime = 900.0
+    resolution = instructions['instructions']['output']['grid_params']['resolution']
+    run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep)
+```
 
 The function requires 9 arguments, of which 3 are set as default values and can be changed later:
 
