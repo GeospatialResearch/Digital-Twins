@@ -38,15 +38,17 @@ def input_data(file):
 
 if __name__ == "__main__":
     from src.digitaltwin import insert_api_to_table
+    from src.digitaltwin import setup_environment
+    engine = setup_environment.get_database()
     load_dotenv()
     Stats_NZ_KEY = os.getenv('KEY')
     # create region_geometry table if it doesn't exist in the db.
     # no need to call region_geometry_table function if region_geometry table exist in the db
-    insert_api_to_table.region_geometry_table(Stats_NZ_KEY)
+    insert_api_to_table.region_geometry_table(engine, Stats_NZ_KEY)
 
     record = input_data("src/instructions_linz.json")
     # call the function to insert record in apilinks table
-    insert_api_to_table.insert_records(record['data_provider'],
+    insert_api_to_table.insert_records(engine, record['data_provider'],
                                        record['source'],
                                        record['api'], record['region'],
                                        record['geometry_column'],

@@ -58,7 +58,7 @@ def get_files(filetype, file_path_to_store):
     return files_path
 
 
-def store_lidar_path(file_path_to_store, instruction_file, filetype=".laz"):
+def store_lidar_path(engine, file_path_to_store, instruction_file, filetype=".laz"):
     """To store the path of downloaded point cloud data."""
     get_lidar_data(file_path_to_store, instruction_file)
     laz_files = get_files(filetype, file_path_to_store)
@@ -72,10 +72,10 @@ def store_lidar_path(file_path_to_store, instruction_file, filetype=".laz"):
         session = session()
         session.add(lidar)
         session.commit()
-        remove_duplicate_rows("lidar")
+        remove_duplicate_rows(engine, "lidar")
 
 
-def remove_duplicate_rows(table_name):
+def remove_duplicate_rows(engine, table_name):
     """Remove duplicate rows from the tables."""
     # add tbl_id column in each table
     engine.execute('ALTER TABLE \"%(table_name)s\" ADD COLUMN IF NOT EXISTS tbl_id SERIAL' % (
@@ -85,7 +85,7 @@ def remove_duplicate_rows(table_name):
                    a."Filename" = b."Filename";' % ({'table_name': table_name}))
 
 
-def store_tileindex(file_path_to_store, filetype=".shp"):
+def store_tileindex(engine, file_path_to_store, filetype=".shp"):
     """Store tile information of each point in the point cloud data.
 
     Function extracts the zip files where tile index files are stored as shape
@@ -104,29 +104,29 @@ def store_tileindex(file_path_to_store, filetype=".shp"):
     for i in shp_files:
         gdf = gpd.read_file(i)
         gdf.to_postgis("tileindex", engine, index=False, if_exists='append')
-    remove_duplicate_rows("tileindex")
+    remove_duplicate_rows(engine, "tileindex")
     query = 'UPDATE lidar SET geometry =(SELECT geometry FROM tileindex WHERE tileindex."Filename" = lidar."Filename")'
     engine.execute(query)
 
 
-def get_lidar_path(geometry_df):
+def get_lidar_path(engine, geometry_df):
     """Get the file path within the catchment area."""
     poly = geometry_df['geometry'][0]
     query = f"select * from lidar where ST_Intersects(geometry, ST_GeomFromText('{poly}', 2193))"
     output_data = pd.read_sql_query(query, engine)
     pd.set_option("display.max_colwidth", None)
-    print(output_data['filepath'])
+    return output_data['filepath']
 
 
 if __name__ == "__main__":
-    instruction_file = r"P:\GRI_codes\DigitalTwin2\src\lidar\lidar_test.json"
-    file_path_to_store = r"\\file\Research\FloodRiskResearch\LiDAR\lidar_data"
+    from src.digitaltwin import setup_environment
+    instruction_file = "src/lidar_test.json"
+    file_path_to_store = "your_path/lidar_data"
     with open(instruction_file, 'r') as file_pointer:
         instructions = json.load(file_pointer)
-    from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
     geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
-    store_lidar_path(file_path_to_store, geometry_df)
-    store_tileindex(file_path_to_store)
-    get_lidar_path(geometry_df)
+    store_lidar_path(engine, file_path_to_store, geometry_df)
+    store_tileindex(engine, file_path_to_store)
+    lidar_file = get_lidar_path(engine, geometry_df)

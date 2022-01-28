@@ -20,7 +20,10 @@ def catchment_area_geometry_info(file):
 
 def get_each_site_hirds_depth_data(ari, duration, site, engine, rcp=None, time_period=None):
     """Get hirds rainfall depth data from the database."""
-    if rcp is None or time_period is None:
+    if rcp is None and time_period is not None:
+        print("check the arguments of get_hirds_depth_data if rcp is None,time period should be None and vice-versa")
+        raise ValueError
+    elif rcp is not None and time_period is None:
         print("check the arguments of get_hirds_depth_data if rcp is None,time period should be None and vice-versa")
         raise ValueError
     else:
@@ -41,7 +44,7 @@ def hirds_depths_from_db(engine, catchment_area, ari, duration, rcp=None, time_p
 
     depths_list = []
     for site_id in sites_in_catchment:
-        rain_depth = get_each_site_hirds_depth_data(ari, duration, site_id, engine, rcp=None, time_period=None)
+        rain_depth = get_each_site_hirds_depth_data(ari, duration, site_id, engine, rcp, time_period)
         depths_list.append(rain_depth)
     rain_depth_data = pd.DataFrame((depths_list), columns=['site_id', 'depth'])
     return rain_depth_data
