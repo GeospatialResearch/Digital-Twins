@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
-    "geo-visualisation-components": "https://github.com/GeospatialResearch/geo-visualisation-components/releases/download/v0.0.2/geo-visualisation-components-0.0.2.tgz",
+    "geo-visualisation-components": "https://github.com/GeospatialResearch/geo-visualisation-components/releases/download/v0.0.3.alpha.1/geo-visualisation-components-0.0.3.tgz",
     "vue": "^2.6.11"
   },
   "devDependencies": {
