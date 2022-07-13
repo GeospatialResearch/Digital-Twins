@@ -31,7 +31,7 @@ if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
     # load in the instructions, get the source list and polygon from the user
-    FILE_PATH = pathlib.Path().cwd() / pathlib.Path("src\test4.json")
+    FILE_PATH = pathlib.Path().cwd() / pathlib.Path("src/instructions_get_data_from_db.json")
     with open(FILE_PATH, 'r') as file_pointer:
         instructions = json.load(file_pointer)
     source_list = tuple(instructions['source_name'])
