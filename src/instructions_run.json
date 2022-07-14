@@ -1,0 +1,11 @@
+{
+  "instructions": {
+    "data_provider": "LINZ",
+    "region_name": "New Zealand",
+    "url": "https://data.linz.govt.nz/layer/50327-nz-river-centrelines-topo-150k/",
+    "api": "https://data.linz.govt.nz/services;key=API_KEY/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=layer-50327&outputFormat=json&SRSName=EPSG:2193&cql_filter=bbox(shape,5169354.082, 1559525.958, 5167380.381, 1558247.433 )",
+    "source_name": "_50327-nz-river-centrelines",
+    "layer": 50327,
+    "geometry_col_name": "GEOMETRY"
+  }
+}

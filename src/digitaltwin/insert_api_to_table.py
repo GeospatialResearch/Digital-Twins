@@ -13,7 +13,6 @@ import sqlalchemy
 import validators
 from bs4 import BeautifulSoup
 from . import tables
-from .setup_environment import get_database
 
 
 def extract_api_params(api):
@@ -57,10 +56,8 @@ def api_data_modified_date(data_provider: str, url=None):
         pass
 
 
-def region_geometry_table(YOUR_KEY):
+def region_geometry_table(engine, YOUR_KEY):
     """Create region_geometry table which is used to create the geometry column in the apilinks table."""
-    engine = get_database()
-
     # check if the region_geometry table exists in the database
     insp = sqlalchemy.inspect(engine)
     table_exist = insp.has_table("region_geometry", schema="public")
@@ -76,7 +73,7 @@ def region_geometry_table(YOUR_KEY):
         print('region_geometry table exists')
 
 
-def insert_records(data_provider: str, source_name: str, api: str, region: str,
+def insert_records(engine, data_provider: str, source_name: str, api: str, region: str,
                    geometry_column: str = None, url=None, layer=None):
     """Insert user inputs as a row in the apilinks table."""
     if source_name[0].isalpha() or source_name[0].startswith("_"):
@@ -94,7 +91,6 @@ def insert_records(data_provider: str, source_name: str, api: str, region: str,
             "layer": layer,
             "geometry_col_name": geometry_column
         }
-        engine = get_database()
         try:
             Apilink = tables.Apilink
             dbsession = tables.dbsession()

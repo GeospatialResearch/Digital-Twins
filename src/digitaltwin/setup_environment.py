@@ -61,6 +61,3 @@ def get_engine(db, user, host, port, passwd):
     engine = create_engine(url)
     Base.metadata.create_all(engine)
     return engine
-
-
-get_database()

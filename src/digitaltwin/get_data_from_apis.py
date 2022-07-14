@@ -13,7 +13,7 @@ from src.digitaltwin import wfs_request
 
 
 def check_table_exist(engine, source_list):
-    """To check if tables already exists in the db for the requetsed sources."""
+    """To check if tables already exists in the db for the requested sources."""
     table = engine.execute("select table_name from information_schema.tables")
     tables_name = []
     for i in table:
@@ -49,7 +49,7 @@ def wfs_request_from_db(engine, tables, polygon):
 
 def get_geometry_info(engine):
     """Get the geometry of the tables that exist in the database."""
-    stored_list = engine.execute("select source_list, ST_AsText(geometry) from\
+    stored_list = engine.execute("select distinct source_list, ST_AsText(geometry) from\
                                       user_log_information")
     stored_srces = stored_list.fetchall()
 
@@ -64,9 +64,9 @@ def get_geometry_info(engine):
 
 def get_data_from_apis(engine, geometry_df, source_list):
     """
-    Get the sources already available in the database.
 
-    check if the requested polygon intersects with the existing polygon.
+    Check if the requested polygon intersects with the existing polygon.
+
     Get non-intersecting part of the requested polygon and make wfs request.
     If table not in the database, simply make wfs request.
     """

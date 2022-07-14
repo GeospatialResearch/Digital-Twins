@@ -1,0 +1,52 @@
+{"instructions": 
+	{
+		"output": {
+			"crs": {
+				"horizontal": 2193,
+				"vertical": 7839
+			},
+			"grid_params": {
+				"resolution": 10
+			}
+		},
+		"processing": {
+			"chunk_size": 150,
+			"number_of_cores": 3
+		},
+		"data_paths": {
+			"local_cache": "//file/Research/FloodRiskResearch/LiDAR/lidar_data",
+			"catchment_boundary": "//file/Research/FloodRiskResearch/LiDAR/catchment_boundary/small_catchment.shp",
+			"result_dem": "//file/Research/FloodRiskResearch/LiDAR/hc_dem3.nc"
+		},
+		"apis": {
+			"open_topography": {
+				"Rangiora_2014": {
+					"crs": {
+						"horizontal": 2193,
+						"vertical": 7839
+					}
+				}
+			},
+			"linz": {
+				"key": "YOUR_KEY",
+				"land": {
+					"layers": [51153]
+				}
+			}
+		},
+		"general": {
+			"set_dem_shoreline": true,
+			"bathymetry_contours_z_label": "valdco",
+			"drop_offshore_lidar": true,
+			"keep_only_ground_lidar": true,
+			"interpolate_missing_values": true
+		},
+		"benchmarking":{
+			"delete_dems": false,
+			"numbers_of_cores": [2, 3],
+			"chunk_sizes": [100, 150],
+			"title": "Benchmarking script"
+	}
+}
+}
+
