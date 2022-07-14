@@ -120,8 +120,8 @@ def get_lidar_path(engine, geometry_df):
 
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
-    instruction_file = "src/lidar_test.json"
-    file_path_to_store = "your_path/lidar_data"
+    instruction_file = "src/lidar/instructions_lidar.json"
+    file_path_to_store = r"P:/DT/LiDAR/lidar_data"
     with open(instruction_file, 'r') as file_pointer:
         instructions = json.load(file_pointer)
     engine = setup_environment.get_database()
