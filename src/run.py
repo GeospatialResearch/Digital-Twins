@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # no need to call region_geometry_table function if region_geometry table exist in the db
     insert_api_to_table.region_geometry_table(engine, Stats_NZ_KEY)
 
-    record = input_data("src/instructions_linz.json")
+    record = input_data("src/instructions_run.json")
     # call the function to insert record in apilinks table
     insert_api_to_table.insert_records(engine, record['data_provider'],
                                        record['source'],
