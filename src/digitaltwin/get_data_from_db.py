@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 20 09:18:56 2021.
 
-@author: pkh35
+@author: pkh35, sli229
 """
 
 import geopandas as gpd
@@ -13,10 +13,10 @@ import pandas as pd
 
 def get_data_from_db(engine, geometry: gpd.GeoDataFrame, source_list: tuple):
     """Perform spatial query within the database for the requested polygon."""
-    user_geometry = geometry.iloc[0, 0]
     get_data_from_apis.get_data_from_apis(engine, geometry, source_list)
+    user_geometry = geometry.iloc[0, 0]
     poly = "'{}'".format(user_geometry)
-    for source in source_list:
+    for source in source_list: #when testing source_list = ['_50327-nz-river-centrelines']
         # 2193 is an NZTM projection
         query = f'select * from "{source}" where ST_Intersects(geometry, ST_GeomFromText({poly}, 2193))'
         output_data = pd.read_sql_query(query, engine)
@@ -27,13 +27,13 @@ def get_data_from_db(engine, geometry: gpd.GeoDataFrame, source_list: tuple):
 
 
 if __name__ == "__main__":
-    from src.digitaltwin import get_data_from_apis
     from src.digitaltwin import setup_environment
+    from src.digitaltwin import get_data_from_apis
     engine = setup_environment.get_database()
     # load in the instructions, get the source list and polygon from the user
     FILE_PATH = pathlib.Path().cwd() / pathlib.Path("src/instructions_get_data_from_db.json")
     with open(FILE_PATH, 'r') as file_pointer:
         instructions = json.load(file_pointer)
     source_list = tuple(instructions['source_name'])
-    geometry = gpd.GeoDataFrame.from_features(instructions["features"])
+    geometry = gpd.GeoDataFrame.from_features(instructions['features'], crs=2193)
     get_data_from_db(engine, geometry, source_list)

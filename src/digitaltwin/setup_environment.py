@@ -2,7 +2,7 @@
 """
 Created on Thu Aug  5 17:09:13 2021.
 
-@author: pkh35
+@author: pkh35, sli229
 """
 
 import logging
@@ -14,6 +14,13 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(levelname)s:%(asctime)s:%(name)s:%(message)s')
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
 
 
 def get_database():
@@ -21,14 +28,14 @@ def get_database():
     try:
         engine = get_connection_from_profile()
         log.info("Connected to PostgreSQL database!")
-    except IOError:
-        log.exception("Failed to get database connection!")
+        return engine
+    except KeyError:
+        log.exception("Failed to get PostgreSQL database connection!")
         sys.exit()
-    return engine
 
 
 def get_connection_from_profile(config_file_name="db_configure.yml"):
-    """Set up database connection from config file.
+    """Sets up database connection from config file.
 
     Input:
     config_file_name:File containing PGHOST, PGUSER,
@@ -37,10 +44,10 @@ def get_connection_from_profile(config_file_name="db_configure.yml"):
     """
     with open(config_file_name, 'r') as config_vals:
         vals = yaml.safe_load(config_vals)
+
     if not all(key in vals.keys() for key in ['PGHOST', 'PGUSER', 'PGPASSWORD', 'PGDATABASE', 'PGPORT']):
         raise KeyError('Bad config file: ' + config_file_name)
     else:
-
         return get_engine(vals['PGDATABASE'], vals['PGUSER'],
                           vals['PGHOST'], vals['PGPORT'],
                           vals['PGPASSWORD'])
@@ -50,7 +57,6 @@ def get_engine(db, user, host, port, passwd):
     """Get SQLalchemy engine using credentials.
 
     Input:
-
     db: database name
     user: Username
     host: Hostname of the database server

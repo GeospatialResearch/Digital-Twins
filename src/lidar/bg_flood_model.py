@@ -27,7 +27,6 @@ Base = declarative_base()
 def bg_model_inputs(bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep, mask=15, gpudevice=0,
                     smallnc=0):
     """Set parameters to run the flood model.
-
     mask is used for visualising all the values larger than 15.
     If we are using the gpu then set to 0 (if no gpu type -1).
     smallnc = 0 means Level of refinement to apply to resolution based on the adaptive resolution trigger
@@ -56,12 +55,6 @@ def bg_model_inputs(bg_path, dem_path, catchment_boundary, resolution, endtime, 
     river_discharge_info(bg_path)
 
 
-def river_discharge_info(file):
-    """Get the river discharge info. from design hydrographs."""
-    with open(rf"{file}\RiverDis.txt") as file:
-        print(file.read())
-
-
 def bg_model_path(file):
     """Check if the flood_model path exists."""
     file = pathlib.Path(file)
@@ -80,15 +73,20 @@ def model_ouput_to_db(outfile, catchment_boundary):
     filename = os.path.basename(filepath)
     geometry = str(catchment_boundary['geometry'][0])
     flood_dem = BGDEM(filepath=filepath, Filename=filename, geometry=geometry)
-    session = sessionmaker(bind=engine)
-    session = session()
+    Session = sessionmaker(bind=engine)
+    session = Session()
     session.add(flood_dem)
     session.commit()
 
 
+def river_discharge_info(file):
+    """Get the river discharge info. from design hydrographs."""
+    with open(rf"{file}\RiverDis.txt") as file:
+        print(file.read())
+
+
 class BGDEM(Base):
     """Create lidar table in the database."""
-
     __tablename__ = 'model_ouput'
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     filepath = Column(String)
@@ -107,15 +105,17 @@ def run_model(bg_path, instructions, catchment_boundary, resolution, endtime, ou
 
 if __name__ == '__main__':
     engine = setup_environment.get_database()
-    instruction_file = r"P:\GRI_codes\DigitalTwin2\src\file.json"
+    bg_path = r'P:\DT\BG-Flood\BG-Flood_Win10_v0.6-a'
+    instruction_file = "src/lidar/file.json"
     with open(instruction_file, 'r') as file_pointer:
         instructions = json.load(file_pointer)
-    catchment_boundary = gpd.read_file(
-        instructions['instructions']['data_paths']['catchment_boundary'])
-    bg_path = r'P:\BG-Flood_Win10_v0.6-a'
+    cache_path = pathlib.Path(instructions['instructions']['data_paths']['local_cache'])
+    catchment_boundary_path = cache_path / instructions['instructions']['data_paths']['subfolder'] / \
+                              instructions['instructions']['data_paths']['catchment_boundary']
+    catchment_boundary = gpd.read_file(catchment_boundary_path)
+    resolution = instructions['instructions']['output']['grid_params']['resolution']
     # Saving the outputs after each 100 seconds
     outputtimestep = 100.0
     # Saving the outputs till 14400 seconds (or the output after 14400 seconds is the last one)
     endtime = 900.0
-    resolution = instructions['instructions']['output']['grid_params']['resolution']
     run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep)
