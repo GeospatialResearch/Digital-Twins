@@ -6,6 +6,7 @@ Created on Wed Nov 10 13:22:27 2021.
 """
 
 import geofabrics.processor
+import shapely.geometry
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from geoalchemy2 import Geometry
@@ -13,13 +14,13 @@ from sqlalchemy.orm import sessionmaker
 import os
 import geopandas as gpd
 import sys
+import pathlib
 
 Base = declarative_base()
 
 
 class DEM(Base):
-    """Create lidar table in the database."""
-
+    """Class used to create hydrological_dem table."""
     __tablename__ = 'hydrological_dem'
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     filepath = Column(String)
@@ -27,20 +28,30 @@ class DEM(Base):
     geometry = Column(Geometry('POLYGON'))
 
 
+def dem_table(engine):
+    """Create hydrological_dem table if doesn't exists."""
+    DEM.__table__.create(bind=engine, checkfirst=True)
+
+
 def check_dem_exist(instructions, engine):
     """Only generate DEM if it doesn't exist in the database."""
     dem_table(engine)
-    catchment_boundary = gpd.read_file(
-        instructions['instructions']['data_paths']['catchment_boundary'])
+    cache_path = pathlib.Path(instructions['instructions']['data_paths']['local_cache'])
+    catchment_boundary_path = cache_path / instructions['instructions']['data_paths']['subfolder'] / \
+                              instructions['instructions']['data_paths']['catchment_boundary']
+    catchment_boundary = gpd.read_file(catchment_boundary_path)
     geometry = str(catchment_boundary['geometry'][0])
-    query = f"select exists (Select 1 from hydrological_dem h where h.geometry ='{geometry}')"
+    query = f"select exists (Select 1 from hydrological_dem where geometry ='{geometry}')"
     row = engine.execute(query)
     return row.fetchone()[0]
 
 
-def dem_table(engine):
-    """Create hydrological_dem table if doesn't exists."""
-    DEM.__table__.create(bind=engine, checkfirst=True)
+def generate_dem(instructions):
+    """Use geofabrics to generate the hydrologically conditioned DEM."""
+    runner = geofabrics.processor.RawLidarDemGenerator(instructions['instructions'])
+    runner.run()
+    runner = geofabrics.processor.HydrologicDemGenerator(instructions['instructions'])
+    runner.run()
 
 
 def dem_metadata_to_db(instructions, engine):
@@ -51,8 +62,8 @@ def dem_metadata_to_db(instructions, engine):
         instructions['instructions']['data_paths']['catchment_boundary'])
     geometry = str(catchment_boundary['geometry'][0])
     lidar = DEM(filepath=filepath, Filename=filename, geometry=geometry)
-    session = sessionmaker(bind=engine)
-    session = session()
+    Session = sessionmaker(bind=engine)
+    session = Session()
     session.add(lidar)
     session.commit()
 
@@ -62,15 +73,9 @@ def dem_metadata_from_db(instructions, engine):
     catchment_boundary = gpd.read_file(
         instructions['instructions']['data_paths']['catchment_boundary'])
     geometry = str(catchment_boundary['geometry'][0])
-    query = f"SELECT filepath FROM hydrological_dem h where h.geometry = '{geometry}'"
+    query = f"SELECT filepath FROM hydrological_dem WHERE geometry = '{geometry}'"
     dem = engine.execute(query)
     return dem.fetchone()[0]
-
-
-def generate_dem(instructions):
-    """Use geofabrics to generate the hydrologically conditioned DEM."""
-    runner = geofabrics.processor.DemGenerator(instructions)
-    runner.run()
 
 
 def get_dem_path(instructions, engine):

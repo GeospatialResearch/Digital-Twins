@@ -1,27 +1,24 @@
  {
- "type": "FeatureCollection", 
- "features": 
- [{"type": "Feature", 
- "properties": {}, 
- "geometry": 
- {"type": "Polygon", 
- "coordinates":
-		[
-			[
+   "type": "FeatureCollection",
+   "features": [
+     {
+       "type": "Feature",
+       "properties": {},
+       "geometry": {
+         "type": "Polygon",
+         "coordinates": [
+           [
             [
               1561834,
 			  5189278
-			  
             ],
             [
               1560193,
 			  5175303
-			  
             ],
             [
               1574396,
 			  5175538
-			  
             ],
             [
 		      1576461,
@@ -32,6 +29,8 @@
 			  5189278
             ]
           ]
-		] 
- }}]
+		]
+       }
+     }
+   ]
  }

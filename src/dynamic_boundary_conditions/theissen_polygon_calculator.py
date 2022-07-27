@@ -16,7 +16,6 @@ import sys
 
 def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polygon: geopandas.GeoDataFrame):
     """Calculate the area covered by each gauging site and store it in the database.
-
     catchment: get the geopandas dataframe of the catchment area.
     gauges_in_polygon: get the gauges data in the form of geopandas dataframe.
     """
@@ -46,12 +45,15 @@ def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polyg
             projected_area = transform(project, region_polys[i]).area
             sites.append(sites_in_catchment['site_id'][ind])
             area.append(projected_area*0.001)
-            geometry.append((region_polys[i]))
+            geometry.append(region_polys[i])
+            # TODO: currently in EPSG4326. does this need to be in EPSG3857? code (line45): geometry.append(transform(project, region_polys[i]))
 
         gauges_area['site_id'] = sites
         gauges_area['area_in_km'] = area
         gauges_area['geometry'] = geometry
+        gauges_area.set_crs(crs='epsg:4326', inplace=True)
         gauges_area.to_postgis("gauges_area", engine, if_exists='replace')
+        # TODO: above line get UserWarning: Could not parse CRS from the GeoDataFrame. Have set_crs to 4326 now.
 
 
 if __name__ == "__main__":
