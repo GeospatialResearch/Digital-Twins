@@ -11,6 +11,7 @@ dependencies:
   - rasterio # Needs to be explicit as wheel fails to build if insalled as a dependency of geofabrics
   - python-pdal # Not on PyPI so needs to be added here and not through pip geofabrics
   - geoapis>=0.2.8
+  - pytest
   - psycopg2 # Try remove in future
   - bs4 # Try remove in future
   - validators  # Try remove in future
