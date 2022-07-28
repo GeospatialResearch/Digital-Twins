@@ -41,7 +41,7 @@ jobs:
           docker-compose up -d db_postgres
       - name: Build unit test image
         run: |
-          docker build -t unit_test -f Dockerfile.unittest test_setup_environment.py
+          docker build -t unit_test -f Dockerfile.unittest test_setup_environment
       - name: Create .env file with API keys
         env:
           ENV_BASE64: ${{ secrets.ENV_BASE64 }}
@@ -51,7 +51,6 @@ jobs:
       - name: Run unit tests
         run: |
           docker run --network="host" unit_test
-
 
   sonarcloud:
     # Runs static-code analysis on SonarCloud
