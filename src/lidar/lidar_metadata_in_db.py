@@ -126,6 +126,7 @@ def store_tileindex(engine, file_path_to_store, filetype=".shp"):
         except psycopg2.ProgrammingError as error:
             # TODO: if_exists=append does not allow for the addition of new
             # fields to a table, only new rows. NZ20_Canterbury have new columns
+            # Fix in https://github.com/GeospatialResearch/Digital-Twins/issues/33
             filename = os.path.basename(i)
             query = "SELECT column_name FROM information_schema.columns WHERE table_name = 'tileindex'"
             col_names_in_db = pd.read_sql_query(query, engine)["column_name"].tolist()
