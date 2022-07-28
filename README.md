@@ -113,15 +113,15 @@ The data source for the LiDAR data is [opentopography]( https://portal.opentopog
 
  
  To get the path of the lidar file within the given catchment area:
-**store_lidar_path()** fucntion is used first in case data is not available in the database, user needs to provide database information to connect to the database, the path where Lidar data will be stored and geopandas dataframe to get the geometry information.   
-Then **store_tileindex()** function is used to store the corresponding tiles information, user needs to provide database information to connect to the database and the path where Lidar data will be stored and finally
-**get_lidar_path function()** is used which requires two arguments i.e. engine to connect to the database and geopandas dataframe to get the geometry information to get the path of the files within the catchment area. 
+`store_lidar_path()` function is used first in case data is not available in the database, user needs to provide database information to connect to the database, the path where Lidar data will be stored and geopandas dataframe to get the geometry information.   
+Then `store_tileindex()` function is used to store the corresponding tiles information, user needs to provide database information to connect to the database and the path where Lidar data will be stored and finally
+`get_lidar_path function()` is used which requires two arguments i.e. engine to connect to the database and geopandas dataframe to get the geometry information to get the path of the files within the catchment area. 
 
 ## BoundaryConditions data
 
 ### Rain gauges location
 
-The rain gauages location is accessed from [HIRDS](https://hirds.niwa.co.nz/) which is tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The gauges information can be stored in the database using **hirds_gauges.py** script as shown below:
+The rain gauges location is accessed from [HIRDS](https://hirds.niwa.co.nz/) which is tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The gauges information can be stored in the database using `hirds_gauges.py` script as shown below:
 
 ```
 if __name__ == "__main__":
