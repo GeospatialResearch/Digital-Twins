@@ -24,25 +24,21 @@ from geofabrics import processor
 
 
 class GeoFabricsTest(unittest.TestCase):
-    """A class to test the basic processor class DemGenerator functionality for remote
-    LiDAR tiles and remote Bathymetry contours and coast contours by downloading files
-    from OpenTopography and the LINZ data portal within a small region and then
-    generating a DEM. All files are deleted after checking the DEM.
+    """Test GeoFabrics runs correctly - test both the python environment setup,
+    and GeoFabrcics.
 
     Tests run include:
-        1. test_correct_datasets - Test that the expected datasets are downloaded from
-           OpenTopography and LINZ
-        2. test_correct_lidar_files_downloaded - Test the downloaded LIDAR files have
-           the expected names
-        3. test_correct_lidar_file_size - Test the downloaded LIDAR files have the
-           expected file sizes
+        1. test_correct_datasets - Test that the expected datasets are downloaded
+        2. test_correct_lidar_files_downloaded - Test the correct LIDAR files are
+           downloaded
+        3. test_correct_lidar_file_size - Test the downloaded LIDAR files are the
+           right size
         4. test_result_dem_windows/linux - Check the generated DEM matches the benchmark
            DEM, where the rigor of the test depends on the operating system (windows or
                                                                              Linux)
     """
 
-    # The expected datasets and files to be downloaded - used for comparison in the
-    # later tests
+    # The expected datasets and files to be downloaded - used in test comparisons
     DATASETS = ["Rangiora_2014", "51153", "50448"]
     LIDAR_SIZES = {
         "ot_CL2_BW24_2014_1000_4025.laz": 3424271,
@@ -90,7 +86,7 @@ class GeoFabricsTest(unittest.TestCase):
         y0 = 5197550
         x1 = 1577550
         y1 = 5196950
-        catchment = shapely.geometry.Polygon([(x0, y0), (x0, y1), (x1, y1), (x1, y0),])
+        catchment = shapely.geometry.Polygon([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])
         catchment = geopandas.GeoSeries([catchment])
         catchment = catchment.set_crs(cls.instructions["output"]["crs"]["horizontal"])
 
@@ -110,7 +106,7 @@ class GeoFabricsTest(unittest.TestCase):
         """Remove created cache directory and included created and downloaded files at
         the end of the test."""
 
-        # cls.clean_data_folder()
+        cls.clean_data_folder()
 
     @classmethod
     def clean_data_folder(cls):
