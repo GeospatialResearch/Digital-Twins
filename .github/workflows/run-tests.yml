@@ -41,7 +41,7 @@ jobs:
           docker-compose up -d db_postgres
       - name: Build unit test image
         run: |
-          docker build -t unit_test -f Dockerfile.unittest .
+          docker build -t unit_test -f Dockerfile.unittest tests/test_setup_environment.py
       - name: Create .env file with API keys
         env:
           ENV_BASE64: ${{ secrets.ENV_BASE64 }}
