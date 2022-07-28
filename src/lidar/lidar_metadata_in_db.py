@@ -19,6 +19,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
 import logging
 import psycopg2
+from src.digitaltwin import setup_environment
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -145,8 +146,7 @@ def get_lidar_path(engine, geometry_df):
     return output_data["filepath"]
 
 
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
+def main():
 
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
@@ -157,4 +157,7 @@ if __name__ == "__main__":
     geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
     store_lidar_path(engine, file_path_to_store, geometry_df)
     store_tileindex(engine, file_path_to_store)
-    lidar_file = get_lidar_path(engine, geometry_df)
+
+
+if __name__ == "__main__":
+    main()
