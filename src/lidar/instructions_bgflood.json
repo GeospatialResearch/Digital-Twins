@@ -14,7 +14,7 @@
 			"number_of_cores": 3
 		},
 		"data_paths": {
-			"local_cache": "P:/DT/LiDAR/lidar_data/cache",
+			"local_cache": "P:/DT/LiDAR/cache",
 			"subfolder": "results",
 			"catchment_boundary": "small_catchment.geojson",
 			"raw_dem": "raw_dem.nc",
