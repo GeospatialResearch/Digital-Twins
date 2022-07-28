@@ -56,7 +56,7 @@ Run run.py file from your IDE:
                                        record['url'],
                                        record['layer'])
                                        ```
-StatsNZ Api key is only required if the region_geomerty table doesn't exist in the database otherwise you can skip lines 5-9 of the above script.
+StatsNZ Api key is only required if the region_geometry table doesn't exist in the database otherwise you can skip lines 5-9 of the above script.
 
 This way data will be stored in the database which then will be used to make api requests for the desired Area of Interest.
 geometry column's name, url and layer name are not required if the data provider is not LINZ, LRIS or StatsNZ:
