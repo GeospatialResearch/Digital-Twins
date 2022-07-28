@@ -10,7 +10,6 @@ from sqlalchemy import Column, Integer, DateTime, Unicode, Date
 from sqlalchemy.dialects.postgresql import JSONB, JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import func
 import sqlalchemy
 import geoapis.vector
 import pandas as pd
