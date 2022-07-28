@@ -42,12 +42,12 @@ jobs:
       - name: Build unit test image
         run: |
           docker build -t unit_test -f Dockerfile.unittest .
-       - name: Create .env file with API keys
-         env:
-           ENV_BASE64: ${{ secrets.ENV_BASE64 }}
-         run: |
-           create .env file from encoded contents stored in a GitHub secret
-              echo $ENV_BASE64 | base64 -d > .env
+      - name: Create .env file with API keys
+        env:
+          ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+        run: |
+          echo import .env file from secrets and regenerate the file
+          echo $ENV_BASE64 | base64 -d > .env
       - name: Run unit tests
         run: |
           docker run --network="host" unit_test
