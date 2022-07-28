@@ -17,8 +17,6 @@ def get_data_from_db(engine, geometry: gpd.GeoDataFrame, source_list: tuple):
     user_geometry = geometry.iloc[0, 0]
     poly = "'{}'".format(user_geometry)
     for source in source_list:
-        #  when testing source_list = ['_50327-nz-river-centrelines']
-        #  2193 is an NZTM projection
         query = f'select * from "{source}" where ST_Intersects(geometry, ST_GeomFromText({poly}, 2193))'
         output_data = pd.read_sql_query(query, engine)
         output_data["geometry"] = gpd.GeoSeries.from_wkb(output_data["geometry"])
