@@ -11,6 +11,9 @@ The following list defines the basic steps required to setup and run the digital
 5. Run lidar.bg_flood_model.py - runs GeoFabrics and then BG-FLOOD
 6. Run dynamic_boundary_conditions.hyetograph.py
 
+### Notes on API keys setup
+The api_keys table doesn't exist, manually insert api_keys table into database for now
+
 ## Setup
 
 ### Create Docker or PostGRESQL

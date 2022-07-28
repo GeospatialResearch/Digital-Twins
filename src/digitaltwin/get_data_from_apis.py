@@ -44,7 +44,8 @@ def check_table_exist(engine, source_list):
 
 def wfs_request_from_db(engine, tables, polygon):
     """Make wfs request for the requested sources.
-    tables is source_name ('_50329-nz-road-centrelines', '_50319-nz-railway-centrelines')
+    tables is source_name ('_50329-nz-road-centrelines',
+                           '_50319-nz-railway-centrelines')
     """
     db_tbl = wfs_request.access_api_info(engine, tuple(tables))
     for i in range(len(db_tbl)):
@@ -53,8 +54,6 @@ def wfs_request_from_db(engine, tables, polygon):
         base_url = db_tbl.loc[i, "source_api"]
         geometry_name = db_tbl.loc[i, "geometry_col_name"]
         table_name = db_tbl.loc[i, "source_name"]
-        # TODO: manually insert api_keys table into database for now
-        # api_keys table doesn't exist, set key manually for now
         keys = engine.execute(
             "select key from api_keys where data_provider = %(data_provider)s",
             ({"data_provider": data_provider}),
