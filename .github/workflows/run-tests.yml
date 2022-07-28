@@ -52,27 +52,6 @@ jobs:
         run: |
           docker run --network="host" unit_test
 
-  python-tests:
-    # Runs Python only tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0}
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [ 3.8 ]
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Load conda cache
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-conda-env
-      with:
-        path: ~/conda_pkgs_dir
-        key: ${{ runner.os }}-conda-${{ env.cache-name }}-${{ hashFiles('environment.yml') }}
-
   sonarcloud:
     # Runs static-code analysis on SonarCloud
     runs-on: ubuntu-latest
