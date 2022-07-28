@@ -83,7 +83,7 @@ jobs:
         use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
         python-version: ${{ matrix.python-version }}
         mamba-version: "*"
-      run: |
+      - run: |
         conda info
         conda list
         conda config --show-sources
