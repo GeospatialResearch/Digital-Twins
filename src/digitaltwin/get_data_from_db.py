@@ -9,6 +9,8 @@ import geopandas as gpd
 import pathlib
 import json
 import pandas as pd
+from src.digitaltwin import setup_environment
+from src.digitaltwin import get_data_from_apis
 
 
 def get_data_from_db(engine, geometry: gpd.GeoDataFrame, source_list: tuple):
@@ -26,10 +28,7 @@ def get_data_from_db(engine, geometry: gpd.GeoDataFrame, source_list: tuple):
         print(output_data)
 
 
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    from src.digitaltwin import get_data_from_apis
-
+def main():
     engine = setup_environment.get_database()
     # load in the instructions, get the source list and polygon from the user
     FILE_PATH = pathlib.Path().cwd() / pathlib.Path(
@@ -40,3 +39,7 @@ if __name__ == "__main__":
     source_list = tuple(instructions["source_name"])
     geometry = gpd.GeoDataFrame.from_features(instructions["features"], crs=2193)
     get_data_from_db(engine, geometry, source_list)
+
+
+if __name__ == "__main__":
+    main()
