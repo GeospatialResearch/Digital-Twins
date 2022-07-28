@@ -50,15 +50,12 @@ def theissen_polygons(
             sites.append(sites_in_catchment["site_id"][ind])
             area.append(projected_area * 0.001)
             geometry.append(region_polys[i])
-            # TODO: currently in EPSG4326. does this need to be in EPSG3857?
-            # code (line45): geometry.append(transform(project, region_polys[i]))
+            # TODO: currently in EPSG4326. Check if this should be in EPSG3857?
         gauges_area["site_id"] = sites
         gauges_area["area_in_km"] = area
         gauges_area["geometry"] = geometry
         gauges_area.set_crs(crs="epsg:4326", inplace=True)
         gauges_area.to_postgis("gauges_area", engine, if_exists="replace")
-        # TODO: above line get UserWarning: Could not parse CRS from the
-        # GeoDataFrame. Have set_crs to 4326 now.
 
 
 if __name__ == "__main__":
