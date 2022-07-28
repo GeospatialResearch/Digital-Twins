@@ -52,6 +52,55 @@ jobs:
         run: |
           docker run --network="host" unit_test
 
+    python-tests:
+      # Runs Python only tests
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          shell: bash -l {0}
+      strategy:
+        fail-fast: false
+        matrix:
+          python-version: [ 3.8 ]
+
+      steps:
+        - uses: actions/checkout@v2
+        - name: Load conda cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-conda-env
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.cache-name }}-${{ hashFiles('environment.yml') }}
+        - name: Conda environment setup
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: geofabrics
+          environment-file: environment_linux.yml
+          auto-activate-base: false
+          channels: conda-forge
+          channel-priority: strict
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
+          python-version: ${{ matrix.python-version }}
+          mamba-version: "*"
+        - run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
+        - name: Install test dependencies
+        run: |
+          mamba install flake8 pytest
+        - name: Create .env file with API keys
+          env:
+            ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+          run: |
+            echo import .env file from secrets and regenerate the file
+            echo $ENV_BASE64 | base64 -d > .env
+        - name: Run python tests with pytest
+        run: |
+          pytest tests/test_run_geofabric.py
+
   sonarcloud:
     # Runs static-code analysis on SonarCloud
     runs-on: ubuntu-latest
