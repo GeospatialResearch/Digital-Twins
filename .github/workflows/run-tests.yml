@@ -19,7 +19,7 @@ jobs:
         run: |
           flake8 src --show-source --count --statistics --max-line-length=120
 
-  docker-tests:
+  unit-tests:
     # Starts the database, builds the testing docker image and runs all unit tests using docker
     runs-on: ubuntu-latest
     defaults:
@@ -41,7 +41,7 @@ jobs:
           docker-compose up -d db_postgres
       - name: Build unit test image
         run: |
-          docker build -t unit_test -f Dockerfile.unittest test_setup_environment
+          docker build -t unit_test -f Dockerfile.unittest .
       - name: Create .env file with API keys
         env:
           ENV_BASE64: ${{ secrets.ENV_BASE64 }}
