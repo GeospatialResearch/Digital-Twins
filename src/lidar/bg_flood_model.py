@@ -129,7 +129,7 @@ def run_model(
 def main():
     engine = setup_environment.get_database()
     bg_path = r"P:\DT\BG-Flood\BG-Flood_Win10_v0.6-a"
-    instruction_file = "src/lidar/file.json"
+    instruction_file = "src/lidar/instructions_bgflood.json"
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
     cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
