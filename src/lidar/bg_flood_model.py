@@ -145,7 +145,6 @@ def main():
     # Saving the outputs till 14400 seconds (or the output after 14400 seconds
     # is the last one)
     endtime = 900.0
-    resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     run_model(
         bg_path=bg_path,
         instructions=instructions,
