@@ -1,0 +1,55 @@
+{"instructions":
+	{
+		"output": {
+			"crs": {
+				"horizontal": 2193,
+				"vertical": 7839
+			},
+			"grid_params": {
+				"resolution": 10
+			}
+		},
+		"processing": {
+			"chunk_size": 150,
+			"number_of_cores": 3
+		},
+		"data_paths": {
+			"local_cache": "P:/DT/LiDAR/cache",
+			"subfolder": "results",
+			"catchment_boundary": "small_catchment.geojson",
+			"raw_dem": "raw_dem.nc",
+			"raw_dem_extents": "raw_extents.geojson",
+			"result_dem": "generated_dem.nc"
+		},
+		"apis": {
+			"open_topography": {
+				"Rangiora_2014": {
+					"crs": {
+						"horizontal": 2193,
+						"vertical": 7839
+					}
+				}
+			},
+			"linz": {
+				"key": "65cf810763bc49d0beacb17f18b5ce53",
+				"land": {
+					"layers": [51153]
+				}
+			}
+		},
+		"general": {
+			"set_dem_shoreline": true,
+			"drop_offshore_lidar": true,
+			"bathymetry_contours_z_label": "valdco",
+			"lidar_classifications_to_keep ": [2],
+			"interpolation_method": "linear"
+		},
+		"benchmarking":{
+			"numbers_of_cores": [2, 3],
+			"chunk_sizes": [100, 150],
+			"title": "Benchmarking script",
+			"delete_dems": false
+		}
+	}
+}
+

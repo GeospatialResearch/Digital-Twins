@@ -11,12 +11,12 @@ dependencies:
   - sqlalchemy
   - python-dotenv
   - pyproj
-  - pytest
+  - pytest # Keep - for testing
   - pip
   - gdal
   - geopandas
   - requests
-  - matplotlib
+  - matplotlib # Keep during development - remove later
   - ipykernel
   - ipython
   - jupyter_client
@@ -26,7 +26,7 @@ dependencies:
   - pytest
   - numpy
   - scipy
-  - geoalchemy2
+  - geoalchemy2 # Keep
   - validators
   - pip:
       - git+https://github.com/niwa/geoapis.git
