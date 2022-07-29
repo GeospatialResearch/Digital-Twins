@@ -60,7 +60,7 @@ def get_files(filetype, file_path_to_store):
     """To get the path of the downloaded point cloud files."""
     files_list = []
     files_path = []
-    for (path, _dirs, files) in os.walk(file_path_to_store):
+    for (path, dirs, files) in os.walk(file_path_to_store):
         for file in files:
             if file.endswith(filetype):
                 files_list.append(os.path.join(path, file))
