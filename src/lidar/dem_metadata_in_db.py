@@ -60,9 +60,13 @@ def dem_metadata_to_db(instructions, engine):
     """Store metadata of the generated DEM in database."""
     filepath = instructions["instructions"]["data_paths"]["result_dem"]
     filename = os.path.basename(filepath)
-    catchment_boundary = gpd.read_file(
-        instructions["instructions"]["data_paths"]["catchment_boundary"]
+    cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
+    catchment_boundary_path = (
+        cache_path
+        / instructions["instructions"]["data_paths"]["subfolder"]
+        / instructions["instructions"]["data_paths"]["catchment_boundary"]
     )
+    catchment_boundary = gpd.read_file(catchment_boundary_path)
     geometry = str(catchment_boundary["geometry"][0])
     lidar = DEM(filepath=filepath, Filename=filename, geometry=geometry)
     Session = sessionmaker(bind=engine)
@@ -73,9 +77,13 @@ def dem_metadata_to_db(instructions, engine):
 
 def dem_metadata_from_db(instructions, engine):
     """Get requested dem information from the database."""
-    catchment_boundary = gpd.read_file(
-        instructions["instructions"]["data_paths"]["catchment_boundary"]
+    cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
+    catchment_boundary_path = (
+        cache_path
+        / instructions["instructions"]["data_paths"]["subfolder"]
+        / instructions["instructions"]["data_paths"]["catchment_boundary"]
     )
+    catchment_boundary = gpd.read_file(catchment_boundary_path)
     geometry = str(catchment_boundary["geometry"][0])
     query = f"SELECT filepath FROM hydrological_dem WHERE geometry = '{geometry}'"
     dem = engine.execute(query)
