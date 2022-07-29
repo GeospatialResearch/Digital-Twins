@@ -19,11 +19,12 @@ from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
 import logging
 import psycopg2
+from src.digitaltwin import setup_environment
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter('%(levelname)s:%(asctime)s:%(name)s:%(message)s')
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
@@ -34,21 +35,24 @@ Base = declarative_base()
 
 class Lidar(Base):
     """Class used to create lidar table in the database."""
-    __tablename__ = 'lidar'
+
+    __tablename__ = "lidar"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     filepath = Column(String)
     Filename = Column(String)
     filename_no_format = Column(String)
-    geometry = Column(Geometry('POLYGON'))
+    geometry = Column(Geometry("POLYGON"))
 
 
 def get_lidar_data(file_path_to_store, geometry_df):
-    """Download the LiDAR data within the catchment area from opentopography using geoapis.
+    """Download the LiDAR data within the catchment area from opentopography
+    using geoapis.
     https://github.com/niwa/geoapis
     """
-    geometry_df.set_crs(crs='epsg:2193', inplace=True)
-    lidar_fetcher = geoapis.lidar.OpenTopography(cache_path=file_path_to_store,
-                                                 search_polygon=geometry_df, verbose=True)
+    geometry_df.set_crs(crs="epsg:2193", inplace=True)
+    lidar_fetcher = geoapis.lidar.OpenTopography(
+        cache_path=file_path_to_store, search_polygon=geometry_df, verbose=True
+    )
     lidar_fetcher.run()
 
 
@@ -61,7 +65,7 @@ def get_files(filetype, file_path_to_store):
             if file.endswith(filetype):
                 files_list.append(os.path.join(paths, file))
     for filepath in files_list:
-        filepath = filepath.replace(os.sep, '/')
+        filepath = filepath.replace(os.sep, "/")
         files_path.append(filepath)
     return files_path
 
@@ -69,12 +73,16 @@ def get_files(filetype, file_path_to_store):
 def remove_duplicate_rows(engine, table_name):
     """Remove duplicate rows from the tables."""
     # add tbl_id column in each table
-    engine.execute('ALTER TABLE \"%(table_name)s\" ADD COLUMN IF NOT EXISTS unique_id SERIAL PRIMARY KEY'
-                   % ({'table_name': table_name}))
+    engine.execute(
+        'ALTER TABLE "%(table_name)s" ADD COLUMN IF NOT EXISTS unique_id SERIAL PRIMARY KEY'
+        % ({"table_name": table_name})
+    )
     # delete duplicate rows from the newly created tables if exists
-    engine.execute('DELETE FROM "%(table_name)s" a USING "%(table_name)s" b\
+    engine.execute(
+        'DELETE FROM "%(table_name)s" a USING "%(table_name)s" b\
                     WHERE a.unique_id < b.unique_id AND a."Filename" = b."Filename";'
-                   % ({'table_name': table_name}))
+        % ({"table_name": table_name})
+    )
 
 
 def store_lidar_path(engine, file_path_to_store, instruction_file, filetype=".laz"):
@@ -83,10 +91,12 @@ def store_lidar_path(engine, file_path_to_store, instruction_file, filetype=".la
     laz_files = get_files(filetype, file_path_to_store)
     for filepath in laz_files:
         file_name = os.path.basename(filepath)
-        file_name_no_format = file_name.rsplit('.', 1)[0]
-        lidar = Lidar(filepath=filepath, 
-                      Filename=file_name,
-                      filename_no_format=file_name_no_format)
+        file_name_no_format = file_name.rsplit(".", 1)[0]
+        lidar = Lidar(
+            filepath=filepath,
+            Filename=file_name,
+            filename_no_format=file_name_no_format,
+        )
         Session = sessionmaker(bind=engine)
         session = Session()
         session.add(lidar)
@@ -112,15 +122,17 @@ def store_tileindex(engine, file_path_to_store, filetype=".shp"):
     for i in shp_files:
         try:
             gdf = gpd.read_file(i)
-            gdf.to_postgis("tileindex", engine, index=False, if_exists='append')
+            gdf.to_postgis("tileindex", engine, index=False, if_exists="append")
         except psycopg2.ProgrammingError as error:
-            # TODO: if_exists=append does not allow for the addition of new fields to a table, only new rows. NZ20_Canterbury have new columns
+            # TODO: if_exists=append does not allow for the addition of new
+            # fields to a table, only new rows. NZ20_Canterbury have new columns
+            # Fix in https://github.com/GeospatialResearch/Digital-Twins/issues/33
             filename = os.path.basename(i)
             query = "SELECT column_name FROM information_schema.columns WHERE table_name = 'tileindex'"
-            col_names_in_db = pd.read_sql_query(query, engine)['column_name'].tolist()
+            col_names_in_db = pd.read_sql_query(query, engine)["column_name"].tolist()
             col_names_in_shp = gdf.columns.tolist()
             col_names_not_in_db = np.setdiff1d(col_names_in_shp, col_names_in_db)
-            log.debug(f'{filename}: {error}. new column names: {col_names_not_in_db}')
+            log.debug(f"{filename}: {error}. new column names: {col_names_not_in_db}")
     remove_duplicate_rows(engine, "tileindex")
     query = 'UPDATE lidar SET geometry = (SELECT geometry FROM tileindex WHERE tileindex."Filename" = lidar."Filename")'
     engine.execute(query)
@@ -128,22 +140,25 @@ def store_tileindex(engine, file_path_to_store, filetype=".shp"):
 
 def get_lidar_path(engine, geometry_df):
     """Get the file path within the catchment area."""
-    poly = geometry_df['geometry'][0]
+    poly = geometry_df["geometry"][0]
     query = f"select * from lidar where ST_Intersects(geometry, ST_GeomFromText('{poly}', 2193))"
     output_data = pd.read_sql_query(query, engine)
     pd.set_option("display.max_colwidth", None)
-    return output_data['filepath']
+    return output_data["filepath"]
 
 
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
+def main():
+
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
     file_path_to_store = r"P:/DT/LiDAR/lidar_data"
     instruction_file = "src/lidar/instructions_lidar.json"
-    with open(instruction_file, 'r') as file_pointer:
+    with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
     geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
     store_lidar_path(engine, file_path_to_store, geometry_df)
     store_tileindex(engine, file_path_to_store)
-    lidar_file = get_lidar_path(engine, geometry_df)
+
+
+if __name__ == "__main__":
+    main()

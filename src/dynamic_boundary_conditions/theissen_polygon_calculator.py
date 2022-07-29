@@ -14,7 +14,9 @@ from shapely.ops import transform
 import sys
 
 
-def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polygon: geopandas.GeoDataFrame):
+def theissen_polygons(
+    engine, catchment: geopandas.GeoDataFrame, gauges_in_polygon: geopandas.GeoDataFrame
+):
     """Calculate the area covered by each gauging site and store it in the database.
     catchment: get the geopandas dataframe of the catchment area.
     gauges_in_polygon: get the gauges data in the form of geopandas dataframe.
@@ -25,16 +27,18 @@ def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polyg
     else:
         catchment_area = catchment.geom[0]
         coords = points_to_coords(gauges_in_polygon.geometry)
-        region_polys, region_pts = voronoi_regions_from_coords(coords, catchment_area, per_geom=False)
+        region_polys, region_pts = voronoi_regions_from_coords(
+            coords, catchment_area, per_geom=False
+        )
 
         sites_list = []
         for key, value in region_pts.items():
-            site = gauges_in_polygon.loc[(gauges_in_polygon['order'] == value[0])]
+            site = gauges_in_polygon.loc[(gauges_in_polygon["order"] == value[0])]
             sites_list.append(site)
         sites_in_catchment = pd.concat(sites_list)
 
-        wgs84 = pyproj.CRS('EPSG:4326')
-        utm = pyproj.CRS('EPSG:3857')
+        wgs84 = pyproj.CRS("EPSG:4326")
+        utm = pyproj.CRS("EPSG:3857")
         project = pyproj.Transformer.from_crs(wgs84, utm, always_xy=True).transform
         gauges_area = gpd.GeoDataFrame()
         sites = []
@@ -43,22 +47,21 @@ def theissen_polygons(engine, catchment: geopandas.GeoDataFrame, gauges_in_polyg
 
         for i, ind in zip(range(len(region_polys)), sites_in_catchment.index):
             projected_area = transform(project, region_polys[i]).area
-            sites.append(sites_in_catchment['site_id'][ind])
-            area.append(projected_area*0.001)
+            sites.append(sites_in_catchment["site_id"][ind])
+            area.append(projected_area * 0.001)
             geometry.append(region_polys[i])
-            # TODO: currently in EPSG4326. does this need to be in EPSG3857? code (line45): geometry.append(transform(project, region_polys[i]))
-
-        gauges_area['site_id'] = sites
-        gauges_area['area_in_km'] = area
-        gauges_area['geometry'] = geometry
-        gauges_area.set_crs(crs='epsg:4326', inplace=True)
-        gauges_area.to_postgis("gauges_area", engine, if_exists='replace')
-        # TODO: above line get UserWarning: Could not parse CRS from the GeoDataFrame. Have set_crs to 4326 now.
+            # TODO: currently in EPSG4326. Check if this should be in EPSG3857?
+        gauges_area["site_id"] = sites
+        gauges_area["area_in_km"] = area
+        gauges_area["geometry"] = geometry
+        gauges_area.set_crs(crs="epsg:4326", inplace=True)
+        gauges_area.to_postgis("gauges_area", engine, if_exists="replace")
 
 
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import hirds_gauges
+
     engine = setup_environment.get_database()
     catchment = hirds_gauges.get_new_zealand_boundary(engine)
     gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
