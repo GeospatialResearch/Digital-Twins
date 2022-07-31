@@ -60,7 +60,7 @@ def get_files(filetype, file_path_to_store):
     """To get the path of the downloaded point cloud files."""
     files_list = []
     files_path = []
-    for (path, dirs, files) in os.walk(file_path_to_store):
+    for (path, _dirs, files) in os.walk(file_path_to_store):
         for file in files:
             if file.endswith(filetype):
                 files_list.append(os.path.join(path, file))
@@ -110,7 +110,7 @@ def store_tileindex(engine, file_path_to_store, filetype=".shp"):
     then shapes files are stored in the database.
     """
     zip_files = []
-    for (paths, dirs, files) in os.walk(file_path_to_store):
+    for (paths, _dirs, files) in os.walk(file_path_to_store):
         for file in files:
             if file.endswith(".zip"):
                 zip_files.append(os.path.join(paths, file))
