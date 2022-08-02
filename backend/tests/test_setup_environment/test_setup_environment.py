@@ -2,7 +2,7 @@ import unittest
 
 from sqlalchemy.exc import OperationalError
 
-from src.digitaltwin import setup_environment
+from ...src.util import setup_environment
 
 
 class SetupEnvironmentTest(unittest.TestCase):

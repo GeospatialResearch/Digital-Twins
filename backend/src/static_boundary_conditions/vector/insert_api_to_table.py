@@ -11,7 +11,7 @@ from urllib.parse import urlparse, parse_qs
 import requests
 import validators
 from bs4 import BeautifulSoup
-from src.digitaltwin import tables
+from . import tables
 import logging
 
 log = logging.getLogger(__name__)

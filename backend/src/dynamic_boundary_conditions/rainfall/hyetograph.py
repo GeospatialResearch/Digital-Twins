@@ -49,11 +49,9 @@ def hyetograph(duration, site, total_rain_depth):
 
 if __name__ == "__main__":
     # TODO: geometry stored in database is EPSG4326.
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hirds_gauges
-    from src.dynamic_boundary_conditions import theissen_polygon_calculator
-    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
-    from src.dynamic_boundary_conditions import hirds_depth_data_from_db
+    from ...util import setup_environment
+    from . import hirds_depth_data_from_db, theissen_polygon_calculator, hirds_depth_data_to_db, hirds_gauges
+
     engine = setup_environment.get_database()
     file = r'C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catch4.shp'
     path = r'P:/DT/hirds_depth_data'

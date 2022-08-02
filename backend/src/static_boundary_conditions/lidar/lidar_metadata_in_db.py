@@ -19,7 +19,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
 import logging
 import psycopg2
-from src.digitaltwin import setup_environment
+from ...util import setup_environment
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

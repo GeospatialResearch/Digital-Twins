@@ -15,7 +15,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
   python-app:
     network_mode: host
-    build: .
+    build: ./backend
     depends_on:
       - db_postgres
 

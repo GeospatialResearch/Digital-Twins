@@ -10,7 +10,7 @@ import geopandas
 import numpy as np
 import sqlalchemy
 from shapely.geometry import Polygon
-from src.dynamic_boundary_conditions import rain_depth_data_from_hirds
+from . import rain_depth_data_from_hirds
 
 
 def check_table_exists(engine):
@@ -106,7 +106,7 @@ def hirds_depths_to_db(engine, catchment_area: Polygon, path):
 
 
 if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
+    from ...util import setup_environment
 
     engine = setup_environment.get_database()
     file = r"C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catch4.shp"

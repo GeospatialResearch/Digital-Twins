@@ -7,7 +7,7 @@ Created on Thu Jan 20 16:36:59 2022.
 
 import pandas as pd
 import geopandas
-from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+from . import hirds_depth_data_to_db
 
 
 def catchment_area_geometry_info(file):
@@ -62,7 +62,7 @@ def hirds_depths_from_db(
 
 
 if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
+    from ...util import setup_environment
 
     engine = setup_environment.get_database()
     file = (

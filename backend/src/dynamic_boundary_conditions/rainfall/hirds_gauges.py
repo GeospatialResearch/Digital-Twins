@@ -87,7 +87,8 @@ def get_gauges_location(engine, catchment: geopandas.GeoDataFrame):
 
 
 if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
+    from ...util import setup_environment
+
     engine = setup_environment.get_database()
     guages = get_hirds_gauges_data()
     hirds_gauges_to_db(engine, guages)

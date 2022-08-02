@@ -8,8 +8,7 @@ import shapely.wkt
 import json
 import geopandas as gpd
 from geopandas import GeoSeries
-from src.digitaltwin import tables
-from src.digitaltwin import wfs_request
+from . import wfs_request, tables
 import logging
 
 log = logging.getLogger(__name__)

@@ -59,8 +59,8 @@ def theissen_polygons(
 
 
 if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hirds_gauges
+    from ...util import setup_environment
+    from . import hirds_gauges
 
     engine = setup_environment.get_database()
     catchment = hirds_gauges.get_new_zealand_boundary(engine)

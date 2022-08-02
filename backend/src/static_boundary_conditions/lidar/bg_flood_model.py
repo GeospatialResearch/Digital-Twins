@@ -18,8 +18,8 @@ from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
 import geopandas as gpd
 from sqlalchemy import DateTime
-from src.digitaltwin import setup_environment
-from src.lidar import dem_metadata_in_db
+from ...util import setup_environment
+from . import dem_metadata_in_db
 
 Base = declarative_base()
 

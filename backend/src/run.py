@@ -8,8 +8,8 @@ import json
 import os
 import pathlib
 from dotenv import load_dotenv
-from src.digitaltwin import insert_api_to_table
-from src.digitaltwin import setup_environment
+from .static_boundary_conditions.vector import insert_api_to_table
+from .util import setup_environment
 
 
 def input_data(file):

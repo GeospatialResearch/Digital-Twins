@@ -9,8 +9,8 @@ import geopandas as gpd
 import pathlib
 import json
 import pandas as pd
-from src.digitaltwin import setup_environment
-from src.digitaltwin import get_data_from_apis
+from ...util import setup_environment
+from . import get_data_from_apis
 
 
 def get_data_from_db(engine, geometry: gpd.GeoDataFrame, source_list: tuple):
