@@ -8,8 +8,9 @@ import json
 import os
 import pathlib
 from dotenv import load_dotenv
-from .static_boundary_conditions.vector import insert_api_to_table
-from .util import setup_environment
+
+from backend.src.static_boundary_conditions.vector import insert_api_to_table, services
+from backend.src.util import setup_environment
 
 
 def input_data(file):
