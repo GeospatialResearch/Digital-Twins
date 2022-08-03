@@ -3,7 +3,7 @@
     <MapViewer
       :init-lat="kaiapoi.latitude"
       :init-long="kaiapoi.longitude"
-      :cesium-access-token="hereApiToken"
+      :cesium-access-token="cesiumApiToken"
     />
   </div>
 </template>
@@ -23,7 +23,7 @@ export default Vue.extend({
         latitude: -43.380881,
         longitude: 172.655714
       },
-      hereApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
+      cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
     }
   },
 });
