@@ -27,3 +27,9 @@ services:
     depends_on:
       db_postgres:
         condition: service_healthy
+
+  www:
+    build:
+      context: ./visualisation
+    ports:
+      - "8080:80"
