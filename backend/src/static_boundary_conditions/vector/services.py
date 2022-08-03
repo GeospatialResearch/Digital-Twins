@@ -18,7 +18,8 @@ from ...util import setup_environment
 
 def fetch_updated_vector_data(data_sources: Optional[List[str]] = None) -> List[gpd.GeoDataFrame]:
     """Checks if requested_data needs to be updated, updates it in the database if needed, then returns data.
-    :param data_sources List of source names of data required. If this is None then all vector data is fetched"""
+    :param data_sources List of source names of data required. If this is None then all vector data is fetched
+    """
     if data_sources is None:
         data_sources = get_all_vector_source_names()
     if data_needs_update(data_sources):
@@ -32,10 +33,10 @@ def get_all_vector_source_names() -> List[str]:
     pass
 
 
-def get_data_from_db(data_sources: List[str]) -> List[gpd.GeoDataFrame]:
-    """Retrieves the vector data of each data source in data_sources"""
-    # TODO: Implement
-    pass
+# def get_data_from_db(data_sources: List[str]) -> List[gpd.GeoDataFrame]:
+#     """Retrieves the vector data of each data source in data_sources"""
+#     # TODO: Implement, and replace existing get_data_from_db function
+#     pass
 
 
 def get_data_from_external_services(data_sources: List[str]) -> List[gpd.GeoDataFrame]:

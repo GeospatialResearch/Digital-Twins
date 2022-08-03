@@ -6,6 +6,7 @@ from flask_cors import CORS
 
 from .static_boundary_conditions import vector_blueprint
 
+# Initialise flask server object
 app = Flask(__name__)
 
 # Set up Cross-Origin policy
