@@ -1,7 +1,11 @@
-const cesiumSource = 'node_modules/cesium/Source';
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
+const cesiumSource = 'node_modules/cesium/Source';
+
+/**
+ * @type {import('@vue/cli-service').ProjectOptions}
+ */
 module.exports = {
   configureWebpack: {
     plugins: [
