@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {MapViewer} from 'geo-visualisation-components/src/components';
+import MapViewer from 'geo-visualisation-components'
 
 export default Vue.extend({
   name: 'App',

@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
-    "geo-visualisation-components": "^0.0.3-6",
+    "geo-visualisation-components": "^0.0.3-8",
     "vue": "^2.6.11"
   },
   "devDependencies": {
