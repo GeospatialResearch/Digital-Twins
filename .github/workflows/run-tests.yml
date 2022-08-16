@@ -27,12 +27,10 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.x.x
+          node-version: 16.16.x
       - uses: actions/checkout@v3
       - name: Change to front-end directory
-        run: |
-          cd visualisation
-          ls .
+        run: cd visualisation
       - name: Install dependencies
         run: npm ci
       - name: Run linting
