@@ -1,4 +1,5 @@
 <template>
+  <!-- The Vue app main context -->
   <div id="app">
     <MapViewer
       :init-lat="kaiapoi.latitude"
