@@ -19,6 +19,23 @@ jobs:
         run: |
           flake8 src --show-source --count --statistics --max-line-length=120
 
+
+  linting-js:
+    name: Lint Front-end application
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x.x
+      - uses: actions/checkout@v3
+      - name: Change to front-end directory
+        run: cd visualisation/
+      - name: Install dependencies
+        run: npm ci
+      - name: Run linting
+        run: npm run lint
+
+
   unit-tests:
     # Starts the database, builds the testing docker image and runs all unit tests using docker
     runs-on: ubuntu-latest
