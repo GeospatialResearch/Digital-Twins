@@ -42,24 +42,27 @@ def bg_model_inputs(
     adaptive resolution trigger
     """
     now = datetime.now()
-    dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
+    dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
     with xr.open_dataset(dem_path) as file_nc:
         max_temp_xr = file_nc
     keys = max_temp_xr.data_vars.keys()
-    elev_var = list(keys)[0]
+    elev_var = list(keys)[1]
     river = "RiverDis.txt"
-    extents = "1575386.285,1575387.285,5197749.557,5197750.557"
+    extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     outfile = rf"\\file\Research\FloodRiskResearch\DigitalTwin\model_output\output_{dt_string}.nc"
     file = bg_model_path(bg_path)
     try:
         with open(rf"{file}\BG_param.txt", "w+") as file:
-            file.write(f"topo = {dem_path}?{elev_var};\n")
-            file.write(
-                f"gpudevice = {gpudevice};\nmask = {mask};\ndx = {resolution};\n"
-            )
-            file.write(f"smallnc = {smallnc};\n")
-            file.write(f"outputtimestep = {outputtimestep};\nendtime = {endtime};\n")
-            file.write(f"river = {river},{extents};\noutfile = {outfile};")
+            file.write(f"topo = {dem_path}?{elev_var};\n"
+                       f"gpudevice = {gpudevice};\n"
+                       f"mask = {mask};\n"
+                       f"dx = {resolution};\n"
+                       f"smallnc = {smallnc};\n"
+                       f"outputtimestep = {outputtimestep};\n"
+                       f"endtime = {endtime};\n"
+                       f"river = {river},{extents};\n"
+                       f"outvars = h, hmax, zb, zs, u, v;\n"
+                       f"outfile = {outfile};")
     except Exception as error:
         print(error, type(error))
         sys.exit()
