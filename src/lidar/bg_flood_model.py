@@ -133,11 +133,9 @@ def main():
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
     cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
-    catchment_boundary_path = (
-        cache_path
-        / instructions["instructions"]["data_paths"]["subfolder"]
-        / instructions["instructions"]["data_paths"]["catchment_boundary"]
-    )
+    subfolder = instructions["instructions"]["data_paths"]["subfolder"]
+    catchment_name = instructions["instructions"]["data_paths"]["catchment_boundary"]
+    catchment_boundary_path = (cache_path / subfolder / catchment_name)
     catchment_boundary = gpd.read_file(catchment_boundary_path)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each 100 seconds
