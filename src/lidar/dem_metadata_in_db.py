@@ -39,7 +39,8 @@ def check_dem_exist(instructions, engine):
     cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
     subfolder = instructions["instructions"]["data_paths"]["subfolder"]
     catchment_name = instructions["instructions"]["data_paths"]["catchment_boundary"]
-    catchment_boundary = gpd.read_file(cache_path / subfolder / catchment_name)
+    catchment_boundary_path = (cache_path / subfolder / catchment_name)
+    catchment_boundary = gpd.read_file(catchment_boundary_path)
     geometry = str(catchment_boundary["geometry"][0])
     query = (
         f"select exists (Select 1 from hydrological_dem where geometry ='{geometry}')"
