@@ -59,13 +59,15 @@ def generate_dem(instructions):
 
 def dem_metadata_to_db(instructions, engine):
     """Store metadata of the generated DEM in database."""
-    filepath = instructions["instructions"]["data_paths"]["result_dem"]
-    filename = os.path.basename(filepath)
-    catchment_boundary = gpd.read_file(
-        instructions["instructions"]["data_paths"]["catchment_boundary"]
-    )
+    cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
+    subfolder = instructions["instructions"]["data_paths"]["subfolder"]
+    catchment_name = instructions["instructions"]["data_paths"]["catchment_boundary"]
+    catchment_boundary_path = (cache_path / subfolder / catchment_name)
+    catchment_boundary = gpd.read_file(catchment_boundary_path)
     geometry = str(catchment_boundary["geometry"][0])
-    lidar = DEM(filepath=filepath, Filename=filename, geometry=geometry)
+    result_dem_name = instructions["instructions"]["data_paths"]["result_dem"]
+    result_dem_path = (cache_path / subfolder / result_dem_name).as_posix()
+    lidar = DEM(filepath=result_dem_path, Filename=result_dem_name, geometry=geometry)
     Session = sessionmaker(bind=engine)
     session = Session()
     session.add(lidar)
