@@ -98,9 +98,9 @@ def river_discharge_info(file):
 
 
 class BGDEM(Base):
-    """Create lidar table in the database."""
+    """Class used to create model_output table in the database."""
 
-    __tablename__ = "model_ouput"
+    __tablename__ = "model_output"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     filepath = Column(String)
     Filename = Column(String)
