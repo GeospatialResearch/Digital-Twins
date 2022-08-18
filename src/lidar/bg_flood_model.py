@@ -63,7 +63,7 @@ def bg_model_inputs(
     except Exception as error:
         print(error, type(error))
         sys.exit()
-    model_ouput_to_db(outfile, catchment_boundary)
+    model_output_to_db(outfile, catchment_boundary)
     river_discharge_info(bg_path)
 
 
@@ -77,8 +77,8 @@ def bg_model_path(file):
         sys.exit()
 
 
-def model_ouput_to_db(outfile, catchment_boundary):
-    """Store metadata of model ouput in database."""
+def model_output_to_db(outfile, catchment_boundary):
+    """Store metadata of model output in database."""
     engine = setup_environment.get_database()
     BGDEM.__table__.create(bind=engine, checkfirst=True)
     filepath = outfile
