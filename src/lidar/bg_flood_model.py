@@ -16,7 +16,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from geoalchemy2 import Geometry
 from sqlalchemy.orm import sessionmaker
-import geopandas as gpd
 from sqlalchemy import DateTime
 from src.digitaltwin import setup_environment
 from src.lidar import dem_metadata_in_db
@@ -135,11 +134,7 @@ def main():
     instruction_file = "src/lidar/instructions_bgflood.json"
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
-    cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
-    subfolder = instructions["instructions"]["data_paths"]["subfolder"]
-    catchment_name = instructions["instructions"]["data_paths"]["catchment_boundary"]
-    catchment_boundary_path = (cache_path / subfolder / catchment_name)
-    catchment_boundary = gpd.read_file(catchment_boundary_path)
+    catchment_boundary = dem_metadata_in_db.get_catchment_boundary(instructions)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each 100 seconds
     outputtimestep = 100.0
