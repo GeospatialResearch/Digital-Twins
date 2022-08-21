@@ -56,7 +56,8 @@ def dem_metadata_to_db(instructions, engine):
     """Store metadata of the generated DEM in database."""
     catchment_boundary = get_catchment_boundary(instructions)
     geometry = str(catchment_boundary["geometry"][0])
-    result_dem_path = get_result_dem_path(instructions)
+    result_dem_name = instructions["instructions"]["data_paths"]["result_dem"]
+    result_dem_path = (cache_path / subfolder / result_dem_name).as_posix()
     lidar = DEM(filepath=result_dem_path, Filename=result_dem_name, geometry=geometry)
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -94,12 +95,3 @@ def get_catchment_boundary(instructions):
     catchment_boundary_path = (cache_path / subfolder / catchment_name)
     catchment_boundary = gpd.read_file(catchment_boundary_path)
     return catchment_boundary
-
-
-def get_result_dem_path(instructions):
-    """Get result DEM path"""
-    cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
-    subfolder = instructions["instructions"]["data_paths"]["subfolder"]
-    result_dem_name = instructions["instructions"]["data_paths"]["result_dem"]
-    result_dem_path = (cache_path / subfolder / result_dem_name).as_posix()
-    return result_dem_path
