@@ -56,6 +56,8 @@ def dem_metadata_to_db(instructions, engine):
     """Store metadata of the generated DEM in database."""
     catchment_boundary = get_catchment_boundary(instructions)
     geometry = str(catchment_boundary["geometry"][0])
+    cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
+    subfolder = instructions["instructions"]["data_paths"]["subfolder"]
     result_dem_name = instructions["instructions"]["data_paths"]["result_dem"]
     result_dem_path = (cache_path / subfolder / result_dem_name).as_posix()
     lidar = DEM(filepath=result_dem_path, Filename=result_dem_name, geometry=geometry)
