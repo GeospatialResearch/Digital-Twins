@@ -264,29 +264,53 @@ if __name__ == "__main__":
 
 ### Run BG Flood model
 
-To run the model, **bg_flood_model.py** script is used which takes DEM informationfrom the database, runs the model and stores the output back to the database.
+To run the model, **bg_flood_model.py** script is used which takes DEM information from the database, runs the model and stores the output back to the database.
 run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
 
-```
+``` python
 if __name__ == '__main__':
     engine = setup_environment.get_database()
-    instruction_file = r"P:\GRI_codes\DigitalTwin2\src\file.json"
-    with open(instruction_file, 'r') as file_pointer:
+    bg_path = r"P:\DT\BG-Flood\BG-Flood_Win10_v0.6-a"
+    instruction_file = "src/lidar/instructions_bgflood.json"
+    with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
-    catchment_boundary = gpd.read_file(
-        instructions['instructions']['data_paths']['catchment_boundary'])
-    bg_path = r'P:\BG-Flood_Win10_v0.6-a'
+    catchment_boundary = dem_metadata_in_db.get_catchment_boundary(instructions)
+    resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each 100 seconds
     outputtimestep = 100.0
     # Saving the outputs till 14400 seconds (or the output after 14400 seconds is the last one)
     endtime = 900.0
-    resolution = instructions['instructions']['output']['grid_params']['resolution']
-    run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep)
+    run_model(
+        bg_path=bg_path,
+        instructions=instructions,
+        catchment_boundary=catchment_boundary,
+        resolution=resolution,
+        endtime=endtime,
+        outputtimestep=outputtimestep,
+        engine=engine,
+    )
 ```
 
-The function requires 9 arguments, of which 3 are set as default values and can be changed later:
+The bg_model_inputs function requires 9 arguments, of which 3 are set as default values and can be changed later:
 
-![image](https://user-images.githubusercontent.com/86580534/151092395-ab6e62a9-96ea-4d55-be39-25aaeb5d3aa0.png)
+``` python
+def bg_model_inputs(
+    bg_path,
+    dem_path,
+    catchment_boundary,
+    resolution,
+    endtime,
+    outputtimestep,
+    mask=15,
+    gpudevice=0,
+    smallnc=0,
+):
+    """Set parameters to run the flood model.
+    mask is used for visualising all the values larger than 15.
+    If we are using the gpu then set to 0 (if no gpu type -1).
+    smallnc = 0 means Level of refinement to apply to resolution based on the adaptive resolution trigger
+    """
+```
 
 The arguments are explained below:
 1. bg_path: path where BG Flood exe file is saved.
