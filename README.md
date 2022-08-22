@@ -22,7 +22,7 @@ See the 'Running docker on your machine' section at the bottom of this README.
 ### Create Conda environment
 Setup a conda environment to run in using the following command run from the repository folder:
 
-```
+```bash
 conda env create -f environment.yml
 ```
 
@@ -64,7 +64,7 @@ For more details on the format and structure of the inputs check out [instructio
 
 Run run.py file from your IDE:
 1. Creating [json file](https://github.com/GeospatialResearch/Digital-Twins/blob/master/src/instructions_linz.json)
-   ```
+   ```python
    if __name__ == "__main__":
     from src.digitaltwin import insert_api_to_table
     from src.digitaltwin import setup_environment
@@ -83,7 +83,7 @@ Run run.py file from your IDE:
                                        record['geometry_column'],
                                        record['url'],
                                        record['layer'])
-                                       ```
+    ```
 StatsNZ Api key is only required if the region_geometry table doesn't exist in the database otherwise you can skip lines 5-9 of the above script.
 
 This way data will be stored in the database which then will be used to make api requests for the desired Area of Interest.
@@ -96,7 +96,7 @@ To get the data from the database:
 2. The geometry (geopandas dataframe type) and source list (tuple data type) needs to passed as an argument to get_data_from_db() function. Check [test1.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/test1.json) for more details on the format and structure of the arguments.
 3. Run get_data_from_db.py file from your IDE:
 
-   ```
+   ```python
    if __name__ == "__main__":
     from src.digitaltwin import get_data_from_apis
     from src.digitaltwin import setup_environment
@@ -123,7 +123,7 @@ The [instruction file](https://github.com/GeospatialResearch/Digital-Twins/blob/
 
 The data source for the LiDAR data is [opentopography]( https://portal.opentopography.org/dataCatalog). The data for the requested catchment area is downloaded using [geoapis](https://github.com/niwa/geoapis ) in the local directory set by the user. To store the LiDAR metadata in the database, **lidar_metadata_in_db.py** script is used. The [instruction file](/lidar_to_db/src/lidar/file.json ) and path to the local directory where user wants to store the LiDAR data is passed as an argument to **store_lidar_path(file_path_to_store, instruction_file) function as shown below:**
 
-   ```
+   ```python
    if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     instruction_file = "src/lidar_test.json"
@@ -136,7 +136,6 @@ The data source for the LiDAR data is [opentopography]( https://portal.opentopog
     store_lidar_path(engine, file_path_to_store, geometry_df)
     store_tileindex(engine, file_path_to_store)
     lidar_file = get_lidar_path(engine, geometry_df)
-
    ```
 
 
@@ -151,7 +150,7 @@ Then `store_tileindex()` function is used to store the corresponding tiles infor
 
 The rain gauges location is accessed from [HIRDS](https://hirds.niwa.co.nz/) which is tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The gauges information can be stored in the database using `hirds_gauges.py` script as shown below:
 
-```
+```python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
@@ -167,7 +166,7 @@ if __name__ == "__main__":
 3. path: hirds depth data is first downloaded as csv files in the local directory before getting stored in the database, so user needs to provide the path where the depth data will be stored as csv files.
 The example is as shown below:
 
-```
+```python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
@@ -191,7 +190,7 @@ if __name__ == "__main__":
 
 For more details on ari, duration, rcp and time_period go to [HIRDS](https://hirds.niwa.co.nz/)
 
-```
+```python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
@@ -214,7 +213,7 @@ theissen_polygons(engine, catchment, gauges_in_polygon) function is used to calc
 3. gauges_in_polygon: get the gauges information which are within the desired catchment area.
  to get the get the gauges within the catchment area, **get_guages_location(engine, catchment)** function is used from **hirds_gauges.py** script.
 
-```
+```python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import hirds_gauges
@@ -233,7 +232,7 @@ hyetograph(duration, site, total_rain_depth) function takes 3 arguments:
 2. site: site id of a site for which hyetograph is required
 3. total_rain_depth: total rainfal depth at a given duration
 
-```
+```python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import hirds_gauges
@@ -267,7 +266,7 @@ if __name__ == "__main__":
 To run the model, **bg_flood_model.py** script is used which takes DEM information from the database, runs the model and stores the output back to the database.
 run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
 
-``` python
+```python
 if __name__ == '__main__':
     engine = setup_environment.get_database()
     bg_path = r"P:\DT\BG-Flood\BG-Flood_Win10_v0.6-a"
@@ -293,7 +292,7 @@ if __name__ == '__main__':
 
 The bg_model_inputs function requires 9 arguments, of which 3 are set as default values and can be changed later:
 
-``` python
+```python
 def bg_model_inputs(
     bg_path,
     dem_path,
