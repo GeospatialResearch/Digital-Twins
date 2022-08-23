@@ -49,19 +49,19 @@ def bg_model_inputs(
     river = "RiverDis.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     outfile = rf"\\file\Research\FloodRiskResearch\DigitalTwin\model_output\output_{dt_string}.nc"
-    file = bg_model_path(bg_path)
+    valid_bg_path = bg_model_path(bg_path)
     try:
-        with open(rf"{file}\BG_param.txt", "w+") as file:
-            file.write(f"topo = {dem_path}?{elev_var};\n"
-                       f"gpudevice = {gpudevice};\n"
-                       f"mask = {mask};\n"
-                       f"dx = {resolution};\n"
-                       f"smallnc = {smallnc};\n"
-                       f"outputtimestep = {outputtimestep};\n"
-                       f"endtime = {endtime};\n"
-                       f"river = {river},{extents};\n"
-                       f"outvars = h, hmax, zb, zs, u, v;\n"
-                       f"outfile = {outfile};")
+        with open(rf"{valid_bg_path}\BG_param.txt", "w+") as param_file:
+            param_file.write(f"topo = {dem_path}?{elev_var};\n"
+                             f"gpudevice = {gpudevice};\n"
+                             f"mask = {mask};\n" 
+                             f"dx = {resolution};\n"
+                             f"smallnc = {smallnc};\n"
+                             f"outputtimestep = {outputtimestep};\n" 
+                             f"endtime = {endtime};\n"
+                             f"river = {river},{extents};\n"
+                             f"outvars = h, hmax, zb, zs, u, v;\n"
+                             f"outfile = {outfile};")
     except Exception as error:
         print(error, type(error))
         sys.exit()
