@@ -1,15 +1,20 @@
 <template>
   <!-- The Vue app main context -->
   <div id="app">
-    <router-view ref="routerView" />
+    <TheNavBar />
+    <b-container fluid>
+      <router-view ref="routerView" />
+    </b-container>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import TheNavBar from "@/components/TheNavBar.vue";
 
 export default Vue.extend({
   name: 'App',
+  components: {TheNavBar},
 });
 </script>
 
