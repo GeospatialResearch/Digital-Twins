@@ -24,15 +24,15 @@ Base = declarative_base()
 
 
 def bg_model_inputs(
-    bg_path,
-    dem_path,
-    catchment_boundary,
-    resolution,
-    endtime,
-    outputtimestep,
-    mask=15,
-    gpudevice=0,
-    smallnc=0,
+        bg_path,
+        dem_path,
+        catchment_boundary,
+        resolution,
+        endtime,
+        outputtimestep,
+        mask=15,
+        gpudevice=0,
+        smallnc=0,
 ):
     """Set parameters to run the flood model.
     mask is used for visualising all the values larger than 15.
@@ -54,10 +54,10 @@ def bg_model_inputs(
         with open(rf"{valid_bg_path}\BG_param.txt", "w+") as param_file:
             param_file.write(f"topo = {dem_path}?{elev_var};\n"
                              f"gpudevice = {gpudevice};\n"
-                             f"mask = {mask};\n" 
+                             f"mask = {mask};\n"
                              f"dx = {resolution};\n"
                              f"smallnc = {smallnc};\n"
-                             f"outputtimestep = {outputtimestep};\n" 
+                             f"outputtimestep = {outputtimestep};\n"
                              f"endtime = {endtime};\n"
                              f"river = {river},{extents};\n"
                              f"outvars = h, hmax, zb, zs, u, v;\n"
@@ -111,13 +111,13 @@ class BGDEM(Base):
 
 
 def run_model(
-    bg_path,
-    instructions,
-    catchment_boundary,
-    resolution,
-    endtime,
-    outputtimestep,
-    engine,
+        bg_path,
+        instructions,
+        catchment_boundary,
+        resolution,
+        endtime,
+        outputtimestep,
+        engine,
 ):
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
