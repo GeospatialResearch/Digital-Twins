@@ -136,9 +136,9 @@ def main():
         instructions = json.load(file_pointer)
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary(instructions)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
-    # Saving the outputs after each 100 seconds
+    # Saving the outputs after each `outputtimestep` seconds
     outputtimestep = 100.0
-    # Saving the outputs till 14400 seconds (or the output after 14400 seconds
+    # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
     # is the last one)
     endtime = 900.0
     run_model(
