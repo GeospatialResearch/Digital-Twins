@@ -11,6 +11,7 @@ import json
 import xarray as xr
 from datetime import datetime
 import subprocess
+from dotenv import load_dotenv
 import os
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
@@ -126,6 +127,14 @@ def run_model(
     )
     os.chdir(rf"{bg_path}")
     subprocess.call([rf"{bg_path}/BG_Flood_Cleanup.exe"])
+
+
+def get_api_key(key_name: str):
+    """Get the required api key from dotenv environment variable file"""
+    env_path = pathlib.Path().cwd() / pathlib.Path('src/.env')
+    load_dotenv(env_path)
+    api_key = os.getenv(key_name)
+    return api_key
 
 
 def main():
