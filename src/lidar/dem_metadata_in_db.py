@@ -59,7 +59,7 @@ def dem_metadata_to_db(instructions, engine):
     data_paths = instructions["instructions"]["data_paths"]
     cache_path = pathlib.Path(data_paths["local_cache"])
     subfolder = data_paths["subfolder"]
-    result_dem_name = data_paths["result_dem"] 
+    result_dem_name = data_paths["result_dem"]
     result_dem_path = (cache_path / subfolder / result_dem_name).as_posix()
     lidar = DEM(filepath=result_dem_path, Filename=result_dem_name, geometry=geometry)
     Session = sessionmaker(bind=engine)
