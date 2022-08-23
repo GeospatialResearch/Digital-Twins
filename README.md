@@ -290,7 +290,7 @@ if __name__ == '__main__':
     )
 ```
 
-The bg_model_inputs function requires 9 arguments, of which 3 are set as default values and can be changed later:
+The `bg_model_inputs` function requires 9 arguments, of which 3 are set as default values and can be changed later:
 
 ```python
 def bg_model_inputs(
