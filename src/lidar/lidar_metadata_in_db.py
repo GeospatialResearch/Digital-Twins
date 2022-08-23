@@ -148,10 +148,9 @@ def get_lidar_path(engine, geometry_df):
 
 
 def main():
-
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
-    file_path_to_store = r"P:/DT/LiDAR/lidar_data"
+    file_path_to_store = r"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/lidar_data"
     instruction_file = "src/lidar/instructions_lidar.json"
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
