@@ -48,7 +48,7 @@ def bg_model_inputs(
     elev_var = list(keys)[1]
     river = "RiverDis.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
-    outfile = rf"\\file\Research\FloodRiskResearch\DigitalTwin\model_output\output_{dt_string}.nc"
+    outfile = rf"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/model_output/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
     try:
         with open(rf"{valid_bg_path}\BG_param.txt", "w+") as param_file:
