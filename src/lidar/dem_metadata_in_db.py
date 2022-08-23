@@ -91,9 +91,10 @@ def get_dem_path(instructions, engine):
 
 def get_catchment_boundary(instructions):
     """Get catchment boundary from instructions file"""
-    cache_path = pathlib.Path(instructions["instructions"]["data_paths"]["local_cache"])
-    subfolder = instructions["instructions"]["data_paths"]["subfolder"]
-    catchment_name = instructions["instructions"]["data_paths"]["catchment_boundary"]
+    data_paths = instructions["instructions"]["data_paths"]
+    cache_path = pathlib.Path(data_paths["local_cache"])
+    subfolder = data_paths["subfolder"]
+    catchment_name = data_paths["catchment_boundary"]
     catchment_boundary_path = (cache_path / subfolder / catchment_name)
     catchment_boundary = gpd.read_file(catchment_boundary_path)
     return catchment_boundary
