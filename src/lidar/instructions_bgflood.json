@@ -14,7 +14,7 @@
 			"number_of_cores": 3
 		},
 		"data_paths": {
-			"local_cache": "P:/DT/LiDAR/cache",
+			"local_cache": "U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/cache",
 			"subfolder": "results",
 			"catchment_boundary": "small_catchment.geojson",
 			"raw_dem": "raw_dem.nc",
