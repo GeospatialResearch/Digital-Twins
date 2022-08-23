@@ -263,7 +263,7 @@ if __name__ == "__main__":
 
 ### Run BG Flood model
 
-To run the model, **bg_flood_model.py** script is used which takes DEM information from the database, runs the model and stores the output back to the database.
+To run the model, `bg_flood_model.py` script is used which takes DEM information from the database, runs the model and stores the output back to the database.
 run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
 
 ```python
