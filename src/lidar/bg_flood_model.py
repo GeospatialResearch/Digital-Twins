@@ -51,7 +51,7 @@ def bg_model_inputs(
     outfile = rf"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/model_output/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
     try:
-        with open(rf"{valid_bg_path}\BG_param.txt", "w+") as param_file:
+        with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
             param_file.write(f"topo = {dem_path}?{elev_var};\n"
                              f"gpudevice = {gpudevice};\n"
                              f"mask = {mask};\n"
@@ -95,7 +95,7 @@ def model_output_to_db(outfile, catchment_boundary):
 
 def river_discharge_info(file):
     """Get the river discharge info. from design hydrographs."""
-    with open(rf"{file}\RiverDis.txt") as file:
+    with open(rf"{file}/RiverDis.txt") as file:
         print(file.read())
 
 
@@ -125,7 +125,7 @@ def run_model(
         bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
     )
     os.chdir(rf"{bg_path}")
-    subprocess.call([rf"{bg_path}\BG_Flood_Cleanup.exe"])
+    subprocess.call([rf"{bg_path}/BG_Flood_Cleanup.exe"])
 
 
 def main():
