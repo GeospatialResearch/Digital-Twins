@@ -269,9 +269,9 @@ run_model(bg_path, instructions, catchment_boundary, resolution, endtime, output
 ```python
 if __name__ == '__main__':
     engine = setup_environment.get_database()
-    bg_path = r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a"
+    bg_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
     linz_api_key = get_api_key("LINZ_API_KEY")
-    instruction_file = "src/lidar/instructions_bgflood.json"
+    instruction_file = pathlib.Path("src/lidar/instructions_bgflood.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
         instructions["instructions"]["apis"]["linz"]["key"] = linz_api_key
@@ -297,20 +297,21 @@ The `bg_model_inputs` function requires 9 arguments, of which 3 are set as defau
 
 ```python
 def bg_model_inputs(
-    bg_path,
-    dem_path,
-    catchment_boundary,
-    resolution,
-    endtime,
-    outputtimestep,
-    mask=15,
-    gpudevice=0,
-    smallnc=0,
+        bg_path,
+        dem_path,
+        catchment_boundary,
+        resolution,
+        endtime,
+        outputtimestep,
+        mask=15,
+        gpudevice=0,
+        smallnc=0,
 ):
     """Set parameters to run the flood model.
     mask is used for visualising all the values larger than 15.
     If we are using the gpu then set to 0 (if no gpu type -1).
-    smallnc = 0 means Level of refinement to apply to resolution based on the adaptive resolution trigger
+    smallnc = 0 means Level of refinement to apply to resolution based on the
+    adaptive resolution trigger
     """
 ```
 
