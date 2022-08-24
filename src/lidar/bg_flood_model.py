@@ -139,9 +139,9 @@ def get_api_key(key_name: str):
 
 def main():
     engine = setup_environment.get_database()
-    bg_path = pathlib.Path(r'U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a')
+    bg_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
     linz_api_key = get_api_key("LINZ_API_KEY")
-    instruction_file = "src/lidar/instructions_bgflood.json"
+    instruction_file = pathlib.Path("src/lidar/instructions_bgflood.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
         instructions["instructions"]["apis"]["linz"]["key"] = linz_api_key
