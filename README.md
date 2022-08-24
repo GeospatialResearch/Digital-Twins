@@ -23,6 +23,7 @@ See the 'Running docker on your machine' section at the bottom of this README.
 Setup a conda environment to run in using the following command run from the repository folder:
 
 ```bash
+#!/usr/bin/env bash
 conda env create -f environment.yml
 ```
 
@@ -64,26 +65,29 @@ For more details on the format and structure of the inputs check out [instructio
 
 Run run.py file from your IDE:
 1. Creating [json file](https://github.com/GeospatialResearch/Digital-Twins/blob/master/src/instructions_linz.json)
+   
    ```python
+   #!/usr/bin/env python
    if __name__ == "__main__":
-    from src.digitaltwin import insert_api_to_table
-    from src.digitaltwin import setup_environment
-    engine = setup_environment.get_database()
-    load_dotenv()
-    Stats_NZ_KEY = os.getenv('KEY')
-    # create region_geometry table if it doesn't exist in the db.
-    # no need to call region_geometry_table function if region_geometry table exist in the db
-    insert_api_to_table.region_geometry_table(engine, Stats_NZ_KEY)
+       from src.digitaltwin import insert_api_to_table
+       from src.digitaltwin import setup_environment
+       engine = setup_environment.get_database()
+       load_dotenv()
+       Stats_NZ_KEY = os.getenv('KEY')
+       # create region_geometry table if it doesn't exist in the db.
+       # no need to call region_geometry_table function if region_geometry table exist in the db
+       insert_api_to_table.region_geometry_table(engine, Stats_NZ_KEY)
 
-    record = input_data("src/instructions_linz.json")
-    # call the function to insert record in apilinks table
-    insert_api_to_table.insert_records(engine, record['data_provider'],
-                                       record['source'],
-                                       record['api'], record['region'],
-                                       record['geometry_column'],
-                                       record['url'],
-                                       record['layer'])
-    ```
+       record = input_data("src/instructions_linz.json")
+       # call the function to insert record in apilinks table
+       insert_api_to_table.insert_records(engine, record['data_provider'],
+                                          record['source'],
+                                          record['api'], record['region'],
+                                          record['geometry_column'],
+                                          record['url'],
+                                          record['layer'])
+   ```
+
 StatsNZ Api key is only required if the region_geometry table doesn't exist in the database otherwise you can skip lines 5-9 of the above script.
 
 This way data will be stored in the database which then will be used to make api requests for the desired Area of Interest.
@@ -97,18 +101,19 @@ To get the data from the database:
 3. Run get_data_from_db.py file from your IDE:
 
    ```python
+   #!/usr/bin/env python
    if __name__ == "__main__":
-    from src.digitaltwin import get_data_from_apis
-    from src.digitaltwin import setup_environment
-    engine = setup_environment.get_database()
-    # load in the instructions, get the source list and polygon from the user
-    FILE_PATH = pathlib.Path().cwd() / pathlib.Path(r"P:\GRI_codes\DigitalTwin2\src\test3.json")
-    with open(FILE_PATH, 'r') as file_pointer:
-        instructions = json.load(file_pointer)
-    source_list = tuple(instructions['source_name'])
-    geometry = gpd.GeoDataFrame.from_features(instructions["features"])
-    get_data_from_db(engine, geometry, source_list)
-    ```
+       from src.digitaltwin import get_data_from_apis
+       from src.digitaltwin import setup_environment
+       engine = setup_environment.get_database()
+       # load in the instructions, get the source list and polygon from the user
+       FILE_PATH = pathlib.Path().cwd() / pathlib.Path(r"P:\GRI_codes\DigitalTwin2\src\test3.json")
+       with open(FILE_PATH, 'r') as file_pointer:
+           instructions = json.load(file_pointer)
+       source_list = tuple(instructions['source_name'])
+       geometry = gpd.GeoDataFrame.from_features(instructions["features"])
+       get_data_from_db(engine, geometry, source_list)
+   ```
 
 get_data_from_db module allows the user to get data from the multiple sources within the required Area of Interest from the database and if data is not available in the database for the desired area of Interest, wfs request is made from the stored APIs, data is stored in the database and spatial query is done within the database to get the data for the desired Area of Interest.
 Currently data is collected from LINZ, ECAN, Stats NZ, KiwiRail, LRIS, NIWa and opentopography but will be extended to other sources.
@@ -124,20 +129,20 @@ The [instruction file](https://github.com/GeospatialResearch/Digital-Twins/blob/
 The data source for the LiDAR data is [opentopography]( https://portal.opentopography.org/dataCatalog). The data for the requested catchment area is downloaded using [geoapis](https://github.com/niwa/geoapis ) in the local directory set by the user. To store the LiDAR metadata in the database, **lidar_metadata_in_db.py** script is used. The [instruction file](/lidar_to_db/src/lidar/file.json ) and path to the local directory where user wants to store the LiDAR data is passed as an argument to **store_lidar_path(file_path_to_store, instruction_file) function as shown below:**
 
    ```python
+   #!/usr/bin/env python
    if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    instruction_file = "src/lidar_test.json"
-    file_path_to_store = "your_path/lidar_data"
-    with open(instruction_file, 'r') as file_pointer:
-        instructions = json.load(file_pointer)
-    engine = setup_environment.get_database()
-    Lidar.__table__.create(bind=engine, checkfirst=True)
-    geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
-    store_lidar_path(engine, file_path_to_store, geometry_df)
-    store_tileindex(engine, file_path_to_store)
-    lidar_file = get_lidar_path(engine, geometry_df)
+       from src.digitaltwin import setup_environment
+       instruction_file = "src/lidar_test.json"
+       file_path_to_store = "your_path/lidar_data"
+       with open(instruction_file, 'r') as file_pointer:
+           instructions = json.load(file_pointer)
+       engine = setup_environment.get_database()
+       Lidar.__table__.create(bind=engine, checkfirst=True)
+       geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
+       store_lidar_path(engine, file_path_to_store, geometry_df)
+       store_tileindex(engine, file_path_to_store)
+       lidar_file = get_lidar_path(engine, geometry_df)
    ```
-
 
  To get the path of the lidar file within the given catchment area:
 `store_lidar_path()` function is used first in case data is not available in the database, user needs to provide database information to connect to the database, the path where Lidar data will be stored and geopandas dataframe to get the geometry information.   
@@ -151,6 +156,7 @@ Then `store_tileindex()` function is used to store the corresponding tiles infor
 The rain gauges location is accessed from [HIRDS](https://hirds.niwa.co.nz/) which is tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The gauges information can be stored in the database using `hirds_gauges.py` script as shown below:
 
 ```python
+#!/usr/bin/env python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
@@ -167,6 +173,7 @@ if __name__ == "__main__":
 The example is as shown below:
 
 ```python
+#!/usr/bin/env python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
@@ -191,6 +198,7 @@ if __name__ == "__main__":
 For more details on ari, duration, rcp and time_period go to [HIRDS](https://hirds.niwa.co.nz/)
 
 ```python
+#!/usr/bin/env python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
@@ -214,6 +222,7 @@ theissen_polygons(engine, catchment, gauges_in_polygon) function is used to calc
  to get the get the gauges within the catchment area, **get_guages_location(engine, catchment)** function is used from **hirds_gauges.py** script.
 
 ```python
+#!/usr/bin/env python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import hirds_gauges
@@ -233,6 +242,7 @@ hyetograph(duration, site, total_rain_depth) function takes 3 arguments:
 3. total_rain_depth: total rainfal depth at a given duration
 
 ```python
+#!/usr/bin/env python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import hirds_gauges
@@ -267,6 +277,7 @@ To run the model, `bg_flood_model.py` script is used which takes DEM information
 run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
 
 ```python
+#!/usr/bin/env python
 if __name__ == '__main__':
     engine = setup_environment.get_database()
     bg_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
@@ -296,6 +307,7 @@ if __name__ == '__main__':
 The `bg_model_inputs` function requires 9 arguments, of which 3 are set as default values and can be changed later:
 
 ```python
+#!/usr/bin/env python
 def bg_model_inputs(
         bg_path,
         dem_path,
@@ -357,6 +369,7 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
 In order to run the code, run the following command in your Anaconda Powershell Prompt:
 
 ```bash
+#!/usr/bin/env bash
 conda env create -f create_new_env_window.yml
 conda activate digitaltwin
 pip install git+https://github.com/GeospatialResearch/Digital-Twins.git
@@ -368,6 +381,7 @@ pip install git+https://github.com/GeospatialResearch/Digital-Twins.git
 2. run the command
 
 ```bash
+#!/usr/bin/env bash
 conda activate digitaltwin
 spyder
 ```
@@ -386,9 +400,10 @@ When the installation finishes, Docker starts automatically. The whale   in the 
 ### Instructions to run docker
 1. Create an .env file with variables in the following format, each on a new line:
    ```bash
-      POSTGRES_USER=postgres
-      POSTGRES_PASSWORD=postgres
-      POSTGRES_DB=db
+   #!/usr/bin/env bash
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=postgres
+   POSTGRES_DB=db
    ```
 2. Save this file in the directory where docker-compose file is stored.
 3. Open the command prompt, you can use `Windows Key + X` to open it.
@@ -396,8 +411,9 @@ When the installation finishes, Docker starts automatically. The whale   in the 
    For instance:  ![image](https://user-images.githubusercontent.com/86580534/135922576-25644dc3-ef32-4f59-8b5c-8c5778242cc8.png)
 6. Run the command:
    ```bash
-      docker-compose build
-      docker-compose up
+   #!/usr/bin/env bash
+   docker-compose build
+   docker-compose up
    ```
 Now your docker is up and running
 
@@ -408,8 +424,9 @@ Now your docker is up and running
 
 2. Run the container in the terminal using bash command, then using psql command to enter the database:
 ```bash
-   docker exec -it [container id] bash
-   psql -U [username]
+#!/usr/bin/env bash
+docker exec -it [container id] bash
+psql -U [username]
 ```
 ![image](https://user-images.githubusercontent.com/86580534/135923113-de2579eb-9993-48df-9481-58241f648390.png)
 
@@ -423,6 +440,7 @@ Now your docker is up and running
 5. To check the data stored in the table:
 run the command:
 ```bash
+#!/usr/bin/env bash
 select * from apilinks;
 ```
 
