@@ -125,8 +125,8 @@ def run_model(
     bg_model_inputs(
         bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
     )
-    os.chdir(rf"{bg_path}")
-    subprocess.call([rf"{bg_path}/BG_Flood_Cleanup.exe"])
+    os.chdir(bg_path)
+    subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
 
 
 def get_api_key(key_name: str):
