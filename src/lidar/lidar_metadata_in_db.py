@@ -9,7 +9,7 @@ import geoapis.lidar
 import json
 import geopandas as gpd
 import os
-
+import pathlib
 import numpy as np
 import pandas as pd
 import zipfile
@@ -150,8 +150,8 @@ def get_lidar_path(engine, geometry_df):
 def main():
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
-    file_path_to_store = r"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/lidar_data"
-    instruction_file = "src/lidar/instructions_lidar.json"
+    file_path_to_store = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/lidar_data")
+    instruction_file = pathlib.Path("src/lidar/instructions_lidar.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
     geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
