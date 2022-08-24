@@ -269,15 +269,18 @@ run_model(bg_path, instructions, catchment_boundary, resolution, endtime, output
 ```python
 if __name__ == '__main__':
     engine = setup_environment.get_database()
-    bg_path = r"P:\DT\BG-Flood\BG-Flood_Win10_v0.6-a"
+    bg_path = r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a"
+    linz_api_key = get_api_key("LINZ_API_KEY")
     instruction_file = "src/lidar/instructions_bgflood.json"
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
+        instructions["instructions"]["apis"]["linz"]["key"] = linz_api_key
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary(instructions)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
-    # Saving the outputs after each 100 seconds
+    # Saving the outputs after each `outputtimestep` seconds
     outputtimestep = 100.0
-    # Saving the outputs till 14400 seconds (or the output after 14400 seconds is the last one)
+    # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
+    # is the last one)
     endtime = 900.0
     run_model(
         bg_path=bg_path,
