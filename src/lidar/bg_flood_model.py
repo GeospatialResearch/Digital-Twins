@@ -94,9 +94,9 @@ def model_output_to_db(outfile, catchment_boundary):
     session.commit()
 
 
-def river_discharge_info(file):
+def river_discharge_info(bg_path):
     """Get the river discharge info. from design hydrographs."""
-    with open(rf"{file}/RiverDis.txt") as file:
+    with open(bg_path / "RiverDis.txt") as file:
         print(file.read())
 
 
