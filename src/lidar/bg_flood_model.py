@@ -131,7 +131,7 @@ def run_model(
 
 def get_api_key(key_name: str):
     """Get the required api key from dotenv environment variable file"""
-    env_path = pathlib.Path().cwd() / pathlib.Path('src/.env')
+    env_path = pathlib.Path().cwd() / "src" / ".env"
     load_dotenv(env_path)
     api_key = os.getenv(key_name)
     return api_key
