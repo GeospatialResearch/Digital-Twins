@@ -400,7 +400,6 @@ When the installation finishes, Docker starts automatically. The whale   in the 
 ### Instructions to run docker
 1. Create an .env file with variables in the following format, each on a new line:
    ```bash
-   #!/usr/bin/env bash
    POSTGRES_USER=postgres
    POSTGRES_PASSWORD=postgres
    POSTGRES_DB=db
