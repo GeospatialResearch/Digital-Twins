@@ -16,5 +16,14 @@ module.exports = {
         {from: path.join(cesiumSource, 'Widgets'), to: 'Widgets'}
       ])
     ]
+  },
+  chainWebpack(config) {
+   // Add rule so that the LICENSE text can be read into a WebPage
+   config.module
+      .rule('raw')
+      .test(/LICENSE$/)
+      .use('raw-loader')
+      .loader('raw-loader')
+      .end()
   }
 }
