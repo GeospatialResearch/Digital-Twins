@@ -13,7 +13,7 @@ import "@/assets/base-style.css"
 
 // Set plugins
 Vue.use(VueRouter);
-Vue.use(BootstrapVue)
+Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false;
 

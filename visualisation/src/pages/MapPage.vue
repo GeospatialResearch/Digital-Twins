@@ -8,11 +8,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue from "vue";
 import {MapViewer} from 'geo-visualisation-components/src/components';
+import titleMixin from "@/mixins/title";
 
 export default Vue.extend({
-  name: 'MapPage',
+  name: "MapPage",
+  title: "Map",
+  mixins: [titleMixin],
   components: {
     MapViewer,
   },
