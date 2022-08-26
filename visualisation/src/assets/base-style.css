@@ -47,8 +47,3 @@ h1, h2, h3, h4 {
     left: 10px;
     font-size: 12px;
 }
-
-/* If not using map tiles, show a white background */
-.leaflet-container {
-    background-color: white !important;
-}
