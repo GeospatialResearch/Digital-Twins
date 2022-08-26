@@ -8,7 +8,7 @@ on: push
 
 jobs:
   linting-flake8:
-    # Lints the Python files, checking for style and correctness
+    name: Lint Python with flake8
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -73,7 +73,7 @@ jobs:
           pytest
 
   sonarcloud:
-    # Runs static-code analysis on SonarCloud
+    name: Run static-code analysis on SonarCloud
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
