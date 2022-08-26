@@ -27,11 +27,10 @@ conda env create -f environment.yml
 ```
 
 ## Tests
-Tests exist in the tests folder.
+Tests exist in the `tests/` folder.
 
 ### Automated testing
-[Github Actions](https://docs.github.com/en/actions) are used to run tests after each push to remote (i.e. github). [Miniconda](https://github.com/marketplace/actions/setup-miniconda)from the GitHub Actions marketplace is used to install the package dependencies. Linting with [Flake8](https://github.com/py-actions/flake8) and testing with [PyTest](https://docs.pytest.org/en/6.2.x/contents.html) is then performed. Several tests require an API key. This is stored as a GitHub secret and accessed by the workflow. These tests also ensure the Docker container is built.
-
+[Github Actions](https://docs.github.com/en/actions) are used to run tests after each push to remote (i.e. github). [Miniconda](https://github.com/marketplace/actions/setup-miniconda)from the GitHub Actions marketplace is used to install the package dependencies. Linting with [Flake8](https://github.com/py-actions/flake8) and testing with [PyTest](https://docs.pytest.org/en/6.2.x/contents.html) is then performed. Several tests require an API key. This is stored as a GitHub secret and accessed by the workflow.
 ### Running tests locally
 See the [geoapis wiki testing page](https://github.com/niwa/geoapis/wiki/Testing) for instructions for setting up a .env file and running the geofabrics test.
 
