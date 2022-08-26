@@ -22,11 +22,13 @@
 
 <script lang="ts">
 import Vue from "vue";
-import licenseText from "@/../../LICENSE"
+import titleMixin from "@/mixins/title"
+import licenseText from "@/../../LICENSE";
 
 export default Vue.extend({
   name: "AboutPage",
   title: "About",
+  mixins: [titleMixin],
   data() {
     return {
       license: licenseText
