@@ -9,7 +9,7 @@ import geoapis.lidar
 import json
 import geopandas as gpd
 import os
-
+import pathlib
 import numpy as np
 import pandas as pd
 import zipfile
@@ -60,7 +60,7 @@ def get_files(filetype, file_path_to_store):
     """To get the path of the downloaded point cloud files."""
     files_list = []
     files_path = []
-    for (path, dirs, files) in os.walk(file_path_to_store):
+    for (path, _dirs, files) in os.walk(file_path_to_store):
         for file in files:
             if file.endswith(filetype):
                 files_list.append(os.path.join(path, file))
@@ -110,7 +110,7 @@ def store_tileindex(engine, file_path_to_store, filetype=".shp"):
     then shapes files are stored in the database.
     """
     zip_files = []
-    for (paths, dirs, files) in os.walk(file_path_to_store):
+    for (paths, _dirs, files) in os.walk(file_path_to_store):
         for file in files:
             if file.endswith(".zip"):
                 zip_files.append(os.path.join(paths, file))
@@ -148,11 +148,10 @@ def get_lidar_path(engine, geometry_df):
 
 
 def main():
-
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
-    file_path_to_store = r"P:/DT/LiDAR/lidar_data"
-    instruction_file = "src/lidar/instructions_lidar.json"
+    file_path_to_store = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/lidar_data")
+    instruction_file = pathlib.Path("src/lidar/instructions_lidar.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
     geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
