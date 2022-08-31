@@ -7,6 +7,11 @@ Created on Mon Jan 17 09:32:16 2022.
 
 import numpy
 import pandas as pd
+from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions import hirds_gauges
+from src.dynamic_boundary_conditions import theissen_polygon_calculator
+from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+from src.dynamic_boundary_conditions import hirds_depth_data_from_db
 
 
 def hyetograph(duration, site, total_rain_depth):
@@ -47,13 +52,7 @@ def hyetograph(duration, site, total_rain_depth):
     return hyetograph_data
 
 
-if __name__ == "__main__":
-    # TODO: geometry stored in database is EPSG4326.
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hirds_gauges
-    from src.dynamic_boundary_conditions import theissen_polygon_calculator
-    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
-    from src.dynamic_boundary_conditions import hirds_depth_data_from_db
+def main():
     engine = setup_environment.get_database()
     file = r'C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catch4.shp'
     path = r'P:/DT/hirds_depth_data'
@@ -73,3 +72,7 @@ if __name__ == "__main__":
         hyt = hyetograph(duration, site_id, depth)
         hyt.plot.bar(title=f'{ari}-year storm: site {site_id}', x='time', y='prcp_prop', rot=0)
         # TODO: hyetograph data table is input into BG-Flood model
+
+
+if __name__ == "__main__":
+    main()
