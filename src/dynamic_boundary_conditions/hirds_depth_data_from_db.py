@@ -66,8 +66,7 @@ if __name__ == "__main__":
 
     engine = setup_environment.get_database()
     file = (
-        r"C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_"
-        "conditions/catch4.shp"
+        r"C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catchment_polygon.shp"
     )
     path = r"P:/DT/hirds_depth_data"
     ari = 100

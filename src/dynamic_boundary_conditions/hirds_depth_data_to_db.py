@@ -109,7 +109,7 @@ if __name__ == "__main__":
     from src.digitaltwin import setup_environment
 
     engine = setup_environment.get_database()
-    file = r"C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catch4.shp"
+    file = r"C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catchment_polygon.shp"
     path = r"P:/DT/hirds_depth_data"
     catchment = geopandas.read_file(file)
     catchment = catchment.to_crs(4326)
