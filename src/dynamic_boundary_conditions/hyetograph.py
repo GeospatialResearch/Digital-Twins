@@ -9,7 +9,7 @@ import numpy
 import pandas as pd
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites
-from src.dynamic_boundary_conditions import theissen_polygon_calculator
+from src.dynamic_boundary_conditions import thiessen_polygon_calculator
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 from src.dynamic_boundary_conditions import hirds_depth_data_from_db
 
