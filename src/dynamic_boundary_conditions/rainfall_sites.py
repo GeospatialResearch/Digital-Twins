@@ -11,10 +11,9 @@ import pandas as pd
 import geopandas as gpd
 import sqlalchemy
 from geoalchemy2 import Geometry
-import geopandas
 
 
-def get_rainfall_sites_data() -> geopandas.GeoDataFrame:
+def get_rainfall_sites_data() -> gpd.GeoDataFrame:
     """Get rainfall sites data from the hirds website using HTTP request."""
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
@@ -38,7 +37,7 @@ def get_rainfall_sites_data() -> geopandas.GeoDataFrame:
     return sites_with_geometry
 
 
-def rainfall_sites_to_db(engine, sites: geopandas.GeoDataFrame):
+def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
     """Storing rainfall sites data from the hirds website in the database."""
     if not sqlalchemy.inspect(engine).has_table("rainfall_sites"):
         print("Storing rainfall sites data from hirds in the database.")
@@ -48,7 +47,7 @@ def rainfall_sites_to_db(engine, sites: geopandas.GeoDataFrame):
         print("hirds rainfall sites data already exists in the database.")
 
 
-def get_new_zealand_boundary(engine) -> geopandas.GeoDataFrame:
+def get_new_zealand_boundary(engine) -> gpd.GeoDataFrame:
     """Get the boundary information of new Zealand from region_geometry table."""
     query = "SELECT geometry AS geom FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
     nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, crs=2193)
@@ -56,7 +55,7 @@ def get_new_zealand_boundary(engine) -> geopandas.GeoDataFrame:
     return nz_boundary
 
 
-def get_sites_locations(engine, catchment: geopandas.GeoDataFrame):
+def get_sites_locations(engine, catchment: gpd.GeoDataFrame):
     """
     Get the site locations within the catchment area from the database and return in geopandas.GeoDataFrame format.
     engine: to connect to the database.

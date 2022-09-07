@@ -8,11 +8,10 @@ Created on Thu Jan 20 11:36:07 2022
 import pandas as pd
 import geopandas as gpd
 from geovoronoi import voronoi_regions_from_coords, points_to_coords
-import geopandas
 import sys
 
 
-def thiessen_polygons(engine, catchment: geopandas.GeoDataFrame, sites_in_catchment: geopandas.GeoDataFrame):
+def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: gpd.GeoDataFrame):
     """Calculate the area covered by each site and store it in the database.
     catchment: get the geopandas dataframe of the catchment area.
     sites_in_catchment: get the geopandas dataframe of the sites in the catchment area.
