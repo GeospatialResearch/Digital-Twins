@@ -63,6 +63,6 @@ if __name__ == "__main__":
     from src.dynamic_boundary_conditions import rainfall_sites
 
     engine = setup_environment.get_database()
-    catchment = rainfall_sites.get_new_zealand_boundary(engine)
-    gauges_in_polygon = rainfall_sites.get_gauges_location(engine, catchment)
-    theissen_polygons(engine, catchment, gauges_in_polygon)
+    nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
+    gauges_in_polygon = rainfall_sites.get_gauges_location(engine, nz_boundary)
+    theissen_polygons(engine, nz_boundary, gauges_in_polygon)

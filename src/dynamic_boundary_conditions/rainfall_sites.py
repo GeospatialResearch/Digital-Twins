@@ -52,10 +52,10 @@ def rainfall_sites_to_db(engine, sites: geopandas.GeoDataFrame):
 
 def get_new_zealand_boundary(engine) -> geopandas.GeoDataFrame:
     """Get the boundary information of new Zealand from region_geometry table."""
-    query1 = "select geometry as geom from region_geometry where regc2021_v1_00_name='New Zealand'"
-    catchment = geopandas.GeoDataFrame.from_postgis(query1, engine)
-    catchment = catchment.to_crs(4326)
-    return catchment
+    query = "SELECT geometry AS geom FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
+    nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, crs=2193)
+    nz_boundary = nz_boundary.to_crs(4326)
+    return nz_boundary
 
 
 def get_gauges_location(engine, catchment: geopandas.GeoDataFrame):
