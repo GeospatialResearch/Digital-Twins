@@ -58,6 +58,7 @@ def main():
     rainfall_sites.rainfall_sites_to_db(engine, sites)
     nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
     sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
+    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
 
     file = r'C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catchment_polygon.shp'
     path = r'P:/DT/hirds_depth_data'
@@ -65,7 +66,6 @@ def main():
     duration = 24
     rcp = "2.6"
     time_period = "2031-2050"
-    thiessen_polygon_calculator.theissen_polygons(engine, nz_boundary, sites_in_catchment)
     catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
     hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
     depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)

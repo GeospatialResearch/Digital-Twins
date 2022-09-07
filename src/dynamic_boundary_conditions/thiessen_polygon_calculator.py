@@ -14,7 +14,7 @@ from shapely.ops import transform
 import sys
 
 
-def theissen_polygons(
+def thiessen_polygons(
     engine, catchment: geopandas.GeoDataFrame, gauges_in_polygon: geopandas.GeoDataFrame
 ):
     """Calculate the area covered by each gauging site and store it in the database.
@@ -65,4 +65,4 @@ if __name__ == "__main__":
     engine = setup_environment.get_database()
     nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
     sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
-    theissen_polygons(engine, nz_boundary, sites_in_catchment)
+    thiessen_polygons(engine, nz_boundary, sites_in_catchment)
