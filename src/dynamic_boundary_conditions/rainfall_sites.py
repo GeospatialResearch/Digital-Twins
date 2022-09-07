@@ -60,29 +60,26 @@ def get_new_zealand_boundary(engine) -> geopandas.GeoDataFrame:
 
 def get_gauges_location(engine, catchment: geopandas.GeoDataFrame):
     """
-    Get the gauge locations within the catchment area from the database and return in geopandas format.
+    Get the site locations within the catchment area from the database and return in geopandas.GeoDataFrame format.
     engine: to connect to the database.
     catchment: get the geopandas dataframe of the NZ catchment area.
     """
-    # Get all gauges within the New Zealand catchment area.
-    catchment_area = catchment.geom[0]
-    query = f'''select * from public.hirds_gauges hg
-        where ST_Intersects(hg.geometry, ST_GeomFromText('{catchment_area}', 4326))'''
-    gauges_in_catchment = pd.read_sql_query(query, engine)
-
-    # Convert geometry column from wkb format to EPSG:4326
-    gauges_in_catchment['geometry'] = gpd.GeoSeries.from_wkb(gauges_in_catchment['geometry'])
-    # Convert pandas dataframe to geopandas dataframe
-    gauges_in_catchment = gpd.GeoDataFrame(gauges_in_catchment, geometry='geometry')
-    # Get gauges locations (geometry column)
-    gauges = gauges_in_catchment.geometry
-    # Add new column 'exists' which identifies whether the gauges are within the catchment area
-    gauges_in_catchment['exists'] = gauges.within(catchment_area)
-    # Filter for all gauges that are within the catchment area (i.e., all Trues in 'exists' column)
-    gauges_in_polygon = gauges_in_catchment[gauges_in_catchment.all(axis=1)]
-    # Add new column 'order' which acts like the index column
-    gauges_in_polygon['order'] = np.arange(len(gauges_in_polygon))
-    return gauges_in_polygon
+    # Get all rainfall sites within the New Zealand catchment area.
+    catchment_area = catchment["geom"][0]
+    query = f"""SELECT * FROM rainfall_sites AS rs
+        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment_area}', 4326))"""
+    sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
+    # Get site locations geometry (geometry column)
+    sites_geom = sites_in_catchment["geometry"]
+    # Add new column 'exists' which identifies whether each site is within the catchment area
+    sites_in_catchment["exists"] = sites_geom.within(catchment_area)
+    # Filter for all sites that are within the catchment area (i.e., all Trues in 'exists' column)
+    sites_in_catchment.query("exists == True", inplace=True)
+    # Reset the index (i.e., the original index is added as a column, and a new sequential index is used)
+    sites_in_catchment.reset_index(inplace=True)
+    # Rename column
+    sites_in_catchment.rename(columns={"index": "order"}, inplace=True)
+    return sites_in_catchment
 
 
 if __name__ == "__main__":
