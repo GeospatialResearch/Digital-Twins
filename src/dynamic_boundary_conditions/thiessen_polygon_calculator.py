@@ -64,5 +64,5 @@ if __name__ == "__main__":
 
     engine = setup_environment.get_database()
     nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
-    gauges_in_polygon = rainfall_sites.get_gauges_location(engine, nz_boundary)
-    theissen_polygons(engine, nz_boundary, gauges_in_polygon)
+    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
+    theissen_polygons(engine, nz_boundary, sites_in_catchment)

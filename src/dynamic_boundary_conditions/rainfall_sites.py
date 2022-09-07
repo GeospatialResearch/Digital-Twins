@@ -58,7 +58,7 @@ def get_new_zealand_boundary(engine) -> geopandas.GeoDataFrame:
     return nz_boundary
 
 
-def get_gauges_location(engine, catchment: geopandas.GeoDataFrame):
+def get_sites_locations(engine, catchment: geopandas.GeoDataFrame):
     """
     Get the site locations within the catchment area from the database and return in geopandas.GeoDataFrame format.
     engine: to connect to the database.
