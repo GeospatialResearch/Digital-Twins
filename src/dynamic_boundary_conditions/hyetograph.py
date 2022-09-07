@@ -60,11 +60,11 @@ def main():
     duration = 24
     rcp = "2.6"
     time_period = "2031-2050"
-    guages = hirds_gauges.get_hirds_gauges_data()
+    guages = rainfall_sites.get_hirds_gauges_data()
     rainfall_sites.hirds_gauges_to_db(engine, guages)
-    catchment = hirds_gauges.get_new_zealand_boundary(engine)
-    gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
-    theissen_polygon_calculator.theissen_polygons(engine, catchment, gauges_in_polygon)
+    catchment = rainfall_sites.get_new_zealand_boundary(engine)
+    gauges_in_polygon = rainfall_sites.get_gauges_location(engine, catchment)
+    thiessen_polygon_calculator.theissen_polygons(engine, catchment, gauges_in_polygon)
     catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
     hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
     depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)
