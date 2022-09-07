@@ -29,15 +29,15 @@ def hyetograph(duration, site, total_rain_depth):
     N = duration
     time_list = []
     prcp_list = []
-    for t in range(N+1):
-        dt = t/N  # dt is the proportion of the duration
+    for t in range(N + 1):
+        dt = t / N  # dt is the proportion of the duration
         if dt <= n:
-            x = (((t)/N)-n)*wl
+            x = (((t) / N) - n) * wl
         else:
-            x = (((t)/N)-n)*wr
+            x = (((t) / N) - n) * wr
         tan = numpy.tanh(x)
-        s = (m*tan)+m
-        pt = R*s  # Pt is the proportion of total rainfall depth of a hyetograph
+        s = (m * tan) + m
+        pt = R * s  # Pt is the proportion of total rainfall depth of a hyetograph
         # TODO: accumulated total rainfall depth ^ (above line)???
         pt = round(pt, 2)
         duration, proportion_rain = t, pt
