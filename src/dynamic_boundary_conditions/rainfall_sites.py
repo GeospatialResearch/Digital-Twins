@@ -16,7 +16,7 @@ import geopandas
 import numpy as np
 
 
-def get_hirds_gauges_data() -> geopandas.GeoDataFrame:
+def get_rainfall_sites_data() -> geopandas.GeoDataFrame:
     """Get rainfall sites data from the hirds website using HTTP request."""
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
@@ -88,5 +88,5 @@ def get_gauges_location(engine, catchment: geopandas.GeoDataFrame):
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
-    guages = get_hirds_gauges_data()
-    hirds_gauges_to_db(engine, guages)
+    sites = get_rainfall_sites_data()
+    hirds_gauges_to_db(engine, sites)
