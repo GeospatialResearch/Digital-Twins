@@ -14,48 +14,31 @@ from shapely.ops import transform
 import sys
 
 
-def thiessen_polygons(
-    engine, catchment: geopandas.GeoDataFrame, gauges_in_polygon: geopandas.GeoDataFrame
-):
-    """Calculate the area covered by each gauging site and store it in the database.
+def thiessen_polygons(engine, catchment: geopandas.GeoDataFrame, sites_in_catchment: geopandas.GeoDataFrame):
+    """Calculate the area covered by each site and store it in the database.
     catchment: get the geopandas dataframe of the catchment area.
-    gauges_in_polygon: get the gauges data in the form of geopandas dataframe.
+    sites_in_catchment: get the geopandas dataframe of the sites in the catchment area.
     """
-    if catchment.empty or gauges_in_polygon.empty:
-        print("No data available for the catchment or gauges passed as an argument.")
+    if catchment.empty or sites_in_catchment.empty:
+        print("No data available for the catchment or sites passed as an argument.")
         sys.exit()
     else:
-        catchment_area = catchment.geom[0]
-        coords = points_to_coords(gauges_in_polygon.geometry)
-        region_polys, region_pts = voronoi_regions_from_coords(
-            coords, catchment_area, per_geom=False
-        )
+        catchment_area = catchment["geom"][0]
+        coords = points_to_coords(sites_in_catchment["geometry"])
+        region_polys, region_pts = voronoi_regions_from_coords(coords, catchment_area, per_geom=False)
 
-        sites_list = []
+        rainfall_sites_coverage = gpd.GeoDataFrame()
         for key, value in region_pts.items():
-            site = gauges_in_polygon.loc[(gauges_in_polygon["order"] == value[0])]
-            sites_list.append(site)
-        sites_in_catchment = pd.concat(sites_list)
-
-        wgs84 = pyproj.CRS("EPSG:4326")
-        utm = pyproj.CRS("EPSG:3857")
-        project = pyproj.Transformer.from_crs(wgs84, utm, always_xy=True).transform
-        gauges_area = gpd.GeoDataFrame()
-        sites = []
-        area = []
-        geometry = []
-
-        for i, ind in zip(range(len(region_polys)), sites_in_catchment.index):
-            projected_area = transform(project, region_polys[i]).area
-            sites.append(sites_in_catchment["site_id"][ind])
-            area.append(projected_area * 0.001)
-            geometry.append(region_polys[i])
-            # TODO: currently in EPSG4326. Check if this should be in EPSG3857?
-        gauges_area["site_id"] = sites
-        gauges_area["area_in_km"] = area
-        gauges_area["geometry"] = geometry
-        gauges_area.set_crs(crs="epsg:4326", inplace=True)
-        gauges_area.to_postgis("gauges_area", engine, if_exists="replace")
+            value = value[0]
+            site = sites_in_catchment.filter(items=[value], axis=0)
+            site.reset_index(inplace=True)
+            site.drop(columns=["index", "geometry"], inplace=True)
+            voronoi = gpd.GeoDataFrame(crs="epsg:4326", geometry=[region_polys[key]])
+            voronoi["area_in_km2"] = voronoi.to_crs(3857).area / 1e6
+            site_voronoi = pd.concat([site, voronoi], axis=1)
+            site_voronoi = site_voronoi[["site_id", "area_in_km2", "geometry"]]
+            rainfall_sites_coverage = pd.concat([rainfall_sites_coverage, site_voronoi])
+        rainfall_sites_coverage.to_postgis("rainfall_sites_coverage", engine, if_exists="replace")
 
 
 if __name__ == "__main__":
