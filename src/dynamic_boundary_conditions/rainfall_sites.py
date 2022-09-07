@@ -82,6 +82,7 @@ def get_sites_locations(engine, catchment: geopandas.GeoDataFrame):
 
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
+
     engine = setup_environment.get_database()
     sites = get_rainfall_sites_data()
     rainfall_sites_to_db(engine, sites)
