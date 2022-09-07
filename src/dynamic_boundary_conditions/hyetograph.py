@@ -8,7 +8,7 @@ Created on Mon Jan 17 09:32:16 2022.
 import numpy
 import pandas as pd
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import hirds_gauges
+from src.dynamic_boundary_conditions import rainfall_sites
 from src.dynamic_boundary_conditions import theissen_polygon_calculator
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 from src.dynamic_boundary_conditions import hirds_depth_data_from_db
@@ -61,7 +61,7 @@ def main():
     rcp = "2.6"
     time_period = "2031-2050"
     guages = hirds_gauges.get_hirds_gauges_data()
-    hirds_gauges.hirds_gauges_to_db(engine, guages)
+    rainfall_sites.hirds_gauges_to_db(engine, guages)
     catchment = hirds_gauges.get_new_zealand_boundary(engine)
     gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
     theissen_polygon_calculator.theissen_polygons(engine, catchment, gauges_in_polygon)
