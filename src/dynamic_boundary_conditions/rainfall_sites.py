@@ -40,14 +40,14 @@ def get_rainfall_sites_data() -> geopandas.GeoDataFrame:
     return sites_with_geometry
 
 
-def hirds_gauges_to_db(engine, hirds_gauges: geopandas.GeoDataFrame):
-    """Get gauges information from the hirds website and store it in the database."""
-    if not sqlalchemy.inspect(engine).has_table("hirds_gauges"):
-        print("Storing gauges data from hirds in the database.")
-        hirds_gauges.to_postgis('hirds_gauges', engine, if_exists='replace',
-                                index=False, dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
+def hirds_gauges_to_db(engine, sites: geopandas.GeoDataFrame):
+    """Storing rainfall sites data from the hirds website in the database."""
+    if not sqlalchemy.inspect(engine).has_table("rainfall_sites"):
+        print("Storing rainfall sites data from hirds in the database.")
+        sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,
+                         dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
     else:
-        print("hirds gauges information exists in the database.")
+        print("hirds rainfall sites data already exists in the database.")
 
 
 def get_new_zealand_boundary(engine) -> geopandas.GeoDataFrame:
