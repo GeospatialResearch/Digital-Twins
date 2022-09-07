@@ -1,22 +1,19 @@
-// Mixin to append name of component to name of app and makes this the webpage title
+// Mixin to append title of a component to the base title of the app and makes this the document title.
+// Best to only use this once per page.
 
-import Vue, {ComponentOptions} from "vue";
+import Vue from "vue";
+
+/** The base title of the application, displayed in the document title */
+export const appBaseTitle = "Digital Twin for Flood Resilience";
 
 export default {
   /**
-   * Changes the document title if a component has a data variable `title`
+   * Changes the document title prefix to the page title
    */
   created: function (this: Vue): void {
-    const pageTitle = getPageTitle(this);
+    const pageTitle = this.$options.title;
     if (pageTitle) {
-      const mainTitle = "Digital Twin for Flood Resilience";
-      document.title = `${pageTitle} | ${mainTitle}`;
+      document.title = `${pageTitle} | ${appBaseTitle}`;
     }
   }
-}
-
-/** Gets data variable title from page */
-function getPageTitle(vm: Vue): string | undefined {
-  const {title} = vm.$options as ComponentOptions<Vue> & { title?: string } // Optional title variable added to component
-  return title;
-}
+};
