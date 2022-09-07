@@ -40,7 +40,7 @@ def get_rainfall_sites_data() -> geopandas.GeoDataFrame:
     return sites_with_geometry
 
 
-def hirds_gauges_to_db(engine, sites: geopandas.GeoDataFrame):
+def rainfall_sites_to_db(engine, sites: geopandas.GeoDataFrame):
     """Storing rainfall sites data from the hirds website in the database."""
     if not sqlalchemy.inspect(engine).has_table("rainfall_sites"):
         print("Storing rainfall sites data from hirds in the database.")
@@ -89,4 +89,4 @@ if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     engine = setup_environment.get_database()
     sites = get_rainfall_sites_data()
-    hirds_gauges_to_db(engine, sites)
+    rainfall_sites_to_db(engine, sites)
