@@ -17,7 +17,7 @@ import numpy as np
 
 
 def get_hirds_gauges_data() -> geopandas.GeoDataFrame:
-    """Get gauges information from the hirds website using HTTP request."""
+    """Get rainfall sites data from the hirds website using HTTP request."""
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
@@ -34,11 +34,10 @@ def get_hirds_gauges_data() -> geopandas.GeoDataFrame:
     headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
         Chrome/96.0.4664.45 Safari/537.36"
     response = requests.get(url, headers=headers)
-    gauges = pd.read_json(response.text)
-    geometry = [Point(xy) for xy in zip(gauges['longitude'], gauges['latitude'])]
-    crs = 'EPSG:4326'
-    hirds_gauges = gpd.GeoDataFrame(gauges, crs=crs, geometry=geometry)
-    return hirds_gauges
+    sites_df = pd.read_json(response.text)
+    sites_geometry = gpd.points_from_xy(sites_df["longitude"], sites_df["latitude"], crs="EPSG:4326")
+    sites_with_geometry = gpd.GeoDataFrame(sites_df, geometry=sites_geometry)
+    return sites_with_geometry
 
 
 def hirds_gauges_to_db(engine, hirds_gauges: geopandas.GeoDataFrame):
