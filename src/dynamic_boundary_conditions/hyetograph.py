@@ -65,7 +65,7 @@ def main():
     duration = 24
     rcp = "2.6"
     time_period = "2031-2050"
-    thiessen_polygon_calculator.theissen_polygons(engine, nz_boundary, gauges_in_polygon)
+    thiessen_polygon_calculator.theissen_polygons(engine, nz_boundary, sites_in_catchment)
     catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
     hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
     depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)
