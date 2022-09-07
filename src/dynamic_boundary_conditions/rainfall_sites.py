@@ -8,12 +8,10 @@ Created on Thu Dec 23 16:06:53 2021.
 import requests
 from requests.structures import CaseInsensitiveDict
 import pandas as pd
-from shapely.geometry import Point
 import geopandas as gpd
 import sqlalchemy
 from geoalchemy2 import Geometry
 import geopandas
-import numpy as np
 
 
 def get_rainfall_sites_data() -> geopandas.GeoDataFrame:
