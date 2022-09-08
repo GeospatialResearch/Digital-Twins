@@ -7,7 +7,9 @@ Created on Mon Jan 17 09:32:16 2022.
 
 import numpy
 import pandas as pd
+import geopandas as gpd
 import pathlib
+import shapely.geometry
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites
 from src.dynamic_boundary_conditions import thiessen_polygon_calculator
@@ -53,6 +55,14 @@ def hyetograph(duration, site, total_rain_depth):
     return hyetograph_data
 
 
+def catchment_area_geometry_info(catchment_file) -> shapely.geometry.Polygon:
+    """Extract shapely polygon geometry from the catchment file"""
+    catchment = gpd.read_file(catchment_file)
+    catchment = catchment.to_crs(4326)
+    catchment_polygon = catchment["geometry"][0]
+    return catchment_polygon
+
+
 def main():
     engine = setup_environment.get_database()
     sites = rainfall_sites.get_rainfall_sites_data()
@@ -68,10 +78,10 @@ def main():
     duration = 24
     rcp = "2.6"
     time_period = "2031-2050"
-    
-    catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(catchment_file)
-    hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, file_path_to_store)
-    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)
+
+    catchment_polygon = catchment_area_geometry_info(catchment_file)
+    hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_polygon, file_path_to_store)
+    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_polygon, ari, duration, rcp, time_period)
 
     for site_id, depth in zip(depths_data.site_id, depths_data.depth):
         hyt = hyetograph(duration, site_id, depth)

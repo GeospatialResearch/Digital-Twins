@@ -6,7 +6,6 @@ Created on Thu Jan 20 15:09:11 2022
 """
 
 import pandas as pd
-import geopandas
 import numpy as np
 import sqlalchemy
 import pathlib
@@ -108,13 +107,11 @@ def hirds_depths_to_db(engine, catchment_area: Polygon, path):
 
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import hyetograph
 
     engine = setup_environment.get_database()
     catchment_file = pathlib.Path(
         r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
-
-    catchment = geopandas.read_file(catchment_file)
-    catchment = catchment.to_crs(4326)
-    catchment_area = catchment.geometry[0]
-    hirds_depths_to_db(engine, catchment_area, file_path_to_store)
+    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+    hirds_depths_to_db(engine, catchment_polygon, file_path_to_store)

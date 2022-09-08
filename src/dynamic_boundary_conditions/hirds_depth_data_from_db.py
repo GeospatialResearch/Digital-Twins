@@ -6,17 +6,8 @@ Created on Thu Jan 20 16:36:59 2022.
 """
 
 import pandas as pd
-import geopandas
 import pathlib
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
-
-
-def catchment_area_geometry_info(file):
-    """Extract geometry from the shape file, returns polygon."""
-    catchment = geopandas.read_file(file)
-    catchment = catchment.to_crs(4326)
-    catchment_area = catchment.geometry[0]
-    return catchment_area
 
 
 def get_each_site_hirds_depth_data(
@@ -64,6 +55,7 @@ def hirds_depths_from_db(
 
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import hyetograph
 
     engine = setup_environment.get_database()
     catchment_file = pathlib.Path(
@@ -73,5 +65,5 @@ if __name__ == "__main__":
     duration = 24
     rcp = "2.6"
     time_period = "2031-2050"
-    catchment_area = catchment_area_geometry_info(catchment_file)
-    depths_data = hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)
+    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+    depths_data = hirds_depths_from_db(engine, catchment_polygon, ari, duration, rcp, time_period)
