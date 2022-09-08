@@ -57,13 +57,15 @@ if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import hyetograph
 
-    engine = setup_environment.get_database()
     catchment_file = pathlib.Path(
         r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
+
     ari = 100
     duration = 24
     rcp = "2.6"
     time_period = "2031-2050"
+
+    engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
     depths_data = hirds_depths_from_db(engine, catchment_polygon, ari, duration, rcp, time_period)
