@@ -59,8 +59,6 @@ if __name__ == "__main__":
 
     catchment_file = pathlib.Path(
         r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
-    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
-
     ari = 100
     duration = 24
     rcp = "2.6"
