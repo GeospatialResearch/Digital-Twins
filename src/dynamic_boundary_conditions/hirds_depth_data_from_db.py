@@ -11,11 +11,11 @@ from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 
 
 def get_each_site_hirds_depth_data(
-    ari, duration, site, engine, rcp=None, time_period=None
+        ari, duration, site, engine, rcp=None, time_period=None
 ):
     """Get hirds rainfall depth data from the database."""
     if (rcp is None and time_period is not None) or (
-        rcp is not None and time_period is None
+            rcp is not None and time_period is None
     ):
         raise ValueError(
             "check the arguments of get_hirds_depth_data if rcp is None,time"
@@ -35,7 +35,7 @@ def get_each_site_hirds_depth_data(
 
 
 def hirds_depths_from_db(
-    engine, catchment_area, ari, duration, rcp=None, time_period=None
+        engine, catchment_area, ari, duration, rcp=None, time_period=None
 ):
     """Get the list of depths and site's id of each site and return in
     dataframe format."""
