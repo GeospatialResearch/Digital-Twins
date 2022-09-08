@@ -9,6 +9,7 @@ import pandas as pd
 import geopandas
 import numpy as np
 import sqlalchemy
+import pathlib
 from shapely.geometry import Polygon
 from src.dynamic_boundary_conditions import rain_depth_data_from_hirds
 
@@ -109,9 +110,11 @@ if __name__ == "__main__":
     from src.digitaltwin import setup_environment
 
     engine = setup_environment.get_database()
-    file = r"C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catchment_polygon.shp"
-    path = r"P:/DT/hirds_depth_data"
-    catchment = geopandas.read_file(file)
+    catchment_file = pathlib.Path(
+        r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
+    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
+
+    catchment = geopandas.read_file(catchment_file)
     catchment = catchment.to_crs(4326)
     catchment_area = catchment.geometry[0]
-    hirds_depths_to_db(engine, catchment_area, path)
+    hirds_depths_to_db(engine, catchment_area, file_path_to_store)

@@ -7,6 +7,7 @@ Created on Mon Jan 17 09:32:16 2022.
 
 import numpy
 import pandas as pd
+import pathlib
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites
 from src.dynamic_boundary_conditions import thiessen_polygon_calculator
@@ -60,15 +61,18 @@ def main():
     sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
     thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
 
-    file = r'C:/Users/sli229/Projects/Digital-Twins/src/dynamic_boundary_conditions/catchment_polygon.shp'
-    path = r'P:/DT/hirds_depth_data'
+    catchment_file = pathlib.Path(
+        r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
+    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
     ari = 100
     duration = 24
     rcp = "2.6"
     time_period = "2031-2050"
-    catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
-    hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
+    
+    catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(catchment_file)
+    hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, file_path_to_store)
     depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)
+
     for site_id, depth in zip(depths_data.site_id, depths_data.depth):
         hyt = hyetograph(duration, site_id, depth)
         hyt.plot.bar(title=f'{ari}-year storm: site {site_id}', x='time', y='prcp_prop', rot=0)
