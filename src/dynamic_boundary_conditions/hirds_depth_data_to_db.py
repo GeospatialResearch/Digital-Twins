@@ -6,6 +6,7 @@ Created on Thu Jan 20 15:09:11 2022
 """
 
 import pandas as pd
+import geopandas as gpd
 import numpy as np
 import sqlalchemy
 import pathlib
@@ -19,13 +20,14 @@ def check_table_exists(engine):
     return insp.has_table("hirds_rain_depth", schema="public")
 
 
-def get_sites_in_catchment(catchment_area: Polygon, engine) -> list:
-    """Get gauges within the catchment area from the 'hirds_gauges' table in
-    the database."""
-    query = f"""select site_id from public.hirds_gauges f
-        where ST_Intersects(f.geometry, ST_GeomFromText('{catchment_area}', 4326))"""
-    gauges_in_catchment = pd.read_sql_query(query, engine)
-    return gauges_in_catchment["site_id"].tolist()
+def get_sites_id_in_catchment(catchment_polygon: Polygon, engine) -> list:
+    """Get rainfall sites id within the catchment area from the 'rainfall_sites' table in the database."""
+    query = f"""SELECT * FROM rainfall_sites AS rs
+        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"""
+    sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
+    sites_id = sites_in_catchment["site_id"]
+    sites_id_list = sites_id.tolist()
+    return sites_id_list
 
 
 def get_sites_not_in_db(engine, sites_in_catchment):
@@ -84,7 +86,7 @@ def add_hirds_depth_data_to_db(path: str, site_id: str, engine):
 
 def rainfall_depths_to_db(engine, catchment_area: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
-    sites_in_catchment = get_sites_in_catchment(catchment_area, engine)
+    sites_in_catchment = get_sites_id_in_catchment(catchment_area, engine)
     if check_table_exists(engine):
         site_ids = get_sites_not_in_db(engine, sites_in_catchment)
         if site_ids.size:

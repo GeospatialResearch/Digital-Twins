@@ -39,7 +39,7 @@ def hirds_depths_from_db(
 ):
     """Get the list of depths and site's id of each site and return in
     dataframe format."""
-    sites_in_catchment = hirds_depth_data_to_db.get_sites_in_catchment(
+    sites_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(
         catchment_area, engine
     )
 
