@@ -82,7 +82,7 @@ def add_hirds_depth_data_to_db(path: str, site_id: str, engine):
         site_data.to_sql("hirds_rain_depth", engine, index=False, if_exists="append")
 
 
-def hirds_depths_to_db(engine, catchment_area: Polygon, path):
+def rainfall_depths_to_db(engine, catchment_area: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
     sites_in_catchment = get_sites_in_catchment(catchment_area, engine)
     if check_table_exists(engine):
@@ -115,4 +115,4 @@ if __name__ == "__main__":
 
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    hirds_depths_to_db(engine, catchment_polygon, file_path_to_store)
+    rainfall_depths_to_db(engine, catchment_polygon, file_path_to_store)

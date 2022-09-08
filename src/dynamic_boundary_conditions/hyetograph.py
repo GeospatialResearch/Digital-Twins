@@ -79,7 +79,7 @@ def main():
     sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
     thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
     catchment_polygon = catchment_area_geometry_info(catchment_file)
-    hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_polygon, file_path_to_store)
+    hirds_depth_data_to_db.rainfall_depths_to_db(engine, catchment_polygon, file_path_to_store)
     depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_polygon, ari, duration, rcp,
                                                                 time_period)
 
