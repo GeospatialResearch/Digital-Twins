@@ -69,7 +69,7 @@ def store_data_to_csv(site_id: str, file_path_to_store):
     if not pathlib.Path.exists(file_path_to_store):
         file_path_to_store.mkdir(parents=True, exist_ok=True)
 
-    filename = rf'{site_id}_rain_depth.csv'
+    filename = pathlib.Path(rf'{site_id}_rain_depth.csv')
     site_data = get_data_from_hirds(site_id)
     with open(file_path_to_store / filename, 'w') as file:
         file.write(site_data)
