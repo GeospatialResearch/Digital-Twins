@@ -9,6 +9,7 @@ import re
 import requests
 from requests.structures import CaseInsensitiveDict
 import pandas as pd
+import pathlib
 
 
 def get_site_url_key(site_id: str) -> str:
