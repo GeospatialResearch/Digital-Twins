@@ -50,8 +50,8 @@ def add_hirds_data_to_csv(site_id: str, response, path):
 
 def get_data_from_hirds(site_id: str, path: str):
     """Get data from the hirds website using curl command and store as a csv files."""
-    site_id_url = get_site_url_key(site_id)
-    url = f"https://api.niwa.co.nz/hirds/report/{site_id_url}/export"
+    site_url_key = get_site_url_key(site_id)
+    url = f"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
     headers["Accept-Language"] = "en-GB,en-US;q=0.9,en;q=0.8"
