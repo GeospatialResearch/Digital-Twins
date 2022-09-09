@@ -11,7 +11,7 @@ from requests.structures import CaseInsensitiveDict
 import pandas as pd
 
 
-def get_url_id(site_id: str) -> str:
+def get_site_url_key(site_id: str) -> str:
     """Each site has a unique key that need to be inserted in the url before making an api request."""
     url = "https://api.niwa.co.nz/hirds/report"
     headers = CaseInsensitiveDict()
@@ -50,7 +50,7 @@ def add_hirds_data_to_csv(site_id: str, response, path):
 
 def get_data_from_hirds(site_id: str, path: str):
     """Get data from the hirds website using curl command and store as a csv files."""
-    site_id_url = get_url_id(site_id)
+    site_id_url = get_site_url_key(site_id)
     url = f"https://api.niwa.co.nz/hirds/report/{site_id_url}/export"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
