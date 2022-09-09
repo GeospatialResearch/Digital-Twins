@@ -92,7 +92,7 @@ def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
         site_ids = get_sites_not_in_db(engine, sites_id_list)
         if site_ids.size:
             for site_id in site_ids:
-                rain_depth_data_from_hirds.get_data_from_hirds(site_id, path)
+                rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
                 add_hirds_depth_data_to_db(path, site_id, engine)
         else:
             print("Sites for the requested catchment available in the database.")
@@ -100,7 +100,7 @@ def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
         # check if sites_id_list is not empty
         if sites_id_list:
             for site_id in sites_id_list:
-                rain_depth_data_from_hirds.get_data_from_hirds(site_id, path)
+                rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
                 add_hirds_depth_data_to_db(path, site_id, engine)
         else:
             print("There are no sites within the requested catchment area, select a wider area")
