@@ -4,6 +4,7 @@ Created on Thu Jan 20 14:35:08 2022.
 
 @author: pkh35
 """
+import re
 
 import requests
 from requests.structures import CaseInsensitiveDict
@@ -28,20 +29,15 @@ def get_url_id(site_id: str) -> str:
     headers["sec-ch-ua"] = '"" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96""'
     headers["sec-ch-ua-mobile"] = "?0"
     headers["sec-ch-ua-platform"] = '""Windows""'
+    # Set idf to false for rainfall depth data, and set idf to true for rainfall intensity data.
     data = f'{{"site_id":"{site_id}","idf":false}}'
-    # TODO: idf set to false is grabbing depth data not intensity data. Is this what we are after?
-    try:
-        resp = requests.post(url, headers=headers, data=data)
-    except requests.exceptions.HTTPError as error:
-        print("Request Failed", error)
-    hirds = pd.read_json(resp.text)  # get each sites url.
-    site_url = hirds['url'][0]
-    start = site_url.find("/asset/") + len("/asset/")
-    # TODO: another way to code the above line > re.search("/asset/", site_url).span()[1]
-    # get the long digits part from the url
-    site_id_url = site_url[start:]
-    site_id_url = site_id_url.rsplit('/')[0]
-    return site_id_url
+    resp = requests.post(url, headers=headers, data=data)
+    rainfall_results = pd.read_json(resp.text)
+    # Get requested sites url unique key
+    site_url = rainfall_results["url"][0]
+    pattern = re.compile(rf"(?<=/asset/)\w*(?=/)")
+    site_url_key = re.findall(pattern, site_url)[0]
+    return site_url_key
 
 
 def add_hirds_data_to_csv(site_id: str, response, path):
