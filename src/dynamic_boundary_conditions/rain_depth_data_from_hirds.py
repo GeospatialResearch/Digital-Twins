@@ -48,7 +48,7 @@ def add_hirds_data_to_csv(site_id: str, response, path):
     site_info.close()
 
 
-def get_data_from_hirds(site_id: str, path: str):
+def get_data_from_hirds(site_id: str) -> str:
     """Get data from the hirds website using curl command and store as a csv files."""
     site_url_key = get_site_url_key(site_id)
     url = f"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
@@ -66,9 +66,6 @@ def get_data_from_hirds(site_id: str, path: str):
     headers["sec-ch-ua"] = '"" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96""'
     headers["sec-ch-ua-mobile"] = "?0"
     headers["sec-ch-ua-platform"] = '""Windows""'
-    try:
-        response = requests.get(url, headers=headers)
-    except requests.exceptions.HTTPError as error:
-        print("Request Failed", error)
-    hirds_data = response.text
-    add_hirds_data_to_csv(site_id, hirds_data, path)
+    resp = requests.get(url, headers=headers)
+    site_data = resp.text
+    return site_data
