@@ -12,7 +12,7 @@ import pandas as pd
 
 
 def get_site_url_key(site_id: str) -> str:
-    """Each site has a unique key that need to be inserted in the url before making an api request."""
+    """Get each sites' unique url key from the hirds website using curl commands"""
     url = "https://api.niwa.co.nz/hirds/report"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
