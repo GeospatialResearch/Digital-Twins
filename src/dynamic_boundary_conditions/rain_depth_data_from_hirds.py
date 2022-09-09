@@ -4,10 +4,10 @@ Created on Thu Jan 20 14:35:08 2022.
 
 @author: pkh35
 """
-import re
 
 import requests
 from requests.structures import CaseInsensitiveDict
+import re
 import pandas as pd
 import pathlib
 
