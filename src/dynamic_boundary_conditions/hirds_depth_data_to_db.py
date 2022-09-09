@@ -57,7 +57,7 @@ def get_data_from_csv(filename: str, site_id: str, rcp, time_period, n: int):
     return hirds_data
 
 
-def add_hirds_depth_data_to_db(path: str, site_id: str, engine):
+def add_rain_depth_data_to_db(path: str, site_id: str, engine):
     """Store each site's depth data in the database. Each csv file contains
     data for historical rainfall depth, and for various rcp and time period.
     To view the csv file, go to : https://hirds.niwa.co.nz/, select a site and
@@ -93,7 +93,7 @@ def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
         if site_ids.size:
             for site_id in site_ids:
                 rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
-                add_hirds_depth_data_to_db(path, site_id, engine)
+                add_rain_depth_data_to_db(path, site_id, engine)
         else:
             print("Sites for the requested catchment available in the database.")
     else:
@@ -101,7 +101,7 @@ def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
         if sites_id_list:
             for site_id in sites_id_list:
                 rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
-                add_hirds_depth_data_to_db(path, site_id, engine)
+                add_rain_depth_data_to_db(path, site_id, engine)
         else:
             print("There are no sites within the requested catchment area, select a wider area")
 
