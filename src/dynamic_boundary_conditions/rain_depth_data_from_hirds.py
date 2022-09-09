@@ -40,14 +40,6 @@ def get_site_url_key(site_id: str) -> str:
     return site_url_key
 
 
-def add_hirds_data_to_csv(site_id: str, response, path):
-    """Store the depth data in the form of csv file in the desired path."""
-    filename = fr'{path}\{site_id}_depth.csv'
-    site_info = open(filename, "w")
-    site_info.write(response)
-    site_info.close()
-
-
 def get_data_from_hirds(site_id: str) -> str:
     """Get data from the hirds website using curl command and store as a csv files."""
     site_url_key = get_site_url_key(site_id)
@@ -69,3 +61,14 @@ def get_data_from_hirds(site_id: str) -> str:
     resp = requests.get(url, headers=headers)
     site_data = resp.text
     return site_data
+
+
+def store_data_to_csv(site_id: str, file_path_to_store):
+    """Store the depth data in the form of csv file in the desired path."""
+    if not pathlib.Path.exists(file_path_to_store):
+        file_path_to_store.mkdir(parents=True, exist_ok=True)
+
+    filename = rf'{site_id}_rain_depth.csv'
+    site_data = get_data_from_hirds(site_id)
+    with open(file_path_to_store / filename, 'w') as file:
+        file.write(site_data)
