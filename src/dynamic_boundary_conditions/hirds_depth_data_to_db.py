@@ -14,10 +14,10 @@ from shapely.geometry import Polygon
 from src.dynamic_boundary_conditions import rain_depth_data_from_hirds
 
 
-def check_table_exists(engine):
-    """Check if the hirds_rain_depth table exists in the database."""
+def check_table_exists(db_table_name: str, engine) -> bool:
+    """Check if table exists in the database."""
     insp = sqlalchemy.inspect(engine)
-    return insp.has_table("hirds_rain_depth", schema="public")
+    return insp.has_table(db_table_name, schema="public")
 
 
 def get_sites_id_in_catchment(catchment_polygon: Polygon, engine) -> list:
@@ -87,7 +87,7 @@ def add_hirds_depth_data_to_db(path: str, site_id: str, engine):
 def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
     sites_in_catchment = get_sites_id_in_catchment(catchment_polygon, engine)
-    if check_table_exists(engine):
+    if check_table_exists("rainfall_depth", engine):
         site_ids = get_sites_not_in_db(engine, sites_in_catchment)
         if site_ids.size:
             for site_id in site_ids:
