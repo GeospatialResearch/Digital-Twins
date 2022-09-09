@@ -36,7 +36,7 @@ def get_site_url_key(site_id: str) -> str:
     rainfall_results = pd.read_json(resp.text)
     # Get requested sites url unique key
     site_url = rainfall_results["url"][0]
-    pattern = re.compile(rf"(?<=/asset/)\w*(?=/)")
+    pattern = re.compile(r"(?<=/asset/)\w*(?=/)")
     site_url_key = re.findall(pattern, site_url)[0]
     return site_url_key
 
@@ -44,7 +44,7 @@ def get_site_url_key(site_id: str) -> str:
 def get_data_from_hirds(site_id: str) -> str:
     """Get data from the hirds website using curl command and store as a csv files."""
     site_url_key = get_site_url_key(site_id)
-    url = f"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
+    url = rf"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
     headers["Accept-Language"] = "en-GB,en-US;q=0.9,en;q=0.8"
@@ -69,7 +69,7 @@ def store_data_to_csv(site_id: str, file_path_to_store):
     if not pathlib.Path.exists(file_path_to_store):
         file_path_to_store.mkdir(parents=True, exist_ok=True)
 
-    filename = pathlib.Path(rf'{site_id}_rain_depth.csv')
+    filename = pathlib.Path(f'{site_id}_rain_depth.csv')
     site_data = get_data_from_hirds(site_id)
     with open(file_path_to_store / filename, 'w') as file:
         file.write(site_data)
