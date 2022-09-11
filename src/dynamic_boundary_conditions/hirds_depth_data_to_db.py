@@ -64,6 +64,9 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
     generate a report, there are rainfall depths for diffrent RCP Scenarios.
     To understand the structure of the CSV file, download the spreadsheet.
     """
+    filename = pathlib.Path(f"{site_id}_rain_depth.csv")
+    filepath = (path / filename)
+
     the_values = [
         (None, None, 12),
         (2.6, "2031-2050", 40),
@@ -75,11 +78,11 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
         (8.5, "2031-2050", 124),
         (8.5, "2081-2100", 138),
     ]
-    filename = fr"{path}\{site_id}_depth.csv"
+
     print("Adding data for site", site_id, "to database")
     for (rcp, time_period, n) in the_values:
         site_data = get_data_from_csv(
-            filename, site_id, rcp=rcp, time_period=time_period, n=n
+            filepath, site_id, rcp=rcp, time_period=time_period, n=n
         )
         site_data.to_sql("hirds_rain_depth", engine, index=False, if_exists="append")
 
