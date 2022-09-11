@@ -55,10 +55,10 @@ def get_sites_not_in_db(engine, sites_in_catchment):
     return sites
 
 
-def get_data_from_csv(filename: str, site_id: str, rcp, time_period, n: int):
+def get_data_from_csv(filepath, site_id: str, rcp, time_period, n: int):
     """Read data of the diffrent time period and return a dataframe."""
     hirds_data = pd.read_csv(
-        filename, skiprows=n, nrows=12, index_col=None, quotechar='"'
+        filepath, skiprows=n, nrows=12, index_col=None, quotechar='"'
     )
     hirds_data["site_id"] = site_id
     hirds_data["rcp"] = rcp
