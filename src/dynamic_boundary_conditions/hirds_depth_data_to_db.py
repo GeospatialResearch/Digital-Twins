@@ -33,7 +33,7 @@ def get_sites_id_in_catchment(catchment_polygon: Polygon, engine) -> list:
 def get_sites_not_in_db(engine, sites_in_catchment):
     """To only get the data for the sites for which data are not avialble in
     the database."""
-    query = "SELECT DISTINCT site_id FROM hirds_rain_depth;"
+    query = "SELECT DISTINCT site_id FROM rainfall_depth;"
     gauges = engine.execute(query)
     sites = gauges.fetchall()
     sites = list(sites)
@@ -84,7 +84,7 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
         site_data = get_data_from_csv(
             filepath, site_id, rcp=rcp, time_period=time_period, n=n
         )
-        site_data.to_sql("hirds_rain_depth", engine, index=False, if_exists="append")
+        site_data.to_sql("rainfall_depth", engine, index=False, if_exists="append")
 
 
 def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
