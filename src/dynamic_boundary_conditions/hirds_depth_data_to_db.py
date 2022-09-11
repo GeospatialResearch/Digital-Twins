@@ -10,8 +10,18 @@ import geopandas as gpd
 import numpy as np
 import sqlalchemy
 import pathlib
+import logging
 from shapely.geometry import Polygon
 from src.dynamic_boundary_conditions import rain_depth_data_from_hirds
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
 
 
 def check_table_exists(db_table_name: str, engine) -> bool:
@@ -79,7 +89,7 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
         (8.5, "2081-2100", 138),
     ]
 
-    print("Adding data for site", site_id, "to database")
+    log.info(f"Adding rainfall depth data for site {site_id} to database")
     for (rcp, time_period, n) in the_values:
         site_data = get_data_from_csv(
             filepath, site_id, rcp=rcp, time_period=time_period, n=n
