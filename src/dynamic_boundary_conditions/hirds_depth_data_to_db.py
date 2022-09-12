@@ -41,7 +41,7 @@ def get_sites_id_in_catchment(catchment_polygon: Polygon, engine) -> list:
     return sites_id_list
 
 
-def get_sites_not_in_db(engine, sites_id_in_catchment: list) -> list:
+def get_sites_id_not_in_db(engine, sites_id_in_catchment: list) -> list:
     """To only get the data for the sites for which data are not avialble in
     the database."""
     query = "SELECT DISTINCT site_id FROM rainfall_depth;"
@@ -114,7 +114,7 @@ def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
     sites_id_in_catchment = get_sites_id_in_catchment(catchment_polygon, engine)
     # check if 'rainfall_depth' table is already in the database
     if check_table_exists("rainfall_depth", engine):
-        site_ids = get_sites_not_in_db(engine, sites_id_in_catchment)
+        site_ids = get_sites_id_not_in_db(engine, sites_id_in_catchment)
         if site_ids.size:
             for site_id in site_ids:
                 rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
