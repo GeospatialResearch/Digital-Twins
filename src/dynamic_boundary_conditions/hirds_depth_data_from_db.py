@@ -10,7 +10,7 @@ import pathlib
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 
 
-def get_each_site_hirds_depth_data(
+def get_each_site_rain_depth_data(
         ari, duration, site, engine, rcp=None, time_period=None
 ):
     """Get hirds rainfall depth data from the database."""
@@ -45,7 +45,7 @@ def rain_depths_from_db(
 
     depths_list = []
     for site_id in sites_in_catchment:
-        rain_depth = get_each_site_hirds_depth_data(
+        rain_depth = get_each_site_rain_depth_data(
             ari, duration, site_id, engine, rcp, time_period
         )
         depths_list.append(rain_depth)
