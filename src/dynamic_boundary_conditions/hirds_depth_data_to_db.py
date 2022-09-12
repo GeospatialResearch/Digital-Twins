@@ -68,7 +68,7 @@ def get_layout_structure_of_csv(filepath) -> list:
             # Get lines that contain "(mm) ::"
             if line.find("(mm) ::") != -1:
                 # add the row number to skip_rows list
-                skip_rows.append(index+1)
+                skip_rows.append(index + 1)
                 # add the obtained rcp and time_period values to list
                 rcp_result = re.search(r"(\d*\.\d*)", line)
                 period_result = re.search(r"(\d{4}-\d{4})", line)
