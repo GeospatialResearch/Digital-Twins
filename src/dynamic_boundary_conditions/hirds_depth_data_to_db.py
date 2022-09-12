@@ -41,19 +41,17 @@ def get_sites_id_in_catchment(catchment_polygon: Polygon, engine) -> list:
     return sites_id_list
 
 
-def get_sites_not_in_db(engine, sites_id_in_catchment):
+def get_sites_not_in_db(engine, sites_id_in_catchment: list) -> list:
     """To only get the data for the sites for which data are not avialble in
     the database."""
     query = "SELECT DISTINCT site_id FROM rainfall_depth;"
-    gauges = engine.execute(query)
-    sites = gauges.fetchall()
-    sites = list(sites)
-    sites_in_db = []
-    for i in range(len(sites)):
-        sites_in_db.append(sites[i][0])
-    # yields the elements in `sites_in_catchment` that are NOT in `sites_in_db`
-    sites = np.setdiff1d(sites_id_in_catchment, sites_in_db)
-    return sites
+    # Get dataframe of sites in the database
+    sites_id_in_db = pd.read_sql_query(query, engine)
+    # Convert dataframe to list of sites in the database
+    sites_id_in_db = sites_id_in_db["site_id"].tolist()
+    # yields the elements in `sites_id_in_catchment` that are NOT in `sites_id_in_db`
+    sites_id_not_in_db = list(set(sites_id_in_catchment).difference(sites_id_in_db))
+    return sites_id_not_in_db
 
 
 def get_layout_structure_of_csv(filepath) -> list:
