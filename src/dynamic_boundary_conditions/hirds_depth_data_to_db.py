@@ -56,6 +56,32 @@ def get_sites_not_in_db(engine, sites_in_catchment):
     return sites
 
 
+def get_layout_structure_of_csv(filepath) -> list:
+    """Read the csv files of the different sites rainfall data and return a dataframe of the layout structure"""
+    skip_rows = []
+    rcp = []
+    time_period = []
+    # Read file line by line wih a for loop
+    with open(filepath) as file:
+        for index, line in enumerate(file):
+            # Get lines that contain "(mm) ::"
+            if line.find("(mm) ::") != -1:
+                # add the row number to skip_rows list
+                skip_rows.append(index+1)
+                # add the obtained rcp and time_period values to list
+                rcp_result = re.search(r"(\d*\.\d*)", line)
+                period_result = re.search(r"(\d{4}-\d{4})", line)
+                if rcp_result or period_result != None:
+                    rcp.append(float(rcp_result[0]))
+                    time_period.append(period_result[0])
+                else:
+                    rcp.append(None)
+                    time_period.append(None)
+    # Merge the three different lists into one list of tuples
+    layout_structure = list(zip(skip_rows, rcp, time_period))
+    return layout_structure
+
+
 def get_data_from_csv(filepath, site_id: str, rcp, time_period, n: int):
     """Read data of the diffrent time period and return a dataframe."""
     hirds_data = pd.read_csv(
