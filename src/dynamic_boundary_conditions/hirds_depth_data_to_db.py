@@ -108,7 +108,7 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
     log.info(f"Added rainfall depth data for site {site_id} to database")
 
 
-def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
+def rain_depths_to_db(engine, catchment_polygon: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
     sites_id_in_catchment = get_sites_id_in_catchment(catchment_polygon, engine)
     # check if 'rainfall_depth' table is already in the database
@@ -141,4 +141,4 @@ if __name__ == "__main__":
 
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    rainfall_depths_to_db(engine, catchment_polygon, file_path_to_store)
+    rain_depths_to_db(engine, catchment_polygon, file_path_to_store)
