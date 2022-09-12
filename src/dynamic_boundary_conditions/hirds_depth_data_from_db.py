@@ -34,7 +34,7 @@ def get_each_site_hirds_depth_data(
     return rain_depth
 
 
-def hirds_depths_from_db(
+def rain_depths_from_db(
         engine, catchment_area, ari, duration, rcp=None, time_period=None
 ):
     """Get the list of depths and site's id of each site and return in
@@ -66,4 +66,4 @@ if __name__ == "__main__":
 
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    depths_data = hirds_depths_from_db(engine, catchment_polygon, ari, duration, rcp, time_period)
+    depths_data = rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp, time_period)
