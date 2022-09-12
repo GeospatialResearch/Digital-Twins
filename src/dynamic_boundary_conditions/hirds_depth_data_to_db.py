@@ -113,10 +113,10 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
 
 def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
-    sites_id_list = get_sites_id_in_catchment(catchment_polygon, engine)
+    sites_id_in_catchment = get_sites_id_in_catchment(catchment_polygon, engine)
     # check if 'rainfall_depth' table is already in the database
     if check_table_exists("rainfall_depth", engine):
-        site_ids = get_sites_not_in_db(engine, sites_id_list)
+        site_ids = get_sites_not_in_db(engine, sites_id_in_catchment)
         if site_ids.size:
             for site_id in site_ids:
                 rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
@@ -124,9 +124,9 @@ def rainfall_depths_to_db(engine, catchment_polygon: Polygon, path):
         else:
             log.info("Sites for the requested catchment available in the database.")
     else:
-        # check if sites_id_list is not empty
-        if sites_id_list:
-            for site_id in sites_id_list:
+        # check if sites_id_in_catchment is not empty
+        if sites_id_in_catchment:
+            for site_id in sites_id_in_catchment:
                 rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
                 add_rain_depth_data_to_db(path, site_id, engine)
         else:
