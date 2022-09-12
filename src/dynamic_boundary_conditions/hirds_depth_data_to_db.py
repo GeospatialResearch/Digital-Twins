@@ -82,16 +82,14 @@ def get_layout_structure_of_csv(filepath) -> list:
     return layout_structure
 
 
-def get_data_from_csv(filepath, site_id: str, rcp, time_period, n: int):
-    """Read data of the diffrent time period and return a dataframe."""
-    hirds_data = pd.read_csv(
-        filepath, skiprows=n, nrows=12, index_col=None, quotechar='"'
-    )
-    hirds_data["site_id"] = site_id
-    hirds_data["rcp"] = rcp
-    hirds_data["time_period"] = time_period
-    hirds_data.columns = hirds_data.columns.str.lower()
-    return hirds_data
+def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_period: str) -> pd.DataFrame:
+    """Read the csv files of the different sites rainfall data and return a dataframe."""
+    rainfall_data = pd.read_csv(filepath, skiprows=skip_rows, nrows=12)
+    rainfall_data.insert(0, "site_id", site_id)
+    rainfall_data.insert(1, "rcp", rcp)
+    rainfall_data.insert(2, "time_period", time_period)
+    rainfall_data.columns = rainfall_data.columns.str.lower()
+    return rainfall_data
 
 
 def add_rain_depth_data_to_db(path: str, site_id: str, engine):
