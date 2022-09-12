@@ -104,17 +104,7 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
     filename = pathlib.Path(f"{site_id}_rain_depth.csv")
     filepath = (path / filename)
 
-    the_values = [
-        (None, None, 12),
-        (2.6, "2031-2050", 40),
-        (2.6, "2081-2100", 54),
-        (4.5, "2031-2050", 68),
-        (4.5, "2081-2100", 82),
-        (6, "2031-2050", 96),
-        (6, "2081-2100", 110),
-        (8.5, "2031-2050", 124),
-        (8.5, "2081-2100", 138),
-    ]
+    layout_structure = get_layout_structure_of_csv(filepath)
 
     log.info(f"Adding rainfall depth data for site {site_id} to database")
     for (rcp, time_period, n) in the_values:
