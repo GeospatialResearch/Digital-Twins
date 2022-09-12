@@ -105,10 +105,8 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
     layout_structure = get_layout_structure_of_csv(filepath)
 
     log.info(f"Adding rainfall depth data for site {site_id} to database")
-    for (rcp, time_period, n) in the_values:
-        site_data = get_data_from_csv(
-            filepath, site_id, rcp=rcp, time_period=time_period, n=n
-        )
+    for (skip_rows, rcp, time_period) in layout_structure:
+        site_data = get_data_from_csv(filepath, site_id, skip_rows=skip_rows, rcp=rcp, time_period=time_period)
         site_data.to_sql("rainfall_depth", engine, index=False, if_exists="append")
 
 
