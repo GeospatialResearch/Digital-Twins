@@ -91,10 +91,10 @@ def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_p
 
 
 def add_rain_depth_data_to_db(path: str, site_id: str, engine):
-    """Store each site's depth data in the database. Each csv file contains
-    data for historical rainfall depth, and for various rcp and time period.
-    To view the csv file, go to : https://hirds.niwa.co.nz/, select a site and
-    generate a report, there are rainfall depths for diffrent RCP Scenarios.
+    """Store each site's depth data in the database. Each csv file contains data for historical rainfall depth,
+    and for various rcp and time period.
+    To view the csv file, go to : https://hirds.niwa.co.nz/, select a site and generate a report,
+    there are rainfall depths for different RCP Scenarios.
     To understand the structure of the CSV file, download the spreadsheet.
     """
     filename = pathlib.Path(f"{site_id}_rain_depth.csv")
