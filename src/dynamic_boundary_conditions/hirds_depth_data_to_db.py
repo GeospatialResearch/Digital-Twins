@@ -8,7 +8,6 @@ Created on Thu Jan 20 15:09:11 2022
 import re
 import pandas as pd
 import geopandas as gpd
-import numpy as np
 import sqlalchemy
 import pathlib
 import logging
