@@ -57,7 +57,8 @@ def get_sites_not_in_db(engine, sites_in_catchment):
 
 
 def get_layout_structure_of_csv(filepath) -> list:
-    """Read the csv files of the different sites rainfall data and return a dataframe of the layout structure"""
+    """Read the csv file of each site's rainfall data and return a list of tuples (skip_rows, rcp, time_period)
+    of its layout structure"""
     skip_rows = []
     rcp = []
     time_period = []
