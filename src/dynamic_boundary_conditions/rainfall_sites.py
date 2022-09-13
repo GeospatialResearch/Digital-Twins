@@ -11,6 +11,7 @@ import pandas as pd
 import geopandas as gpd
 import sqlalchemy
 from geoalchemy2 import Geometry
+from src.digitaltwin import setup_environment
 
 
 def get_rainfall_sites_data() -> gpd.GeoDataFrame:
@@ -79,9 +80,11 @@ def get_sites_locations(engine, catchment: gpd.GeoDataFrame) -> gpd.GeoDataFrame
     return sites_in_catchment
 
 
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-
+def main():
     engine = setup_environment.get_database()
     sites = get_rainfall_sites_data()
     rainfall_sites_to_db(engine, sites)
+
+
+if __name__ == "__main__":
+    main()
