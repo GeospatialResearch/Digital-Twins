@@ -22,11 +22,11 @@ def get_each_site_rain_depth_data(
             " period should be None and vice-versa"
         )
     elif rcp is not None and time_period is not None:
-        query = f"""select site_id, "{duration}h" from hirds_rain_depth where
+        query = f"""select site_id, "{duration}h" from rainfall_depth where
                 site_id='{site}' and ari={ari} and\
                 rcp='{rcp}' and time_period='{time_period}'"""
     else:
-        query = f"""select site_id, "{duration}h" from hirds_rain_depth where
+        query = f"""select site_id, "{duration}h" from rainfall_depth where
                 site_id='{site}' and ari={ari} and\
                 rcp is null and time_period is null"""
     rain_depth = engine.execute(query)
