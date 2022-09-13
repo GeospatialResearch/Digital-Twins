@@ -87,6 +87,7 @@ def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_p
     rainfall_data.insert(0, "site_id", site_id)
     rainfall_data.insert(1, "rcp", rcp)
     rainfall_data.insert(2, "time_period", time_period)
+    rainfall_data["rcp"] = rainfall_data["rcp"].astype('float64')
     rainfall_data.columns = rainfall_data.columns.str.lower()
     return rainfall_data
 
