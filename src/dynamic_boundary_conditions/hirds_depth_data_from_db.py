@@ -10,17 +10,11 @@ import pathlib
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 
 
-def get_each_site_rain_depth_data(
-        ari, duration, site, engine, rcp=None, time_period=None
-):
+def get_each_site_rain_depth_data(ari, duration, site, engine, rcp=None, time_period=None):
     """Get hirds rainfall depth data from the database."""
-    if (rcp is None and time_period is not None) or (
-            rcp is not None and time_period is None
-    ):
+    if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         raise ValueError(
-            "check the arguments of get_hirds_depth_data if rcp is None,time"
-            " period should be None and vice-versa"
-        )
+            "check the arguments of get_hirds_depth_data if rcp is None,time period should be None and vice-versa")
     elif rcp is not None and time_period is not None:
         query = f"""select site_id, "{duration}h" from rainfall_depth where
                 site_id='{site}' and ari={ari} and\
@@ -34,14 +28,10 @@ def get_each_site_rain_depth_data(
     return rain_depth
 
 
-def rain_depths_from_db(
-        engine, catchment_polygon, ari, duration, rcp=None, time_period=None
-):
+def rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp=None, time_period=None):
     """Get the list of depths and site's id of each site and return in
     dataframe format."""
-    sites_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(
-        catchment_polygon, engine
-    )
+    sites_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(catchment_polygon, engine)
 
     depths_list = []
     for site_id in sites_in_catchment:
@@ -61,7 +51,7 @@ if __name__ == "__main__":
         r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
     ari = 100
     duration = 24
-    rcp = "2.6"
+    rcp = 2.6
     time_period = "2031-2050"
 
     engine = setup_environment.get_database()
