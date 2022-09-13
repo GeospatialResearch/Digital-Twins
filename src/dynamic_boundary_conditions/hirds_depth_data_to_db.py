@@ -74,7 +74,7 @@ def get_layout_structure_of_csv(filepath) -> list:
                     rcp.append(float(rcp_result[0]))
                     time_period.append(period_result[0])
                 else:
-                    rcp.append(None)
+                    rcp.append(float('nan'))
                     time_period.append(None)
     # Merge the three different lists into one list of tuples
     layout_structure = list(zip(skip_rows, rcp, time_period))
@@ -87,7 +87,6 @@ def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_p
     rainfall_data.insert(0, "site_id", site_id)
     rainfall_data.insert(1, "rcp", rcp)
     rainfall_data.insert(2, "time_period", time_period)
-    rainfall_data["rcp"] = rainfall_data["rcp"].astype('float64')
     rainfall_data.columns = rainfall_data.columns.str.lower()
     return rainfall_data
 
