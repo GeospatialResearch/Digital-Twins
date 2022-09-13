@@ -9,6 +9,8 @@ import pandas as pd
 import geopandas as gpd
 from geovoronoi import voronoi_regions_from_coords, points_to_coords
 import sys
+from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions import rainfall_sites
 
 
 def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: gpd.GeoDataFrame):
@@ -38,11 +40,12 @@ def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: g
         rainfall_sites_coverage.to_postgis("rainfall_sites_coverage", engine, if_exists="replace")
 
 
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import rainfall_sites
-
+def main():
     engine = setup_environment.get_database()
     nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
     sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
     thiessen_polygons(engine, nz_boundary, sites_in_catchment)
+
+
+if __name__ == "__main__":
+    main()
