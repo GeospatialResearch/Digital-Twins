@@ -24,7 +24,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, duration):
+def get_each_site_rain_depth_data(engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str):
     """Get hirds rainfall depth data from the database."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
@@ -44,7 +44,7 @@ def get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, durati
     return rain_depth
 
 
-def rain_depths_from_db(engine, catchment_polygon: Polygon, rcp, time_period, ari, duration):
+def rain_depths_from_db(engine, catchment_polygon: Polygon, rcp: float, time_period: str, ari: float, duration: str):
     """Get the list of depths and site's id of each site and return in dataframe format."""
     sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(catchment_polygon, engine)
 
