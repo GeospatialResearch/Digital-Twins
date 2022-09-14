@@ -10,8 +10,18 @@ from requests.structures import CaseInsensitiveDict
 import pandas as pd
 import geopandas as gpd
 import sqlalchemy
+import logging
 from geoalchemy2 import Geometry
 from src.digitaltwin import setup_environment
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
 
 
 def get_rainfall_sites_data() -> gpd.GeoDataFrame:
@@ -41,11 +51,11 @@ def get_rainfall_sites_data() -> gpd.GeoDataFrame:
 def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
     """Storing rainfall sites data from the hirds website in the database."""
     if not sqlalchemy.inspect(engine).has_table("rainfall_sites"):
-        print("Storing rainfall sites data from hirds in the database.")
         sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,
                          dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
+        log.info("Stored rainfall sites data in the database.")
     else:
-        print("hirds rainfall sites data already exists in the database.")
+        log.info("Rainfall sites data already exists in the database.")
 
 
 def get_new_zealand_boundary(engine) -> gpd.GeoDataFrame:
