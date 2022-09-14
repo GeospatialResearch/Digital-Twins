@@ -50,12 +50,12 @@ def get_rainfall_sites_data() -> gpd.GeoDataFrame:
 
 def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
     """Storing rainfall sites data from the hirds website in the database."""
-    if not hirds_depth_data_to_db.check_table_exists("rainfall_sites", engine):
+    if hirds_depth_data_to_db.check_table_exists("rainfall_sites", engine):
+        log.info("Rainfall sites data already exists in the database.")
+    else:
         sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,
                          dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
         log.info("Stored rainfall sites data in the database.")
-    else:
-        log.info("Rainfall sites data already exists in the database.")
 
 
 def get_new_zealand_boundary(engine) -> gpd.GeoDataFrame:
