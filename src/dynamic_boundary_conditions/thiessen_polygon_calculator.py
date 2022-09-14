@@ -36,7 +36,7 @@ def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: g
             voronoi["area_in_km2"] = voronoi.to_crs(3857).area / 1e6
             site_voronoi = pd.concat([site, voronoi], axis=1)
             site_voronoi = site_voronoi[["site_id", "area_in_km2", "geometry"]]
-            rainfall_sites_coverage = pd.concat([rainfall_sites_coverage, site_voronoi])
+            rainfall_sites_coverage = pd.concat([rainfall_sites_coverage, site_voronoi], ignore_index=True)
         rainfall_sites_coverage.to_postgis("rainfall_sites_coverage", engine, if_exists="replace")
 
 
