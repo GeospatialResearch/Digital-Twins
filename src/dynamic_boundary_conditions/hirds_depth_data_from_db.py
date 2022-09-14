@@ -65,7 +65,7 @@ def main():
 
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    depths_data = rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)
+    rain_depth_in_catchment = rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)
 
 
 if __name__ == "__main__":
