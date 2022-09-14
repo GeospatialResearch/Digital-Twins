@@ -13,6 +13,7 @@ import sqlalchemy
 import logging
 from geoalchemy2 import Geometry
 from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -50,7 +51,7 @@ def get_rainfall_sites_data() -> gpd.GeoDataFrame:
 
 def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
     """Storing rainfall sites data from the hirds website in the database."""
-    if not sqlalchemy.inspect(engine).has_table("rainfall_sites"):
+    if not hirds_depth_data_to_db.check_table_exists("rainfall_sites", engine):
         sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,
                          dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
         log.info("Stored rainfall sites data in the database.")
