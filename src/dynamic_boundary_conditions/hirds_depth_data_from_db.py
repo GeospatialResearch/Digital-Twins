@@ -12,7 +12,7 @@ from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hyetograph
 
 
-def get_each_site_rain_depth_data(ari, duration, site, engine, rcp=None, time_period=None):
+def get_each_site_rain_depth_data(site_id, rcp, time_period, ari, duration, engine):
     """Get hirds rainfall depth data from the database."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         raise ValueError(
@@ -20,11 +20,11 @@ def get_each_site_rain_depth_data(ari, duration, site, engine, rcp=None, time_pe
             f"If rcp is None, time period should be None, and vice-versa.")
     elif rcp is not None and time_period is not None:
         query = f"""select site_id, "{duration}h" from rainfall_depth where
-                site_id='{site}' and ari={ari} and\
+                site_id='{site_id}' and ari={ari} and\
                 rcp='{rcp}' and time_period='{time_period}'"""
     else:
         query = f"""select site_id, "{duration}h" from rainfall_depth where
-                site_id='{site}' and ari={ari} and\
+                site_id='{site_id}' and ari={ari} and\
                 rcp is null and time_period is null"""
     rain_depth = engine.execute(query)
     rain_depth = list(rain_depth.fetchone())
@@ -38,7 +38,7 @@ def rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp=None, time
 
     depths_list = []
     for site_id in sites_id_in_catchment:
-        rain_depth = get_each_site_rain_depth_data(ari, duration, site_id, engine, rcp, time_period)
+        rain_depth = get_each_site_rain_depth_data(site_id, rcp, time_period, ari, duration, engine)
         depths_list.append(rain_depth)
     rain_depth_data = pd.DataFrame(depths_list, columns=["site_id", "depth"])
     return rain_depth_data
