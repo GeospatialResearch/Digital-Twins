@@ -25,7 +25,7 @@ log.addHandler(stream_handler)
 
 
 def get_each_site_rain_depth_data(engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str):
-    """Get hirds rainfall depth data from the database."""
+    """Get the hirds rainfall depth data for the requested site from the database."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
             f"Check the arguments of the 'rain_depths_from_db' function. "
