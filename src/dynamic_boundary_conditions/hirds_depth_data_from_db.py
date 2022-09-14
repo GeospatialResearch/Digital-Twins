@@ -43,7 +43,7 @@ def get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, durati
     return rain_depth
 
 
-def rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp=None, time_period=None):
+def rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, duration):
     """Get the list of depths and site's id of each site and return in
     dataframe format."""
     sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(catchment_polygon, engine)
@@ -59,14 +59,14 @@ def rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp=None, time
 def main():
     catchment_file = pathlib.Path(
         r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
-    ari = 100
-    duration = "24h"
     rcp = 2.6
     time_period = "2031-2050"
+    ari = 100
+    duration = "24h"
 
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    depths_data = rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp, time_period)
+    depths_data = rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)
 
 
 if __name__ == "__main__":

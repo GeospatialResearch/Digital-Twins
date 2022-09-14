@@ -67,10 +67,10 @@ def main():
     catchment_file = pathlib.Path(
         r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
-    ari = 100
-    duration = 24
-    rcp = "2.6"
+    rcp = 2.6
     time_period = "2031-2050"
+    ari = 100
+    duration = "24h"
 
     engine = setup_environment.get_database()
     sites = rainfall_sites.get_rainfall_sites_data()
@@ -80,8 +80,8 @@ def main():
     thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
     catchment_polygon = catchment_area_geometry_info(catchment_file)
     hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store)
-    depths_data = hirds_depth_data_from_db.rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp,
-                                                               time_period)
+    depths_data = hirds_depth_data_from_db.rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari,
+                                                               duration)
 
     for site_id, depth in zip(depths_data.site_id, depths_data.depth):
         hyt = hyetograph(duration, site_id, depth)
