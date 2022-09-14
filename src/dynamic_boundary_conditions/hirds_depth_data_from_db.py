@@ -31,11 +31,11 @@ def get_each_site_rain_depth_data(site_id, rcp, time_period, ari, duration, engi
             f"If rcp is None, time period should be None, and vice-versa.")
         sys.exit()
     elif rcp is not None and time_period is not None:
-        query = f"""select site_id, "{duration}h" from rainfall_depth where
+        query = f"""select site_id, "{duration}" from rainfall_depth where
                 site_id='{site_id}' and ari={ari} and\
                 rcp='{rcp}' and time_period='{time_period}'"""
     else:
-        query = f"""select site_id, "{duration}h" from rainfall_depth where
+        query = f"""select site_id, "{duration}" from rainfall_depth where
                 site_id='{site_id}' and ari={ari} and\
                 rcp is null and time_period is null"""
     rain_depth = engine.execute(query)
@@ -60,7 +60,7 @@ def main():
     catchment_file = pathlib.Path(
         r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
     ari = 100
-    duration = 24
+    duration = "24h"
     rcp = 2.6
     time_period = "2031-2050"
 
