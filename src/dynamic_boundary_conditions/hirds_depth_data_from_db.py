@@ -45,8 +45,7 @@ def get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, durati
 
 
 def rain_depths_from_db(engine, catchment_polygon: Polygon, rcp, time_period, ari, duration):
-    """Get the list of depths and site's id of each site and return in
-    dataframe format."""
+    """Get the list of depths and site's id of each site and return in dataframe format."""
     sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(catchment_polygon, engine)
 
     depths_list = []
