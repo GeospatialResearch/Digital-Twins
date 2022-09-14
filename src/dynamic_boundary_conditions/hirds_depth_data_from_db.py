@@ -23,7 +23,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_each_site_rain_depth_data(site_id, rcp, time_period, ari, duration, engine):
+def get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, duration):
     """Get hirds rainfall depth data from the database."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
@@ -50,7 +50,7 @@ def rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp=None, time
 
     depths_list = []
     for site_id in sites_id_in_catchment:
-        rain_depth = get_each_site_rain_depth_data(site_id, rcp, time_period, ari, duration, engine)
+        rain_depth = get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, duration)
         depths_list.append(rain_depth)
     rain_depth_data = pd.DataFrame(depths_list, columns=["site_id", "depth"])
     return rain_depth_data
