@@ -24,8 +24,9 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_each_site_rain_depth_data(engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str):
-    """Get the hirds rainfall depth data for the requested site from the database."""
+def get_each_site_rain_depth_data(
+        engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
+    """Get the hirds rainfall depth data for the requested site from the database and return in dataframe format."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
             f"Check the arguments of the 'rain_depths_from_db' function. "
@@ -34,11 +35,11 @@ def get_each_site_rain_depth_data(engine, site_id: str, rcp: float, time_period:
     elif rcp is not None and time_period is not None:
         query = f"""SELECT site_id, "{duration}" FROM rainfall_depth 
         WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
+        rain_depth = pd.read_sql_query(query, engine)
     else:
         query = f"""SELECT site_id, "{duration}" FROM rainfall_depth 
         WHERE site_id='{site_id}' AND rcp is null AND time_period is null AND ari={ari};"""
-    rain_depth = engine.execute(query)
-    rain_depth = list(rain_depth.fetchone())
+        rain_depth = pd.read_sql_query(query, engine).head(1)
     return rain_depth
 
 
