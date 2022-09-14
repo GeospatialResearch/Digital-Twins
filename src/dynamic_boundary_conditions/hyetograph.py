@@ -80,13 +80,13 @@ def main():
     thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
     catchment_polygon = catchment_area_geometry_info(catchment_file)
     hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store)
-    depths_data = hirds_depth_data_from_db.rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari,
-                                                               duration)
+    rain_depth_in_catchment = hirds_depth_data_from_db.rain_depths_from_db(engine, catchment_polygon, rcp, time_period,
+                                                                           ari, duration)
 
-    for site_id, depth in zip(depths_data.site_id, depths_data.depth):
-        hyt = hyetograph(duration, site_id, depth)
-        hyt.plot.bar(title=f'{ari}-year storm: site {site_id}', x='time', y='prcp_prop', rot=0)
-        # TODO: hyetograph data table is input into BG-Flood model
+    # for site_id, depth in zip(rain_depth_in_catchment.site_id, rain_depth_in_catchment.depth):
+    #     hyt = hyetograph(duration, site_id, depth)
+    #     hyt.plot.bar(title=f'{ari}-year storm: site {site_id}', x='time', y='prcp_prop', rot=0)
+    #     # TODO: hyetograph data table is input into BG-Flood model
 
 
 if __name__ == "__main__":
