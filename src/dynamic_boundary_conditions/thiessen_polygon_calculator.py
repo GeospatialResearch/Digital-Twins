@@ -8,9 +8,19 @@ Created on Thu Jan 20 11:36:07 2022
 import pandas as pd
 import geopandas as gpd
 from geovoronoi import voronoi_regions_from_coords, points_to_coords
+import logging
 import sys
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
 
 
 def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: gpd.GeoDataFrame):
@@ -19,7 +29,7 @@ def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: g
     sites_in_catchment: get the geopandas dataframe of the sites in the catchment area.
     """
     if catchment.empty or sites_in_catchment.empty:
-        print("No data available for the catchment or sites passed as an argument.")
+        log.info("No data available for the catchment or sites_in_catchment passed as arguments.")
         sys.exit()
     else:
         catchment_area = catchment["geom"][0]
