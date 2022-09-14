@@ -43,16 +43,16 @@ def get_each_site_rain_depth_data(
     return rain_depth
 
 
-def rain_depths_from_db(engine, catchment_polygon: Polygon, rcp: float, time_period: str, ari: float, duration: str):
-    """Get the list of depths and site's id of each site and return in dataframe format."""
+def rain_depths_from_db(
+        engine, catchment_polygon: Polygon, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
+    """Get all the rainfall depth data for the sites within the catchment area and return in dataframe format."""
     sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(catchment_polygon, engine)
 
-    depths_list = []
+    rain_depth_in_catchment = pd.DataFrame()
     for site_id in sites_id_in_catchment:
         rain_depth = get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, duration)
-        depths_list.append(rain_depth)
-    rain_depth_data = pd.DataFrame(depths_list, columns=["site_id", "depth"])
-    return rain_depth_data
+        rain_depth_in_catchment = pd.concat([rain_depth_in_catchment, rain_depth], ignore_index=True)
+    return rain_depth_in_catchment
 
 
 def main():
