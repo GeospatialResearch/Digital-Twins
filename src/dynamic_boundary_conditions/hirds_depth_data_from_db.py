@@ -7,17 +7,29 @@ Created on Thu Jan 20 16:36:59 2022.
 
 import pandas as pd
 import pathlib
+import logging
+import sys
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hyetograph
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
 
 
 def get_each_site_rain_depth_data(site_id, rcp, time_period, ari, duration, engine):
     """Get hirds rainfall depth data from the database."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
-        raise ValueError(
+        log.error(
             f"Check the arguments of the 'rain_depths_from_db' function. "
             f"If rcp is None, time period should be None, and vice-versa.")
+        sys.exit()
     elif rcp is not None and time_period is not None:
         query = f"""select site_id, "{duration}h" from rainfall_depth where
                 site_id='{site_id}' and ari={ari} and\
