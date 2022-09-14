@@ -16,7 +16,8 @@ def get_each_site_rain_depth_data(ari, duration, site, engine, rcp=None, time_pe
     """Get hirds rainfall depth data from the database."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         raise ValueError(
-            "check the arguments of get_hirds_depth_data if rcp is None,time period should be None and vice-versa")
+            f"Check the arguments of the 'rain_depths_from_db' function. "
+            f"If rcp is None, time period should be None, and vice-versa.")
     elif rcp is not None and time_period is not None:
         query = f"""select site_id, "{duration}h" from rainfall_depth where
                 site_id='{site}' and ari={ari} and\
