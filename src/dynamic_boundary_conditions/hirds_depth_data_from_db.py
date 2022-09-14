@@ -32,13 +32,11 @@ def get_each_site_rain_depth_data(engine, site_id: str, rcp: float, time_period:
             f"If rcp is None, time period should be None, and vice-versa.")
         sys.exit()
     elif rcp is not None and time_period is not None:
-        query = f"""select site_id, "{duration}" from rainfall_depth where
-                site_id='{site_id}' and ari={ari} and\
-                rcp='{rcp}' and time_period='{time_period}'"""
+        query = f"""SELECT site_id, "{duration}" FROM rainfall_depth 
+        WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
     else:
-        query = f"""select site_id, "{duration}" from rainfall_depth where
-                site_id='{site_id}' and ari={ari} and\
-                rcp is null and time_period is null"""
+        query = f"""SELECT site_id, "{duration}" FROM rainfall_depth 
+        WHERE site_id='{site_id}' AND rcp is null AND time_period is null AND ari={ari};"""
     rain_depth = engine.execute(query)
     rain_depth = list(rain_depth.fetchone())
     return rain_depth
