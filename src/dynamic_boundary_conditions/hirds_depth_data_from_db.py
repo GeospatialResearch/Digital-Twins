@@ -37,9 +37,7 @@ def rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp=None, time
 
     depths_list = []
     for site_id in sites_id_in_catchment:
-        rain_depth = get_each_site_rain_depth_data(
-            ari, duration, site_id, engine, rcp, time_period
-        )
+        rain_depth = get_each_site_rain_depth_data(ari, duration, site_id, engine, rcp, time_period)
         depths_list.append(rain_depth)
     rain_depth_data = pd.DataFrame(depths_list, columns=["site_id", "depth"])
     return rain_depth_data
