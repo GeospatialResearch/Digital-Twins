@@ -8,6 +8,8 @@ Created on Thu Jan 20 16:36:59 2022.
 import pandas as pd
 import pathlib
 from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions import hyetograph
 
 
 def get_each_site_rain_depth_data(ari, duration, site, engine, rcp=None, time_period=None):
@@ -43,10 +45,7 @@ def rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp=None, time
     return rain_depth_data
 
 
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hyetograph
-
+def main():
     catchment_file = pathlib.Path(
         r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
     ari = 100
@@ -57,3 +56,7 @@ if __name__ == "__main__":
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
     depths_data = rain_depths_from_db(engine, catchment_polygon, ari, duration, rcp, time_period)
+
+
+if __name__ == "__main__":
+    main()
