@@ -12,6 +12,7 @@ import logging
 import sys
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites
+from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -31,6 +32,8 @@ def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: g
     if catchment.empty or sites_in_catchment.empty:
         log.info("No data available for the catchment or sites_in_catchment passed as arguments.")
         sys.exit()
+    elif hirds_depth_data_to_db.check_table_exists("rainfall_sites_coverage", engine):
+        log.info("Rainfall sites coverage data already exists in the database.")
     else:
         catchment_area = catchment["geom"][0]
         coords = points_to_coords(sites_in_catchment["geometry"])
