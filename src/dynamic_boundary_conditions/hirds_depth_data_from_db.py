@@ -29,8 +29,8 @@ def get_each_site_rain_depth_data(
     """Get the hirds rainfall depth data for the requested site from the database and return in dataframe format."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
-            f"Check the arguments of the 'rain_depths_from_db' function. "
-            f"If rcp is None, time period should be None, and vice-versa.")
+            "Check the arguments of the 'rain_depths_from_db' function. "
+            "If rcp is None, time period should be None, and vice-versa.")
         sys.exit()
     elif rcp is not None and time_period is not None:
         query = f"""SELECT site_id, "{duration}" FROM rainfall_depth 
