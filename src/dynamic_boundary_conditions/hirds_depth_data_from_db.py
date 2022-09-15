@@ -37,7 +37,7 @@ def get_each_site_rain_depth_data(
         WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
         rain_depth = pd.read_sql_query(query, engine)
     else:
-        query = f"""SELECT site_id, "{duration}" FROM rainfall_depth 
+        query = f"""SELECT site_id, "{duration}" FROM rainfall_depth
         WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};"""
         rain_depth = pd.read_sql_query(query, engine).head(1)
     return rain_depth
