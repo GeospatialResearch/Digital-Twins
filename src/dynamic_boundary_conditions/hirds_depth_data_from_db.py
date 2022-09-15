@@ -63,8 +63,7 @@ def rain_depths_from_db(
 
 
 def main():
-    catchment_file = pathlib.Path(
-        r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
+    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     rcp = 2.6
     time_period = "2031-2050"
     ari = 100

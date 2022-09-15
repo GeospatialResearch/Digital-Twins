@@ -60,8 +60,7 @@ def catchment_area_geometry_info(catchment_file) -> shapely.geometry.Polygon:
 
 
 def main():
-    catchment_file = pathlib.Path(
-        r"C:\Users\sli229\Projects\Digital-Twins\src\dynamic_boundary_conditions\catchment_polygon.shp")
+    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
     rcp = 2.6
     time_period = "2031-2050"
