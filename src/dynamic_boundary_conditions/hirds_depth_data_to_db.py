@@ -37,9 +37,8 @@ def get_sites_id_in_catchment(catchment_polygon: Polygon, engine) -> list:
     query = f"""SELECT * FROM rainfall_sites AS rs
         WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"""
     sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
-    sites_id = sites_in_catchment["site_id"]
-    sites_id_list = sites_id.tolist()
-    return sites_id_list
+    sites_id_in_catchment = sites_in_catchment["site_id"].tolist()
+    return sites_id_in_catchment
 
 
 def get_sites_id_not_in_db(engine, sites_id_in_catchment: list) -> list:
