@@ -66,7 +66,7 @@ def main():
     rcp = 2.6
     time_period = "2031-2050"
     ari = 100
-    duration = "24h"
+    duration = "all"
 
     engine = setup_environment.get_database()
     sites = rainfall_sites.get_rainfall_sites_data()
