@@ -78,6 +78,7 @@ def main():
     hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store)
     rain_depth_in_catchment = hirds_depth_data_from_db.rain_depths_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration)
+    print(rain_depth_in_catchment)
 
     # # hyetograph data table is input into BG-Flood model
     # for site_id, depth in zip(rain_depth_in_catchment.site_id, rain_depth_in_catchment.depth):
