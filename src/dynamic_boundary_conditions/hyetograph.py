@@ -5,8 +5,6 @@ Created on Mon Jan 17 09:32:16 2022.
 @author: pkh35
 """
 
-import numpy
-import pandas as pd
 import geopandas as gpd
 import pathlib
 import shapely.geometry
