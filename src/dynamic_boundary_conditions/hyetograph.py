@@ -80,8 +80,8 @@ def main():
     thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
     catchment_polygon = catchment_area_geometry_info(catchment_file)
     hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store)
-    rain_depth_in_catchment = hirds_depth_data_from_db.rain_depths_from_db(engine, catchment_polygon, rcp, time_period,
-                                                                           ari, duration)
+    rain_depth_in_catchment = hirds_depth_data_from_db.rain_depths_from_db(
+        engine, catchment_polygon, rcp, time_period, ari, duration)
 
     # for site_id, depth in zip(rain_depth_in_catchment.site_id, rain_depth_in_catchment.depth):
     #     hyt = hyetograph(duration, site_id, depth)
