@@ -19,8 +19,6 @@ from src.dynamic_boundary_conditions import hirds_depth_data_from_db
 
 def hyetograph(duration, site, total_rain_depth):
     """Take inputs from the database to create a design storm."""
-    # TODO: is this the chicago method? how are these numbers derived? formula for this?
-    #  don't quite understand how to derive hyetographs.
     # m is the ordinate of (proportion of rain fallen at) the peak rainfall depth
     m = 0.53
     # n is the abscissa of (proportion of time past at) the peak rainfall depth
@@ -41,7 +39,6 @@ def hyetograph(duration, site, total_rain_depth):
         tan = numpy.tanh(x)
         s = (m * tan) + m
         pt = R * s  # Pt is the proportion of total rainfall depth of a hyetograph
-        # TODO: accumulated total rainfall depth ^ (above line)???
         pt = round(pt, 2)
         duration, proportion_rain = t, pt
         time_list.append(duration)
@@ -50,7 +47,6 @@ def hyetograph(duration, site, total_rain_depth):
     del time_list, prcp_list
     hyetograph_data['prcp_prop'] = hyetograph_data['prcp'].diff()
     # prcp_prop is the proportion of the total rainfall.
-    # TODO: total rainfall depth each hour???
     hyetograph_data['prcp_prop'] = hyetograph_data['prcp_prop'].fillna(0)
     return hyetograph_data
 
@@ -83,10 +79,10 @@ def main():
     rain_depth_in_catchment = hirds_depth_data_from_db.rain_depths_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration)
 
+    # # hyetograph data table is input into BG-Flood model
     # for site_id, depth in zip(rain_depth_in_catchment.site_id, rain_depth_in_catchment.depth):
     #     hyt = hyetograph(duration, site_id, depth)
     #     hyt.plot.bar(title=f'{ari}-year storm: site {site_id}', x='time', y='prcp_prop', rot=0)
-    #     # TODO: hyetograph data table is input into BG-Flood model
 
 
 if __name__ == "__main__":
