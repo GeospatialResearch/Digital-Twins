@@ -26,7 +26,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def check_table_exists(db_table_name: str, engine) -> bool:
+def check_table_exists(engine, db_table_name: str) -> bool:
     """Check if table exists in the database."""
     insp = sqlalchemy.inspect(engine)
     return insp.has_table(db_table_name, schema="public")
@@ -112,7 +112,7 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
     sites_id_in_catchment = get_sites_id_in_catchment(engine, catchment_polygon)
     # check if 'rainfall_depth' table is already in the database
-    if check_table_exists("rainfall_depth", engine):
+    if check_table_exists(engine, "rainfall_depth"):
         sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment)
         # Check if sites_id_not_in_db is not empty
         if sites_id_not_in_db:
