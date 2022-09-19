@@ -122,17 +122,13 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path):
         sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment)
         # Check if sites_id_not_in_db is not empty
         if sites_id_not_in_db:
-            for site_id in sites_id_not_in_db:
-                rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
-                add_rain_depth_data_to_db(engine, site_id, path)
+            add_each_site_rain_depth_data(engine, sites_id_not_in_db, path)
         else:
             log.info("Sites for the requested catchment already available in the database.")
     else:
         # check if sites_id_in_catchment is not empty
         if sites_id_in_catchment:
-            for site_id in sites_id_in_catchment:
-                rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
-                add_rain_depth_data_to_db(engine, site_id, path)
+            add_each_site_rain_depth_data(engine, sites_id_in_catchment, path)
         else:
             log.info("There are no sites within the requested catchment area, select a wider area.")
 
