@@ -108,6 +108,12 @@ def add_rain_depth_data_to_db(engine, site_id: str, path):
     log.info(f"Added rainfall depth data for site {site_id} to database")
 
 
+def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str):
+    for site_id in sites_id_list:
+        rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
+        add_rain_depth_data_to_db(engine, site_id, path)
+
+
 def rain_depths_to_db(engine, catchment_polygon: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
     sites_id_in_catchment = get_sites_id_in_catchment(engine, catchment_polygon)
