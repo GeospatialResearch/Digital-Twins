@@ -14,6 +14,8 @@ The following list defines the basic steps required to setup and run the digital
 ### Notes on API keys setup
 The api_keys table doesn't exist, manually insert api_keys table into database for now
 
+<br>
+
 ## Setup
 
 ### Create Docker or PostGRESQL
@@ -27,6 +29,8 @@ Setup a conda environment to run in using the following command run from the rep
 conda env create -f environment.yml
 ```
 
+<br>
+
 ## Tests
 Tests exist in the `tests/` folder.
 
@@ -34,6 +38,8 @@ Tests exist in the `tests/` folder.
 [Github Actions](https://docs.github.com/en/actions) are used to run tests after each push to remote (i.e. github). [Miniconda](https://github.com/marketplace/actions/setup-miniconda)from the GitHub Actions marketplace is used to install the package dependencies. Linting with [Flake8](https://github.com/py-actions/flake8) and testing with [PyTest](https://docs.pytest.org/en/6.2.x/contents.html) is then performed. Several tests require an API key. This is stored as a GitHub secret and accessed by the workflow.
 ### Running tests locally
 See the [geoapis wiki testing page](https://github.com/niwa/geoapis/wiki/Testing) for instructions for setting up a .env file and running the geofabrics test.
+
+<br>
 
 ## Introduction
 
@@ -48,6 +54,8 @@ The reason for creating a database are:
 3.	To store the data only for the Area of Interest.
 
 The digital twin stores API details and a local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, LRIS, opentopography, and NIWA in PostgreSQL.
+
+<br>
 
 ## Vector Database
 To store api details of vector data in the database,
@@ -117,11 +125,15 @@ To get the data from the database:
 get_data_from_db module allows the user to get data from the multiple sources within the required Area of Interest from the database and if data is not available in the database for the desired area of Interest, wfs request is made from the stored APIs, data is stored in the database and spatial query is done within the database to get the data for the desired Area of Interest.
 Currently data is collected from LINZ, ECAN, Stats NZ, KiwiRail, LRIS, NIWa and opentopography but will be extended to other sources.
 
+<br>
+
 ## Raster Database
 
 Hydrologically conditioned DEMs are generated using [geofabrics] (https://github.com/rosepearson/GeoFabrics ) designed by NIWA which downloads the LiDAR data in the local directory from [opentopography] (https://portal.opentopography.org/dataCatalog ) and generates DEM. These DEMs are stored in the local directory set by the user. The objective of the **dem_metadata_in_db.py** script is to store the metadata of the generated DEM in the database for the requested catchment area. Storing these details in the database helps in getting the DEM already generated using geofabrics rather than generating DEM for the same catchment, again and again, saving time and resources.
 The stored DEM is used to run the Flood model (BG Flood model)[https://github.com/CyprienBosserelle/BG_Flood )] designed by NIWA.
 The [instruction file](https://github.com/GeospatialResearch/Digital-Twins/blob/lidar_to_db/src/lidar/file.json) used to create hydrologically conditioned DEM is passed to the **get_dem_path(instruction)** function which checks if the DEM information exists in the database, if it doesn’t exist, geofabrics is used to generate the hydrologically conditioned DEM which gets stored in the local directory and the metadata of the generated DEM is stored in the database and file path of the generated DEM is returned which is then used to run the flood model.
+
+<br>
 
 ## LiDAR Database
 
