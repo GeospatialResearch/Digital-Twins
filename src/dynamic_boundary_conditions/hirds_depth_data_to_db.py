@@ -59,7 +59,7 @@ def get_layout_structure_of_csv(filepath) -> list:
     skip_rows = []
     rcp = []
     time_period = []
-    # Read file line by line wih a for loop
+    # Read file line by line with a for loop
     with open(filepath) as file:
         for index, line in enumerate(file):
             # Get lines that contain "(mm) ::"
