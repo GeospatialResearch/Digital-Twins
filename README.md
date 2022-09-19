@@ -148,11 +148,11 @@ The data source for the LiDAR data is [opentopography]( https://portal.opentopog
 Then `store_tileindex()` function is used to store the corresponding tiles information, user needs to provide database information to connect to the database and the path where Lidar data will be stored and finally
 `get_lidar_path function()` is used which requires two arguments i.e. engine to connect to the database and geopandas dataframe to get the geometry information to get the path of the files within the catchment area. 
 
-***
+<br>
 
-# Dynamic Boundary Conditions
+## Dynamic Boundary Conditions
 
-## Rainfall sites' locations
+### Rainfall sites' locations
 
 The rainfall sites' locations are accessed from [NIWA HIRDS](https://hirds.niwa.co.nz/) which is a tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The sites' information can be stored in the database using the `rainfall_sites.py` script as shown below:
 
@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
 <br>
 
-## Store rainfall depth data to database
+### Store rainfall depth data to database
 
 To store the rainfall depth data of sites within the desired catchment area in the database, the `hirds_depth_data_to_db.py` script is used. As shown below:
 
@@ -193,7 +193,7 @@ The `rain_depths_to_db(engine, catchment_polygon, file_path_to_store)` function 
 
 <br>
 
-## Get required rainfall depth data from the database 
+### Get required rainfall depth data from the database 
 
 To get the rainfall depth data of sites within the desired catchment from the database, the `hirds_depth_data_from_db.py` script is used. As shown below:
 
@@ -228,7 +228,7 @@ For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) a
 
 <br>
 
-## Thiessen Polygon
+### Thiessen Polygon
 
 Each gauge is associated for a particular area. To get the size of the area assoicated wih each gauge, **theissen_polygon_calculator.py** script is used.
 
@@ -252,7 +252,7 @@ if __name__ == "__main__":
 
 <br>
 
-## Hyetograph
+### Hyetograph
 
 A hyetograph is a graphical representation of the distribution of rainfall intensity over time. For instance, in the 24-hour rainfall distributions, rainfall intensity progressively increases until it reaches a maximum and then gradually decreases. Where this maximum occurs and how fast the maximum is reached is what differentiates one distribution from another. One important aspect to understand is that the distributions are for design storms, not necessarily actual storms. In other words, a real storm may not behave in this same fashion
 To generate a hyetograph, **hyetograph.py** script is used.
@@ -291,7 +291,7 @@ if __name__ == "__main__":
       hyt.plot.bar(x='time', y='prcp_prop', rot=0)
 ```
 
----
+<br>
 
 ## Run BG Flood model
 
