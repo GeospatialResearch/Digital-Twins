@@ -148,6 +148,7 @@ The data source for the LiDAR data is [opentopography]( https://portal.opentopog
 Then `store_tileindex()` function is used to store the corresponding tiles information, user needs to provide database information to connect to the database and the path where Lidar data will be stored and finally
 `get_lidar_path function()` is used which requires two arguments i.e. engine to connect to the database and geopandas dataframe to get the geometry information to get the path of the files within the catchment area. 
 
+***
 
 ## Dynamic Boundary Conditions
 
