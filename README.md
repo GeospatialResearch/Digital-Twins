@@ -173,6 +173,7 @@ The rainfall sites' locations are accessed from [NIWA HIRDS](https://hirds.niwa.
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import rainfall_sites
+    
     engine = setup_environment.get_database()
     sites = rainfall_sites.get_rainfall_sites_data()
     rainfall_sites.rainfall_sites_to_db(engine, sites)
@@ -191,6 +192,7 @@ if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import hyetograph
     from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+    
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
     engine = setup_environment.get_database()
@@ -198,10 +200,10 @@ if __name__ == "__main__":
     hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store)
 ```
 
-The `rain_depths_to_db(engine, catchment_polygon, file_path_to_store)` function requires three arguments:
+The `rain_depths_to_db(engine, catchment_polygon, path)` function requires three arguments:
 1. *engine:* engine used to connect to the PostgreSQL database. 
-2. *catchment_polygon:* desired catchment area (polygon type)
-3. *file_path_to_store:* rainfall depth data are downloaded as CSV files in the local directory before being stored in the database. Thus, the user needs to specify the path of where the CSV files need to be stored.
+2. *catchment_polygon:* desired catchment area (polygon type).
+3. *path:* rainfall depth data are downloaded as CSV files in the local directory before being stored in the database. Thus, the user needs to specify the path of where the CSV files need to be stored.
 
 <br>
 
@@ -216,6 +218,7 @@ if __name__ == "__main__":
     from src.digitaltwin import setup_environment
     from src.dynamic_boundary_conditions import hyetograph
     from src.dynamic_boundary_conditions import hirds_depth_data_from_db
+    
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     rcp = 2.6
     time_period = "2031-2050"
@@ -230,7 +233,7 @@ if __name__ == "__main__":
 
 The `rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)` function requires six arguments:
 1. *engine:* engine used to connect to the PostgreSQL database. 
-2. *catchment_polygon:* desired catchment area (polygon type)
+2. *catchment_polygon:* desired catchment area (polygon type).
 3. *rcp:* there are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5, RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
 4. *time_period:* rainfall estimates for two future time periods (2031-2050 and 2081-2100) for four RCPs.
 5. *ari:* storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, and 250.
@@ -242,32 +245,36 @@ For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) a
 
 ### Thiessen Polygon
 
-Each gauge is associated for a particular area. To get the size of the area assoicated wih each gauge, **theissen_polygon_calculator.py** script is used.
-
-thiessen_polygons(engine, catchment, gauges_in_polygon) function is used to calculate the area. It takes three arguments:
-1. engine: information about the database to interact with.
-2. catchment_area: Polygon type
-3. gauges_in_polygon: get the gauges information which are within the desired catchment area.
- to get the get the gauges within the catchment area, **get_guages_location(engine, catchment)** function is used from **hirds_gauges.py** script.
+Each rainfall site is associated with a particular area. To store the total size of the area (km squared) associated with each site in the database, the `thiessen_polygon_calculator` script is used. As shown below:
 
 ```python
 #!/usr/bin/env python
 if __name__ == "__main__":
-   from src.digitaltwin import setup_environment
-   from src.dynamic_boundary_conditions import rainfall_sites
-
-   engine = setup_environment.get_database()
-   catchment = rainfall_sites.get_new_zealand_boundary(engine)
-   gauges_in_polygon = rainfall_sites.get_sites_locations(engine, catchment)
-   thiessen_polygons(engine, catchment, gauges_in_polygon)
+    from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import rainfall_sites
+    from src.dynamic_boundary_conditions import thiessen_polygon_calculator
+    
+    engine = setup_environment.get_database()
+    nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
+    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
+    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
 ```
+
+The `get_sites_locations(engine, catchment)` function is used to get the sites with the catchment area from the database. The function requires two arguments:
+1. *engine:* engine used to connect to the PostgreSQL database. 
+2. *catchment:* geopandas dataframe of the NZ catchment area.
+
+The `thiessen_polygons(engine, catchment, sites_in_catchment)` function is used to calculate the area covered by each site and stores the data in the database. The function requires three arguments:
+1. *engine:* engine used to connect to the PostgreSQL database. 
+2. *catchment:* geopandas dataframe of the NZ catchment area.
+3. *sites_in_catchment:* geopandas dataframe of the sites within the NZ catchment area.
 
 <br>
 
 ### Hyetograph
 
 A hyetograph is a graphical representation of the distribution of rainfall intensity over time. For instance, in the 24-hour rainfall distributions, rainfall intensity progressively increases until it reaches a maximum and then gradually decreases. Where this maximum occurs and how fast the maximum is reached is what differentiates one distribution from another. One important aspect to understand is that the distributions are for design storms, not necessarily actual storms. In other words, a real storm may not behave in this same fashion
-To generate a hyetograph, **hyetograph.py** script is used.
+To generate a hyetograph, `hyetograph.py` script is used.
 hyetograph(duration, site, total_rain_depth) function takes 3 arguments:
 1. duration: how many hours rainfall distributions is required i.e. 1,2,6,12,24,48,72,96 and 120 hr
 2. site: site id of a site for which hyetograph is required
