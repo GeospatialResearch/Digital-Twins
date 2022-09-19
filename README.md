@@ -292,6 +292,7 @@ A hyetograph is a graphical representation of the distribution of rainfall inten
 >     rcp = 2.6
 >     time_period = "2031-2050"
 >     ari = 100
+>     # To get rainfall depths data for all durations set duration to "all"
 >     duration = "all"
 > 
 >     engine = setup_environment.get_database()
