@@ -373,6 +373,7 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
 8. gpudevice: if using GPU to run the model, set value as 0 else -1.
 9. smallnc: Level of refinement to apply to resolution based on the adaptive resolution trigger
 
+<br>
 
 ## Requirements
 
@@ -380,9 +381,13 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
 * [pip](https://pypi.org/project/pip/) (**P**ip **I**nstalls **P**ackages - Python package manager)
 * [PostgreSQL](https://www.postgresql.org/download/)
 
+<br>
+
 ## Required Credentials:
 
 * [Stats NZ API KEY](https://datafinder.stats.govt.nz/my/api/)
+
+<br>
 
 ## Create extensions in PostgreSQL:
 
@@ -397,6 +402,8 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
    ![image](https://user-images.githubusercontent.com/86580534/133153968-0d65230f-2b5d-4686-b115-2c354f66f04e.png)          ![image](https://user-images.githubusercontent.com/86580534/133154073-4e1702f8-866c-45a3-a8aa-4c1a505cf9b4.png)
 5. Once the extension is created, spatial_ref_sys table will appear under tables as shown below:
    ![image](https://user-images.githubusercontent.com/86580534/133154207-a8e5c181-7a8d-4a4a-81ce-aeae930e9593.png)
+
+<br>
 
 ## Create environment to run the packages
 
@@ -424,6 +431,8 @@ spyder
    and specify the root of the directory
 
    ![image](https://user-images.githubusercontent.com/86580534/133013167-c7e4541a-5723-4a76-9344-25f9f835b986.png)
+
+<br>
 
 ## Running docker on your machine
 
@@ -478,6 +487,8 @@ select * from apilinks;
 ```
 
 ![image](https://user-images.githubusercontent.com/86580534/135923860-d10a2323-100c-446e-bec3-6010cca2ba8b.png)
+
+<br>
 
 ## Use a database server running as a container
 
