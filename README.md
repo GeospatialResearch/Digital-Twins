@@ -165,6 +165,8 @@ if __name__ == "__main__":
     rainfall_sites.rainfall_sites_to_db(engine, sites)
 ```
 
+<br>
+
 ### Store rainfall depth data to database
 
 To store the rainfall depth data of sites within the desired catchment area in the database, the `hirds_depth_data_to_db.py` script is used. As shown below:
@@ -187,6 +189,8 @@ The `rain_depths_to_db(engine, catchment_polygon, file_path_to_store)` function 
 1. *engine:* engine used to connect to the PostgreSQL database. 
 2. *catchment_polygon:* desired catchment area (polygon type)
 3. *file_path_to_store:* rainfall depth data are downloaded as CSV files in the local directory before being stored in the database. Thus, the user needs to specify the path of where the CSV files need to be stored.
+
+<br>
 
 ### Get required rainfall depth data from the database 
 
@@ -221,6 +225,8 @@ The `rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, durat
 
 For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) and [HIRDSv4 Usage](https://niwa.co.nz/information-services/hirds/help) websites.
 
+<br>
+
 ### Thiessen Polygon
 
 Each gauge is associated for a particular area. To get the size of the area assoicated wih each gauge, **theissen_polygon_calculator.py** script is used.
@@ -242,6 +248,8 @@ if __name__ == "__main__":
    gauges_in_polygon = rainfall_sites.get_sites_locations(engine, catchment)
    thiessen_polygons(engine, catchment, gauges_in_polygon)
 ```
+
+<br>
 
 ### Hyetograph
 
@@ -282,8 +290,9 @@ if __name__ == "__main__":
       hyt.plot.bar(x='time', y='prcp_prop', rot=0)
 ```
 
+---
 
-### Run BG Flood model
+## Run BG Flood model
 
 To run the model, `bg_flood_model.py` script is used which takes DEM information from the database, runs the model and stores the output back to the database.
 run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
