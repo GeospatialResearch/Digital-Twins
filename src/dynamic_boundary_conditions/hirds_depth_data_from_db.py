@@ -53,7 +53,7 @@ def get_each_site_rain_depth_data(
 def rain_depths_from_db(
         engine, catchment_polygon: Polygon, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
     """Get all the rainfall depth data for the sites within the catchment area and return in dataframe format."""
-    sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(catchment_polygon, engine)
+    sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(engine, catchment_polygon)
 
     rain_depth_in_catchment = pd.DataFrame()
     for site_id in sites_id_in_catchment:

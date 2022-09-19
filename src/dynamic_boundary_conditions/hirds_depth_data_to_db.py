@@ -32,7 +32,7 @@ def check_table_exists(db_table_name: str, engine) -> bool:
     return insp.has_table(db_table_name, schema="public")
 
 
-def get_sites_id_in_catchment(catchment_polygon: Polygon, engine) -> list:
+def get_sites_id_in_catchment(engine, catchment_polygon: Polygon) -> list:
     """Get rainfall sites id within the catchment area from the 'rainfall_sites' table in the database."""
     query = f"""SELECT * FROM rainfall_sites AS rs
         WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"""
@@ -110,7 +110,7 @@ def add_rain_depth_data_to_db(path: str, site_id: str, engine):
 
 def rain_depths_to_db(engine, catchment_polygon: Polygon, path):
     """Store depth data of all the sites within the catchment area in the database."""
-    sites_id_in_catchment = get_sites_id_in_catchment(catchment_polygon, engine)
+    sites_id_in_catchment = get_sites_id_in_catchment(engine, catchment_polygon)
     # check if 'rainfall_depth' table is already in the database
     if check_table_exists("rainfall_depth", engine):
         sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment)
