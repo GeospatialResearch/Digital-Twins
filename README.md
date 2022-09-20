@@ -181,9 +181,9 @@ if __name__ == "__main__":
 
 <br>
 
-### Store rainfall depth data to database
+### Store rainfall data to database
 
-To store the rainfall depth data of sites within the desired catchment area in the database, the `hirds_depth_data_to_db.py` script is used. As shown below:
+To store the rainfall data of sites within the desired catchment area in the database, the `hirds_depth_data_to_db.py` script is used. As shown below:
 
 ```python
 #!/usr/bin/env python
@@ -195,15 +195,18 @@ if __name__ == "__main__":
     
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
+    # Set idf to "false" for rain depth data and to "true" for rain intensity data
+    idf = "false"
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store)
+    hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf)
 ```
 
-The `rain_depths_to_db(engine, catchment_polygon, path)` function requires three arguments:
+The `rain_depths_to_db(engine, catchment_polygon, path, idf)` function requires four arguments:
 1. *engine:* engine used to connect to the PostgreSQL database. 
 2. *catchment_polygon:* desired catchment area (polygon type).
-3. *path:* rainfall depth data are downloaded as CSV files in the local directory before being stored in the database. Thus, the user needs to specify the path of where the CSV files need to be stored.
+3. *path:* rainfall data are downloaded as CSV files in the local directory before being stored in the database. Thus, the user needs to specify the path of where the CSV files need to be stored.
+4. *idf:* set to 'false' to get rainfall depth data, and 'true' to get rainfall intensity data
 
 <br>
 
