@@ -42,7 +42,7 @@ def get_site_url_key(site_id: str, idf: str) -> str:
 
 
 def get_data_from_hirds(site_id: str, idf: str) -> str:
-    """Get data from the hirds website using curl command and store as a csv files."""
+    """Get rainfall data from the hirds website using curl command."""
     site_url_key = get_site_url_key(site_id, idf)
     url = rf"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
     headers = CaseInsensitiveDict()
