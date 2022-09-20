@@ -109,6 +109,8 @@ def add_rain_depth_data_to_db(engine, site_id: str, path):
 
 
 def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str, idf: str):
+    """Loop through all the sites in the sites list, download and store each site's rainfall data as a CSV file
+    in the desired path, and finally store it in the database."""
     for site_id in sites_id_list:
         rain_depth_data_from_hirds.store_data_to_csv(site_id, path, idf)
         add_rain_depth_data_to_db(engine, site_id, path)
