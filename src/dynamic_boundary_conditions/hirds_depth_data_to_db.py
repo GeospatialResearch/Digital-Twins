@@ -62,11 +62,11 @@ def get_layout_structure_of_csv(filepath) -> list:
     # Read file line by line with a for loop
     with open(filepath) as file:
         for index, line in enumerate(file):
-            # Get lines that contain "(mm) ::"
+            # Get lines that contain "(mm) ::" for depth data or "(mm/hr) ::" for intensity data
             if (line.find("(mm) ::") != -1) or (line.find("(mm/hr) ::") != -1):
-                # add the row number to skip_rows list
+                # Add the row number to skip_rows list
                 skip_rows.append(index + 1)
-                # add the obtained rcp and time_period values to list
+                # Add the obtained rcp and time_period values to list
                 rcp_result = re.search(r"(\d*\.\d*)", line)
                 period_result = re.search(r"(\d{4}-\d{4})", line)
                 if rcp_result or period_result is not None:
