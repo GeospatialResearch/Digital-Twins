@@ -41,9 +41,9 @@ def get_site_url_key(site_id: str, idf: str) -> str:
     return site_url_key
 
 
-def get_data_from_hirds(site_id: str) -> str:
+def get_data_from_hirds(site_id: str, idf: str) -> str:
     """Get data from the hirds website using curl command and store as a csv files."""
-    site_url_key = get_site_url_key(site_id, idf="false")
+    site_url_key = get_site_url_key(site_id, idf)
     url = rf"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
@@ -64,12 +64,12 @@ def get_data_from_hirds(site_id: str) -> str:
     return site_data
 
 
-def store_data_to_csv(site_id: str, file_path_to_store):
+def store_data_to_csv(site_id: str, file_path_to_store, idf: str):
     """Store the depth data in the form of csv file in the desired path."""
     if not pathlib.Path.exists(file_path_to_store):
         file_path_to_store.mkdir(parents=True, exist_ok=True)
 
     filename = pathlib.Path(f"{site_id}_rain_depth.csv")
-    site_data = get_data_from_hirds(site_id)
+    site_data = get_data_from_hirds(site_id, idf)
     with open(file_path_to_store / filename, "w") as file:
         file.write(site_data)

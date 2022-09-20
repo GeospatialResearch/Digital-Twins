@@ -108,13 +108,13 @@ def add_rain_depth_data_to_db(engine, site_id: str, path):
     log.info(f"Added rainfall depth data for site {site_id} to database")
 
 
-def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str):
+def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str, idf: str):
     for site_id in sites_id_list:
-        rain_depth_data_from_hirds.store_data_to_csv(site_id, path)
+        rain_depth_data_from_hirds.store_data_to_csv(site_id, path, idf)
         add_rain_depth_data_to_db(engine, site_id, path)
 
 
-def rain_depths_to_db(engine, catchment_polygon: Polygon, path):
+def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: str):
     """Store depth data of all the sites within the catchment area in the database."""
     sites_id_in_catchment = get_sites_id_in_catchment(engine, catchment_polygon)
     # check if 'rainfall_depth' table is already in the database
@@ -122,13 +122,13 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path):
         sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment)
         # Check if sites_id_not_in_db is not empty
         if sites_id_not_in_db:
-            add_each_site_rain_depth_data(engine, sites_id_not_in_db, path)
+            add_each_site_rain_depth_data(engine, sites_id_not_in_db, path, idf)
         else:
             log.info("Sites for the requested catchment already available in the database.")
     else:
         # check if sites_id_in_catchment is not empty
         if sites_id_in_catchment:
-            add_each_site_rain_depth_data(engine, sites_id_in_catchment, path)
+            add_each_site_rain_depth_data(engine, sites_id_in_catchment, path, idf)
         else:
             log.info("There are no sites within the requested catchment area, select a wider area.")
 
@@ -136,9 +136,11 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path):
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
+    # Set idf to "false" for rain depth data and to "true" for rain intensity data
+    idf = "false"
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    rain_depths_to_db(engine, catchment_polygon, file_path_to_store)
+    rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf)
 
 
 if __name__ == "__main__":
