@@ -108,7 +108,7 @@ def add_rain_depth_data_to_db(engine, site_id: str, path):
     log.info(f"Added rainfall depth data for site {site_id} to database")
 
 
-def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str, idf: str):
+def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str, idf: bool):
     """Loop through all the sites in the sites list, download and store each site's rainfall data as a CSV file
     in the desired path, and finally store it in the database."""
     for site_id in sites_id_list:
@@ -116,7 +116,7 @@ def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str, idf: s
         add_rain_depth_data_to_db(engine, site_id, path)
 
 
-def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: str):
+def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
     """Store rainfall data of all the sites within the catchment area in the database."""
     sites_id_in_catchment = get_sites_id_in_catchment(engine, catchment_polygon)
     # check if 'rainfall_depth' table is already in the database
@@ -138,8 +138,8 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: str):
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
-    # Set idf to "false" for rain depth data and to "true" for rain intensity data
-    idf = "false"
+    # Set idf to False for rain depth data and to True for rain intensity data
+    idf = False
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
     rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf)
