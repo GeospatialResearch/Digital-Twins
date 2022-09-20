@@ -65,7 +65,7 @@ def get_data_from_hirds(site_id: str, idf: str) -> str:
 
 
 def store_data_to_csv(site_id: str, file_path_to_store, idf: str):
-    """Store the depth data in the form of csv file in the desired path."""
+    """Store the rainfall data in the form of csv file in the desired path."""
     if not pathlib.Path.exists(file_path_to_store):
         file_path_to_store.mkdir(parents=True, exist_ok=True)
 
