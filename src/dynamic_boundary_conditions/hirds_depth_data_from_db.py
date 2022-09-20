@@ -67,7 +67,7 @@ def main():
     rcp = 2.6
     time_period = "2031-2050"
     ari = 100
-    # To get rainfall depths data for all durations set duration to "all"
+    # To get rainfall data for all durations set duration to "all"
     duration = "all"
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
