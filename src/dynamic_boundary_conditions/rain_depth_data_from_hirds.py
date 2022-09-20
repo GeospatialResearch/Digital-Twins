@@ -12,8 +12,9 @@ import pandas as pd
 import pathlib
 
 
-def get_site_url_key(site_id: str) -> str:
-    """Get each sites' unique url key from the hirds website using curl commands"""
+def get_site_url_key(site_id: str, idf: str) -> str:
+    """Get each sites' unique url key from the hirds website using curl commands.
+    idf: 'false' for rainfall depth data, and 'true' for rainfall intensity data."""
     url = "https://api.niwa.co.nz/hirds/report"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
@@ -30,8 +31,7 @@ def get_site_url_key(site_id: str) -> str:
     headers["sec-ch-ua"] = '"" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96""'
     headers["sec-ch-ua-mobile"] = "?0"
     headers["sec-ch-ua-platform"] = '""Windows""'
-    # Set idf to false for rainfall depth data, and set idf to true for rainfall intensity data.
-    data = f'{{"site_id":"{site_id}","idf":false}}'
+    data = f'{{"site_id":"{site_id}","idf":{idf}}}'
     resp = requests.post(url, headers=headers, data=data)
     rainfall_results = pd.read_json(resp.text)
     # Get requested sites url unique key
@@ -43,7 +43,7 @@ def get_site_url_key(site_id: str) -> str:
 
 def get_data_from_hirds(site_id: str) -> str:
     """Get data from the hirds website using curl command and store as a csv files."""
-    site_url_key = get_site_url_key(site_id)
+    site_url_key = get_site_url_key(site_id, idf="false")
     url = rf"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
