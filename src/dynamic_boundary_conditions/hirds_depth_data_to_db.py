@@ -138,11 +138,10 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
-    # Set idf to False for rain depth data and to True for rain intensity data
-    idf = False
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf)
+    # Set idf to False for rain depth data and to True for rain intensity data
+    rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
 
 
 if __name__ == "__main__":
