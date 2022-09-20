@@ -14,7 +14,7 @@ import pathlib
 
 def get_site_url_key(site_id: str, idf: str) -> str:
     """Get each sites' unique url key from the hirds website using curl commands.
-    idf: 'false' for rainfall depth data, and 'true' for rainfall intensity data."""
+    idf: set to 'false' to get rainfall depth data, and 'true' to get rainfall intensity data."""
     url = "https://api.niwa.co.nz/hirds/report"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
