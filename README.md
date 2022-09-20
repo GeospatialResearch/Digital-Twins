@@ -210,9 +210,9 @@ The `rain_depths_to_db(engine, catchment_polygon, path, idf)` function requires 
 
 <br>
 
-### Get required rainfall depth data from the database 
+### Get required rainfall data from the database 
 
-To get the rainfall depth data of sites within the desired catchment from the database, the `hirds_depth_data_from_db.py` script is used. As shown below:
+To get the rainfall data of sites within the desired catchment from the database, the `hirds_depth_data_from_db.py` script is used. As shown below:
 
 ```python
 #!/usr/bin/env python
@@ -226,7 +226,7 @@ if __name__ == "__main__":
     rcp = 2.6
     time_period = "2031-2050"
     ari = 100
-    # To get rainfall depths data for all durations set duration to "all"
+    # To get rainfall data for all durations set duration to "all"
     duration = "all"
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
