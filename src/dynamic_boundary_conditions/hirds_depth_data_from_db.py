@@ -25,7 +25,7 @@ log.addHandler(stream_handler)
 
 
 def filter_for_duration(rain_depth: pd.DataFrame, duration: str) -> pd.DataFrame:
-    """Used to filter the hirds rainfall data for a requested duration."""
+    """Used to filter the HIRDS rainfall data for a requested duration."""
     if duration != "all":
         rain_depth = rain_depth[["site_id", "rcp", "time_period", "ari", "aep", duration]]
     return rain_depth
@@ -33,7 +33,7 @@ def filter_for_duration(rain_depth: pd.DataFrame, duration: str) -> pd.DataFrame
 
 def get_each_site_rain_depth_data(
         engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
-    """Get the hirds rainfall data for the requested site from the database and return in dataframe format."""
+    """Get the HIRDS rainfall data for the requested site from the database and return in dataframe format."""
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
             "Check the arguments of the 'rain_depths_from_db' function. "

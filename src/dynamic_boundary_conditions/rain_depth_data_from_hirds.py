@@ -13,7 +13,7 @@ import pathlib
 
 
 def get_site_url_key(site_id: str, idf: bool) -> str:
-    """Get each sites' unique url key from the hirds website using curl commands.
+    """Get each sites' unique url key from the HIRDS website using curl commands.
     idf: set to False to get rainfall depth data, and True to get rainfall intensity data."""
     url = "https://api.niwa.co.nz/hirds/report"
     headers = CaseInsensitiveDict()
@@ -43,7 +43,7 @@ def get_site_url_key(site_id: str, idf: bool) -> str:
 
 
 def get_data_from_hirds(site_id: str, idf: bool) -> str:
-    """Get rainfall data from the hirds website using curl command."""
+    """Get rainfall data from the HIRDS website using curl command."""
     site_url_key = get_site_url_key(site_id, idf)
     url = rf"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
     headers = CaseInsensitiveDict()

@@ -25,7 +25,7 @@ log.addHandler(stream_handler)
 
 
 def get_rainfall_sites_data() -> gpd.GeoDataFrame:
-    """Get rainfall sites data from the hirds website using HTTP request."""
+    """Get rainfall sites data from the HIRDS website using HTTP request."""
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
@@ -49,7 +49,7 @@ def get_rainfall_sites_data() -> gpd.GeoDataFrame:
 
 
 def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
-    """Storing rainfall sites data from the hirds website in the database."""
+    """Storing rainfall sites data from the HIRDS website in the database."""
     if hirds_depth_data_to_db.check_table_exists(engine, "rainfall_sites"):
         log.info("Rainfall sites data already exists in the database.")
     else:
