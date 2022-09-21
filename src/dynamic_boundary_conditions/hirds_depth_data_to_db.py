@@ -222,7 +222,7 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
         if sites_id_not_in_db:
             add_each_site_rain_depth_data(engine, sites_id_not_in_db, path, idf)
         else:
-            log.info("Sites for the requested catchment already available in the database.")
+            log.info(f"{rain_table_name} data for sites in the requested catchment already available in the database.")
     else:
         # check if sites_id_in_catchment is not empty
         if sites_id_in_catchment:
