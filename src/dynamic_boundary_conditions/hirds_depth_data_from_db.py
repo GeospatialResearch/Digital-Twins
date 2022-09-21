@@ -27,7 +27,7 @@ log.addHandler(stream_handler)
 def filter_for_duration(rain_depth: pd.DataFrame, duration: str) -> pd.DataFrame:
     """Used to filter the hirds rainfall data for a requested duration."""
     if duration != "all":
-        rain_depth = rain_depth[["site_id", "rcp", "time_period", "ari", "aep", f"{duration}"]]
+        rain_depth = rain_depth[["site_id", "rcp", "time_period", "ari", "aep", duration]]
     return rain_depth
 
 
