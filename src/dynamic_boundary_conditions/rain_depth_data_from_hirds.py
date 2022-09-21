@@ -13,6 +13,7 @@ from requests.structures import CaseInsensitiveDict
 import re
 import pandas as pd
 import pathlib
+from src.dynamic_boundary_conditions import hirds_depth_data_to_db
 
 
 def get_site_url_key(site_id: str, idf: bool) -> str:
@@ -101,7 +102,8 @@ def store_data_to_csv(site_id: str, file_path_to_store, idf: bool):
     if not pathlib.Path.exists(file_path_to_store):
         file_path_to_store.mkdir(parents=True, exist_ok=True)
 
-    filename = pathlib.Path(f"{site_id}_rain_depth.csv")
+    rain_table_name = hirds_depth_data_to_db.db_rain_table_name(idf)
+    filename = pathlib.Path(f"{site_id}_{rain_table_name}.csv")
     site_data = get_data_from_hirds(site_id, idf)
     with open(file_path_to_store / filename, "w") as file:
         file.write(site_data)

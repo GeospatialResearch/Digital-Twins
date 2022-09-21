@@ -143,7 +143,7 @@ def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_p
     return rainfall_data
 
 
-def add_rain_depth_data_to_db(engine, site_id: str, path):
+def add_rain_depth_data_to_db(engine, site_id: str, path, idf: bool):
     """
     Store each site's rainfall data in the database.
     Each CSV file contains historical and future forecasted rainfall data for various rcp, time periods and durations.
@@ -160,15 +160,16 @@ def add_rain_depth_data_to_db(engine, site_id: str, path):
     path
         The file path of where the downloaded rainfall data CSV files are stored.
     """
-    filename = pathlib.Path(f"{site_id}_rain_depth.csv")
+    rain_table_name = db_rain_table_name(idf)
+    filename = pathlib.Path(f"{site_id}_{rain_table_name}.csv")
     filepath = (path / filename)
 
     layout_structure = get_layout_structure_of_csv(filepath)
 
     for (skip_rows, rcp, time_period) in layout_structure:
         site_data = get_data_from_csv(filepath, site_id, skip_rows=skip_rows, rcp=rcp, time_period=time_period)
-        site_data.to_sql("rainfall_depth", engine, index=False, if_exists="append")
-    log.info(f"Added rainfall depth data for site {site_id} to database")
+        site_data.to_sql(rain_table_name, engine, index=False, if_exists="append")
+    log.info(f"Added {rain_table_name} data for site {site_id} to database")
 
 
 def add_each_site_rain_depth_data(engine, sites_id_list: List[str], path: str, idf: bool):
@@ -189,7 +190,12 @@ def add_each_site_rain_depth_data(engine, sites_id_list: List[str], path: str, i
     """
     for site_id in sites_id_list:
         rain_depth_data_from_hirds.store_data_to_csv(site_id, path, idf)
-        add_rain_depth_data_to_db(engine, site_id, path)
+        add_rain_depth_data_to_db(engine, site_id, path, idf)
+
+
+def db_rain_table_name(idf: bool) -> str:
+    table_name = "rainfall_depth" if idf is False else "rainfall_intensity"
+    return table_name
 
 
 def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
@@ -208,8 +214,9 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
     sites_id_in_catchment = get_sites_id_in_catchment(engine, catchment_polygon)
-    # check if 'rainfall_depth' table is already in the database
-    if check_table_exists(engine, "rainfall_depth"):
+    rain_table_name = db_rain_table_name(idf)
+    # check if 'rainfall_depth' or 'rainfall_intensity' table is already in the database
+    if check_table_exists(engine, rain_table_name):
         sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment)
         # Check if sites_id_not_in_db is not empty
         if sites_id_not_in_db:
