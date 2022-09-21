@@ -51,6 +51,7 @@ def main():
     catchment_polygon = catchment_area_geometry_info(catchment_file)
     # Set idf to False for rain depth data and to True for rain intensity data
     hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
+    hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=True)
     rain_depth_in_catchment = hirds_depth_data_from_db.rain_depths_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration)
     print(rain_depth_in_catchment)

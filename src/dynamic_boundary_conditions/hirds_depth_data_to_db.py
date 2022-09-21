@@ -238,6 +238,7 @@ def main():
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
     # Set idf to False for rain depth data and to True for rain intensity data
     rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
+    rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=True)
 
 
 if __name__ == "__main__":
