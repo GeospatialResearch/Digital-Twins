@@ -30,6 +30,11 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
+def db_rain_table_name(idf: bool) -> str:
+    table_name = "rainfall_depth" if idf is False else "rainfall_intensity"
+    return table_name
+
+
 def check_table_exists(engine, db_table_name: str) -> bool:
     """
     Check if table exists in the database.
@@ -192,11 +197,6 @@ def add_each_site_rain_depth_data(engine, sites_id_list: List[str], path: str, i
     for site_id in sites_id_list:
         rain_depth_data_from_hirds.store_data_to_csv(site_id, path, idf)
         add_rain_depth_data_to_db(engine, site_id, path, idf)
-
-
-def db_rain_table_name(idf: bool) -> str:
-    table_name = "rainfall_depth" if idf is False else "rainfall_intensity"
-    return table_name
 
 
 def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
