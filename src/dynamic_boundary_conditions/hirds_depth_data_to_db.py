@@ -63,7 +63,7 @@ def get_sites_id_in_catchment(engine, catchment_polygon: Polygon) -> List[str]:
     return sites_id_in_catchment
 
 
-def get_sites_id_not_in_db(engine, sites_id_in_catchment: List[str]) -> List[str]:
+def get_sites_id_not_in_db(engine, sites_id_in_catchment: List[str], idf: bool) -> List[str]:
     """
     Get the list of rainfall sites ids that are in the catchment area but are not in the database.
 
@@ -74,7 +74,8 @@ def get_sites_id_not_in_db(engine, sites_id_in_catchment: List[str]) -> List[str
     sites_id_in_catchment : List[str]
         Rainfall sites ids within the catchment area.
     """
-    query = "SELECT DISTINCT site_id FROM rainfall_depth;"
+    rain_table_name = db_rain_table_name(idf)
+    query = f"SELECT DISTINCT site_id FROM {rain_table_name};"
     # Get dataframe of sites in the database
     sites_id_in_db = pd.read_sql_query(query, engine)
     # Convert dataframe to list of sites in the database
@@ -217,7 +218,7 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
     rain_table_name = db_rain_table_name(idf)
     # check if 'rainfall_depth' or 'rainfall_intensity' table is already in the database
     if check_table_exists(engine, rain_table_name):
-        sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment)
+        sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment, idf)
         # Check if sites_id_not_in_db is not empty
         if sites_id_not_in_db:
             add_each_site_rain_depth_data(engine, sites_id_not_in_db, path, idf)
