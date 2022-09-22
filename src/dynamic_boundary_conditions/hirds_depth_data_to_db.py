@@ -118,7 +118,20 @@ def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str, idf: b
 
 
 def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
-    """Store rainfall data of all the sites within the catchment area in the database."""
+    """
+    Store rainfall data of all the sites within the catchment area in the database.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    catchment_polygon : Polygon
+        Desired catchment area.
+    path
+        The file path of where the downloaded rainfall data csv files are stored.
+    idf : bool
+        Set to False for rainfall depth data, and True for rainfall intensity data.
+    """
     sites_id_in_catchment = get_sites_id_in_catchment(engine, catchment_polygon)
     # check if 'rainfall_depth' table is already in the database
     if check_table_exists(engine, "rainfall_depth"):
