@@ -33,9 +33,9 @@ def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: g
     engine
         Engine used to connect to the database.
     catchment : gpd.GeoDataFrame
-        Geopandas dataframe of the catchment area.
+        New Zealand catchment boundary geometry.
     sites_in_catchment : gpd.GeoDataFrame
-        Geopandas dataframe of the sites in the catchment area.
+        Rainfall sites within the catchment area.
     """
     if catchment.empty or sites_in_catchment.empty:
         log.info("No data available for the catchment or sites_in_catchment passed as arguments.")
