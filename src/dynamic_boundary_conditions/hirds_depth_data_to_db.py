@@ -42,7 +42,16 @@ def check_table_exists(engine, db_table_name: str) -> bool:
 
 
 def get_sites_id_in_catchment(engine, catchment_polygon: Polygon) -> list:
-    """Get rainfall sites id within the catchment area from the 'rainfall_sites' table in the database."""
+    """
+    Get rainfall sites ids within the catchment area from the 'rainfall_sites' table in the database.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    catchment_polygon : Polygon
+        Desired catchment area.
+    """
     query = f"""SELECT * FROM rainfall_sites AS rs
         WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"""
     sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
