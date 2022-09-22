@@ -91,9 +91,10 @@ def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_p
 
 
 def add_rain_depth_data_to_db(engine, site_id: str, path):
-    """Store each site's rainfall data in the database. Each csv file contains historical and future forecasted
-    rainfall data for various rcp, time periods and durations.
-    To view the csv file, go to : https://hirds.niwa.co.nz/, select a site and generate a report,
+    """
+    Store each site's rainfall data in the database.
+    Each csv file contains historical and future forecasted rainfall data for various rcp, time periods and durations.
+    To view the csv file, go to https://hirds.niwa.co.nz/, select a site and generate a report,
     there are rainfall depths and rainfall intensities data for different RCP Scenarios.
     To understand the structure of the CSV file, download the spreadsheet.
     """

@@ -69,8 +69,13 @@ def get_new_zealand_boundary(engine) -> gpd.GeoDataFrame:
 def get_sites_locations(engine, catchment: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Get the site locations within the catchment area from the database and return in geopandas.GeoDataFrame format.
-    engine: engine used to connect to the database.
-    catchment: get the geopandas dataframe of the NZ catchment area.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    catchment : gpd.GeoDataFrame
+        Geopandas dataframe of the NZ catchment area.
     """
     # Get all rainfall sites within the New Zealand catchment area.
     catchment_area = catchment["geom"][0]

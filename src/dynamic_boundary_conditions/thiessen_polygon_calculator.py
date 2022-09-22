@@ -25,10 +25,17 @@ log.addHandler(stream_handler)
 
 
 def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: gpd.GeoDataFrame):
-    """Calculate the area covered by each site and store it in the database.
-    engine: engine used to connect to the database.
-    catchment: get the geopandas dataframe of the catchment area.
-    sites_in_catchment: get the geopandas dataframe of the sites in the catchment area.
+    """
+    Calculate the area covered by each rainfall site and store it in the database.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    catchment : gpd.GeoDataFrame
+        Geopandas dataframe of the catchment area.
+    sites_in_catchment : gpd.GeoDataFrame
+        Geopandas dataframe of the sites in the catchment area.
     """
     if catchment.empty or sites_in_catchment.empty:
         log.info("No data available for the catchment or sites_in_catchment passed as arguments.")

@@ -33,14 +33,25 @@ def filter_for_duration(rain_depth: pd.DataFrame, duration: str) -> pd.DataFrame
 
 def get_each_site_rain_depth_data(
         engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
-    """Get the HIRDS rainfall data for the requested site from the database and return in dataframe format.
-    engine: engine used to connect to the database.
-    site_id: HIRDS rainfall site id
-    rcp: there are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-    RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
-    time_period: rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
-    ari: storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
-    duration: storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, or 120h.
+    """
+    Get the HIRDS rainfall data for the requested site from the database and return in dataframe format.
+
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    site_id : str
+        HIRDS rainfall site id.
+    rcp : float
+        There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
+        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
+    time_period : str
+        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+    ari : float
+        Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+    duration : str
+        Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
     """
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
@@ -61,14 +72,24 @@ def get_each_site_rain_depth_data(
 
 def rain_depths_from_db(
         engine, catchment_polygon: Polygon, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
-    """Get all the rainfall data for the sites within the catchment area and return in dataframe format.
-    engine: engine used to connect to the database.
-    catchment_polygon: desired catchment area (polygon type).
-    rcp: there are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-    RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
-    time_period: rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
-    ari: storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
-    duration: storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, or 120h.
+    """
+    Get all the rainfall data for the sites within the catchment area and return in dataframe format.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    catchment_polygon : Polygon
+        Desired catchment area.
+    rcp : float
+        There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
+        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
+    time_period : str
+        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+    ari : float
+        Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+    duration : str
+        Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
     """
     sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(engine, catchment_polygon)
 
