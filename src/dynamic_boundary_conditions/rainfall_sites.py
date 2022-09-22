@@ -59,7 +59,14 @@ def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
 
 
 def get_new_zealand_boundary(engine) -> gpd.GeoDataFrame:
-    """Get the boundary information of New Zealand from region_geometry table."""
+    """
+    Get the boundary geometry of New Zealand from the 'region_geometry' table in the database.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    """
     query = "SELECT geometry AS geom FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
     nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, crs=2193)
     nz_boundary = nz_boundary.to_crs(4326)
