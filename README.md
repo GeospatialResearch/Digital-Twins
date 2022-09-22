@@ -202,7 +202,7 @@ if __name__ == "__main__":
 ```
 
 The `rain_depths_to_db(engine, catchment_polygon, path, idf)` function requires four arguments:
-1. *engine:* engine used to connect to the PostgreSQL database. 
+1. *engine:* engine used to connect to the database. 
 2. *catchment_polygon:* desired catchment area (polygon type).
 3. *path:* rainfall data are downloaded as CSV files in the local directory before being stored in the database. Thus, the user needs to specify the path of where the CSV files need to be stored.
 4. *idf:* set to False to get rainfall depth data, and True to get rainfall intensity data
@@ -234,12 +234,12 @@ if __name__ == "__main__":
 ```
 
 The `rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)` function requires six arguments:
-1. *engine:* engine used to connect to the PostgreSQL database. 
+1. *engine:* engine used to connect to the database. 
 2. *catchment_polygon:* desired catchment area (polygon type).
 3. *rcp:* there are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5, RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
-4. *time_period:* rainfall estimates for two future time periods (2031-2050 and 2081-2100) for four RCPs.
-5. *ari:* storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, and 250.
-6. *duration:* storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, and 120h. 
+4. *time_period:* rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+5. *ari:* storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+6. *duration:* storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, or 120h. 
 
 For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) and [HIRDSv4 Usage](https://niwa.co.nz/information-services/hirds/help) websites.
 
@@ -263,11 +263,11 @@ if __name__ == "__main__":
 ```
 
 The `get_sites_locations(engine, catchment)` function is used to get the sites with the catchment area from the database. The function requires two arguments:
-1. *engine:* engine used to connect to the PostgreSQL database. 
+1. *engine:* engine used to connect to the database. 
 2. *catchment:* geopandas dataframe of the NZ catchment area.
 
 The `thiessen_polygons(engine, catchment, sites_in_catchment)` function is used to calculate the area covered by each site and stores the data in the database. The function requires three arguments:
-1. *engine:* engine used to connect to the PostgreSQL database. 
+1. *engine:* engine used to connect to the database. 
 2. *catchment:* geopandas dataframe of the NZ catchment area.
 3. *sites_in_catchment:* geopandas dataframe of the sites within the NZ catchment area.
 
