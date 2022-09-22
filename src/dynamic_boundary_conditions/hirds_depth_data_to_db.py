@@ -88,7 +88,7 @@ def get_layout_structure_of_csv(filepath) -> list:
     Parameters
     ----------
     filepath
-        The file path of where the downloaded rainfall data CSV files are stored.
+        The file path of the downloaded rainfall data CSV files.
     """
     skip_rows = []
     rcp = []
@@ -162,7 +162,7 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
     catchment_polygon : Polygon
         Desired catchment area.
     path
-        The file path of where the downloaded rainfall data CSV files are stored.
+        The file path of the downloaded rainfall data CSV files.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
