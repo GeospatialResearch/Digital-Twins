@@ -81,8 +81,15 @@ def get_sites_id_not_in_db(engine, sites_id_in_catchment: list) -> list:
 
 
 def get_layout_structure_of_csv(filepath) -> list:
-    """Read the csv file of each site's rainfall data and return a list of tuples (skip_rows, rcp, time_period)
-    of its layout structure"""
+    """
+    Read the csv file of each site's rainfall data and return a list of tuples (skip_rows, rcp, time_period)
+    of its layout structure.
+
+    Parameters
+    ----------
+    filepath
+        The file path of where the downloaded rainfall data csv files are stored.
+    """
     skip_rows = []
     rcp = []
     time_period = []
