@@ -49,7 +49,16 @@ def get_rainfall_sites_data() -> gpd.GeoDataFrame:
 
 
 def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
-    """Storing rainfall sites data from the HIRDS website in the database."""
+    """
+    Storing rainfall sites data from the HIRDS website in the database.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    sites : gpd.GeoDataFrame
+        Rainfall sites in New Zealand.
+    """
     if hirds_depth_data_to_db.check_table_exists(engine, "rainfall_sites"):
         log.info("Rainfall sites data already exists in the database.")
     else:
