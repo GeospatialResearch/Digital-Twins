@@ -60,7 +60,16 @@ def get_sites_id_in_catchment(engine, catchment_polygon: Polygon) -> list:
 
 
 def get_sites_id_not_in_db(engine, sites_id_in_catchment: list) -> list:
-    """Get the list of sites that are in the catchment area but are not available in the database."""
+    """
+    Get the list of rainfall sites ids that are in the catchment area but are not in the database.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    sites_id_in_catchment : list
+        Rainfall sites ids within the catchment area.
+    """
     query = "SELECT DISTINCT site_id FROM rainfall_depth;"
     # Get dataframe of sites in the database
     sites_id_in_db = pd.read_sql_query(query, engine)
