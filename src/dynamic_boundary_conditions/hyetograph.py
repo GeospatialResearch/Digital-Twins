@@ -16,7 +16,14 @@ from src.dynamic_boundary_conditions import hirds_depth_data_from_db
 
 
 def catchment_area_geometry_info(catchment_file_path) -> shapely.geometry.Polygon:
-    """Extract shapely polygon geometry from the catchment file."""
+    """
+    Extract shapely polygon geometry from the catchment file.
+
+    Parameters
+    ----------
+    catchment_file_path
+        The file path of the catchment polygon shapefile.
+    """
     catchment = gpd.read_file(catchment_file_path)
     catchment = catchment.to_crs(4326)
     catchment_polygon = catchment["geometry"][0]
