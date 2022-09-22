@@ -27,7 +27,16 @@ log.addHandler(stream_handler)
 
 
 def check_table_exists(engine, db_table_name: str) -> bool:
-    """Check if table exists in the database."""
+    """
+    Check if table exists in the database.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    db_table_name : str
+        Database table name.
+    """
     insp = sqlalchemy.inspect(engine)
     return insp.has_table(db_table_name, schema="public")
 
