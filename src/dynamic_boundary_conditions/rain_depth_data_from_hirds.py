@@ -84,7 +84,7 @@ def get_data_from_hirds(site_id: str, idf: bool) -> str:
 
 def store_data_to_csv(site_id: str, file_path_to_store, idf: bool):
     """
-    Store the rainfall data in the form of csv file in the desired path.
+    Store the rainfall data in the form of CSV file in the desired path.
 
     Parameters
     ----------
