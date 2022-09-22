@@ -14,6 +14,7 @@ import pathlib
 
 def get_site_url_key(site_id: str, idf: bool) -> str:
     """Get each sites' unique url key from the HIRDS website using curl commands.
+    site_id: HIRDS rainfall site id
     idf: set to False to get rainfall depth data, and True to get rainfall intensity data."""
     url = "https://api.niwa.co.nz/hirds/report"
     headers = CaseInsensitiveDict()
@@ -43,7 +44,9 @@ def get_site_url_key(site_id: str, idf: bool) -> str:
 
 
 def get_data_from_hirds(site_id: str, idf: bool) -> str:
-    """Get rainfall data from the HIRDS website using curl command."""
+    """Get rainfall data from the HIRDS website using curl command.
+    site_id: HIRDS rainfall site id
+    idf: set to False to get rainfall depth data, and True to get rainfall intensity data."""
     site_url_key = get_site_url_key(site_id, idf)
     url = rf"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
     headers = CaseInsensitiveDict()
@@ -66,7 +69,10 @@ def get_data_from_hirds(site_id: str, idf: bool) -> str:
 
 
 def store_data_to_csv(site_id: str, file_path_to_store, idf: bool):
-    """Store the rainfall data in the form of csv file in the desired path."""
+    """Store the rainfall data in the form of csv file in the desired path.
+    site_id: HIRDS rainfall site id
+    file_path_to_store: the file path used to store the downloaded rainfall data CSV file.
+    idf: set to False to get rainfall depth data, and True to get rainfall intensity data."""
     if not pathlib.Path.exists(file_path_to_store):
         file_path_to_store.mkdir(parents=True, exist_ok=True)
 

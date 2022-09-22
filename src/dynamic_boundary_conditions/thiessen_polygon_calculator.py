@@ -26,6 +26,7 @@ log.addHandler(stream_handler)
 
 def thiessen_polygons(engine, catchment: gpd.GeoDataFrame, sites_in_catchment: gpd.GeoDataFrame):
     """Calculate the area covered by each site and store it in the database.
+    engine: engine used to connect to the database.
     catchment: get the geopandas dataframe of the catchment area.
     sites_in_catchment: get the geopandas dataframe of the sites in the catchment area.
     """
