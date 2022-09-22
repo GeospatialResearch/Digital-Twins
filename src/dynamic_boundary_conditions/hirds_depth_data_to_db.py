@@ -82,13 +82,13 @@ def get_sites_id_not_in_db(engine, sites_id_in_catchment: list) -> list:
 
 def get_layout_structure_of_csv(filepath) -> list:
     """
-    Read the csv file of each site's rainfall data and return a list of tuples (skip_rows, rcp, time_period)
+    Read the CSV file of each site's rainfall data and return a list of tuples (skip_rows, rcp, time_period)
     of its layout structure.
 
     Parameters
     ----------
     filepath
-        The file path of where the downloaded rainfall data csv files are stored.
+        The file path of where the downloaded rainfall data CSV files are stored.
     """
     skip_rows = []
     rcp = []
@@ -115,7 +115,7 @@ def get_layout_structure_of_csv(filepath) -> list:
 
 
 def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_period: str) -> pd.DataFrame:
-    """Read the csv files of the different sites rainfall data and return a dataframe."""
+    """Read the CSV files of the different sites rainfall data and return a dataframe."""
     rainfall_data = pd.read_csv(filepath, skiprows=skip_rows, nrows=12)
     rainfall_data.insert(0, "site_id", site_id)
     rainfall_data.insert(1, "rcp", rcp)
@@ -127,8 +127,8 @@ def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_p
 def add_rain_depth_data_to_db(engine, site_id: str, path):
     """
     Store each site's rainfall data in the database.
-    Each csv file contains historical and future forecasted rainfall data for various rcp, time periods and durations.
-    To view the csv file, go to https://hirds.niwa.co.nz/, select a site and generate a report,
+    Each CSV file contains historical and future forecasted rainfall data for various rcp, time periods and durations.
+    To view the CSV file, go to https://hirds.niwa.co.nz/, select a site and generate a report,
     there are rainfall depths and rainfall intensities data for different RCP Scenarios.
     To understand the structure of the CSV file, download the spreadsheet.
     """
@@ -162,7 +162,7 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
     catchment_polygon : Polygon
         Desired catchment area.
     path
-        The file path of where the downloaded rainfall data csv files are stored.
+        The file path of where the downloaded rainfall data CSV files are stored.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
