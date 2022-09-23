@@ -202,10 +202,10 @@ if __name__ == "__main__":
 ```
 
 The `rain_depths_to_db(engine, catchment_polygon, path, idf)` function requires four arguments:
-1. *engine:* engine used to connect to the database. 
-2. *catchment_polygon:* desired catchment area (polygon type).
-3. *path:* rainfall data are downloaded as CSV files in the local directory before being stored in the database. Thus, the user needs to specify the path of where the CSV files need to be stored.
-4. *idf:* set to False to get rainfall depth data, and True to get rainfall intensity data
+1. *engine:* Engine used to connect to the database.
+2. *catchment_polygon:* Desired catchment area (polygon type).
+3. *path:* The file path of where the downloaded rainfall data CSV files are stored.
+4. *idf:* Set to False for rainfall depth data, and True for rainfall intensity data.
 
 <br>
 
@@ -234,12 +234,12 @@ if __name__ == "__main__":
 ```
 
 The `rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)` function requires six arguments:
-1. *engine:* engine used to connect to the database. 
-2. *catchment_polygon:* desired catchment area (polygon type).
-3. *rcp:* there are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5, RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
-4. *time_period:* rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
-5. *ari:* storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
-6. *duration:* storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, or 120h. 
+1. *engine:* Engine used to connect to the database.
+2. *catchment_polygon:* Desired catchment area (polygon type).
+3. *rcp:* There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5, RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
+4. *time_period:* Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+5. *ari:* Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+6. *duration:* Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
 
 For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) and [HIRDSv4 Usage](https://niwa.co.nz/information-services/hirds/help) websites.
 
@@ -263,13 +263,13 @@ if __name__ == "__main__":
 ```
 
 The `get_sites_locations(engine, catchment)` function is used to get the sites with the catchment area from the database. The function requires two arguments:
-1. *engine:* engine used to connect to the database. 
-2. *catchment:* geopandas dataframe of the NZ catchment area.
+1. *engine:* Engine used to connect to the database.
+2. *catchment:* New Zealand catchment boundary geometry.
 
 The `thiessen_polygons(engine, catchment, sites_in_catchment)` function is used to calculate the area covered by each site and stores the data in the database. The function requires three arguments:
-1. *engine:* engine used to connect to the database. 
-2. *catchment:* geopandas dataframe of the NZ catchment area.
-3. *sites_in_catchment:* geopandas dataframe of the sites within the NZ catchment area.
+1. *engine:* Engine used to connect to the database. 
+2. *catchment:* New Zealand catchment boundary geometry.
+3. *sites_in_catchment:* Rainfall sites within the catchment area.
 
 <br>
 
@@ -278,38 +278,38 @@ The `thiessen_polygons(engine, catchment, sites_in_catchment)` function is used 
 A hyetograph is a graphical representation of the distribution of rainfall intensity over time. For instance, in the 24-hour rainfall distributions, rainfall intensity progressively increases until it reaches a maximum and then gradually decreases. Where this maximum occurs and how fast the maximum is reached is what differentiates one distribution from another. One important aspect to understand is that the distributions are for design storms, not necessarily actual storms. In other words, a real storm may not behave in this same fashion.
 
 > Incomplete yet. To be updated.
-> ```python
-> #!/usr/bin/env python
-> if __name__ == "__main__":
->     import pathlib
->     from src.digitaltwin import setup_environment
->     from src.dynamic_boundary_conditions import rainfall_sites
->     from src.dynamic_boundary_conditions import thiessen_polygon_calculator
->     from src.dynamic_boundary_conditions import hyetograph
->     from src.dynamic_boundary_conditions import hirds_depth_data_to_db
->     from src.dynamic_boundary_conditions import hirds_depth_data_from_db
-> 
->     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
->     file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
->     rcp = 2.6
->     time_period = "2031-2050"
->     ari = 100
->     # To get rainfall depths data for all durations set duration to "all"
->     duration = "all"
-> 
->     engine = setup_environment.get_database()
->     sites = rainfall_sites.get_rainfall_sites_data()
->     rainfall_sites.rainfall_sites_to_db(engine, sites)
->     nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
->     sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
->     thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
->     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
->     # Set idf to False for rain depth data and to True for rain intensity data
->     hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
->     rain_depth_in_catchment = hirds_depth_data_from_db.rain_depths_from_db(
->         engine, catchment_polygon, rcp, time_period, ari, duration)
->     print(rain_depth_in_catchment)
-> ```
+>```python
+>#!/usr/bin/env python
+>if __name__ == "__main__":
+>    import pathlib
+>    from src.digitaltwin import setup_environment
+>    from src.dynamic_boundary_conditions import rainfall_sites
+>    from src.dynamic_boundary_conditions import thiessen_polygon_calculator
+>    from src.dynamic_boundary_conditions import hyetograph
+>    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+>    from src.dynamic_boundary_conditions import hirds_depth_data_from_db
+>
+>    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+>    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
+>    rcp = 2.6
+>    time_period = "2031-2050"
+>    ari = 100
+>    # To get rainfall data for all durations set duration to "all"
+>    duration = "all"
+>
+>    engine = setup_environment.get_database()
+>    sites = rainfall_sites.get_rainfall_sites_data()
+>    rainfall_sites.rainfall_sites_to_db(engine, sites)
+>    nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
+>    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
+>    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
+>    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+>    # Set idf to False for rain depth data and to True for rain intensity data
+>    hirds_depth_data_to_db.rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
+>    rain_depth_in_catchment = hirds_depth_data_from_db.rain_depths_from_db(
+>        engine, catchment_polygon, rcp, time_period, ari, duration)
+>    print(rain_depth_in_catchment)
+>```
 
 <br>
 
