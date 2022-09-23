@@ -146,6 +146,15 @@ def add_rain_depth_data_to_db(engine, site_id: str, path):
     To view the CSV file, go to https://hirds.niwa.co.nz/, select a site and generate a report,
     there are rainfall depths and rainfall intensities data for different RCP Scenarios.
     To understand the structure of the CSV file, download the spreadsheet.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    site_id : str
+        HIRDS rainfall site id.
+    path
+        The file path of where the downloaded rainfall data CSV files are stored.
     """
     filename = pathlib.Path(f"{site_id}_rain_depth.csv")
     filepath = (path / filename)
