@@ -114,7 +114,23 @@ def get_layout_structure_of_csv(filepath) -> list:
 
 
 def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_period: str) -> pd.DataFrame:
-    """Read the CSV files of the different sites rainfall data and return a dataframe."""
+    """
+    Read the rainfall data CSV file and return the required data in Pandas DataFrame format.
+
+    Parameters
+    ----------
+    filepath
+        The file path of the downloaded rainfall data CSV files.
+    site_id : str
+        HIRDS rainfall site id.
+    skip_rows : int
+        Number of lines to skip at the start of the CSV file.
+    rcp : float
+        There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
+        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
+    time_period : str
+        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+    """
     rainfall_data = pd.read_csv(filepath, skiprows=skip_rows, nrows=12)
     rainfall_data.insert(0, "site_id", site_id)
     rainfall_data.insert(1, "rcp", rcp)
