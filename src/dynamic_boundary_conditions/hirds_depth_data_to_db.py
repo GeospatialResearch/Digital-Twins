@@ -179,7 +179,7 @@ def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str, idf: b
     sites_id_list : list
         Rainfall sites' ids.
     path
-        The file path of the downloaded rainfall data CSV files.
+        The file path of where the downloaded rainfall data CSV files are stored.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
@@ -199,7 +199,7 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
     catchment_polygon : Polygon
         Desired catchment area.
     path
-        The file path of the downloaded rainfall data CSV files.
+         The file path of where the downloaded rainfall data CSV files are stored.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
