@@ -43,7 +43,8 @@ def filter_for_duration(rain_depth: pd.DataFrame, duration: str) -> pd.DataFrame
 def get_each_site_rain_depth_data(
         engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
     """
-    Get the HIRDS rainfall data for the requested site from the database and return in dataframe format.
+    Get the HIRDS rainfall data for the requested site from the database and return the required data in
+    Pandas DataFrame format.
 
 
     Parameters
@@ -82,7 +83,8 @@ def get_each_site_rain_depth_data(
 def rain_depths_from_db(
         engine, catchment_polygon: Polygon, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
     """
-    Get all the rainfall data for the sites within the catchment area and return in dataframe format.
+    Get all the rainfall data for the sites within the catchment area and return the required data in
+    Pandas DataFrame format.
 
     Parameters
     ----------

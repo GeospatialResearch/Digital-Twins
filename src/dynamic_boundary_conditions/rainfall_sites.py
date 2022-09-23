@@ -84,7 +84,8 @@ def get_new_zealand_boundary(engine) -> gpd.GeoDataFrame:
 
 def get_sites_locations(engine, catchment: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Get the rainfall sites' locations within the catchment area from the database and return in GeoDataFrame format.
+    Get the rainfall sites' locations within the catchment area from the database and return the required data in
+    GeoDataFrame format.
 
     Parameters
     ----------
