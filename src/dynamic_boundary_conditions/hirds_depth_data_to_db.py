@@ -11,6 +11,7 @@ import geopandas as gpd
 import sqlalchemy
 import pathlib
 import logging
+from typing import List
 from shapely.geometry import Polygon
 from src.dynamic_boundary_conditions import rain_depth_data_from_hirds
 from src.digitaltwin import setup_environment
@@ -41,7 +42,7 @@ def check_table_exists(engine, db_table_name: str) -> bool:
     return insp.has_table(db_table_name, schema="public")
 
 
-def get_sites_id_in_catchment(engine, catchment_polygon: Polygon) -> list:
+def get_sites_id_in_catchment(engine, catchment_polygon: Polygon) -> List[str]:
     """
     Get rainfall sites ids within the catchment area from the 'rainfall_sites' table in the database.
 
@@ -59,7 +60,7 @@ def get_sites_id_in_catchment(engine, catchment_polygon: Polygon) -> list:
     return sites_id_in_catchment
 
 
-def get_sites_id_not_in_db(engine, sites_id_in_catchment: list) -> list:
+def get_sites_id_not_in_db(engine, sites_id_in_catchment: List[str]) -> List[str]:
     """
     Get the list of rainfall sites ids that are in the catchment area but are not in the database.
 
@@ -167,7 +168,7 @@ def add_rain_depth_data_to_db(engine, site_id: str, path):
     log.info(f"Added rainfall depth data for site {site_id} to database")
 
 
-def add_each_site_rain_depth_data(engine, sites_id_list: list, path: str, idf: bool):
+def add_each_site_rain_depth_data(engine, sites_id_list: List[str], path: str, idf: bool):
     """
     Loop through all the sites in the sites_id_list, download and store each site's rainfall data as a CSV file
     in the desired file path, and then read the CSV files to store the rainfall data in the database.
