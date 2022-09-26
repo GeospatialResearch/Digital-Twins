@@ -2,7 +2,7 @@
 """
 Created on Thu Jan 20 15:09:11 2022
 
-@author: pkh35
+@authors: pkh35, sli229
 """
 
 import re

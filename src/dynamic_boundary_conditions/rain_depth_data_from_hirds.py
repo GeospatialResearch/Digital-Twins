@@ -2,7 +2,7 @@
 """
 Created on Thu Jan 20 14:35:08 2022.
 
-@author: pkh35
+@authors: pkh35, sli229
 """
 
 import requests
