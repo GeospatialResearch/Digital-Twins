@@ -11,7 +11,7 @@ import geopandas as gpd
 import sqlalchemy
 import pathlib
 import logging
-from typing import List
+from typing import List, Tuple
 from shapely.geometry import Polygon
 from src.dynamic_boundary_conditions import rain_depth_data_from_hirds
 from src.digitaltwin import setup_environment
@@ -81,7 +81,7 @@ def get_sites_id_not_in_db(engine, sites_id_in_catchment: List[str]) -> List[str
     return sites_id_not_in_db
 
 
-def get_layout_structure_of_csv(filepath) -> list:
+def get_layout_structure_of_csv(filepath) -> List[Tuple[int, float, str]]:
     """
     Read the rainfall data CSV file and return a list of tuples (skip_rows, rcp, time_period) of its layout structure.
 
