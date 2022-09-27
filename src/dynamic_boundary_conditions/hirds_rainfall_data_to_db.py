@@ -159,7 +159,7 @@ def get_data_from_csv(filepath, site_id: str, skip_rows: int, rcp: float, time_p
     return rainfall_data
 
 
-def add_rain_depth_data_to_db(engine, site_id: str, path, idf: bool):
+def add_rainfall_data_to_db(engine, site_id: str, path, idf: bool):
     """
     Store each site's rainfall data in the database.
     Each CSV file contains historical and future forecasted rainfall data for various rcp, time periods and durations.
@@ -208,7 +208,7 @@ def add_each_site_rain_depth_data(engine, sites_id_list: List[str], path: str, i
     """
     for site_id in sites_id_list:
         rainfall_data_from_hirds.store_data_to_csv(site_id, path, idf)
-        add_rain_depth_data_to_db(engine, site_id, path, idf)
+        add_rainfall_data_to_db(engine, site_id, path, idf)
 
 
 def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
