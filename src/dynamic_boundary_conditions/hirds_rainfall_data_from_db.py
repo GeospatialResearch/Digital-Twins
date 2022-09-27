@@ -27,20 +27,20 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def filter_for_duration(rain_depth: pd.DataFrame, duration: str) -> pd.DataFrame:
+def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
     """
     Used to filter the HIRDS rainfall data for a requested duration.
 
     Parameters
     ----------
-    rain_depth : pd.DataFrame
+    rain_data : pd.DataFrame
         HIRDS rainfall data in Pandas Dataframe format.
     duration : str
         Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
     """
     if duration != "all":
-        rain_depth = rain_depth[["site_id", "rcp", "time_period", "ari", "aep", duration]]
-    return rain_depth
+        rain_data = rain_data[["site_id", "rcp", "time_period", "ari", "aep", duration]]
+    return rain_data
 
 
 def get_each_site_rainfall_data(
@@ -77,13 +77,13 @@ def get_each_site_rainfall_data(
     elif rcp is not None and time_period is not None:
         query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
-        rain_depth = pd.read_sql_query(query, engine)
+        rain_data = pd.read_sql_query(query, engine)
     else:
         query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};"""
-        rain_depth = pd.read_sql_query(query, engine).head(1)
-    rain_depth = filter_for_duration(rain_depth, duration)
-    return rain_depth
+        rain_data = pd.read_sql_query(query, engine).head(1)
+    rain_data = filter_for_duration(rain_data, duration)
+    return rain_data
 
 
 def rainfall_data_from_db(
@@ -118,11 +118,11 @@ def rainfall_data_from_db(
     """
     sites_id_in_catchment = hirds_rainfall_data_to_db.get_sites_id_in_catchment(engine, catchment_polygon)
 
-    rain_depth_in_catchment = pd.DataFrame()
+    rain_data_in_catchment = pd.DataFrame()
     for site_id in sites_id_in_catchment:
-        rain_depth = get_each_site_rainfall_data(engine, site_id, rcp, time_period, ari, duration, idf)
-        rain_depth_in_catchment = pd.concat([rain_depth_in_catchment, rain_depth], ignore_index=True)
-    return rain_depth_in_catchment
+        rain_data = get_each_site_rainfall_data(engine, site_id, rcp, time_period, ari, duration, idf)
+        rain_data_in_catchment = pd.concat([rain_data_in_catchment, rain_data], ignore_index=True)
+    return rain_data_in_catchment
 
 
 def main():
