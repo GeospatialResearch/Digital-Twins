@@ -71,7 +71,7 @@ def get_each_site_rainfall_data(
     rain_table_name = hirds_rainfall_data_to_db.db_rain_table_name(idf)
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
-            "Check the arguments of the 'rain_depths_from_db' function. "
+            "Check the arguments of the 'rainfall_data_from_db' function. "
             "If rcp is None, time period should be None, and vice-versa.")
         sys.exit()
     elif rcp is not None and time_period is not None:
@@ -86,7 +86,7 @@ def get_each_site_rainfall_data(
     return rain_depth
 
 
-def rain_depths_from_db(
+def rainfall_data_from_db(
         engine,
         catchment_polygon: Polygon,
         rcp: float,
@@ -134,10 +134,10 @@ def main():
     duration = "all"
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    rain_depth_in_catchment = rain_depths_from_db(
+    rain_depth_in_catchment = rainfall_data_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
     print(rain_depth_in_catchment)
-    rain_intensity_in_catchment = rain_depths_from_db(
+    rain_intensity_in_catchment = rainfall_data_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
     print(rain_intensity_in_catchment)
 

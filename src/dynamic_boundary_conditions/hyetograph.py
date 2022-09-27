@@ -53,10 +53,10 @@ def main():
     # Set idf to False for rain depth data and to True for rain intensity data
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=True)
-    rain_depth_in_catchment = hirds_rainfall_data_from_db.rain_depths_from_db(
+    rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
     print(rain_depth_in_catchment)
-    rain_intensity_in_catchment = hirds_rainfall_data_from_db.rain_depths_from_db(
+    rain_intensity_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
     print(rain_intensity_in_catchment)
 
