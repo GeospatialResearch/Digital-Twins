@@ -44,7 +44,7 @@ def filter_for_duration(rain_depth: pd.DataFrame, duration: str) -> pd.DataFrame
 
 
 def get_each_site_rain_depth_data(
-        engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
+        engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str, idf: bool) -> pd.DataFrame:
     """
     Get the HIRDS rainfall data for the requested site from the database and return the required data in
     Pandas DataFrame format.
@@ -65,18 +65,21 @@ def get_each_site_rain_depth_data(
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     duration : str
         Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
+    idf : bool
+        Set to False for rainfall depth data, and True for rainfall intensity data.
     """
+    rain_table_name = hirds_depth_data_to_db.db_rain_table_name(idf)
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
             "Check the arguments of the 'rain_depths_from_db' function. "
             "If rcp is None, time period should be None, and vice-versa.")
         sys.exit()
     elif rcp is not None and time_period is not None:
-        query = f"""SELECT * FROM rainfall_depth
+        query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
         rain_depth = pd.read_sql_query(query, engine)
     else:
-        query = f"""SELECT * FROM rainfall_depth
+        query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};"""
         rain_depth = pd.read_sql_query(query, engine).head(1)
     rain_depth = filter_for_duration(rain_depth, duration)
@@ -84,7 +87,13 @@ def get_each_site_rain_depth_data(
 
 
 def rain_depths_from_db(
-        engine, catchment_polygon: Polygon, rcp: float, time_period: str, ari: float, duration: str) -> pd.DataFrame:
+        engine,
+        catchment_polygon: Polygon,
+        rcp: float,
+        time_period: str,
+        ari: float,
+        duration: str,
+        idf: bool) -> pd.DataFrame:
     """
     Get all the rainfall data for the sites within the catchment area and return the required data in
     Pandas DataFrame format.
@@ -104,12 +113,14 @@ def rain_depths_from_db(
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     duration : str
         Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
+    idf : bool
+        Set to False for rainfall depth data, and True for rainfall intensity data.
     """
     sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(engine, catchment_polygon)
 
     rain_depth_in_catchment = pd.DataFrame()
     for site_id in sites_id_in_catchment:
-        rain_depth = get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, duration)
+        rain_depth = get_each_site_rain_depth_data(engine, site_id, rcp, time_period, ari, duration, idf)
         rain_depth_in_catchment = pd.concat([rain_depth_in_catchment, rain_depth], ignore_index=True)
     return rain_depth_in_catchment
 
@@ -123,8 +134,12 @@ def main():
     duration = "all"
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    rain_depth_in_catchment = rain_depths_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)
+    rain_depth_in_catchment = rain_depths_from_db(
+        engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
     print(rain_depth_in_catchment)
+    rain_intensity_in_catchment = rain_depths_from_db(
+        engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
+    print(rain_intensity_in_catchment)
 
 
 if __name__ == "__main__":
