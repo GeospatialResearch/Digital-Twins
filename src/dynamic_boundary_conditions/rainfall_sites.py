@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Dec 23 16:06:53 2021.
-
-@authors: pkh35, sli229
+@Script name: rainfall_sites.py
+@Description: Store rainfall sites data from the HIRDS website in the database.
+@Author: pkh35
+@Date: 23/12/2021
+@Last modified by: sli229
+@Last modified date: 27/09/2022
 """
 
 import requests

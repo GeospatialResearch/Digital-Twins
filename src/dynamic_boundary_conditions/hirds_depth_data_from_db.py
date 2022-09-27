@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jan 20 16:36:59 2022.
-
-@authors: pkh35, sli229
+@Script name: hirds_depth_data_from_db.py
+@Description: Get all the rainfall data for the sites within the catchment area from the database.
+@Author: pkh35
+@Date: 20/01/2022
+@Last modified by: sli229
+@Last modified date: 27/09/2022
 """
 
 import pandas as pd

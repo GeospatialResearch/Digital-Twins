@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 17 09:32:16 2022.
-
-@authors: pkh35, sli229
+@Script name: hyetograph.py
+@Description:
+@Author: pkh35
+@Date: 17/01/2022
+@Last modified by: sli229
+@Last modified date: 27/09/2022
 """
 
 import geopandas as gpd

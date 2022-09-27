@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jan 20 11:36:07 2022
-
-@authors: pkh35, sli229
+@Script name: thiessen_polygon_calculator.py
+@Description: Calculate the area covered by each rainfall site and store it in the database.
+@Author: pkh35
+@Date: 20/01/2022
+@Last modified by: sli229
+@Last modified date: 27/09/2022
 """
 
 import pandas as pd

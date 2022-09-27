@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jan 20 14:35:08 2022.
-
-@authors: pkh35, sli229
+@Script name: rain_depth_data_from_hirds.py
+@Description: Fetch rainfall data from the HIRDS website.
+@Author: pkh35
+@Date: 20/01/2022
+@Last modified by: sli229
+@Last modified date: 27/09/2022
 """
 
 import requests
