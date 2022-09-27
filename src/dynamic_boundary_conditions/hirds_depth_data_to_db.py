@@ -32,6 +32,8 @@ log.addHandler(stream_handler)
 
 def db_rain_table_name(idf: bool) -> str:
     """
+    Return the relevant rainfall data table name used in the database.
+
     Parameters
     ----------
     idf : bool
