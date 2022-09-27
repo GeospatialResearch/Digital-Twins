@@ -15,7 +15,7 @@ import geopandas as gpd
 import logging
 from geoalchemy2 import Geometry
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -62,7 +62,7 @@ def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
     sites : gpd.GeoDataFrame
         Rainfall sites in New Zealand.
     """
-    if hirds_depth_data_to_db.check_table_exists(engine, "rainfall_sites"):
+    if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites"):
         log.info("Rainfall sites data already exists in the database.")
     else:
         sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,

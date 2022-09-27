@@ -13,7 +13,7 @@ import pathlib
 import logging
 import sys
 from shapely.geometry import Polygon
-from src.dynamic_boundary_conditions import hirds_depth_data_to_db
+from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hyetograph
 
@@ -68,7 +68,7 @@ def get_each_site_rain_depth_data(
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
-    rain_table_name = hirds_depth_data_to_db.db_rain_table_name(idf)
+    rain_table_name = hirds_rainfall_data_to_db.db_rain_table_name(idf)
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         log.error(
             "Check the arguments of the 'rain_depths_from_db' function. "
@@ -116,7 +116,7 @@ def rain_depths_from_db(
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
-    sites_id_in_catchment = hirds_depth_data_to_db.get_sites_id_in_catchment(engine, catchment_polygon)
+    sites_id_in_catchment = hirds_rainfall_data_to_db.get_sites_id_in_catchment(engine, catchment_polygon)
 
     rain_depth_in_catchment = pd.DataFrame()
     for site_id in sites_id_in_catchment:
