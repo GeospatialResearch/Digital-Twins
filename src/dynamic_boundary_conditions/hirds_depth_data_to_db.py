@@ -31,6 +31,12 @@ log.addHandler(stream_handler)
 
 
 def db_rain_table_name(idf: bool) -> str:
+    """
+    Parameters
+    ----------
+    idf : bool
+        Set to False for rainfall depth data, and True for rainfall intensity data.
+    """
     table_name = "rainfall_depth" if idf is False else "rainfall_intensity"
     return table_name
 
@@ -78,6 +84,8 @@ def get_sites_id_not_in_db(engine, sites_id_in_catchment: List[str], idf: bool) 
         Engine used to connect to the database.
     sites_id_in_catchment : List[str]
         Rainfall sites ids within the catchment area.
+    idf : bool
+        Set to False for rainfall depth data, and True for rainfall intensity data.
     """
     rain_table_name = db_rain_table_name(idf)
     query = f"SELECT DISTINCT site_id FROM {rain_table_name};"
@@ -165,6 +173,8 @@ def add_rain_depth_data_to_db(engine, site_id: str, path, idf: bool):
         HIRDS rainfall site id.
     path
         The file path of where the downloaded rainfall data CSV files are stored.
+    idf : bool
+        Set to False for rainfall depth data, and True for rainfall intensity data.
     """
     rain_table_name = db_rain_table_name(idf)
     filename = pathlib.Path(f"{site_id}_{rain_table_name}.csv")
