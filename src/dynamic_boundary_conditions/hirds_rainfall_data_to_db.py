@@ -211,7 +211,7 @@ def add_each_site_rainfall_data(engine, sites_id_list: List[str], path: str, idf
         add_rainfall_data_to_db(engine, site_id, path, idf)
 
 
-def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
+def rainfall_data_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
     """
     Store rainfall data of all the sites within the catchment area in the database.
 
@@ -250,8 +250,8 @@ def main():
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
     # Set idf to False for rain depth data and to True for rain intensity data
-    rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
-    rain_depths_to_db(engine, catchment_polygon, file_path_to_store, idf=True)
+    rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
+    rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=True)
 
 
 if __name__ == "__main__":
