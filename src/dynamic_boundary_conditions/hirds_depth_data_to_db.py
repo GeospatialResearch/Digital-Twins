@@ -71,7 +71,7 @@ def get_sites_id_not_in_db(engine, sites_id_in_catchment: List[str]) -> List[str
     ----------
     engine
         Engine used to connect to the database.
-    sites_id_in_catchment : list
+    sites_id_in_catchment : List[str]
         Rainfall sites ids within the catchment area.
     """
     query = "SELECT DISTINCT site_id FROM rainfall_depth;"
@@ -180,7 +180,7 @@ def add_each_site_rain_depth_data(engine, sites_id_list: List[str], path: str, i
     ----------
     engine
         Engine used to connect to the database.
-    sites_id_list : list
+    sites_id_list : List[str]
         Rainfall sites' ids.
     path
         The file path of where the downloaded rainfall data CSV files are stored.
