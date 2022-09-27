@@ -16,7 +16,7 @@ import pathlib
 import logging
 from typing import List, Tuple
 from shapely.geometry import Polygon
-from src.dynamic_boundary_conditions import rain_depth_data_from_hirds
+from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hyetograph
 
@@ -207,7 +207,7 @@ def add_each_site_rain_depth_data(engine, sites_id_list: List[str], path: str, i
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
     for site_id in sites_id_list:
-        rain_depth_data_from_hirds.store_data_to_csv(site_id, path, idf)
+        rainfall_data_from_hirds.store_data_to_csv(site_id, path, idf)
         add_rain_depth_data_to_db(engine, site_id, path, idf)
 
 

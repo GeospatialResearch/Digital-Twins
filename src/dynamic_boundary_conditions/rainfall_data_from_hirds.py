@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: rain_depth_data_from_hirds.py
+@Script name: rainfall_data_from_hirds.py
 @Description: Fetch rainfall data from the HIRDS website.
 @Author: pkh35
 @Date: 20/01/2022
