@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: hirds_depth_data_from_db.py
+@Script name: hirds_rainfall_data_from_db.py
 @Description: Get all the rainfall data for the sites within the catchment area from the database.
 @Author: pkh35
 @Date: 20/01/2022
