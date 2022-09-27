@@ -190,7 +190,7 @@ def add_rainfall_data_to_db(engine, site_id: str, path, idf: bool):
     log.info(f"Added {rain_table_name} data for site {site_id} to database")
 
 
-def add_each_site_rain_depth_data(engine, sites_id_list: List[str], path: str, idf: bool):
+def add_each_site_rainfall_data(engine, sites_id_list: List[str], path: str, idf: bool):
     """
     Loop through all the sites in the sites_id_list, download and store each site's rainfall data as a CSV file
     in the desired file path, and then read the CSV files to store the rainfall data in the database.
@@ -233,13 +233,13 @@ def rain_depths_to_db(engine, catchment_polygon: Polygon, path, idf: bool):
         sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment, idf)
         # Check if sites_id_not_in_db is not empty
         if sites_id_not_in_db:
-            add_each_site_rain_depth_data(engine, sites_id_not_in_db, path, idf)
+            add_each_site_rainfall_data(engine, sites_id_not_in_db, path, idf)
         else:
             log.info(f"{rain_table_name} data for sites in the requested catchment already available in the database.")
     else:
         # check if sites_id_in_catchment is not empty
         if sites_id_in_catchment:
-            add_each_site_rain_depth_data(engine, sites_id_in_catchment, path, idf)
+            add_each_site_rainfall_data(engine, sites_id_in_catchment, path, idf)
         else:
             log.info("There are no sites within the requested catchment area, select a wider area.")
 
