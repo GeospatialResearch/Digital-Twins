@@ -13,6 +13,7 @@ from requests.structures import CaseInsensitiveDict
 import pandas as pd
 import geopandas as gpd
 import logging
+from shapely.geometry import Polygon
 from geoalchemy2 import Geometry
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
@@ -70,7 +71,7 @@ def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
         log.info("Stored rainfall sites data in the database.")
 
 
-def get_new_zealand_boundary(engine) -> gpd.GeoDataFrame:
+def get_new_zealand_boundary(engine) -> Polygon:
     """
     Get the boundary geometry of New Zealand from the 'region_geometry' table in the database.
 
@@ -82,7 +83,8 @@ def get_new_zealand_boundary(engine) -> gpd.GeoDataFrame:
     query = "SELECT geometry AS geom FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
     nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, crs=2193)
     nz_boundary = nz_boundary.to_crs(4326)
-    return nz_boundary
+    nz_boundary_polygon = nz_boundary["geom"][0]
+    return nz_boundary_polygon
 
 
 def get_sites_locations(engine, catchment: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
