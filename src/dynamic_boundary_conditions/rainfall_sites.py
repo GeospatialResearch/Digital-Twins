@@ -87,7 +87,7 @@ def get_new_zealand_boundary(engine) -> Polygon:
     return nz_boundary_polygon
 
 
-def get_sites_locations(engine, catchment: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_sites_locations(engine, catchment: Polygon) -> gpd.GeoDataFrame:
     """
     Get the rainfall sites' locations within the catchment area from the database and return the required data in
     GeoDataFrame format.
@@ -96,18 +96,17 @@ def get_sites_locations(engine, catchment: gpd.GeoDataFrame) -> gpd.GeoDataFrame
     ----------
     engine
         Engine used to connect to the database.
-    catchment : gpd.GeoDataFrame
-        New Zealand catchment boundary geometry.
+    catchment : Polygon
+        New Zealand boundary catchment polygon.
     """
     # Get all rainfall sites within the New Zealand catchment area.
-    catchment_area = catchment["geom"][0]
     query = f"""SELECT * FROM rainfall_sites AS rs
-        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment_area}', 4326))"""
+        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment}', 4326))"""
     sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Get site locations geometry (geometry column)
     sites_geom = sites_in_catchment["geometry"]
     # Add new column 'exists' which identifies whether each site is within the catchment area
-    sites_in_catchment["exists"] = sites_geom.within(catchment_area)
+    sites_in_catchment["exists"] = sites_geom.within(catchment)
     # Filter for all sites that are within the catchment area (i.e., all Trues in 'exists' column)
     sites_in_catchment.query("exists == True", inplace=True)
     # Reset the index (i.e., the original index is added as a column, and a new sequential index is used)
