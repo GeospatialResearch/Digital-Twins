@@ -67,9 +67,9 @@ def thiessen_polygons(engine, catchment: Polygon, sites_in_catchment: gpd.GeoDat
 
 def main():
     engine = setup_environment.get_database()
-    nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
-    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
-    thiessen_polygons(engine, nz_boundary, sites_in_catchment)
+    nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
+    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary_polygon)
+    thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
 
 
 if __name__ == "__main__":
