@@ -3,7 +3,7 @@
 ## Basic running instructions
 The following list defines the basic steps required to setup and run the digital twin.
 
-1. Set up Docker or PostGRESQL - i.e. creating and running the database
+1. Set up Docker or PostgreSQL - i.e. creating and running the database
 2. Set up an Anaconda Python environment - using the environment.yml file
 2. Run run.py - adds tables to the database
 3. Run digitaltwin.get_data_from_db.py
@@ -13,6 +13,8 @@ The following list defines the basic steps required to setup and run the digital
 
 ### Notes on API keys setup
 The api_keys table doesn't exist, manually insert api_keys table into database for now
+
+<br>
 
 ## Setup
 
@@ -27,6 +29,8 @@ Setup a conda environment to run in using the following command run from the rep
 conda env create -f environment.yml
 ```
 
+<br>
+
 ## Tests
 Tests exist in the `tests/` folder.
 
@@ -34,6 +38,8 @@ Tests exist in the `tests/` folder.
 [Github Actions](https://docs.github.com/en/actions) are used to run tests after each push to remote (i.e. github). [Miniconda](https://github.com/marketplace/actions/setup-miniconda)from the GitHub Actions marketplace is used to install the package dependencies. Linting with [Flake8](https://github.com/py-actions/flake8) and testing with [PyTest](https://docs.pytest.org/en/6.2.x/contents.html) is then performed. Several tests require an API key. This is stored as a GitHub secret and accessed by the workflow.
 ### Running tests locally
 See the [geoapis wiki testing page](https://github.com/niwa/geoapis/wiki/Testing) for instructions for setting up a .env file and running the geofabrics test.
+
+<br>
 
 ## Introduction
 
@@ -48,6 +54,8 @@ The reason for creating a database are:
 3.	To store the data only for the Area of Interest.
 
 The digital twin stores API details and a local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, LRIS, opentopography, and NIWA in PostgreSQL.
+
+<br>
 
 ## Vector Database
 To store api details of vector data in the database,
@@ -117,11 +125,15 @@ To get the data from the database:
 get_data_from_db module allows the user to get data from the multiple sources within the required Area of Interest from the database and if data is not available in the database for the desired area of Interest, wfs request is made from the stored APIs, data is stored in the database and spatial query is done within the database to get the data for the desired Area of Interest.
 Currently data is collected from LINZ, ECAN, Stats NZ, KiwiRail, LRIS, NIWa and opentopography but will be extended to other sources.
 
+<br>
+
 ## Raster Database
 
 Hydrologically conditioned DEMs are generated using [geofabrics] (https://github.com/rosepearson/GeoFabrics ) designed by NIWA which downloads the LiDAR data in the local directory from [opentopography] (https://portal.opentopography.org/dataCatalog ) and generates DEM. These DEMs are stored in the local directory set by the user. The objective of the **dem_metadata_in_db.py** script is to store the metadata of the generated DEM in the database for the requested catchment area. Storing these details in the database helps in getting the DEM already generated using geofabrics rather than generating DEM for the same catchment, again and again, saving time and resources.
 The stored DEM is used to run the Flood model (BG Flood model)[https://github.com/CyprienBosserelle/BG_Flood )] designed by NIWA.
 The [instruction file](https://github.com/GeospatialResearch/Digital-Twins/blob/lidar_to_db/src/lidar/file.json) used to create hydrologically conditioned DEM is passed to the **get_dem_path(instruction)** function which checks if the DEM information exists in the database, if it doesn’t exist, geofabrics is used to generate the hydrologically conditioned DEM which gets stored in the local directory and the metadata of the generated DEM is stored in the database and file path of the generated DEM is returned which is then used to run the flood model.
+
+<br>
 
 ## LiDAR Database
 
@@ -148,129 +160,165 @@ The data source for the LiDAR data is [opentopography]( https://portal.opentopog
 Then `store_tileindex()` function is used to store the corresponding tiles information, user needs to provide database information to connect to the database and the path where Lidar data will be stored and finally
 `get_lidar_path function()` is used which requires two arguments i.e. engine to connect to the database and geopandas dataframe to get the geometry information to get the path of the files within the catchment area. 
 
-## BoundaryConditions data
+<br>
 
-### Rain gauges location
+## Dynamic Boundary Conditions
 
-The rain gauges location is accessed from [HIRDS](https://hirds.niwa.co.nz/) which is tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The gauges information can be stored in the database using `hirds_gauges.py` script as shown below:
+### Rainfall sites' locations
+
+The rainfall sites' locations are accessed from [NIWA HIRDS](https://hirds.niwa.co.nz/) which is a tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The sites' information can be stored in the database using the `rainfall_sites.py` script as shown below:
 
 ```python
 #!/usr/bin/env python
 if __name__ == "__main__":
     from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import rainfall_sites
+    
     engine = setup_environment.get_database()
-    guages = get_hirds_gauges_data()
-    hirds_gauges_to_db(engine, guages)
+    sites = rainfall_sites.get_rainfall_sites_data()
+    rainfall_sites.rainfall_sites_to_db(engine, sites)
 ```
 
-### To get the rainfall data of the gauging sites within the desired catchment area from HIRDS and store in the database, use **hirds_depth_data_to_db.py** script.
+<br>
 
-**hirds_depths_to_db(engine, catchment_area, path)** function requires three arguments,
-1. engine: information about the database to interact with.
-2. catchment_area: Polygon type
-3. path: hirds depth data is first downloaded as csv files in the local directory before getting stored in the database, so user needs to provide the path where the depth data will be stored as csv files.
-The example is as shown below:
+### Store rainfall data to database
+
+To store the rainfall data of sites within the desired catchment area in the database, the `hirds_depth_data_to_db.py` script is used. As shown below:
 
 ```python
 #!/usr/bin/env python
 if __name__ == "__main__":
+    import pathlib
     from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import hyetograph
+    from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
+    
+    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
     engine = setup_environment.get_database()
-    file = r'P:\Data\catch4.shp'
-    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
-    catchment = geopandas.read_file(file)
-    catchment = catchment.to_crs(4326)
-    catchment_area = catchment.geometry[0]
-    hirds_depths_to_db(engine, catchment_area, path)
+    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+    # Set idf to False for rain depth data and to True for rain intensity data
+    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
+    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=True)
 ```
 
-### To get the rainfall depth data from the database, **hirds_depth_data_from_db.py** script is used.
+The `rainfall_data_to_db(engine, catchment_polygon, path, idf)` function requires four arguments:
+1. *engine:* Engine used to connect to the database.
+2. *catchment_polygon:* Desired catchment area (polygon type).
+3. *path:* The file path of where the downloaded rainfall data CSV files are stored.
+4. *idf:* Set to False for rainfall depth data, and True for rainfall intensity data.
 
-**hirds_depths_from_db(engine, catchment_area, ari, duration, rcp, time_period)** function requires six arguments,
-1. engine: information about the database to interact with.
-2. catchment_area: Polygon type
-3. ari:  Average Recurrence Interval (ARI) i.e. the average or expected value of the periods between exceedances of a given rainfall total accumulated over a given duration.
-4. duration: total rainfall depth for a particular duration i.e. 1,2,6,12,24,48,72,96 and 120 hr
-5. rcp: there are different Representative Concentration Pathway (RCP) which is a greenhouse gas concentration (not emissions) trajectory adopted by the IPCC. There values are 2.6, 4.5, 6, and 8.5 also called radiative forcing values.
-6. time_period: different rcp's are associated  with different time periods.
+<br>
 
-For more details on ari, duration, rcp and time_period go to [HIRDS](https://hirds.niwa.co.nz/)
+### Get required rainfall data from the database 
+
+To get the rainfall data of sites within the desired catchment from the database, the `hirds_depth_data_from_db.py` script is used. As shown below:
 
 ```python
 #!/usr/bin/env python
 if __name__ == "__main__":
+    import pathlib
     from src.digitaltwin import setup_environment
-    engine = setup_environment.get_database()
-    file = r'P:\Data\catch5.shp'
-    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
-    ari = 100
-    duration = 24
-    rcp = "2.6"
+    from src.dynamic_boundary_conditions import hyetograph
+    from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
+
+    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    rcp = 2.6
     time_period = "2031-2050"
-    catchment_area = catchment_area_geometry_info(file)
-    depths_data = hirds_depths_from_db(engine, catchment_area, ari, duration, time_period)
-```
-
-### Theissen Polygons
-Each gauge is associated for a particular area. To get the size of the area assoicated wih each gauge, **theissen_polygon_calculator.py** script is used.
-
-theissen_polygons(engine, catchment, gauges_in_polygon) function is used to calculate the area. It takes three arguments:
-1. engine: information about the database to interact with.
-2. catchment_area: Polygon type
-3. gauges_in_polygon: get the gauges information which are within the desired catchment area.
- to get the get the gauges within the catchment area, **get_guages_location(engine, catchment)** function is used from **hirds_gauges.py** script.
-
-```python
-#!/usr/bin/env python
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hirds_gauges
-    engine = setup_environment.get_database()
-    catchment = hirds_gauges.get_new_zealand_boundary(engine)
-    gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
-    theissen_polygons(engine, catchment, gauges_in_polygon)
-```
-
- ### Hyetographs
-
- A hyetograph is a graphical representation of the distribution of rainfall intensity over time. For instance, in the 24-hour rainfall distributions, rainfall intensity progressively increases until it reaches a maximum and then gradually decreases. Where this maximum occurs and how fast the maximum is reached is what differentiates one distribution from another. One important aspect to understand is that the distributions are for design storms, not necessarily actual storms. In other words, a real storm may not behave in this same fashion
-To generate a hyetograph, **hyetograph.py** script is used.
-hyetograph(duration, site, total_rain_depth) function takes 3 arguments:
-1. duration: how many hours rainfall distributions is required i.e. 1,2,6,12,24,48,72,96 and 120 hr
-2. site: site id of a site for which hyetograph is required
-3. total_rain_depth: total rainfal depth at a given duration
-
-```python
-#!/usr/bin/env python
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hirds_gauges
-    from src.dynamic_boundary_conditions import theissen_polygon_calculator
-    from src.dynamic_boundary_conditions import hirds_depth_data_to_db
-    from src.dynamic_boundary_conditions import hirds_depth_data_from_db
-    engine = setup_environment.get_database()
-    file = r'P:\Data\catch5.shp'
-    path = r'\\file\Research\FloodRiskResearch\DigitalTwin\hirds_depth_data'
     ari = 100
-    duration = 24
-    rcp = "2.6"
-    time_period = "2031-2050"
-    guages = hirds_gauges.get_hirds_gauges_data()
-    hirds_gauges.hirds_gauges_to_db(engine, guages)
-    catchment = hirds_gauges.get_new_zealand_boundary(engine)
-    gauges_in_polygon = hirds_gauges.get_gauges_location(engine, catchment)
-    theissen_polygon_calculator.theissen_polygons(engine, catchment, gauges_in_polygon)
-    catchment_area = hirds_depth_data_from_db.catchment_area_geometry_info(file)
-    hirds_depth_data_to_db.hirds_depths_to_db(engine, catchment_area, path)
-    depths_data = hirds_depth_data_from_db.hirds_depths_from_db(engine, catchment_area, ari, duration, rcp,
-                                                                time_period)
-    for site_id, depth in zip(depths_data.site_id, depths_data.depth):
-        hyt = hyetograph(duration, site_id, depth)
-        hyt.plot.bar(x='time', y='prcp_prop', rot=0)
+    # To get rainfall data for all durations set duration to "all"
+    duration = "all"
+    engine = setup_environment.get_database()
+    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+    rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
+        engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
+    print(rain_depth_in_catchment)
+    rain_intensity_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
+        engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
+    print(rain_intensity_in_catchment)
 ```
 
+The `rainfall_data_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)` function requires six arguments:
+1. *engine:* Engine used to connect to the database.
+2. *catchment_polygon:* Desired catchment area (polygon type).
+3. *rcp:* There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5, RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
+4. *time_period:* Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+5. *ari:* Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+6. *duration:* Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
 
-### Run BG Flood model
+For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) and [HIRDSv4 Usage](https://niwa.co.nz/information-services/hirds/help) websites.
+
+<br>
+
+### Thiessen Polygon
+
+Each rainfall site is associated with a particular area. To store the total size of the area (km squared) associated with each site in the database, the `thiessen_polygon_calculator` script is used. As shown below:
+
+```python
+#!/usr/bin/env python
+if __name__ == "__main__":
+    from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import rainfall_sites
+    from src.dynamic_boundary_conditions import thiessen_polygon_calculator
+    
+    engine = setup_environment.get_database()
+    nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
+    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary_polygon)
+    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
+```
+
+The `get_sites_locations(engine, catchment)` function is used to get the sites with the catchment area from the database. The function requires two arguments:
+1. *engine:* Engine used to connect to the database.
+2. *catchment:* New Zealand boundary catchment polygon (polygon type).
+
+The `thiessen_polygons(engine, catchment, sites_in_catchment)` function is used to calculate the area covered by each site and stores the data in the database. The function requires three arguments:
+1. *engine:* Engine used to connect to the database.
+2. *catchment:* New Zealand boundary catchment polygon (polygon type).
+3. *sites_in_catchment:* Rainfall sites within the catchment area.
+
+<br>
+
+### Hyetograph
+
+A hyetograph is a graphical representation of the distribution of rainfall intensity over time. For instance, in the 24-hour rainfall distributions, rainfall intensity progressively increases until it reaches a maximum and then gradually decreases. Where this maximum occurs and how fast the maximum is reached is what differentiates one distribution from another. One important aspect to understand is that the distributions are for design storms, not necessarily actual storms. In other words, a real storm may not behave in this same fashion.
+
+> Incomplete yet. To be updated.
+>```python
+>#!/usr/bin/env python
+>if __name__ == "__main__":
+>    import pathlib
+>    from src.digitaltwin import setup_environment
+>    from src.dynamic_boundary_conditions import rainfall_sites
+>    from src.dynamic_boundary_conditions import thiessen_polygon_calculator
+>    from src.dynamic_boundary_conditions import hyetograph
+>    from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
+>    from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
+>
+>    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+>    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
+>    rcp = 2.6
+>    time_period = "2031-2050"
+>    ari = 100
+>    # To get rainfall data for all durations set duration to "all"
+>    duration = "all"
+>
+>    engine = setup_environment.get_database()
+>    sites = rainfall_sites.get_rainfall_sites_data()
+>    rainfall_sites.rainfall_sites_to_db(engine, sites)
+>    nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
+>    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
+>    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
+>    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+>    # Set idf to False for rain depth data and to True for rain intensity data
+>    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
+>    rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
+>        engine, catchment_polygon, rcp, time_period, ari, duration)
+>    print(rain_depth_in_catchment)
+>```
+
+<br>
+
+## Run BG Flood model
 
 To run the model, `bg_flood_model.py` script is used which takes DEM information from the database, runs the model and stores the output back to the database.
 run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
@@ -338,6 +386,7 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
 8. gpudevice: if using GPU to run the model, set value as 0 else -1.
 9. smallnc: Level of refinement to apply to resolution based on the adaptive resolution trigger
 
+<br>
 
 ## Requirements
 
@@ -345,9 +394,13 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
 * [pip](https://pypi.org/project/pip/) (**P**ip **I**nstalls **P**ackages - Python package manager)
 * [PostgreSQL](https://www.postgresql.org/download/)
 
+<br>
+
 ## Required Credentials:
 
 * [Stats NZ API KEY](https://datafinder.stats.govt.nz/my/api/)
+
+<br>
 
 ## Create extensions in PostgreSQL:
 
@@ -362,6 +415,8 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
    ![image](https://user-images.githubusercontent.com/86580534/133153968-0d65230f-2b5d-4686-b115-2c354f66f04e.png)          ![image](https://user-images.githubusercontent.com/86580534/133154073-4e1702f8-866c-45a3-a8aa-4c1a505cf9b4.png)
 5. Once the extension is created, spatial_ref_sys table will appear under tables as shown below:
    ![image](https://user-images.githubusercontent.com/86580534/133154207-a8e5c181-7a8d-4a4a-81ce-aeae930e9593.png)
+
+<br>
 
 ## Create environment to run the packages
 
@@ -389,6 +444,8 @@ spyder
    and specify the root of the directory
 
    ![image](https://user-images.githubusercontent.com/86580534/133013167-c7e4541a-5723-4a76-9344-25f9f835b986.png)
+
+<br>
 
 ## Running docker on your machine
 
@@ -443,6 +500,8 @@ select * from apilinks;
 ```
 
 ![image](https://user-images.githubusercontent.com/86580534/135923860-d10a2323-100c-446e-bec3-6010cca2ba8b.png)
+
+<br>
 
 ## Use a database server running as a container
 
