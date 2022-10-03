@@ -18,7 +18,7 @@ from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
 def get_site_url_key(site_id: str, idf: bool) -> str:
     """
-    Get each rainfall sites' unique url key from the HIRDS website using curl commands.
+    Get the unique URL key of the requested rainfall site from the HIRDS website using curl commands.
 
     Parameters
     ----------
