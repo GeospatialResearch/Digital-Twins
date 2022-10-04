@@ -56,7 +56,7 @@ def get_site_url_key(site_id: str, idf: bool) -> str:
 
 def get_data_from_hirds(site_id: str, idf: bool) -> str:
     """
-    Get rainfall data from the HIRDS website using curl command.
+    Fetch rainfall data for the requested rainfall site from the HIRDS website using curl commands.
 
     Parameters
     ----------
