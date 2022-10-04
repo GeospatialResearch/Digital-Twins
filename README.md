@@ -194,19 +194,17 @@ if __name__ == "__main__":
     from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
     
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
-    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
     engine = setup_environment.get_database()
     catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
     # Set idf to False for rain depth data and to True for rain intensity data
-    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
-    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=True)
+    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=False)
+    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=True)
 ```
 
-The `rainfall_data_to_db(engine, catchment_polygon, path, idf)` function requires four arguments:
+The `rainfall_data_to_db(engine, catchment_polygon, idf)` function requires three arguments:
 1. *engine:* Engine used to connect to the database.
 2. *catchment_polygon:* Desired catchment area (polygon type).
-3. *path:* The file path of where the downloaded rainfall data CSV files are stored.
-4. *idf:* Set to False for rainfall depth data, and True for rainfall intensity data.
+3. *idf:* Set to False for rainfall depth data, and True for rainfall intensity data.
 
 <br>
 
@@ -295,7 +293,6 @@ A hyetograph is a graphical representation of the distribution of rainfall inten
 >    from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
 >
 >    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
->    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
 >    rcp = 2.6
 >    time_period = "2031-2050"
 >    ari = 100
@@ -305,15 +302,20 @@ A hyetograph is a graphical representation of the distribution of rainfall inten
 >    engine = setup_environment.get_database()
 >    sites = rainfall_sites.get_rainfall_sites_data()
 >    rainfall_sites.rainfall_sites_to_db(engine, sites)
->    nz_boundary = rainfall_sites.get_new_zealand_boundary(engine)
->    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary)
->    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary, sites_in_catchment)
+>    nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
+>    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary_polygon)
+>    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
 >    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+>
 >    # Set idf to False for rain depth data and to True for rain intensity data
->    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
+>    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=False)
+>    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=True)
 >    rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
->        engine, catchment_polygon, rcp, time_period, ari, duration)
+>        engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
 >    print(rain_depth_in_catchment)
+>    rain_intensity_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
+>        engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
+>    print(rain_intensity_in_catchment)
 >```
 
 <br>
