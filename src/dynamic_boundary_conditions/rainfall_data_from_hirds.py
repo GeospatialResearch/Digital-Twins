@@ -107,7 +107,7 @@ def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str]]
             # Add the obtained rcp and time_period values to list
             rcp_result = re.search(r"(\d*\.\d*)", line)
             period_result = re.search(r"(\d{4}-\d{4})", line)
-            if rcp_result or period_result is not None:
+            if rcp_result is not None or period_result is not None:
                 rcp.append(float(rcp_result[0]))
                 time_period.append(period_result[0])
             else:
