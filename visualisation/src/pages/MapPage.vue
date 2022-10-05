@@ -1,11 +1,19 @@
 <template>
   <!-- The page that shows the map for the Digital Twin -->
-  <MapViewer
-    :init-lat="kaiapoi.latitude"
-    :init-long="kaiapoi.longitude"
-    :cesium-access-token="cesiumApiToken"
-    :data-sources="dataSources"
-  />
+  <div>
+    <MapViewer
+      :init-lat="kaiapoi.latitude"
+      :init-long="kaiapoi.longitude"
+      :cesium-access-token="cesiumApiToken"
+      :data-sources="dataSources"
+      :scenarios="scenarios"
+      :picked-scenario-name="pickedScenarioName"
+    />
+    <div v-for="(scenarioName, i) in scenarioNames" :key="scenarioName">
+      <input type="radio" :id="`scenario_${i}`" v-model="pickedScenarioName" :value="scenarioName">
+      <label :for="`scenario_${i}`">{{ scenarioName }}</label>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,7 +21,7 @@ import Vue from "vue";
 import * as Cesium from "cesium";
 import {MapViewer} from 'geo-visualisation-components/src/components';
 import titleMixin from "@/mixins/title";
-import {MapViewerDataSourceOptions} from "geo-visualisation-components/dist/types/src/types";
+import {MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/dist/types/src/types";
 
 export default Vue.extend({
   name: "MapPage",
@@ -29,6 +37,8 @@ export default Vue.extend({
         longitude: 172.655714
       },
       dataSources: {} as MapViewerDataSourceOptions,
+      scenarios: [] as Scenario[],
+      pickedScenarioName: "Without climate change",
       cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
     }
   },
@@ -38,11 +48,17 @@ export default Vue.extend({
   methods: {
     async loadDataSources() {
       const geoJsonDataSources = await this.loadGeoJson();
-      const floodRasterAssetNumber = 946761;
       this.dataSources = {
         geoJsonDataSources,
-        ionAssetIds: [floodRasterAssetNumber]
       };
+
+      const floodRasterScen1 = 946761;
+      const floodRasterScen2 = 1335686;
+
+      this.scenarios = [
+        {name: "Without climate change", ionAssetIds: [floodRasterScen1]},
+        {name: "With climate change", ionAssetIds: [floodRasterScen2]}
+      ]
     },
     async loadGeoJson(): Promise<Cesium.GeoJsonDataSource[]> {
       const nonFloodBuildingDS = await Cesium.GeoJsonDataSource.load(
@@ -67,6 +83,11 @@ export default Vue.extend({
       //   console.log(`Height: ${buildingEntity.polygon?.extrudedHeight}`)
       // }
       return [nonFloodBuildingDS, floodBuildingDS];
+    }
+  },
+  computed: {
+    scenarioNames() {
+      return this.scenarios.map(scenario => scenario.name);
     }
   }
 });
