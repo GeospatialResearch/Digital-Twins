@@ -5,7 +5,7 @@
 @Author: pkh35
 @Date: 17/01/2022
 @Last modified by: sli229
-@Last modified date: 28/09/2022
+@Last modified date: 4/10/2022
 """
 
 import geopandas as gpd
@@ -35,7 +35,6 @@ def catchment_area_geometry_info(catchment_file_path) -> Polygon:
 
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
-    file_path_to_store = pathlib.Path(r"U:\Research\FloodRiskResearch\DigitalTwin\hirds_rainfall_data")
     rcp = 2.6
     time_period = "2031-2050"
     ari = 100
@@ -51,8 +50,8 @@ def main():
     catchment_polygon = catchment_area_geometry_info(catchment_file)
 
     # Set idf to False for rain depth data and to True for rain intensity data
-    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=False)
-    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, file_path_to_store, idf=True)
+    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=False)
+    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=True)
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
     print(rain_depth_in_catchment)

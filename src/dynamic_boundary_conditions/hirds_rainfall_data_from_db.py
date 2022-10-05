@@ -13,9 +13,9 @@ import pathlib
 import logging
 import sys
 from shapely.geometry import Polygon
-from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hyetograph
+from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
