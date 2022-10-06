@@ -7,12 +7,7 @@
       :cesium-access-token="cesiumApiToken"
       :data-sources="dataSources"
       :scenarios="scenarios"
-      :picked-scenario-name="pickedScenarioName"
     />
-    <div v-for="(scenarioName, i) in scenarioNames" :key="scenarioName">
-      <input type="radio" :id="`scenario_${i}`" v-model="pickedScenarioName" :value="scenarioName">
-      <label :for="`scenario_${i}`">{{ scenarioName }}</label>
-    </div>
   </div>
 </template>
 
@@ -38,7 +33,6 @@ export default Vue.extend({
       },
       dataSources: {} as MapViewerDataSourceOptions,
       scenarios: [] as Scenario[],
-      pickedScenarioName: "Without climate change",
       cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
     }
   },
