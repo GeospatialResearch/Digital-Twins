@@ -86,9 +86,9 @@ def get_data_from_hirds(site_id: str, idf: bool) -> str:
     return site_data
 
 
-def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str]]:
+def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str, str]]:
     """
-    Return a list of tuples (skip_rows, rcp, time_period) of the fetched rainfall data's layout structure.
+    Return a list of tuples (skip_rows, rcp, time_period, category) of the fetched rainfall data's layout structure.
 
     Parameters
     ----------
@@ -98,10 +98,11 @@ def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str]]
     skip_rows = []
     rcp = []
     time_period = []
+    category = []
     # Read the site_data text string line by line with a for loop
     for index, line in enumerate(StringIO(site_data)):
         # Get lines that contain "(mm) ::" for depth data or "(mm/hr) ::" for intensity data
-        if (line.find("(mm) ::") != -1) or (line.find("(mm/hr) ::") != -1):
+        if re.search(r"\(mm\S*\)\s::", line):
             # Add the row number to skip_rows list
             skip_rows.append(index + 1)
             # Add the obtained rcp and time_period values to list
@@ -111,14 +112,22 @@ def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str]]
                 rcp.append(float(rcp_result[0]))
                 time_period.append(period_result[0])
             else:
-                rcp.append(float('nan'))
+                rcp.append(float("nan"))
                 time_period.append(None)
-    # Merge the three different lists into one list of tuples
-    layout_structure = list(zip(skip_rows, rcp, time_period))
+            # Assign category to list
+            if re.search(r"standard error", line):
+                category.append("hist_stderr")
+            elif re.search(r"Historical Data\s$", line):
+                category.append("hist")
+            else:
+                category.append("proj")
+    # Merge the four different lists into one list of tuples
+    layout_structure = list(zip(skip_rows, rcp, time_period, category))
     return layout_structure
 
 
-def convert_to_tabular_data(site_data: str, site_id: str, skip_rows: int, rcp: float, time_period: str) -> pd.DataFrame:
+def convert_to_tabular_data(
+        site_data: str, site_id: str, skip_rows: int, rcp: float, time_period: str, category: str) -> pd.DataFrame:
     """
     Return the requested rainfall site data in Pandas DataFrame format.
 
@@ -135,10 +144,13 @@ def convert_to_tabular_data(site_data: str, site_id: str, skip_rows: int, rcp: f
         RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
     time_period : str
         Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+    category : str
+        Historical data, Historical Standard Error or Projections (i.e. hist, hist_stderr or proj).
     """
     rainfall_data = pd.read_csv(StringIO(site_data), skiprows=skip_rows, nrows=12)
     rainfall_data.insert(0, "site_id", site_id)
-    rainfall_data.insert(1, "rcp", rcp)
-    rainfall_data.insert(2, "time_period", time_period)
+    rainfall_data.insert(1, "category", category)
+    rainfall_data.insert(2, "rcp", rcp)
+    rainfall_data.insert(3, "time_period", time_period)
     rainfall_data.columns = rainfall_data.columns.str.lower()
     return rainfall_data
