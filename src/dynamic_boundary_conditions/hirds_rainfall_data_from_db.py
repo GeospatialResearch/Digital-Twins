@@ -39,7 +39,7 @@ def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
         Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
     """
     if duration != "all":
-        rain_data = rain_data[["site_id", "rcp", "time_period", "ari", "aep", duration]]
+        rain_data = rain_data[["site_id", "category", "rcp", "time_period", "ari", "aep", duration]]
     return rain_data
 
 
@@ -78,10 +78,16 @@ def get_each_site_rainfall_data(
         query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
         rain_data = pd.read_sql_query(query, engine)
+        # drop category column
+        rain_data.drop(["category"], axis=1, inplace=True)
     else:
         query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};"""
-        rain_data = pd.read_sql_query(query, engine).head(1)
+        rain_data = pd.read_sql_query(query, engine)
+        # filter for historical data
+        rain_data.query("category == 'hist'", inplace=True)
+        # drop category column
+        rain_data.drop(["category"], axis=1, inplace=True)
     rain_data = filter_for_duration(rain_data, duration)
     return rain_data
 
