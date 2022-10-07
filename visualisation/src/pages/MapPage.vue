@@ -46,37 +46,43 @@ export default Vue.extend({
         geoJsonDataSources,
       };
 
-      const floodRasterScen1 = 946761;
-      const floodRasterScen2 = 1335686;
+      const floodRasterBaseline = 1345828;
+      const floodRasterClimate = 1345829;
 
       this.scenarios = [
-        {name: "Without climate change", ionAssetIds: [floodRasterScen1]},
-        {name: "With climate change", ionAssetIds: [floodRasterScen2]}
+        {name: "Without climate change", ionAssetIds: [floodRasterBaseline]},
+        {name: "With climate change", ionAssetIds: [floodRasterClimate]}
       ]
     },
     async loadGeoJson(): Promise<Cesium.GeoJsonDataSource[]> {
-      const nonFloodBuildingDS = await Cesium.GeoJsonDataSource.load(
-        "ZS_non_flood_reproj.geojson", {
-          stroke: Cesium.Color.FORESTGREEN,
-          fill: Cesium.Color.DARKGREEN,
-          strokeWidth: 3,
-        });
       const floodBuildingDS = await Cesium.GeoJsonDataSource.load(
-        "ZS_flooded_reproj.geojson", {
-          stroke: Cesium.Color.RED,
-          fill: Cesium.Color.DARKRED,
+        "buildings_baseline.geojson", {
           strokeWidth: 3,
         });
-      // const allBuildings = nonFloodBuildingDS.entities.values.concat(floodBuildingDS.entities.values);
-      // for (const buildingEntity of allBuildings) {
-      //   const newHeight = 4 as unknown as Cesium.Property
-      //   let extrudedHeight = buildingEntity?.polygon?.extrudedHeight;
-      //   if (extrudedHeight != undefined) {
-      //     extrudedHeight = newHeight;
-      //   }
-      //   console.log(`Height: ${buildingEntity.polygon?.extrudedHeight}`)
-      // }
-      return [nonFloodBuildingDS, floodBuildingDS];
+
+      const floodedStyle = new Cesium.PolygonGraphics({
+        material: Cesium.Color.DARKRED,
+        outlineColor: Cesium.Color.RED
+      });
+      const nonFloodedStyle = new Cesium.PolygonGraphics({
+        material: Cesium.Color.DARKGREEN,
+        outlineColor: Cesium.Color.FORESTGREEN
+      });
+
+      const buildingEntities = floodBuildingDS.entities.values;
+      for (const entity of buildingEntities) {
+        const polyGraphics = new Cesium.PolygonGraphics();
+        if (entity.properties?.flooded.getValue()) {
+          floodedStyle.clone(polyGraphics);
+        } else {
+          nonFloodedStyle.clone(polyGraphics);
+        }
+        if (entity.polygon != undefined) {
+          polyGraphics.merge(entity.polygon);
+        }
+        entity.polygon = polyGraphics
+      }
+      return [floodBuildingDS];
     }
   },
   computed: {
