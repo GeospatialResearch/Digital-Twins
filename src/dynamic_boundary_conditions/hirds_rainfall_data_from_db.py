@@ -78,16 +78,13 @@ def get_each_site_rainfall_data(
         query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
         rain_data = pd.read_sql_query(query, engine)
-        # drop category column
-        rain_data.drop(["category"], axis=1, inplace=True)
     else:
         query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};"""
         rain_data = pd.read_sql_query(query, engine)
         # filter for historical data
         rain_data.query("category == 'hist'", inplace=True)
-        # drop category column
-        rain_data.drop(["category"], axis=1, inplace=True)
+    # filter for duration
     rain_data = filter_for_duration(rain_data, duration)
     return rain_data
 
