@@ -112,6 +112,8 @@ def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str, 
                 rcp.append(float(rcp_result[0]))
                 time_period.append(period_result[0])
             else:
+                # When there are no rcp and time_period values (i.e. for historical data)
+                # Add nan or None to list depending on data type
                 rcp.append(float("nan"))
                 time_period.append(None)
             # Assign category to list
