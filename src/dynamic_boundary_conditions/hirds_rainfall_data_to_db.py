@@ -118,7 +118,7 @@ def add_rainfall_data_to_db(engine, site_id: str, idf: bool):
 
     for (skip_rows, rcp, time_period, category) in layout_structure:
         rain_data = rainfall_data_from_hirds.convert_to_tabular_data(
-            site_data, site_id, skip_rows=skip_rows, rcp=rcp, time_period=time_period, category=category)
+            site_data, site_id, skip_rows, rcp, time_period, category)
         rain_data.to_sql(rain_table_name, engine, index=False, if_exists="append")
     log.info(f"Added {rain_table_name} data for site {site_id} to database")
 
