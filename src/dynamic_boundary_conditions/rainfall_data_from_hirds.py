@@ -102,7 +102,7 @@ def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str, 
     # Read the site_data text string line by line with a for loop
     for index, line in enumerate(StringIO(site_data)):
         # Get lines that contain "(mm) ::" for depth data or "(mm/hr) ::" for intensity data
-        if re.search(r"\(mm\S*\)\s::", line):
+        if "(mm) ::" in line or "(mm/hr) ::" in line:
             # Add the row number to skip_rows list
             skip_rows.append(index + 1)
             # Add the obtained rcp and time_period values to list
