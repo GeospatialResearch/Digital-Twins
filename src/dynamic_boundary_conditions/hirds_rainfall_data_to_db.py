@@ -116,9 +116,8 @@ def add_rainfall_data_to_db(engine, site_id: str, idf: bool):
     site_data = rainfall_data_from_hirds.get_data_from_hirds(site_id, idf)
     layout_structure = rainfall_data_from_hirds.get_layout_structure_of_data(site_data)
 
-    for (skip_rows, rcp, time_period, category) in layout_structure:
-        rain_data = rainfall_data_from_hirds.convert_to_tabular_data(
-            site_data, site_id, skip_rows, rcp, time_period, category)
+    for block_structure in layout_structure:
+        rain_data = rainfall_data_from_hirds.convert_to_tabular_data(site_data, site_id, block_structure)
         rain_data.to_sql(rain_table_name, engine, index=False, if_exists="append")
     log.info(f"Added {rain_table_name} data for site {site_id} to database")
 

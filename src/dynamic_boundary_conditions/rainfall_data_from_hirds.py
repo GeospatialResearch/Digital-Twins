@@ -12,7 +12,7 @@ import requests
 from requests.structures import CaseInsensitiveDict
 import re
 import pandas as pd
-from typing import List, Tuple
+from typing import List, NamedTuple
 from io import StringIO
 
 
@@ -86,7 +86,30 @@ def get_data_from_hirds(site_id: str, idf: bool) -> str:
     return site_data
 
 
-def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str, str]]:
+class BlockStructure(NamedTuple):
+    """
+    Represents fetched rainfall data's layout structure.
+
+    Attributes
+    ----------
+    skip_rows : int
+        Number of lines to skip at the start of the fetched rainfall site_data.
+    rcp : float
+        There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
+        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or nan for historical data.
+    time_period : str
+        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
+        historical data.
+    category : str
+        Historical data, Historical Standard Error or Projections (i.e. hist, hist_stderr or proj).
+    """
+    skip_rows: int
+    rcp: float
+    time_period: str
+    category: str
+
+
+def get_layout_structure_of_data(site_data: str) -> List[BlockStructure]:
     """
     Return a list of tuples (skip_rows, rcp, time_period, category) of the fetched rainfall data's layout structure.
 
@@ -120,12 +143,12 @@ def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str, 
                 category = "hist"
             else:
                 category = "proj"
-            layout_structure.append((skip_rows, rcp, time_period, category))
+            layout_structure.append(BlockStructure(skip_rows, rcp, time_period, category))
     return layout_structure
 
 
 def convert_to_tabular_data(
-        site_data: str, site_id: str, skip_rows: int, rcp: float, time_period: str, category: str) -> pd.DataFrame:
+        site_data: str, site_id: str, block_structure: BlockStructure) -> pd.DataFrame:
     """
     Return the requested rainfall site data in Pandas DataFrame format.
 
@@ -135,16 +158,10 @@ def convert_to_tabular_data(
         Fetched rainfall data text string from the HIRDS website for the requested rainfall site.
     site_id : str
         HIRDS rainfall site id.
-    skip_rows : int
-        Number of lines to skip at the start of the fetched rainfall site_data.
-    rcp : float
-        There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
-    time_period : str
-        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
-    category : str
-        Historical data, Historical Standard Error or Projections (i.e. hist, hist_stderr or proj).
+    block_structure : BlockStructure
+        Represents fetched rainfall data's layout structure.
     """
+    skip_rows, rcp, time_period, category = block_structure
     rainfall_data = pd.read_csv(StringIO(site_data), skiprows=skip_rows, nrows=12)
     rainfall_data.insert(0, "site_id", site_id)
     rainfall_data.insert(1, "category", category)
