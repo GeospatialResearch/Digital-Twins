@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
 ### Store rainfall data to database
 
-To store the rainfall data of sites within the desired catchment area in the database, the `hirds_depth_data_to_db.py` script is used. As shown below:
+To store the rainfall data of sites within the desired catchment area in the database, the `hirds_rainfall_data_to_db.py` script is used. As shown below:
 
 ```python
 #!/usr/bin/env python
@@ -210,7 +210,7 @@ The `rainfall_data_to_db(engine, catchment_polygon, idf)` function requires thre
 
 ### Get required rainfall data from the database 
 
-To get the rainfall data of sites within the desired catchment from the database, the `hirds_depth_data_from_db.py` script is used. As shown below:
+To get the rainfall data of sites within the desired catchment from the database, the `hirds_rainfall_data_from_db.py` script is used. As shown below:
 
 ```python
 #!/usr/bin/env python
@@ -236,13 +236,14 @@ if __name__ == "__main__":
     print(rain_intensity_in_catchment)
 ```
 
-The `rainfall_data_from_db(engine, catchment_polygon, rcp, time_period, ari, duration)` function requires six arguments:
+The `rainfall_data_from_db(engine, catchment_polygon, rcp, time_period, ari, duration, idf)` function requires seven arguments:
 1. *engine:* Engine used to connect to the database.
 2. *catchment_polygon:* Desired catchment area (polygon type).
-3. *rcp:* There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5, RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
-4. *time_period:* Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+3. *rcp:* There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5, RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
+4. *time_period:* Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for historical data.
 5. *ari:* Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
 6. *duration:* Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
+7. *idf:* Set to False for rainfall depth data, and True for rainfall intensity data.
 
 For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) and [HIRDSv4 Usage](https://niwa.co.nz/information-services/hirds/help) websites.
 
@@ -250,7 +251,7 @@ For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) a
 
 ### Thiessen Polygon
 
-Each rainfall site is associated with a particular area. To store the total size of the area (km squared) associated with each site in the database, the `thiessen_polygon_calculator` script is used. As shown below:
+Each rainfall site is associated with a particular area. To store the total size of the area (km squared) associated with each site in the database, the `thiessen_polygon_calculator.py` script is used. As shown below:
 
 ```python
 #!/usr/bin/env python
