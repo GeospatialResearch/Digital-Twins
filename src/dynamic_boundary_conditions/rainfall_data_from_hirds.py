@@ -117,9 +117,9 @@ def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str, 
                 rcp.append(float("nan"))
                 time_period.append(None)
             # Assign category to list
-            if re.search(r"standard error", line):
+            if "standard error" in line:
                 category.append("hist_stderr")
-            elif re.search(r"Historical Data\s$", line):
+            elif "Historical Data" in line:
                 category.append("hist")
             else:
                 category.append("proj")
