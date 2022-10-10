@@ -8,6 +8,7 @@
       :data-sources="dataSources"
       :scenarios="scenarios"
     />
+    <img id="legend" src="legend.png"/>
   </div>
 </template>
 
@@ -44,14 +45,23 @@ export default Vue.extend({
       const geoJsonDataSources = await this.loadGeoJson();
       this.dataSources = {
         geoJsonDataSources,
+        // terrainAssetId: 1347527
       };
 
       const floodRasterBaseline = 1345828;
       const floodRasterClimate = 1345829;
 
       this.scenarios = [
-        {name: "Without climate change", ionAssetIds: [floodRasterBaseline]},
-        {name: "With climate change", ionAssetIds: [floodRasterClimate]}
+        {
+          name: "Without climate change",
+          // waterElevationAssetId: 1347528,
+          ionAssetIds: [floodRasterBaseline]
+        },
+        {
+          name: "With climate change",
+          // waterElevationAssetId: 1347532,
+          ionAssetIds: [floodRasterClimate]
+        }
       ]
     },
     async loadGeoJson(): Promise<Cesium.GeoJsonDataSource[]> {
@@ -71,17 +81,22 @@ export default Vue.extend({
 
       const buildingEntities = floodBuildingDS.entities.values;
       for (const entity of buildingEntities) {
-        const polyGraphics = new Cesium.PolygonGraphics();
+        const polyGraphics = new Cesium.PolygonGraphics({
+          extrudedHeight: 4,
+          // heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          // zIndex: -1,
+        });
         if (entity.properties?.flooded.getValue()) {
-          floodedStyle.clone(polyGraphics);
+          polyGraphics.merge(floodedStyle);
         } else {
-          nonFloodedStyle.clone(polyGraphics);
+          polyGraphics.merge(nonFloodedStyle);
         }
         if (entity.polygon != undefined) {
           polyGraphics.merge(entity.polygon);
         }
         entity.polygon = polyGraphics
       }
+
       return [floodBuildingDS];
     }
   },
@@ -94,4 +109,10 @@ export default Vue.extend({
 </script>
 
 <style>
+#legend {
+  position: absolute;
+  bottom: 40px;
+  right: 30px;
+  height: 175px
+}
 </style>

@@ -2,9 +2,9 @@
   <!-- The Vue app main context -->
   <div id="app">
     <TheNavBar />
-    <b-container fluid>
+    <div>
       <router-view ref="routerView" />
-    </b-container>
+    </div>
   </div>
 </template>
 
