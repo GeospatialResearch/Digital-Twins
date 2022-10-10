@@ -95,36 +95,32 @@ def get_layout_structure_of_data(site_data: str) -> List[Tuple[int, float, str, 
     site_data : str
         Fetched rainfall data text string from the HIRDS website for the requested rainfall site.
     """
-    skip_rows = []
-    rcp = []
-    time_period = []
-    category = []
+    layout_structure = []
     # Read the site_data text string line by line with a for loop
     for index, line in enumerate(StringIO(site_data)):
         # Get lines that contain "(mm) ::" for depth data or "(mm/hr) ::" for intensity data
         if "(mm) ::" in line or "(mm/hr) ::" in line:
             # Add the row number to skip_rows list
-            skip_rows.append(index + 1)
+            skip_rows = index + 1
             # Add the obtained rcp and time_period values to list
             rcp_result = re.search(r"(\d*\.\d*)", line)
             period_result = re.search(r"(\d{4}-\d{4})", line)
             if rcp_result is not None or period_result is not None:
-                rcp.append(float(rcp_result[0]))
-                time_period.append(period_result[0])
+                rcp = float(rcp_result[0])
+                time_period = period_result[0]
             else:
                 # When there are no rcp and time_period values (i.e. for historical data)
                 # Add nan or None to list depending on data type
-                rcp.append(float("nan"))
-                time_period.append(None)
+                rcp = float("nan")
+                time_period = None
             # Assign category to list
             if "standard error" in line:
-                category.append("hist_stderr")
+                category = "hist_stderr"
             elif "Historical Data" in line:
-                category.append("hist")
+                category = "hist"
             else:
-                category.append("proj")
-    # Merge the four different lists into one list of tuples
-    layout_structure = list(zip(skip_rows, rcp, time_period, category))
+                category = "proj"
+            layout_structure.append((skip_rows, rcp, time_period, category))
     return layout_structure
 
 
