@@ -58,9 +58,10 @@ def get_each_site_rainfall_data(
         HIRDS rainfall site id.
     rcp : float
         There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
+        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
     time_period : str
-        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
+        historical data.
     ari : float
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     duration : str
@@ -109,9 +110,10 @@ def rainfall_data_from_db(
         Desired catchment area.
     rcp : float
         There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
+        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
     time_period : str
-        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
+        historical data.
     ari : float
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     duration : str
