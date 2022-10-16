@@ -18,6 +18,10 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         cls.rainfall_intensity = open_file(r"tests\test_dynamic_boundary_conditions\data\rainfall_intensity.txt")
         cls.depth_historical = open_file(r"tests\test_dynamic_boundary_conditions\data\depth_historical.txt")
 
+        cls.depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_depth)
+        cls.intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_intensity)
+        cls.depth_hist_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.depth_historical)
+
     def test_get_data_from_hirds_not_empty(self):
         example_site_id = "323605"
         depth_data = rainfall_data_from_hirds.get_data_from_hirds(example_site_id, idf=False)
@@ -25,22 +29,13 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         self.assertGreater(len(depth_data), 0)
         self.assertGreater(len(intensity_data), 0)
 
-    def test_get_data_from_hirds_correct_format(self):
-        pass
-
     def test_get_layout_structure_of_data_expected_blocks(self):
-        depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_depth)
-        intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_intensity)
-        depth_hist_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.depth_historical)
-        self.assertEqual(len(depth_layout), 10)
-        self.assertEqual(len(intensity_layout), 10)
-        self.assertEqual(len(depth_hist_layout), 1)
+        self.assertEqual(len(self.depth_layout), 10)
+        self.assertEqual(len(self.intensity_layout), 10)
+        self.assertEqual(len(self.depth_hist_layout), 1)
 
     def test_get_layout_structure_of_data_expected_data_types(self):
-        depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_depth)
-        intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_intensity)
-
-        layouts = [depth_layout, intensity_layout]
+        layouts = [self.depth_layout, self.intensity_layout]
         for layout_structure in layouts:
             for block_structure in layout_structure:
                 self.assertIsInstance(block_structure.skip_rows, int)
@@ -49,36 +44,28 @@ class TestRainfallDataFromHirds(unittest.TestCase):
                 self.assertIsInstance(block_structure.category, str)
 
     def test_get_layout_structure_of_data_rcp_nan(self):
-        depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_depth)
-        intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_intensity)
-        self.assertTrue(math.isnan(depth_layout[0].rcp))
-        self.assertTrue(math.isnan(depth_layout[1].rcp))
-        self.assertTrue(math.isnan(intensity_layout[0].rcp))
-        self.assertTrue(math.isnan(intensity_layout[1].rcp))
+        self.assertTrue(math.isnan(self.depth_layout[0].rcp))
+        self.assertTrue(math.isnan(self.depth_layout[1].rcp))
+        self.assertTrue(math.isnan(self.intensity_layout[0].rcp))
+        self.assertTrue(math.isnan(self.intensity_layout[1].rcp))
 
     def test_get_layout_structure_of_data_rcp_not_nan(self):
-        depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_depth)
-        intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_intensity)
-        self.assertFalse(math.isnan(depth_layout[2].rcp))
-        self.assertFalse(math.isnan(depth_layout[-1].rcp))
-        self.assertFalse(math.isnan(intensity_layout[2].rcp))
-        self.assertFalse(math.isnan(intensity_layout[-1].rcp))
+        self.assertFalse(math.isnan(self.depth_layout[2].rcp))
+        self.assertFalse(math.isnan(self.depth_layout[-1].rcp))
+        self.assertFalse(math.isnan(self.intensity_layout[2].rcp))
+        self.assertFalse(math.isnan(self.intensity_layout[-1].rcp))
 
     def test_get_layout_structure_of_data_time_period_none(self):
-        depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_depth)
-        intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_intensity)
-        self.assertIsNone(depth_layout[0].time_period)
-        self.assertIsNone(depth_layout[1].time_period)
-        self.assertIsNone(intensity_layout[0].time_period)
-        self.assertIsNone(intensity_layout[1].time_period)
+        self.assertIsNone(self.depth_layout[0].time_period)
+        self.assertIsNone(self.depth_layout[1].time_period)
+        self.assertIsNone(self.intensity_layout[0].time_period)
+        self.assertIsNone(self.intensity_layout[1].time_period)
 
     def test_get_layout_structure_of_data_time_period_not_none(self):
-        depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_depth)
-        intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(self.rainfall_intensity)
-        self.assertIsNotNone(depth_layout[2].time_period)
-        self.assertIsNotNone(depth_layout[-1].time_period)
-        self.assertIsNotNone(intensity_layout[2].time_period)
-        self.assertIsNotNone(intensity_layout[-1].time_period)
+        self.assertIsNotNone(self.depth_layout[2].time_period)
+        self.assertIsNotNone(self.depth_layout[-1].time_period)
+        self.assertIsNotNone(self.intensity_layout[2].time_period)
+        self.assertIsNotNone(self.intensity_layout[-1].time_period)
 
 
 if __name__ == "__main__":
