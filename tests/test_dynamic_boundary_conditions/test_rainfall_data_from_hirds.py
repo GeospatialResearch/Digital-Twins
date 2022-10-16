@@ -4,8 +4,8 @@ import math
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 
 
-def open_file(path):
-    file = pathlib.Path(path)
+def open_file(filepath: str) -> str:
+    file = pathlib.Path(filepath)
     with open(file) as in_file:
         file_content = in_file.read()
         return file_content
