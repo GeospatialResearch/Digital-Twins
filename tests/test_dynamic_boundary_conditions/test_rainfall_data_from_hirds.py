@@ -27,10 +27,11 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         cls.intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_intensity)
         cls.depth_hist_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.depth_historical)
 
+        cls.example_site_id = "323605"
+
     def test_get_data_from_hirds_not_empty(self):
-        example_site_id = "323605"
-        depth_data = rainfall_data_from_hirds.get_data_from_hirds(example_site_id, idf=False)
-        intensity_data = rainfall_data_from_hirds.get_data_from_hirds(example_site_id, idf=True)
+        depth_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=False)
+        intensity_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=True)
         self.assertGreater(len(depth_data), 0)
         self.assertGreater(len(intensity_data), 0)
 
