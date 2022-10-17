@@ -9,7 +9,7 @@ class TestRainfallDataFromHirds(unittest.TestCase):
 
     @staticmethod
     def open_file(filepath: str) -> str:
-        file = pathlib.Path(filepath)
+        file = pathlib.Path().cwd() / pathlib.Path(filepath)
         with open(file) as in_file:
             file_content = in_file.read()
             return file_content
@@ -17,11 +17,11 @@ class TestRainfallDataFromHirds(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rainfall_depth = TestRainfallDataFromHirds.open_file(
-            r"tests\test_dynamic_boundary_conditions\data\rainfall_depth.txt")
+            r"tests/test_dynamic_boundary_conditions/data/rainfall_depth.txt")
         cls.rainfall_intensity = TestRainfallDataFromHirds.open_file(
-            r"tests\test_dynamic_boundary_conditions\data\rainfall_intensity.txt")
+            r"tests/test_dynamic_boundary_conditions/data/rainfall_intensity.txt")
         cls.depth_historical = TestRainfallDataFromHirds.open_file(
-            r"tests\test_dynamic_boundary_conditions\data\depth_historical.txt")
+            r"tests/test_dynamic_boundary_conditions/data/depth_historical.txt")
 
         cls.depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_depth)
         cls.intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_intensity)
