@@ -1,6 +1,7 @@
 import pathlib
 import unittest
 import math
+from typing import List
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 
 
@@ -39,7 +40,11 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         self.assertEqual(len(self.depth_hist_layout), 1)
 
     @staticmethod
-    def get_block_structures(layout_1, layout_2, start=None, end=None):
+    def get_block_structures(
+            layout_1: List[rainfall_data_from_hirds.BlockStructure],
+            layout_2: List[rainfall_data_from_hirds.BlockStructure],
+            start=None,
+            end=None) -> List[rainfall_data_from_hirds.BlockStructure]:
         layout_structures = (layout_1[start:end], layout_2[start:end])
         block_structures = []
         for layout_structure in layout_structures:
