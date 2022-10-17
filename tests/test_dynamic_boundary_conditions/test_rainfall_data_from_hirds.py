@@ -39,62 +39,63 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         self.assertEqual(len(self.depth_hist_layout), 1)
 
     @staticmethod
-    def layouts(layout_1, layout_2, start=None, end=None):
-        layout_1 = layout_1[start:end]
-        layout_2 = layout_2[start:end]
-        layout_structures = [layout_1, layout_2]
-        return layout_structures
+    def get_block_structures(layout_1, layout_2, start=None, end=None):
+        layout_structures = (layout_1[start:end], layout_2[start:end])
+        block_structures = []
+        for layout_structure in layout_structures:
+            for block_structure in layout_structure:
+                block_structures.append(block_structure)
+        return block_structures
 
     def test_get_layout_structure_of_data_expected_data_types(self):
-        layout_structures = TestRainfallDataFromHirds.layouts(self.depth_layout, self.intensity_layout)
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                self.assertIsInstance(block_structure.skip_rows, int)
-                self.assertIsInstance(block_structure.rcp, float)
-                self.assertIsInstance(block_structure.time_period, (type(None), str))
-                self.assertIsInstance(block_structure.category, str)
+        block_structures = TestRainfallDataFromHirds.get_block_structures(self.depth_layout, self.intensity_layout)
+        for block_structure in block_structures:
+            self.assertIsInstance(block_structure.skip_rows, int)
+            self.assertIsInstance(block_structure.rcp, float)
+            self.assertIsInstance(block_structure.time_period, (type(None), str))
+            self.assertIsInstance(block_structure.category, str)
 
     def test_get_layout_structure_of_data_rcp_nan(self):
-        layout_structures = TestRainfallDataFromHirds.layouts(self.depth_layout, self.intensity_layout, end=2)
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                self.assertTrue(math.isnan(block_structure.rcp))
+        block_structures = TestRainfallDataFromHirds.get_block_structures(
+            self.depth_layout, self.intensity_layout, end=2)
+        for block_structure in block_structures:
+            self.assertTrue(math.isnan(block_structure.rcp))
 
     def test_get_layout_structure_of_data_rcp_not_nan(self):
-        layout_structures = TestRainfallDataFromHirds.layouts(self.depth_layout, self.intensity_layout, start=2)
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                self.assertFalse(math.isnan(block_structure.rcp))
+        block_structures = TestRainfallDataFromHirds.get_block_structures(
+            self.depth_layout, self.intensity_layout, start=2)
+        for block_structure in block_structures:
+            self.assertFalse(math.isnan(block_structure.rcp))
 
     def test_get_layout_structure_of_data_time_period_none(self):
-        layout_structures = TestRainfallDataFromHirds.layouts(self.depth_layout, self.intensity_layout, end=2)
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                self.assertIsNone(block_structure.time_period)
+        block_structures = TestRainfallDataFromHirds.get_block_structures(
+            self.depth_layout, self.intensity_layout, end=2)
+        for block_structure in block_structures:
+            self.assertIsNone(block_structure.time_period)
 
     def test_get_layout_structure_of_data_time_period_not_none(self):
-        layout_structures = TestRainfallDataFromHirds.layouts(self.depth_layout, self.intensity_layout, start=2)
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                self.assertIsNotNone(block_structure.time_period)
+        block_structures = TestRainfallDataFromHirds.get_block_structures(
+            self.depth_layout, self.intensity_layout, start=2)
+        for block_structure in block_structures:
+            self.assertIsNotNone(block_structure.time_period)
 
     def test_get_layout_structure_of_data_category_hist(self):
-        layout_structures = TestRainfallDataFromHirds.layouts(self.depth_layout, self.intensity_layout, end=1)
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                self.assertIs(block_structure.category, "hist")
+        block_structures = TestRainfallDataFromHirds.get_block_structures(
+            self.depth_layout, self.intensity_layout, end=1)
+        for block_structure in block_structures:
+            self.assertIs(block_structure.category, "hist")
 
     def test_get_layout_structure_of_data_category_hist_stderr(self):
-        layout_structures = TestRainfallDataFromHirds.layouts(self.depth_layout, self.intensity_layout, start=1, end=2)
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                self.assertIs(block_structure.category, "hist_stderr")
+        block_structures = TestRainfallDataFromHirds.get_block_structures(
+            self.depth_layout, self.intensity_layout, start=1, end=2)
+        for block_structure in block_structures:
+            self.assertIs(block_structure.category, "hist_stderr")
 
     def test_get_layout_structure_of_data_category_proj(self):
-        layout_structures = TestRainfallDataFromHirds.layouts(self.depth_layout, self.intensity_layout, start=2)
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                self.assertIs(block_structure.category, "proj")
+        block_structures = TestRainfallDataFromHirds.get_block_structures(
+            self.depth_layout, self.intensity_layout, start=2)
+        for block_structure in block_structures:
+            self.assertIs(block_structure.category, "proj")
 
 
 if __name__ == "__main__":
