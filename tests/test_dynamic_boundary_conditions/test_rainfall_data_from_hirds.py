@@ -5,7 +5,7 @@ from typing import List
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 
 
-class TestRainfallDataFromHirds(unittest.TestCase):
+class RainfallDataFromHirdsUnitTest(unittest.TestCase):
 
     @staticmethod
     def open_file(filepath: str) -> str:
