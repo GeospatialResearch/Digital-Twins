@@ -35,6 +35,12 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         self.assertGreater(len(depth_data), 0)
         self.assertGreater(len(intensity_data), 0)
 
+    def test_get_data_from_hirds_expected_data_type(self):
+        depth_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=False)
+        intensity_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=True)
+        self.assertIsInstance(depth_data, str)
+        self.assertIsInstance(intensity_data, str)
+
     def test_get_layout_structure_of_data_expected_blocks(self):
         self.assertEqual(len(self.depth_layout), 10)
         self.assertEqual(len(self.intensity_layout), 10)
