@@ -14,14 +14,24 @@ class TestRainfallDataFromHirds(unittest.TestCase):
             file_content = in_file.read()
             return file_content
 
+    @staticmethod
+    def get_block_structures(
+            layout_1: List[rainfall_data_from_hirds.BlockStructure],
+            layout_2: List[rainfall_data_from_hirds.BlockStructure],
+            start=None,
+            end=None) -> List[rainfall_data_from_hirds.BlockStructure]:
+        layout_structures = (layout_1[start:end], layout_2[start:end])
+        block_structures = []
+        for layout_structure in layout_structures:
+            for block_structure in layout_structure:
+                block_structures.append(block_structure)
+        return block_structures
+
     @classmethod
     def setUpClass(cls):
-        cls.rainfall_depth = TestRainfallDataFromHirds.open_file(
-            r"tests/test_dynamic_boundary_conditions/data/rainfall_depth.txt")
-        cls.rainfall_intensity = TestRainfallDataFromHirds.open_file(
-            r"tests/test_dynamic_boundary_conditions/data/rainfall_intensity.txt")
-        cls.depth_historical = TestRainfallDataFromHirds.open_file(
-            r"tests/test_dynamic_boundary_conditions/data/depth_historical.txt")
+        cls.rainfall_depth = cls.open_file(r"tests/test_dynamic_boundary_conditions/data/rainfall_depth.txt")
+        cls.rainfall_intensity = cls.open_file(r"tests/test_dynamic_boundary_conditions/data/rainfall_intensity.txt")
+        cls.depth_historical = cls.open_file(r"tests/test_dynamic_boundary_conditions/data/depth_historical.txt")
 
         cls.depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_depth)
         cls.intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_intensity)
@@ -46,21 +56,8 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         self.assertEqual(len(self.intensity_layout), 10)
         self.assertEqual(len(self.depth_hist_layout), 1)
 
-    @staticmethod
-    def get_block_structures(
-            layout_1: List[rainfall_data_from_hirds.BlockStructure],
-            layout_2: List[rainfall_data_from_hirds.BlockStructure],
-            start=None,
-            end=None) -> List[rainfall_data_from_hirds.BlockStructure]:
-        layout_structures = (layout_1[start:end], layout_2[start:end])
-        block_structures = []
-        for layout_structure in layout_structures:
-            for block_structure in layout_structure:
-                block_structures.append(block_structure)
-        return block_structures
-
     def test_get_layout_structure_of_data_correct_data_types(self):
-        block_structures = TestRainfallDataFromHirds.get_block_structures(self.depth_layout, self.intensity_layout)
+        block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout)
         for block_structure in block_structures:
             self.assertIsInstance(block_structure.skip_rows, int)
             self.assertIsInstance(block_structure.rcp, float)
@@ -68,44 +65,37 @@ class TestRainfallDataFromHirds(unittest.TestCase):
             self.assertIsInstance(block_structure.category, str)
 
     def test_get_layout_structure_of_data_rcp_nan(self):
-        block_structures = TestRainfallDataFromHirds.get_block_structures(
-            self.depth_layout, self.intensity_layout, end=2)
+        block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, end=2)
         for block_structure in block_structures:
             self.assertTrue(math.isnan(block_structure.rcp))
 
     def test_get_layout_structure_of_data_rcp_not_nan(self):
-        block_structures = TestRainfallDataFromHirds.get_block_structures(
-            self.depth_layout, self.intensity_layout, start=2)
+        block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, start=2)
         for block_structure in block_structures:
             self.assertFalse(math.isnan(block_structure.rcp))
 
     def test_get_layout_structure_of_data_time_period_none(self):
-        block_structures = TestRainfallDataFromHirds.get_block_structures(
-            self.depth_layout, self.intensity_layout, end=2)
+        block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, end=2)
         for block_structure in block_structures:
             self.assertIsNone(block_structure.time_period)
 
     def test_get_layout_structure_of_data_time_period_not_none(self):
-        block_structures = TestRainfallDataFromHirds.get_block_structures(
-            self.depth_layout, self.intensity_layout, start=2)
+        block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, start=2)
         for block_structure in block_structures:
             self.assertIsNotNone(block_structure.time_period)
 
     def test_get_layout_structure_of_data_category_hist(self):
-        block_structures = TestRainfallDataFromHirds.get_block_structures(
-            self.depth_layout, self.intensity_layout, end=1)
+        block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, end=1)
         for block_structure in block_structures:
             self.assertEqual(block_structure.category, "hist")
 
     def test_get_layout_structure_of_data_category_hist_stderr(self):
-        block_structures = TestRainfallDataFromHirds.get_block_structures(
-            self.depth_layout, self.intensity_layout, start=1, end=2)
+        block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, start=1, end=2)
         for block_structure in block_structures:
             self.assertEqual(block_structure.category, "hist_stderr")
 
     def test_get_layout_structure_of_data_category_proj(self):
-        block_structures = TestRainfallDataFromHirds.get_block_structures(
-            self.depth_layout, self.intensity_layout, start=2)
+        block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, start=2)
         for block_structure in block_structures:
             self.assertEqual(block_structure.category, "proj")
 
