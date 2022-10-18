@@ -103,28 +103,15 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         for block_structure in block_structures:
             self.assertEqual(block_structure.category, "proj")
 
-    # def test_convert_to_tabular_data_expected_rows_columns_size(self):
-    #
-    #     for block_structure in self.depth_layout:
-    #         rain_table = rainfall_data_from_hirds.convert_to_tabular_data(self.rainfall_depth, self.example_site_id, block_structure)
-    #         self.assertEqual(rain_table.shape, )
-    #
-    #     for block_structure in depth_layout:
-    #         rain_table = rainfall_data_from_hirds.convert_to_tabular_data(rainfall_depth, example_site_id, block_structure)
-    #         print(rain_table)
-    #         rain_table.shape # (12 rows, 18 columns)
-    #         rain_table.size # 216 elements = 12 * 18
-    #
-    #     self.rainfall_depth
-    #     self.rainfall_intensity
-    #     self.depth_historical
-    #
-    #     self.depth_layout
-    #     self.intensity_layout
-    #     self.depth_hist_layout
-    #
-    #
-    #      = rainfall_data_from_hirds.convert_to_tabular_data(site_data, self.example_site_id, block_structure)
+    def test_convert_to_tabular_data_expected_rows_columns(self):
+        site_data = [self.rainfall_depth, self.rainfall_intensity, self.depth_historical]
+        layout_structure = [self.depth_layout, self.intensity_layout, self.depth_hist_layout]
+
+        for i in range(len(site_data)):
+            for block_structure in layout_structure[i]:
+                rain_table = rainfall_data_from_hirds.convert_to_tabular_data(
+                    site_data[i], self.example_site_id, block_structure)
+                self.assertEqual(rain_table.shape, (12, 18))
 
 
 if __name__ == "__main__":
