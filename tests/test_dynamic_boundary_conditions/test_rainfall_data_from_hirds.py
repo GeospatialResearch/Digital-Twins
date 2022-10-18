@@ -35,13 +35,13 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         self.assertGreater(len(depth_data), 0)
         self.assertGreater(len(intensity_data), 0)
 
-    def test_get_data_from_hirds_expected_data_type(self):
+    def test_get_data_from_hirds_correct_data_type(self):
         depth_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=False)
         intensity_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=True)
         self.assertIsInstance(depth_data, str)
         self.assertIsInstance(intensity_data, str)
 
-    def test_get_layout_structure_of_data_expected_blocks(self):
+    def test_get_layout_structure_of_data_correct_blocks(self):
         self.assertEqual(len(self.depth_layout), 10)
         self.assertEqual(len(self.intensity_layout), 10)
         self.assertEqual(len(self.depth_hist_layout), 1)
@@ -59,7 +59,7 @@ class TestRainfallDataFromHirds(unittest.TestCase):
                 block_structures.append(block_structure)
         return block_structures
 
-    def test_get_layout_structure_of_data_expected_data_types(self):
+    def test_get_layout_structure_of_data_correct_data_types(self):
         block_structures = TestRainfallDataFromHirds.get_block_structures(self.depth_layout, self.intensity_layout)
         for block_structure in block_structures:
             self.assertIsInstance(block_structure.skip_rows, int)
@@ -109,7 +109,7 @@ class TestRainfallDataFromHirds(unittest.TestCase):
         for block_structure in block_structures:
             self.assertEqual(block_structure.category, "proj")
 
-    def test_convert_to_tabular_data_expected_rows_columns(self):
+    def test_convert_to_tabular_data_correct_rows_columns(self):
         site_data = [self.rainfall_depth, self.rainfall_intensity, self.depth_historical]
         layout_structure = [self.depth_layout, self.intensity_layout, self.depth_hist_layout]
 
