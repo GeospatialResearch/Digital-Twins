@@ -17,6 +17,7 @@ dependencies:
   - validators  # Try remove in future
   - sqlalchemy
   - geoalchemy2
+  - haversine
   - pip:
     - geofabrics>=0.9.3
 
