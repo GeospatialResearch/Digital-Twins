@@ -175,7 +175,8 @@ if __name__ == "__main__":
     from src.dynamic_boundary_conditions import rainfall_sites
     
     engine = setup_environment.get_database()
-    sites = rainfall_sites.get_rainfall_sites_data()
+    sites_data = rainfall_sites.get_rainfall_sites_data()
+    sites = rainfall_sites.rainfall_sites_to_df(sites_data)
     rainfall_sites.rainfall_sites_to_db(engine, sites)
 ```
 
@@ -301,7 +302,8 @@ A hyetograph is a graphical representation of the distribution of rainfall inten
 >    duration = "all"
 >
 >    engine = setup_environment.get_database()
->    sites = rainfall_sites.get_rainfall_sites_data()
+>    sites_data = rainfall_sites.get_rainfall_sites_data()
+>    sites = rainfall_sites.rainfall_sites_to_df(sites_data)
 >    rainfall_sites.rainfall_sites_to_db(engine, sites)
 >    nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
 >    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary_polygon)
