@@ -50,15 +50,9 @@ def get_rainfall_sites_data() -> str:
     return sites_data
 
 
-def rainfall_sites_to_df(sites_data: str) -> gpd.GeoDataFrame:
-    """
-    Transform fetched rainfall sites data to GeoDataFrame format.
-
-    Parameters
-    ----------
-    sites_data : str
-        Fetched rainfall sites data.
-    """
+def get_rainfall_sites_in_df() -> gpd.GeoDataFrame:
+    """Get rainfall sites data from the HIRDS website and transform to GeoDataFrame format."""
+    sites_data = get_rainfall_sites_data()
     sites_df = pd.read_json(sites_data)
     sites_geometry = gpd.points_from_xy(sites_df["longitude"], sites_df["latitude"], crs="EPSG:4326")
     sites_with_geometry = gpd.GeoDataFrame(sites_df, geometry=sites_geometry)
@@ -131,8 +125,7 @@ def get_sites_locations(engine, catchment: Polygon) -> gpd.GeoDataFrame:
 
 def main():
     engine = setup_environment.get_database()
-    sites_data = get_rainfall_sites_data()
-    sites = rainfall_sites_to_df(sites_data)
+    sites = get_rainfall_sites_in_df()
     rainfall_sites_to_db(engine, sites)
 
 
