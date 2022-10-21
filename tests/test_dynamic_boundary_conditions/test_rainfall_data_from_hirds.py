@@ -5,7 +5,7 @@ from typing import List
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 
 
-class RainfallDataFromHirdsUnitTest(unittest.TestCase):
+class RainfallDataFromHirdsTest(unittest.TestCase):
 
     @staticmethod
     def open_file(filepath: str) -> str:
@@ -96,13 +96,6 @@ class RainfallDataFromHirdsUnitTest(unittest.TestCase):
                 rain_table = rainfall_data_from_hirds.convert_to_tabular_data(
                     site_data[i], self.example_site_id, block_structure)
                 self.assertEqual(rain_table.shape, (12, 18))
-
-
-class RainfallDataFromHirdsIntTest(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.example_site_id = "323605"
 
     def test_get_data_from_hirds_not_empty(self):
         depth_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=False)
