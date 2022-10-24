@@ -109,6 +109,18 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
                     site_data[i], self.example_site_id, block_structure)
                 self.assertEqual(rain_table.shape, (12, 18))
 
+    def test_get_site_url_key_not_empty(self):
+        site_url_key_depth = rainfall_data_from_hirds.get_site_url_key(self.example_site_id, idf=False)
+        site_url_key_intensity = rainfall_data_from_hirds.get_site_url_key(self.example_site_id, idf=True)
+        self.assertGreater(len(site_url_key_depth), 0)
+        self.assertGreater(len(site_url_key_intensity), 0)
+
+    def test_get_site_url_key_correct_data_type(self):
+        site_url_key_depth = rainfall_data_from_hirds.get_site_url_key(self.example_site_id, idf=False)
+        site_url_key_intensity = rainfall_data_from_hirds.get_site_url_key(self.example_site_id, idf=True)
+        self.assertIsInstance(site_url_key_depth, str)
+        self.assertIsInstance(site_url_key_intensity, str)
+
     def test_get_data_from_hirds_not_empty(self):
         depth_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=False)
         intensity_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=True)
@@ -124,4 +136,3 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
