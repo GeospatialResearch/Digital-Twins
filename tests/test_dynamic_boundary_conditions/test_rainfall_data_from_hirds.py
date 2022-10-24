@@ -1,7 +1,9 @@
-import pathlib
 import unittest
-import math
+from unittest.mock import patch
+import pathlib
 from typing import List
+import math
+import pandas as pd
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 
 
@@ -86,6 +88,16 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
         block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, start=2)
         for block_structure in block_structures:
             self.assertEqual(block_structure.category, "proj")
+
+    def test_convert_to_tabular_data_correct_frame_type(self):
+        site_data = [self.rainfall_depth, self.rainfall_intensity, self.depth_historical]
+        layout_structure = [self.depth_layout, self.intensity_layout, self.depth_hist_layout]
+
+        for i in range(len(site_data)):
+            for block_structure in layout_structure[i]:
+                rain_table = rainfall_data_from_hirds.convert_to_tabular_data(
+                    site_data[i], self.example_site_id, block_structure)
+                self.assertIsInstance(rain_table, pd.DataFrame)
 
     def test_convert_to_tabular_data_correct_rows_columns(self):
         site_data = [self.rainfall_depth, self.rainfall_intensity, self.depth_historical]
