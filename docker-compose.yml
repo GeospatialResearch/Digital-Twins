@@ -2,6 +2,7 @@ version: '3.8'
 
 volumes:
   postgres_db_vol:
+  geoserver_data:
 
 services:
   db_postgres:
@@ -27,3 +28,20 @@ services:
     depends_on:
       db_postgres:
         condition: service_healthy
+
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.21.2
+    container_name: geoserver_digital_twin
+    volumes:
+      - ./geoserver/geoserver_data:/opt/geoserver_data
+    depends_on:
+      db_postgres:
+        condition: service_healthy
+    ports:
+      - "8088:8080"
+    restart: always
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/ || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
