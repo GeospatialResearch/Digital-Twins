@@ -23,6 +23,7 @@ services:
     build: .
     container_name: backend_digital_twin
     network_mode: host
+    env_file: .env
     depends_on:
       db_postgres:
         condition: service_healthy
