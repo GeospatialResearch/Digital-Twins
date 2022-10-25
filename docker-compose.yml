@@ -1,4 +1,8 @@
 version: '3.8'
+
+volumes:
+  postgres_db_vol:
+
 services:
   db_postgres:
     image: postgis/postgis
@@ -19,5 +23,4 @@ services:
     depends_on:
       - db_postgres
 
-volumes:
-  postgres_db_vol:
+ 
