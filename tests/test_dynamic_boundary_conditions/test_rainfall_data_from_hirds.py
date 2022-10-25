@@ -11,7 +11,15 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
 
     @staticmethod
     def open_file(filepath: str) -> str:
-        file = pathlib.Path().cwd() / pathlib.Path(filepath)
+        """
+        Read the content of a text data file.
+
+        Parameters
+        ----------
+        filepath : str
+            The file path of the text data file.
+        """
+        file = pathlib.Path(filepath)
         with open(file) as in_file:
             file_content = in_file.read()
             return file_content
