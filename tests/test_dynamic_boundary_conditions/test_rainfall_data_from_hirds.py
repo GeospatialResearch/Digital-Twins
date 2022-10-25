@@ -1,6 +1,6 @@
 import unittest
 import pathlib
-from typing import List
+from typing import List, Optional
 import math
 import pandas as pd
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
@@ -25,11 +25,27 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
 
     @staticmethod
     def get_block_structures(
-            layout_1: List[rainfall_data_from_hirds.BlockStructure],
-            layout_2: List[rainfall_data_from_hirds.BlockStructure],
-            start=None,
-            end=None) -> List[rainfall_data_from_hirds.BlockStructure]:
-        layout_structures = (layout_1[start:end], layout_2[start:end])
+            depth_layout: List[rainfall_data_from_hirds.BlockStructure],
+            intensity_layout: List[rainfall_data_from_hirds.BlockStructure],
+            start: Optional[int] = None,
+            end: Optional[int] = None) -> List[rainfall_data_from_hirds.BlockStructure]:
+        """
+        Get a list of BlockStructures from both depth and intensity layouts.
+
+        Parameters
+        ----------
+        depth_layout : List[rainfall_data_from_hirds.BlockStructure]
+            Fetched rainfall depths data's layout structure.
+        intensity_layout : List[rainfall_data_from_hirds.BlockStructure]
+            Fetched rainfall intensities data's layout structure.
+        start : Optional[int] = None
+            An integer number specifying at which position to start the slicing of both depth and intensity layouts.
+            Default is None, i.e. omitting the start index, starts the slice from index 0.
+        end : Optional[int] = None
+            An integer number specifying at which position to end the slicing of both depth and intensity layouts.
+            Default is None, i.e. omitting the end index, extends the slice to the end of the list.
+        """
+        layout_structures = (depth_layout[start:end], intensity_layout[start:end])
         block_structures = []
         for layout_structure in layout_structures:
             for block_structure in layout_structure:
