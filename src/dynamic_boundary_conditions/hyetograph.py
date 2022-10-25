@@ -20,7 +20,7 @@ from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
 
 def catchment_area_geometry_info(catchment_file_path) -> Polygon:
     """
-    Extract shapely polygon geometry from the catchment file.
+    Extract shapely geometry polygon from the catchment file.
 
     Parameters
     ----------
