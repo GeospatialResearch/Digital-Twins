@@ -19,8 +19,8 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
         filepath : str
             The file path of the text data file.
         """
-        file = pathlib.Path(filepath)
-        with open(file) as in_file:
+        data_file = pathlib.Path(filepath)
+        with open(data_file) as in_file:
             file_content = in_file.read()
             return file_content
 
