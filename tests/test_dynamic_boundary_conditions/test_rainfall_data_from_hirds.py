@@ -157,6 +157,7 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
         site_url_key_intensity = rainfall_data_from_hirds.get_site_url_key(self.example_site_id, idf=True)
         self.assertGreater(len(site_url_key_depth), 0)
         self.assertGreater(len(site_url_key_intensity), 0)
+
     def test_get_data_from_hirds_not_empty(self):
         """Test to ensure that the rainfall depths and intensities data fetched from the HIRDS website is not empty."""
         depth_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=False)
