@@ -55,11 +55,6 @@ class RainfallSitesTest(unittest.TestCase):
         sites_data = rainfall_sites.get_rainfall_sites_data()
         self.assertGreater(len(sites_data), 0)
 
-    def test_get_rainfall_sites_data_correct_data_type(self):
-        """Test to ensure that the rainfall sites data fetched from the HIRDS website is of string type."""
-        sites_data = rainfall_sites.get_rainfall_sites_data()
-        self.assertIsInstance(sites_data, str)
-
 
 if __name__ == "__main__":
     unittest.main()
