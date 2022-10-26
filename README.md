@@ -171,12 +171,12 @@ The rainfall sites' locations are accessed from [NIWA HIRDS](https://hirds.niwa.
 ```python
 #!/usr/bin/env python
 if __name__ == "__main__":
-   from src.digitaltwin import setup_environment
-   from src.dynamic_boundary_conditions import rainfall_sites
+    from src.digitaltwin import setup_environment
+    from src.dynamic_boundary_conditions import rainfall_sites
 
-   engine = setup_environment.get_database()
-   sites = rainfall_sites.get_rainfall_sites_in_df()
-   rainfall_sites.rainfall_sites_to_db(engine, sites)
+    engine = setup_environment.get_database()
+    sites = rainfall_sites.get_rainfall_sites_in_df()
+    rainfall_sites.rainfall_sites_to_db(engine, sites)
 ```
 
 <br>
