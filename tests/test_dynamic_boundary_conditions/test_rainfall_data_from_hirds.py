@@ -165,14 +165,6 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
         self.assertGreater(len(depth_data), 0)
         self.assertGreater(len(intensity_data), 0)
 
-    def test_get_data_from_hirds_correct_data_type(self):
-        """Test to ensure that the rainfall depths and intensities data fetched from the HIRDS website is of
-        string type."""
-        depth_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=False)
-        intensity_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=True)
-        self.assertIsInstance(depth_data, str)
-        self.assertIsInstance(intensity_data, str)
-
 
 if __name__ == "__main__":
     unittest.main()
