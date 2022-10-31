@@ -12,6 +12,7 @@ import pandas as pd
 import pathlib
 import logging
 import sys
+from typing import Optional
 from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hyetograph
@@ -44,7 +45,12 @@ def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
 
 
 def get_each_site_rainfall_data(
-        engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str, idf: bool) -> pd.DataFrame:
+        engine, site_id: str,
+        rcp: Optional[float],
+        time_period: Optional[str],
+        ari: float,
+        duration: str,
+        idf: bool) -> pd.DataFrame:
     """
     Get the HIRDS rainfall data for the requested site from the database and return the required data in
     Pandas DataFrame format.
@@ -56,10 +62,10 @@ def get_each_site_rainfall_data(
         Engine used to connect to the database.
     site_id : str
         HIRDS rainfall site id.
-    rcp : float
+    rcp : Optional[float]
         There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
         RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
-    time_period : str
+    time_period : Optional[str]
         Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
         historical data.
     ari : float
@@ -93,8 +99,8 @@ def get_each_site_rainfall_data(
 def rainfall_data_from_db(
         engine,
         catchment_polygon: Polygon,
-        rcp: float,
-        time_period: str,
+        rcp: Optional[float],
+        time_period: Optional[str],
         ari: float,
         duration: str,
         idf: bool) -> pd.DataFrame:
@@ -108,10 +114,10 @@ def rainfall_data_from_db(
         Engine used to connect to the database.
     catchment_polygon : Polygon
         Desired catchment area.
-    rcp : float
+    rcp : Optional[float]
         There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
         RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
-    time_period : str
+    time_period : Optional[str]
         Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
         historical data.
     ari : float
