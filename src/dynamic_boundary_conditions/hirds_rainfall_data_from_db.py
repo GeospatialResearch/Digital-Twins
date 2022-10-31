@@ -138,8 +138,8 @@ def rainfall_data_from_db(
 
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
-    rcp = None
-    time_period = None
+    rcp = 2.6
+    time_period = "2031-2050"
     ari = 100
     # To get rainfall data for all durations set duration to "all"
     duration = "all"
