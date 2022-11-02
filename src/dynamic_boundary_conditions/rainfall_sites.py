@@ -5,7 +5,7 @@
 @Author: pkh35
 @Date: 23/12/2021
 @Last modified by: sli229
-@Last modified date: 28/09/2022
+@Last modified date: 21/10/2022
 """
 
 import requests
@@ -28,7 +28,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_rainfall_sites_data() -> gpd.GeoDataFrame:
+def get_rainfall_sites_data() -> str:
     """Get rainfall sites data from the HIRDS website using HTTP request."""
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
@@ -46,7 +46,14 @@ def get_rainfall_sites_data() -> gpd.GeoDataFrame:
     headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
         Chrome/96.0.4664.45 Safari/537.36"
     response = requests.get(url, headers=headers)
-    sites_df = pd.read_json(response.text)
+    sites_data = response.text
+    return sites_data
+
+
+def get_rainfall_sites_in_df() -> gpd.GeoDataFrame:
+    """Get rainfall sites data from the HIRDS website and transform to GeoDataFrame format."""
+    sites_data = get_rainfall_sites_data()
+    sites_df = pd.read_json(sites_data)
     sites_geometry = gpd.points_from_xy(sites_df["longitude"], sites_df["latitude"], crs="EPSG:4326")
     sites_with_geometry = gpd.GeoDataFrame(sites_df, geometry=sites_geometry)
     return sites_with_geometry
@@ -118,7 +125,7 @@ def get_sites_locations(engine, catchment: Polygon) -> gpd.GeoDataFrame:
 
 def main():
     engine = setup_environment.get_database()
-    sites = get_rainfall_sites_data()
+    sites = get_rainfall_sites_in_df()
     rainfall_sites_to_db(engine, sites)
 
 
