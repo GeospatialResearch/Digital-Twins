@@ -5,7 +5,7 @@
 @Author: pkh35
 @Date: 20/01/2022
 @Last modified by: sli229
-@Last modified date: 11/10/2022
+@Last modified date: 4/11/2022
 """
 
 import pandas as pd
@@ -15,7 +15,7 @@ import sys
 from typing import Optional
 from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import hyetograph
+from src.dynamic_boundary_conditions import main_rainfall
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
@@ -144,7 +144,7 @@ def main():
     # To get rainfall data for all durations set duration to "all"
     duration = "all"
     engine = setup_environment.get_database()
-    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     rain_depth_in_catchment = rainfall_data_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
     print(rain_depth_in_catchment)

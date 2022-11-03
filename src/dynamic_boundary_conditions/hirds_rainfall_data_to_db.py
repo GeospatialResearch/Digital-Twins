@@ -5,7 +5,7 @@
 @Author: pkh35
 @Date: 20/01/2022
 @Last modified by: sli229
-@Last modified date: 11/10/2022
+@Last modified date: 4/11/2022
 """
 
 import pandas as pd
@@ -16,7 +16,7 @@ import logging
 from typing import List
 from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import hyetograph
+from src.dynamic_boundary_conditions import main_rainfall
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 
 log = logging.getLogger(__name__)
@@ -173,7 +173,7 @@ def rainfall_data_to_db(engine, catchment_polygon: Polygon, idf: bool):
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     engine = setup_environment.get_database()
-    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     # Set idf to False for rain depth data and to True for rain intensity data
     rainfall_data_to_db(engine, catchment_polygon, idf=False)
     rainfall_data_to_db(engine, catchment_polygon, idf=True)
