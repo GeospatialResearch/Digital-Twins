@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: hyetograph.py
+@Script name: main.py
 @Description:
 @Author: pkh35
 @Date: 17/01/2022
