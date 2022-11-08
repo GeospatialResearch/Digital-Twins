@@ -100,11 +100,11 @@ def get_each_site_rainfall_data(
 def rainfall_data_from_db(
         engine,
         catchment_polygon: Polygon,
+        idf: bool,
         rcp: Optional[float],
         time_period: Optional[str],
         ari: float,
-        duration: str,
-        idf: bool) -> pd.DataFrame:
+        duration: str = "all") -> pd.DataFrame:
     """
     Get all the rainfall data for the sites within the catchment area and return the required data in
     Pandas DataFrame format.
@@ -115,6 +115,8 @@ def rainfall_data_from_db(
         Engine used to connect to the database.
     catchment_polygon : Polygon
         Desired catchment area.
+    idf : bool
+        Set to False for rainfall depth data, and True for rainfall intensity data.
     rcp : Optional[float]
         There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
         RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
@@ -125,8 +127,6 @@ def rainfall_data_from_db(
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     duration : str
         Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
-    idf : bool
-        Set to False for rainfall depth data, and True for rainfall intensity data.
     """
     sites_id_in_catchment = hirds_rainfall_data_to_db.get_sites_id_in_catchment(engine, catchment_polygon)
 
@@ -142,16 +142,13 @@ def main():
     rcp = 2.6
     time_period = "2031-2050"
     ari = 100
-    # To get rainfall data for all durations set duration to "all"
-    duration = "all"
+
     engine = setup_environment.get_database()
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     # Set idf to False for rain depth data and to True for rain intensity data
-    rain_depth_in_catchment = rainfall_data_from_db(
-        engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
+    rain_depth_in_catchment = rainfall_data_from_db(engine, catchment_polygon, False, rcp, time_period, ari)
     print(rain_depth_in_catchment)
-    rain_intensity_in_catchment = rainfall_data_from_db(
-        engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
+    rain_intensity_in_catchment = rainfall_data_from_db(engine, catchment_polygon, True, rcp, time_period, ari)
     print(rain_intensity_in_catchment)
 
 

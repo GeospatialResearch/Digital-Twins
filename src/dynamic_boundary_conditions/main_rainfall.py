@@ -38,8 +38,6 @@ def main():
     rcp = 2.6
     time_period = "2031-2050"
     ari = 100
-    # To get rainfall data for all durations set duration to "all"
-    duration = "all"
 
     engine = setup_environment.get_database()
     sites = rainfall_sites.get_rainfall_sites_in_df()
@@ -53,10 +51,10 @@ def main():
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=False)
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=True)
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
-        engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
+        engine, catchment_polygon, False, rcp, time_period, ari)
     print(rain_depth_in_catchment)
     rain_intensity_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
-        engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
+        engine, catchment_polygon, True, rcp, time_period, ari)
     print(rain_intensity_in_catchment)
 
 
