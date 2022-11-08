@@ -5,7 +5,7 @@
 @Author: pkh35
 @Date: 20/01/2022
 @Last modified by: sli229
-@Last modified date: 4/11/2022
+@Last modified date: 8/11/2022
 """
 
 import pandas as pd
@@ -145,6 +145,7 @@ def main():
     duration = "all"
     engine = setup_environment.get_database()
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
+    # Set idf to False for rain depth data and to True for rain intensity data
     rain_depth_in_catchment = rainfall_data_from_db(
         engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
     print(rain_depth_in_catchment)
