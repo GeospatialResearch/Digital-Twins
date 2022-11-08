@@ -45,7 +45,8 @@ def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
 
 
 def get_each_site_rainfall_data(
-        engine, site_id: str,
+        engine,
+        site_id: str,
         rcp: Optional[float],
         time_period: Optional[str],
         ari: float,
