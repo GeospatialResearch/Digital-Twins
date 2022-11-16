@@ -5,7 +5,7 @@
 @Author: pkh35
 @Date: 23/12/2021
 @Last modified by: sli229
-@Last modified date: 21/10/2022
+@Last modified date: 17/11/2022
 """
 
 import requests
@@ -59,7 +59,7 @@ def get_rainfall_sites_in_df() -> gpd.GeoDataFrame:
     return sites_with_geometry
 
 
-def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
+def rainfall_sites_to_db(engine):
     """
     Storing rainfall sites data from the HIRDS website in the database.
 
@@ -73,6 +73,7 @@ def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
     if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites"):
         log.info("Rainfall sites data already exists in the database.")
     else:
+        sites = get_rainfall_sites_in_df()
         sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,
                          dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
         log.info("Stored rainfall sites data in the database.")
@@ -125,8 +126,7 @@ def get_sites_locations(engine, catchment: Polygon) -> gpd.GeoDataFrame:
 
 def main():
     engine = setup_environment.get_database()
-    sites = get_rainfall_sites_in_df()
-    rainfall_sites_to_db(engine, sites)
+    rainfall_sites_to_db(engine)
 
 
 if __name__ == "__main__":
