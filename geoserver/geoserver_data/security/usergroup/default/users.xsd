@@ -29,7 +29,6 @@
     
     <complexType name="GroupType">
     	<sequence>    		
-    		<!--<element name="member" type="gsu:UserRefType" minOccurs="0" maxOccurs="unbounded"></element> -->
     		<element name="member" type="gsu:UserRefType" minOccurs="0" maxOccurs="unbounded">
     		</element>
     	</sequence>    
