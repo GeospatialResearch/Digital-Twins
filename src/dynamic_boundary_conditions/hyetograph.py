@@ -119,7 +119,6 @@ def get_hyetograph_sites_data(
         increment_mins: int = 10,
         interp_method: str = "cubic",
         hyeto_method: str = "alt_block") -> List[pd.DataFrame]:
-
     hyeto_methods = ["alt_block", "chicago"]
     if hyeto_method not in hyeto_methods:
         log.error("Invalid hyetograph method.")
@@ -178,7 +177,7 @@ def hyetograph(hyetograph_sites_data: List[pd.DataFrame], ari: int):
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     rcp = 2.6  # None  # 2.6
-    time_period = "2031-2050" # None  # "2031-2050"
+    time_period = "2031-2050"  # None  # "2031-2050"
     ari = 50  # 100
 
     engine = setup_environment.get_database()
