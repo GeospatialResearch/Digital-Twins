@@ -1,19 +1,16 @@
-name: Add issues and pull requests to project
+name: Add issue to project
 
 on:
-  pull_request:
-    types:
-      - opened
   issues:
     types:
       - opened
 
 jobs:
   add-to-project:
-    name: Add issue and/or PR to project
+    name: Add issue to project
     runs-on: ubuntu-latest
     steps:
       - uses: actions/add-to-project@v0.4.0
         with:
           project-url: https://github.com/orgs/GeospatialResearch/projects/1
-          github-token: ${{ secrets.ENV_BASE64}}
+          github-token: ${{ secrets.ACTIONS_TOKEN }}
