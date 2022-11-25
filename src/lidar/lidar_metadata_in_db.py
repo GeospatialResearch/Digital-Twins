@@ -35,13 +35,11 @@ Base = declarative_base()
 
 class Lidar(Base):
     """Class used to create lidar table in the database."""
-
     __tablename__ = "lidar"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    filepath = Column(String)
-    Filename = Column(String)
-    filename_no_format = Column(String)
-    geometry = Column(Geometry("POLYGON"))
+    file_path = Column(String)
+    file_name = Column(String)
+    file_name_without_extension = Column(String)
 
 
 def get_lidar_data(file_path_to_store, geometry_df):
@@ -70,18 +68,16 @@ def get_files(filetype, file_path_to_store):
     return files_path
 
 
-def remove_duplicate_rows(engine, table_name):
-    """Remove duplicate rows from the tables."""
-    # add tbl_id column in each table
+def remove_duplicate_rows(engine, table_name, column_name):
+    """
+    Remove rows from the table based on a column and add unique_id column in table if it is not exist.
+    """
     engine.execute(
-        'ALTER TABLE "%(table_name)s" ADD COLUMN IF NOT EXISTS unique_id SERIAL PRIMARY KEY'
-        % ({"table_name": table_name})
+        f'ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS unique_id SERIAL PRIMARY KEY;'
     )
-    # delete duplicate rows from the newly created tables if exists
     engine.execute(
-        'DELETE FROM "%(table_name)s" a USING "%(table_name)s" b\
-                    WHERE a.unique_id < b.unique_id AND a."Filename" = b."Filename";'
-        % ({"table_name": table_name})
+        f'DELETE FROM {table_name} a USING {table_name} b \
+        WHERE a.unique_id < b.unique_id AND a."{column_name}" = b."{column_name}";'
     )
 
 
@@ -91,20 +87,52 @@ def store_lidar_path(engine, file_path_to_store, instruction_file, filetype=".la
     laz_files = get_files(filetype, file_path_to_store)
     for filepath in laz_files:
         file_name = os.path.basename(filepath)
-        file_name_no_format = file_name.rsplit(".", 1)[0]
+        file_name_without_extension = file_name.rsplit(".", 1)[0]
         lidar = Lidar(
-            filepath=filepath,
-            Filename=file_name,
-            filename_no_format=file_name_no_format,
+            file_path=filepath,
+            file_name=file_name,
+            file_name_without_extension=file_name_without_extension
         )
         Session = sessionmaker(bind=engine)
         session = Session()
         session.add(lidar)
         session.commit()
-        remove_duplicate_rows(engine, "lidar")
+        remove_duplicate_rows(engine, "lidar", "file_name")
 
 
-def store_tileindex(engine, file_path_to_store, filetype=".shp"):
+def gen_tileindex_name(dataframe_in,
+                       columns_2d=['Filename', 'MinX', 'MinY', 'MaxX', 'MaxY', 'URL', 'geometry'],
+                       columns_3d=['file_name', 'version', 'num_points', 'point_type', 'point_size',
+                                   'min_x', 'max_x', 'min_y', 'max_y', 'min_z', 'max_z', 'URL', 'geometry'],
+                       table_name=['tileindex2d', 'tileindex3d'],
+                       column_name=['Filename', 'file_name']
+                       ):
+    """
+    check the input dataframe column names,
+    if input dataframe columns match columns_2d, output table_name[0] and column_name[0]
+    if input dataframe columns match columns_3d, output table_name[1] and column_name[1]
+    return output
+    """
+    table_name_out = ''
+    column_name_out = ''
+    columns_in = dataframe_in.columns.tolist()
+    # for match case
+    class Dims:
+        dim2 = columns_2d
+        dim3 = columns_3d
+    match columns_in:  # Python 3.10 or above
+        case Dims.dim2:
+            table_name_out = table_name[0]
+            column_name_out = column_name[0]
+        case Dims.dim3:
+            table_name_out = table_name[1]
+            column_name_out = column_name[1]
+        case _:
+            log.debug(f"Input dataframe is not compatible. column names {columns_in}")
+    return table_name_out, column_name_out
+
+
+def store_tileindex(engine: object, file_path_to_store: object, filetype: object = ".shp") -> object:
     """Store tile information of each point in the point cloud data.
     Function extracts the zip files where tile index files are stored as shape files,
     then shapes files are stored in the database.
@@ -115,27 +143,15 @@ def store_tileindex(engine, file_path_to_store, filetype=".shp"):
             if file.endswith(".zip"):
                 zip_files.append(os.path.join(paths, file))
     # create tileindex table
-    for i in zip_files:
-        zip_file = zipfile.ZipFile(i)
+    for file in zip_files:
+        zip_file = zipfile.ZipFile(file)
         zip_file.extractall(file_path_to_store)
     shp_files = get_files(filetype, file_path_to_store)
-    for i in shp_files:
-        try:
-            gdf = gpd.read_file(i)
-            gdf.to_postgis("tileindex", engine, index=False, if_exists="append")
-        except psycopg2.ProgrammingError as error:
-            # TODO: if_exists=append does not allow for the addition of new
-            # fields to a table, only new rows. NZ20_Canterbury have new columns
-            # Fix in https://github.com/GeospatialResearch/Digital-Twins/issues/33
-            filename = os.path.basename(i)
-            query = "SELECT column_name FROM information_schema.columns WHERE table_name = 'tileindex'"
-            col_names_in_db = pd.read_sql_query(query, engine)["column_name"].tolist()
-            col_names_in_shp = gdf.columns.tolist()
-            col_names_not_in_db = np.setdiff1d(col_names_in_shp, col_names_in_db)
-            log.debug(f"{filename}: {error}. new column names: {col_names_not_in_db}")
-    remove_duplicate_rows(engine, "tileindex")
-    query = 'UPDATE lidar SET geometry = (SELECT geometry FROM tileindex WHERE tileindex."Filename" = lidar."Filename")'
-    engine.execute(query)
+    for file in shp_files:
+        gdf = gpd.read_file(file)
+        table_name, file_name = gen_tileindex_name(gdf)
+        gdf.to_postgis(table_name, engine, index=False, if_exists="append")
+        remove_duplicate_rows(engine, table_name, file_name)
 
 
 def get_lidar_path(engine, geometry_df):
@@ -150,7 +166,7 @@ def get_lidar_path(engine, geometry_df):
 def main():
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
-    file_path_to_store = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/lidar_data")
+    file_path_to_store = pathlib.Path(r"../LiDAR/lidar_data")
     instruction_file = pathlib.Path("src/lidar/instructions_lidar.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
