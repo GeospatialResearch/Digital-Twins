@@ -190,12 +190,11 @@ def transform_data_for_selected_method(
         site_data = storm_length_data.iloc[:, [0, column_num]]
         if hyeto_method == "alt_block":
             site_data = site_data.sort_values(by=site_data.columns[1], ascending=False)
-            site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
         else:
             site_data_right = site_data.div(2)
             site_data_left = site_data_right[::-1]
             site_data = pd.concat([site_data_left, site_data_right]).reset_index(drop=True)
-            site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
+        site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
         hyetograph_sites_data.append(site_data)
     hyetograph_data = pd.concat(hyetograph_sites_data, axis=1, ignore_index=False)
     hyetograph_data = hyetograph_data.loc[:, ~hyetograph_data.columns.duplicated(keep="last")]
@@ -312,7 +311,7 @@ def main():
         time_to_peak_hrs=60,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method="alt_block")
+        hyeto_method="chicago")
     # hyetograph(hyetograph_sites_data, ari)
     print(hyetograph_data)
 
