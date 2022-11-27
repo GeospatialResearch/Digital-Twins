@@ -235,6 +235,16 @@ def get_hyetograph_sites_data(
 
 
 def hyetograph(hyetograph_sites_data: List[pd.DataFrame], ari: int):
+    """
+    Create interactive individual hyetograph plots for sites within the catchment area.
+
+    Parameters
+    ----------
+    hyetograph_sites_data : List[pd.DataFrame]
+        List of hyetograph data for sites within the catchment area.
+    ari : float
+        Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+    """
     for site_data in hyetograph_sites_data:
         site_id = site_data.columns.values[0]
         site_data["site_id"] = site_id
