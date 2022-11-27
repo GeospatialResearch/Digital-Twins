@@ -209,8 +209,8 @@ def get_hyetograph_sites_data(
         interp_method: str,
         hyeto_method: Literal["alt_block", "chicago"]) -> List[pd.DataFrame]:
     """
-    Get all hyetograph data for a selected hyetograph method used to create individual hyetographs for
-    each site within the catchment area.
+    Returns a list of hyetograph data used to create individual hyetographs for each site within the
+    catchment area based on the selected hyetograph method.
 
     Parameters
     ----------
