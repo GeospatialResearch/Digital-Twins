@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+@Script name: hyetograph.py
+@Description: Create interactive hyetograph plots for sites within the catchment area.
+@Author: pkh35
+@Last modified by: sli229
+@Last modified date: 28/11/2022
+"""
+
 import logging
 import pathlib
 import pandas as pd
