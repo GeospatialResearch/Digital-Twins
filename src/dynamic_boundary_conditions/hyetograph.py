@@ -252,7 +252,7 @@ def hyetograph(hyetograph_sites_data: List[pd.DataFrame], ari: int):
         hyeto_fig = px.bar(
             site_data,
             title=f"{ari}-year storm: site {site_id}",
-            x="mins",  # "hours",
+            x="mins",
             y="rain_depth_mm",
             labels={"mins": "Time (Minutes)",
                     "rain_depth_mm": "Rainfall Depth (mm)"}
@@ -303,7 +303,7 @@ def main():
         time_to_peak_hrs=60,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method="chicago")
+        hyeto_method="alt_block")
     hyetograph(hyetograph_sites_data, ari)
 
 
