@@ -60,7 +60,7 @@ def get_interpolated_data(
     transposed_catchment_data : pd.DataFrame
         Transposed scenario data retrieved from the database.
     increment_mins : int
-        Time interval used for temporal interpolation.
+        Time interval in minutes.
     interp_method : str
         Interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
  |      'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
@@ -97,7 +97,7 @@ def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataF
 
 def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, storm_length_hrs: int) -> pd.DataFrame:
     """
-    Get the incremental rainfall data for a specific storm duration.
+    Get the incremental rainfall data for sites within the catchment area for a specific storm duration.
 
     Parameters
     ----------
@@ -117,6 +117,20 @@ def add_time_information(
         time_to_peak_hrs: int,
         increment_mins: int,
         hyeto_method: str) -> pd.DataFrame:
+    """
+    Add time information (minutes column) to the hyetograph data based on the selected hyetograph method.
+
+    Parameters
+    ----------
+    site_data : pd.DataFrame
+        Hyetograph data for a rainfall site or gauge.
+    time_to_peak_hrs : int
+        The time in hours when rainfall is at its greatest (reaches maximum).
+    increment_mins : int
+        Time interval in minutes.
+    hyeto_method : str
+        Hyetograph method to be used. One of 'alt_block' (Alternating Block Method), or 'chicago' (Chicago Method).
+    """
     time_to_peak_mins = time_to_peak_hrs * 60
     if hyeto_method == "alt_block":
         row_count = len(site_data)
@@ -145,6 +159,22 @@ def transform_data_for_selected_method(
         time_to_peak_hrs: int,
         increment_mins: int,
         hyeto_method: str) -> List[pd.DataFrame]:
+    """
+    Transform the incremental rainfall data for sites within the catchment area for a selected hyetograph method.
+    Returns a list of hyetograph data used to create individual hyetographs for each site within the
+    catchment area.
+
+    Parameters
+    ----------
+    storm_length_data : pd.DataFrame
+        Incremental rainfall data for sites within the catchment area for a specific storm duration.
+    time_to_peak_hrs : int
+        The time in hours when rainfall is at its greatest (reaches maximum).
+    increment_mins : int
+        Time interval in minutes.
+    hyeto_method : str
+        Hyetograph method to be used. One of 'alt_block' (Alternating Block Method), or 'chicago' (Chicago Method).
+    """
     hyetograph_sites_data = []
     for column_num in range(1, len(storm_length_data.columns)):
         site_data = storm_length_data.iloc[:, [0, column_num]]
