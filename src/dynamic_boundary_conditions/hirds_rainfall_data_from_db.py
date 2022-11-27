@@ -5,13 +5,14 @@
 @Author: pkh35
 @Date: 20/01/2022
 @Last modified by: sli229
-@Last modified date: 28/09/2022
+@Last modified date: 11/10/2022
 """
 
 import pandas as pd
 import pathlib
 import logging
 import sys
+from typing import Optional
 from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hyetograph
@@ -39,12 +40,17 @@ def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
         Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
     """
     if duration != "all":
-        rain_data = rain_data[["site_id", "rcp", "time_period", "ari", "aep", duration]]
+        rain_data = rain_data[["site_id", "category", "rcp", "time_period", "ari", "aep", duration]]
     return rain_data
 
 
 def get_each_site_rainfall_data(
-        engine, site_id: str, rcp: float, time_period: str, ari: float, duration: str, idf: bool) -> pd.DataFrame:
+        engine, site_id: str,
+        rcp: Optional[float],
+        time_period: Optional[str],
+        ari: float,
+        duration: str,
+        idf: bool) -> pd.DataFrame:
     """
     Get the HIRDS rainfall data for the requested site from the database and return the required data in
     Pandas DataFrame format.
@@ -56,11 +62,12 @@ def get_each_site_rainfall_data(
         Engine used to connect to the database.
     site_id : str
         HIRDS rainfall site id.
-    rcp : float
+    rcp : Optional[float]
         There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
-    time_period : str
-        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
+    time_period : Optional[str]
+        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
+        historical data.
     ari : float
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     duration : str
@@ -81,7 +88,10 @@ def get_each_site_rainfall_data(
     else:
         query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};"""
-        rain_data = pd.read_sql_query(query, engine).head(1)
+        rain_data = pd.read_sql_query(query, engine)
+        # filter for historical data
+        rain_data.query("category == 'hist'", inplace=True)
+    # filter for duration
     rain_data = filter_for_duration(rain_data, duration)
     return rain_data
 
@@ -89,8 +99,8 @@ def get_each_site_rainfall_data(
 def rainfall_data_from_db(
         engine,
         catchment_polygon: Polygon,
-        rcp: float,
-        time_period: str,
+        rcp: Optional[float],
+        time_period: Optional[str],
         ari: float,
         duration: str,
         idf: bool) -> pd.DataFrame:
@@ -104,11 +114,12 @@ def rainfall_data_from_db(
         Engine used to connect to the database.
     catchment_polygon : Polygon
         Desired catchment area.
-    rcp : float
+    rcp : Optional[float]
         There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases.
-    time_period : str
-        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs.
+        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
+    time_period : Optional[str]
+        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
+        historical data.
     ari : float
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     duration : str
