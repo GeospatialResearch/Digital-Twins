@@ -14,9 +14,10 @@ from the csv's downloaded from: https://searise.takiwa.co/.
 
 from datetime import date, datetime, timedelta
 import pandas as pd
+import geopandas as gpd
 from haversine import haversine
 import os
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, Point
 
 
 def read_slr_files(path: str):
@@ -26,31 +27,35 @@ def read_slr_files(path: str):
         if filename.endswith('.csv'):
             sea_level_rise_projections_region = pd.read_csv(path + filename)
             sea_level_rise_projections_region["Region"] = filename[24:-4]
-            # Creating new column containing location pair
-            sea_level_rise_projections_region['Location'] = sea_level_rise_projections_region[['lat', 'lon']].apply(
-                lambda row: ','.join(row.values.astype(str)), axis=1)
             print('LOADED: ', filename)
 
             sea_level_rise_projections_nz = pd.concat(
                 [sea_level_rise_projections_nz, sea_level_rise_projections_region], ignore_index=True, axis=0)
 
+    # Converting to Geopandas points
+    print('Converting to Geopandas data frame with geometry...')
+    sea_level_rise_projections_nz = gpd.GeoDataFrame(sea_level_rise_projections_nz,
+                                                     geometry=gpd.points_from_xy(sea_level_rise_projections_nz.lon,
+                                                                                 sea_level_rise_projections_nz.lat))
+
     sea_level_rise_projections_nz.rename(
-        columns={'siteId': 'Site_ID', 'year': 'Projected_Year', 'p17': 'SLR_p17_confidence interval_meters',
-                 'p50': 'SLR_p50_confidence interval_meters', 'p83': 'SLR_p83_confidence interval_meters',
-                 'lon': 'Longitude', 'lat': 'Latitude', 'measurementName': 'Scenario_(VLM with confidence level)', },
+        columns={'siteId': 'Site_ID', 'year': 'Projected_Year', 'p17': 'SLR_p17_confidence_interval_meters',
+                 'p50': 'SLR_p50_confidence_interval_meters', 'p83': 'SLR_p83_confidence_interval_meters',
+                 'lon': 'Longitude', 'lat': 'Latitude', 'measurementName': 'Scenario_(VLM_with_confidence)', },
         inplace=True)
 
     return sea_level_rise_projections_nz
 
 
-def unique_locations(sea_level_rise_projections_nz: pd.core.frame.DataFrame):
+def unique_locations(sea_level_rise_projections_nz: gpd.geodataframe.GeoDataFrame):
     """Finds the unique lat lon coordinates (site locations) and appends them to list and returns that list"""
     locations_lat_lon = []
     # Acquiring unique pairs
-    unique_location = sea_level_rise_projections_nz.Location.unique().astype(str)
+    unique_location = sea_level_rise_projections_nz.geometry.unique()
     # Adding pairs to list of dictionarys to map to later on
+    print('Finding unique locations...')
     for i in unique_location:
-        locations_value_pair = {'lat': float(i.split(',')[0]), 'lon': float(i.split(',')[1])}
+        locations_value_pair = {'lat': i.y, 'lon': i.x}
         locations_lat_lon.append(locations_value_pair)
     return locations_lat_lon
 
@@ -68,11 +73,12 @@ def nearest_site(locations_lat_lon: list, lat_input: float, lon_input: float):
 
     user_value = {'lat': lat_input, 'lon': lon_input}
     site = closest_site_location(locations_lat_lon, user_value)
-    print(str(site.get("lat")) + "," + str(site.get("lon")))
-    return str(site.get("lat")) + "," + str(site.get("lon"))
+    print('Closest Site Location: ', str(site.get("lat")) + "," + str(site.get("lon")))
+    print('Searching for site data: ')
+    return Point(site.get("lon"), site.get("lat"))
 
 
-def site_data(sea_level_rise_projections_nz: pd.core.frame.DataFrame, locations_lat_lon: list, lat_input: float,
+def site_data(sea_level_rise_projections_nz: gpd.geodataframe.GeoDataFrame, locations_lat_lon: list, lat_input: float,
               lon_input: float):
     """ Returns data for closest site by querying user for their desired location (calls nearest_site function) """
     if lat_input < -90 or lat_input > 90:
@@ -81,7 +87,7 @@ def site_data(sea_level_rise_projections_nz: pd.core.frame.DataFrame, locations_
         raise ValueError("Longitude is out of range [-180, 180]")
 
     return sea_level_rise_projections_nz.loc[
-        sea_level_rise_projections_nz['Location'] == nearest_site(locations_lat_lon, lat_input, lon_input)]
+        sea_level_rise_projections_nz['geometry'] == nearest_site(locations_lat_lon, lat_input, lon_input)]
 
 
 def main():

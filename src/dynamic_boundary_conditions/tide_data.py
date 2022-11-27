@@ -81,19 +81,21 @@ def get_Tide_data(NIWA_API_KEY: str, lat: float, long: float, total_days: int, s
     return Tide_df
 
 
-def get_highest_tide_data(Tide_df: pd.core.frame.DataFrame, either_side: int):
+def get_highest_tide_data(Tide_df: pd.core.frame.DataFrame, lower_bound: int, upper_bound: int):
     """ takes dataframe and finds data either side of peak is required (in days) """
-    # setting upper and lowe index
-    lower_index = (Tide_df.index[0] - timedelta(days=either_side))
-    upper_index = (Tide_df.index[0] + timedelta(days=either_side))
+    # setting upper and lower index
+    lower_index = (Tide_df.index[0] - timedelta(days=lower_bound))
+    upper_index = (Tide_df.index[0] + timedelta(days=upper_bound))
     # Finding highest tide value and return sorted list
     highest_tide = Tide_df.loc[lower_index.strftime('%Y-%m-%d'): upper_index.strftime('%Y-%m-%d')]
     return highest_tide.sort_index().to_string()
 
 
+
 def main():
     load_dotenv()
     NIWA_API_KEY = os.getenv("NIWA_API_KEY")
+
 
     ## Fetching centroid co-ordinate from user selected shapely polygon
     lat = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569], [-43.418953, 172.826698],
@@ -103,8 +105,8 @@ def main():
 
     # How many days of tide data to collect (e.g. 365 for 1 years worth):
     total_days = 365
-    # Start date (can be in the past or present) for collection of data
 
+    # Start date (can be in the past or present) for collection of data
     # String for start date of data in format of ('yyyy-mm-dd')
     startDate = date.today()
 
@@ -112,11 +114,12 @@ def main():
     datum = "LAT"
 
     # How many days either side of highest tide do you want data for:
-    either_side = 1
+    lower_bound = 2
+    upper_bound = 4
 
     Tide_dataframe = get_Tide_data(NIWA_API_KEY, lat, long, total_days, startDate, datum)
 
-    highest_tide_data = get_highest_tide_data(Tide_dataframe, either_side)
+    highest_tide_data = get_highest_tide_data(Tide_dataframe, lower_bound, upper_bound)
     print(highest_tide_data)
 
 
