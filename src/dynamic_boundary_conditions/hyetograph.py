@@ -2,7 +2,7 @@ import logging
 import pathlib
 import pandas as pd
 import numpy as np
-from typing import List
+from typing import List, Literal
 from math import floor, ceil
 from scipy.interpolate import interp1d
 import plotly.express as px
@@ -116,7 +116,7 @@ def add_time_information(
         site_data: pd.DataFrame,
         time_to_peak_hrs: int,
         increment_mins: int,
-        hyeto_method: str) -> pd.DataFrame:
+        hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
     Add time information (minutes column) to the hyetograph data based on the selected hyetograph method.
 
@@ -128,7 +128,7 @@ def add_time_information(
         The time in hours when rainfall is at its greatest (reaches maximum).
     increment_mins : int
         Time interval in minutes.
-    hyeto_method : str
+    hyeto_method : Literal["alt_block", "chicago"]
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
     """
@@ -159,7 +159,7 @@ def transform_data_for_selected_method(
         storm_length_data: pd.DataFrame,
         time_to_peak_hrs: int,
         increment_mins: int,
-        hyeto_method: str) -> List[pd.DataFrame]:
+        hyeto_method: Literal["alt_block", "chicago"]) -> List[pd.DataFrame]:
     """
     Transform the incremental rainfall data for sites within the catchment area for a selected hyetograph method.
     Returns a list of hyetograph data used to create individual hyetographs for each site within the
@@ -173,7 +173,7 @@ def transform_data_for_selected_method(
         The time in hours when rainfall is at its greatest (reaches maximum).
     increment_mins : int
         Time interval in minutes.
-    hyeto_method : str
+    hyeto_method : Literal["alt_block", "chicago"]
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
     """
@@ -194,11 +194,11 @@ def transform_data_for_selected_method(
 
 def get_hyetograph_sites_data(
         rain_data_in_catchment: pd.DataFrame,
-        storm_length_hrs: int = 48,
-        time_to_peak_hrs: int = 60,
-        increment_mins: int = 10,
-        interp_method: str = "cubic",
-        hyeto_method: str = "alt_block") -> List[pd.DataFrame]:
+        storm_length_hrs: int,
+        time_to_peak_hrs: int,
+        increment_mins: int,
+        interp_method: str,
+        hyeto_method: Literal["alt_block", "chicago"]) -> List[pd.DataFrame]:
     """
     Get all hyetograph data for a selected hyetograph method used to create individual hyetographs for
     each site within the catchment area.
@@ -216,7 +216,7 @@ def get_hyetograph_sites_data(
     interp_method : str
         Temporal interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
         'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
-    hyeto_method : str
+    hyeto_method : Literal["alt_block", "chicago"]
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
     """
