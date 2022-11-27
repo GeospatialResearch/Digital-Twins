@@ -22,14 +22,25 @@ log.addHandler(stream_handler)
 
 
 def get_transposed_data(rain_data_in_catchment: pd.DataFrame) -> pd.DataFrame:
-    catchment_data = rain_data_in_catchment.drop(columns=["category", "rcp", "time_period", "ari", "aep"])
+    """
+    Clean and transpose the retrieved scenario data from the database for sites within the catchment area and
+    return in Pandas DataFrame format.
 
+    Parameters
+    ----------
+    rain_data_in_catchment : pd.DataFrame
+        Rainfall data for sites within the catchment area for a specified scenario retrieved from the database.
+    """
+
+    # drop unnecessary columns
+    catchment_data = rain_data_in_catchment.drop(columns=["category", "rcp", "time_period", "ari", "aep"])
+    # change column names
     for index, column_name in enumerate(catchment_data.columns):
         if column_name.endswith("m"):
             catchment_data.columns.values[index] = int(column_name[:-1])
         elif column_name.endswith("h"):
             catchment_data.columns.values[index] = int(column_name[:-1]) * 60
-
+    # transpose data frame
     transposed_catchment_data = (
         catchment_data.set_index("site_id").rename_axis(None).transpose().rename_axis("duration_mins").reset_index()
     )
@@ -40,6 +51,20 @@ def get_interpolated_data(
         transposed_catchment_data: pd.DataFrame,
         increment_mins: int,
         interp_method: str) -> pd.DataFrame:
+    """
+    Perform temporal interpolation on the transposed scenario data for sites within the catchment area and
+    return in Pandas DataFrame format.
+
+    Parameters
+    ----------
+    transposed_catchment_data : pd.DataFrame
+        Transposed scenario data retrieved from the database.
+    increment_mins : int
+        Time interval used for temporal interpolation.
+    interp_method : str
+        Interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
+ |      'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
+    """
     duration = transposed_catchment_data['duration_mins']
     duration_new = np.arange(increment_mins, duration.values[-1] + increment_mins, increment_mins)
     interp_catchment_data = pd.DataFrame(duration_new, columns=["duration_mins"])
@@ -53,6 +78,15 @@ def get_interpolated_data(
 
 
 def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Get the incremental rainfall data (difference between current and preceding cumulative rainfall)
+    for sites within the catchment area and return in Pandas DataFrame format.
+
+    Parameters
+    ----------
+    interp_catchment_data : pd.DataFrame
+        Interpolated scenario data for sites within the catchment area.
+    """
     interp_increment_data = interp_catchment_data.diff()[1:]
     interp_increment_data = pd.concat([interp_catchment_data.head(1), interp_increment_data])
     interp_increment_data.drop("duration_mins", axis=1, inplace=True)
@@ -62,6 +96,16 @@ def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataF
 
 
 def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, storm_length_hrs: int) -> pd.DataFrame:
+    """
+    Get the incremental rainfall data for a specific storm duration.
+
+    Parameters
+    ----------
+    interp_increment_data : pd.DataFrame
+        Incremental rainfall data for sites within the catchment area.
+    storm_length_hrs : int
+        Storm duration in hours.
+    """
     storm_length_mins = storm_length_hrs * 60
     storm_length_filter = (interp_increment_data["duration_mins"] <= storm_length_mins)
     storm_length_data = interp_increment_data[storm_length_filter]
