@@ -168,11 +168,10 @@ def transform_data_for_selected_method(
         storm_length_data: pd.DataFrame,
         time_to_peak_hrs: int,
         increment_mins: int,
-        hyeto_method: Literal["alt_block", "chicago"]) -> List[pd.DataFrame]:
+        hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
-    Transform the incremental rainfall data for sites within the catchment area for a selected hyetograph method.
-    Returns a list of hyetograph data used to create individual hyetographs for each site within the
-    catchment area.
+    Transform the storm length incremental rainfall data for sites within the catchment area based on
+    the selected hyetograph method and returns in Pandas DataFrame format.
 
     Parameters
     ----------
@@ -198,19 +197,20 @@ def transform_data_for_selected_method(
             site_data = pd.concat([site_data_left, site_data_right]).reset_index(drop=True)
             site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
         hyetograph_sites_data.append(site_data)
-    return hyetograph_sites_data
+    hyetograph_data = pd.concat(hyetograph_sites_data, axis=1, ignore_index=False)
+    hyetograph_data = hyetograph_data.loc[:, ~hyetograph_data.columns.duplicated(keep="last")]
+    return hyetograph_data
 
 
-def get_hyetograph_sites_data(
+def get_hyetograph_data(
         rain_data_in_catchment: pd.DataFrame,
         storm_length_hrs: int,
         time_to_peak_hrs: int,
         increment_mins: int,
         interp_method: str,
-        hyeto_method: Literal["alt_block", "chicago"]) -> List[pd.DataFrame]:
+        hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
-    Returns a list of hyetograph data used to create individual hyetographs for each site within the
-    catchment area based on the selected hyetograph method.
+    Get hyetograph data for all sites within the catchment area and returns in Pandas DataFrame format.
 
     Parameters
     ----------
@@ -238,9 +238,9 @@ def get_hyetograph_sites_data(
         interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
         interp_increment_data = get_interp_incremental_data(interp_catchment_data)
         storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_hrs)
-        hyetograph_sites_data = transform_data_for_selected_method(
+        hyetograph_data = transform_data_for_selected_method(
             storm_length_data, time_to_peak_hrs, increment_mins, hyeto_method)
-    return hyetograph_sites_data
+    return hyetograph_data
 
 
 def hyetograph(hyetograph_sites_data: List[pd.DataFrame], ari: int):
@@ -306,14 +306,15 @@ def main():
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
         engine, catchment_polygon, False, rcp, time_period, ari)
 
-    hyetograph_sites_data = get_hyetograph_sites_data(
+    hyetograph_data = get_hyetograph_data(
         rain_depth_in_catchment,
         storm_length_hrs=48,
         time_to_peak_hrs=60,
         increment_mins=10,
         interp_method="cubic",
         hyeto_method="alt_block")
-    hyetograph(hyetograph_sites_data, ari)
+    # hyetograph(hyetograph_sites_data, ari)
+    print(hyetograph_data)
 
 
 if __name__ == "__main__":
