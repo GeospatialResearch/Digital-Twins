@@ -62,7 +62,7 @@ def get_interpolated_data(
     increment_mins : int
         Time interval in minutes.
     interp_method : str
-        Interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
+        Temporal interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
  |      'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
     """
     duration = transposed_catchment_data['duration_mins']
@@ -129,7 +129,8 @@ def add_time_information(
     increment_mins : int
         Time interval in minutes.
     hyeto_method : str
-        Hyetograph method to be used. One of 'alt_block' (Alternating Block Method), or 'chicago' (Chicago Method).
+        Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
+        Chicago Method.
     """
     time_to_peak_mins = time_to_peak_hrs * 60
     if hyeto_method == "alt_block":
@@ -173,7 +174,8 @@ def transform_data_for_selected_method(
     increment_mins : int
         Time interval in minutes.
     hyeto_method : str
-        Hyetograph method to be used. One of 'alt_block' (Alternating Block Method), or 'chicago' (Chicago Method).
+        Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
+        Chicago Method.
     """
     hyetograph_sites_data = []
     for column_num in range(1, len(storm_length_data.columns)):
@@ -197,6 +199,27 @@ def get_hyetograph_sites_data(
         increment_mins: int = 10,
         interp_method: str = "cubic",
         hyeto_method: str = "alt_block") -> List[pd.DataFrame]:
+    """
+    Get all hyetograph data for a selected hyetograph method used to create individual hyetographs for
+    each site within the catchment area.
+
+    Parameters
+    ----------
+    rain_data_in_catchment : pd.DataFrame
+        Rainfall data for sites within the catchment area for a specified scenario retrieved from the database.
+    storm_length_hrs : int
+        Storm duration in hours.
+    time_to_peak_hrs : int
+        The time in hours when rainfall is at its greatest (reaches maximum).
+    increment_mins : int
+        Time interval in minutes.
+    interp_method : str
+        Temporal interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
+        'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
+    hyeto_method : str
+        Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
+        Chicago Method.
+    """
     hyeto_methods = ["alt_block", "chicago"]
     if hyeto_method not in hyeto_methods:
         log.error("Invalid hyetograph method.")
@@ -254,9 +277,9 @@ def hyetograph(hyetograph_sites_data: List[pd.DataFrame], ari: int):
 
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
-    rcp = None  # None  # 2.6
-    time_period = None  # None  # "2031-2050"
-    ari = 50  # 100
+    rcp = None
+    time_period = None
+    ari = 50
 
     engine = setup_environment.get_database()
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
@@ -266,9 +289,9 @@ def main():
 
     hyetograph_sites_data = get_hyetograph_sites_data(
         rain_depth_in_catchment,
-        storm_length_hrs=48,  # 48,
-        time_to_peak_hrs=60,  # 60
-        increment_mins=10,  # 10,
+        storm_length_hrs=48,
+        time_to_peak_hrs=60,
+        increment_mins=10,
         interp_method="cubic",
         hyeto_method="chicago")
     hyetograph(hyetograph_sites_data, ari)
