@@ -144,7 +144,7 @@ def add_time_information(
             mins_from_peak = [mins for sublist in zip(mins_from_peak_right, mins_from_peak_left) for mins in sublist]
             mins_from_peak.insert(0, 0)
         site_data = site_data.assign(mins=time_to_peak_mins + np.array(mins_from_peak))
-    elif hyeto_method == "chicago":
+    else:
         mins_start = time_to_peak_mins - site_data["duration_mins"][0]
         mins_end = time_to_peak_mins + site_data["duration_mins"][0]
         mins = np.arange(mins_start, mins_end, increment_mins / 2)
@@ -183,7 +183,7 @@ def transform_data_for_selected_method(
         if hyeto_method == "alt_block":
             site_data = site_data.sort_values(by=site_data.columns[1], ascending=False)
             site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
-        elif hyeto_method == "chicago":
+        else:
             site_data_right = site_data.div(2)
             site_data_left = site_data_right[::-1]
             site_data = pd.concat([site_data_left, site_data_right]).reset_index(drop=True)
