@@ -115,18 +115,28 @@ def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, sto
 def add_time_information(
         site_data: pd.DataFrame,
         time_to_peak_hrs: int,
-        increment_mins: int) -> pd.DataFrame:
+        increment_mins: int,
+        hyeto_method: str) -> pd.DataFrame:
     time_to_peak_mins = time_to_peak_hrs * 60
-    row_count = len(site_data)
-    mins_from_peak_right = np.arange(1, ceil((row_count + 1) / 2)) * increment_mins
-    if (row_count % 2) == 0:
-        mins_from_peak_left = np.arange(0, floor((row_count + 1) / 2)) * -increment_mins
-        mins_from_peak = [mins for sublist in zip(mins_from_peak_left, mins_from_peak_right) for mins in sublist]
-    else:
-        mins_from_peak_left = np.arange(1, floor((row_count + 1) / 2)) * -increment_mins
-        mins_from_peak = [mins for sublist in zip(mins_from_peak_right, mins_from_peak_left) for mins in sublist]
-        mins_from_peak.insert(0, 0)
-    site_data = site_data.assign(mins=time_to_peak_mins + np.array(mins_from_peak))
+    if hyeto_method == "alt_block":
+        row_count = len(site_data)
+        mins_from_peak_right = np.arange(1, ceil((row_count + 1) / 2)) * increment_mins
+        if (row_count % 2) == 0:
+            mins_from_peak_left = np.arange(0, floor((row_count + 1) / 2)) * -increment_mins
+            mins_from_peak = [mins for sublist in zip(mins_from_peak_left, mins_from_peak_right) for mins in sublist]
+        else:
+            mins_from_peak_left = np.arange(1, floor((row_count + 1) / 2)) * -increment_mins
+            mins_from_peak = [mins for sublist in zip(mins_from_peak_right, mins_from_peak_left) for mins in sublist]
+            mins_from_peak.insert(0, 0)
+        site_data = site_data.assign(mins=time_to_peak_mins + np.array(mins_from_peak))
+    elif hyeto_method == "chicago":
+        mins_start = time_to_peak_mins - site_data["duration_mins"][0]
+        mins_end = time_to_peak_mins + site_data["duration_mins"][0]
+        mins = np.arange(mins_start, mins_end, increment_mins / 2)
+        site_data = site_data.assign(mins=mins)
+    site_data = site_data.assign(hours=site_data["mins"] / 60)
+    site_data = site_data.sort_values(by="mins", ascending=True)
+    site_data = site_data.drop(columns=["duration_mins"]).reset_index(drop=True)
     return site_data
 
 
@@ -135,23 +145,17 @@ def transform_data_for_selected_method(
         time_to_peak_hrs: int,
         increment_mins: int,
         hyeto_method: str) -> List[pd.DataFrame]:
-    time_to_peak_mins = time_to_peak_hrs * 60
     hyetograph_sites_data = []
     for column_num in range(1, len(storm_length_data.columns)):
         site_data = storm_length_data.iloc[:, [0, column_num]]
         if hyeto_method == "alt_block":
             site_data = site_data.sort_values(by=site_data.columns[1], ascending=False)
-            site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins)
+            site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
         elif hyeto_method == "chicago":
             site_data_right = site_data.div(2)
             site_data_left = site_data_right[::-1]
-            site_data_left = site_data_left.assign(mins=time_to_peak_mins - site_data_left["duration_mins"])
-            site_data_left_last_min = site_data_left["mins"].iloc[-1]
-            site_data_right = site_data_right.assign(mins=site_data_left_last_min + site_data_right["duration_mins"])
-            site_data = pd.concat([site_data_left, site_data_right])
-        site_data = site_data.assign(hours=site_data["mins"] / 60)
-        site_data = site_data.sort_values(by="mins", ascending=True)
-        site_data = site_data.drop(columns=["duration_mins"]).reset_index(drop=True)
+            site_data = pd.concat([site_data_left, site_data_right]).reset_index(drop=True)
+            site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
         hyetograph_sites_data.append(site_data)
     return hyetograph_sites_data
 
@@ -220,8 +224,8 @@ def hyetograph(hyetograph_sites_data: List[pd.DataFrame], ari: int):
 
 def main():
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
-    rcp = 2.6  # None  # 2.6
-    time_period = "2031-2050"  # None  # "2031-2050"
+    rcp = None  # None  # 2.6
+    time_period = None  # None  # "2031-2050"
     ari = 50  # 100
 
     engine = setup_environment.get_database()
