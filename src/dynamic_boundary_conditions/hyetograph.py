@@ -11,7 +11,7 @@ import logging
 import pathlib
 import pandas as pd
 import numpy as np
-from typing import List, Literal
+from typing import Literal
 from math import floor, ceil
 from scipy.interpolate import interp1d
 import plotly.express as px
