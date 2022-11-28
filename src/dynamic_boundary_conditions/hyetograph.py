@@ -312,7 +312,7 @@ def main():
         time_to_peak_hrs=60,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method="chicago")
+        hyeto_method="alt_block")
     hyetograph(hyetograph_data, ari)
 
 
