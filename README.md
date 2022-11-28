@@ -102,7 +102,7 @@ geometry column's name, url and layer name are not required if the data provider
 
 To get the data from the database:
 
-1. Make sure [db_configure.yml](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/db_configure.yml) file has the correct information        stored in it.
+1. Make sure `.env` file has the correct information        stored in it.
 
 2. The geometry (geopandas dataframe type) and source list (tuple data type) needs to passed as an argument to get_data_from_db() function. Check [test1.json](https://github.com/GeospatialResearch/Digital-Twins/blob/get-apis-and-make-wfs-request/src/test1.json) for more details on the format and structure of the arguments.
 3. Run get_data_from_db.py file from your IDE:
@@ -456,21 +456,14 @@ Install [docker](https://docs.docker.com/desktop/windows/install/)
 When the installation finishes, Docker starts automatically. The whale   in the notification area indicates that Docker is running, and accessible from a terminal.
 
 ### Instructions to run docker
-1. Create an .env file with variables in the following format, each on a new line:
-   ```bash
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=postgres
-   POSTGRES_DB=db
-   ```
+1. Copy `template.env` to a file named `.env` and fill in passwords with your choice and fill in API keys from their respective sites.
 2. Save this file in the directory where docker-compose file is stored.
-3. Open the command prompt, you can use `Windows Key + X` to open it.
-4. In the commad prompt switch to the directory where docker-compose file is stored.
-   For instance:  ![image](https://user-images.githubusercontent.com/86580534/135922576-25644dc3-ef32-4f59-8b5c-8c5778242cc8.png)
-6. Run the command:
+3. In the command prompt, switch to the directory where docker-compose file is stored.
+4. Run the below command:
    ```bash
    #!/usr/bin/env bash
    docker-compose build
-   docker-compose up
+   docker-compose up -d
    ```
 Now your docker is up and running
 
