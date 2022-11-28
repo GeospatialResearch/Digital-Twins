@@ -242,23 +242,24 @@ def get_hyetograph_data(
     return hyetograph_data
 
 
-def hyetograph(hyetograph_sites_data: List[pd.DataFrame], ari: int):
+def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
     """
     Create interactive individual hyetograph plots for sites within the catchment area.
 
     Parameters
     ----------
-    hyetograph_sites_data : List[pd.DataFrame]
-        List of hyetograph data for sites within the catchment area.
+    hyetograph_data : pd.DataFrame
+        Hyetograph data for sites within the catchment area.
     ari : float
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     """
-    for site_data in hyetograph_sites_data:
-        site_id = site_data.columns.values[0]
-        site_data["site_id"] = site_id
-        site_data.columns.values[0] = "rain_depth_mm"
+    for column_num in range(0, len(hyetograph_data.columns[:-2])):
+        hyeto_site_data = hyetograph_data.iloc[:, [column_num, 6, 7]]
+        site_id = hyeto_site_data.columns.values[0]
+        hyeto_site_data = hyeto_site_data.assign(site_id=site_id)
+        hyeto_site_data.columns.values[0] = "rain_depth_mm"
         hyeto_fig = px.bar(
-            site_data,
+            hyeto_site_data,
             title=f"{ari}-year storm: site {site_id}",
             x="mins",
             y="rain_depth_mm",
@@ -312,8 +313,7 @@ def main():
         increment_mins=10,
         interp_method="cubic",
         hyeto_method="chicago")
-    # hyetograph(hyetograph_sites_data, ari)
-    print(hyetograph_data)
+    hyetograph(hyetograph_data, ari)
 
 
 if __name__ == "__main__":
