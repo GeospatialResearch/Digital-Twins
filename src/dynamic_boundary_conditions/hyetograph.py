@@ -232,6 +232,9 @@ def get_hyetograph_data(
     if hyeto_method not in hyeto_methods:
         log.error("Invalid hyetograph method.")
         raise ValueError("Invalid hyetograph method.")
+    elif increment_mins < 10:
+        log.error("Increment minute is out of range, needs to be at least 10.")
+        raise ValueError("Increment minute is out of range, needs to be at least 10.")
     else:
         transposed_catchment_data = get_transposed_data(rain_data_in_catchment)
         interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
