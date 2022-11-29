@@ -45,12 +45,12 @@ def check_table_exist(engine, source_list):
     return tables_in_db, tables_not_in_db
 
 
-def wfs_request_from_db(engine, tables, polygon):
+def wfs_request_from_db(engine, table_names, polygon):
     """Make wfs request for the requested sources.
-    tables is source_name ('_50329-nz-road-centrelines',
+    table_names is source_name ('_50329-nz-road-centrelines',
                            '_50319-nz-railway-centrelines')
     """
-    db_tbl = wfs_request.access_api_info(engine, tuple(tables))
+    db_tbl = wfs_request.access_api_info(engine, tuple(table_names))
     for i in range(len(db_tbl)):
         data_provider = db_tbl.loc[i, "data_provider"]
         layer = db_tbl.loc[i, "layer"]
@@ -73,12 +73,12 @@ def get_geometry_info(engine):
     stored_srces = stored_list.fetchall()
 
     for i in range(len(stored_srces)):
-        srcList = stored_srces[i][0]
+        src_list = stored_srces[i][0]
         geom = stored_srces[i][1]
-        srcList = json.loads(srcList)
+        src_list = json.loads(src_list)
         # added geometry column to the source_list dictionary
-        srcList["geometry"] = geom
-        return srcList
+        src_list["geometry"] = geom
+        return src_list
 
 
 def get_data_from_apis(engine, geometry_df, source_list):
@@ -94,28 +94,28 @@ def get_data_from_apis(engine, geometry_df, source_list):
     source_list = tuple(source_list)
 
     if tables_in_db != []:
-        srcList = get_geometry_info(engine)
+        src_list = get_geometry_info(engine)
         for table in tables_in_db:
-            if table in srcList["source_name"]:
-                srcList["geometry"] = shapely.wkt.loads(str(srcList["geometry"]))
-                not_in_db_polygon = user_geometry.difference(srcList["geometry"])
+            if table in src_list["source_name"]:
+                src_list["geometry"] = shapely.wkt.loads(str(src_list["geometry"]))
+                not_in_db_polygon = user_geometry.difference(src_list["geometry"])
                 if not_in_db_polygon.is_empty:
                     log.info("catchment data already available in the database")
                 else:
-                    polygon = gpd.GeoDataFrame(GeoSeries(not_in_db_polygon))
+                    polygon = gpd.GeoDataFrame(gpd.GeoSeries(not_in_db_polygon))
                     polygon = polygon.rename(columns={0: "geometry"})
                     polygon.set_geometry("geometry", crs="epsg:2193", inplace=True)
                     wfs_request_from_db(engine, tables_in_db, polygon)
-    if tables_not_in_db != []:
+    if len(tables_not_in_db) > 0:
         wfs_request_from_db(engine, tables_not_in_db, geometry_df)
     else:
         log.info("data available in the database")
     # store user information in the table
     user_source_list = wfs_request.get_source_from_db(engine, source_list)
-    User_log_info = tables.User_log_info
+    user_log_info = tables.User_log_info
     dbsession = tables.dbsession()
-    dbsession.sessionCreate(User_log_info, engine)
-    query = User_log_info(
+    dbsession.sessionCreate(user_log_info, engine)
+    query = user_log_info(
         source_list=json.dumps(user_source_list, sort_keys=True, default=str),
         geometry=str(user_geometry),
     )
