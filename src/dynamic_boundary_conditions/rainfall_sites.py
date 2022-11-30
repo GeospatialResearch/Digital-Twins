@@ -88,14 +88,14 @@ def get_new_zealand_boundary(engine) -> Polygon:
     engine
         Engine used to connect to the database.
     """
-    query = "SELECT geometry AS geom FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
-    nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, crs=2193)
+    query = "SELECT geometry FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
+    nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=2193)
     nz_boundary = nz_boundary.to_crs(4326)
-    nz_boundary_polygon = nz_boundary["geom"][0]
+    nz_boundary_polygon = nz_boundary["geometry"][0]
     return nz_boundary_polygon
 
 
-def get_sites_locations(engine, catchment: Polygon) -> gpd.GeoDataFrame:
+def get_sites_locations(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     """
     Get the rainfall sites' locations within the catchment area from the database and return the required data in
     GeoDataFrame format.
@@ -104,17 +104,17 @@ def get_sites_locations(engine, catchment: Polygon) -> gpd.GeoDataFrame:
     ----------
     engine
         Engine used to connect to the database.
-    catchment : Polygon
+    area_of_interest : Polygon
         New Zealand boundary catchment polygon.
     """
     # Get all rainfall sites within the New Zealand catchment area.
     query = f"""SELECT * FROM rainfall_sites AS rs
-        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment}', 4326))"""
+        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{area_of_interest}', 4326))"""
     sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Get site locations geometry (geometry column)
     sites_geom = sites_in_catchment["geometry"]
     # Add new column 'exists' which identifies whether each site is within the catchment area
-    sites_in_catchment["exists"] = sites_geom.within(catchment)
+    sites_in_catchment["exists"] = sites_geom.within(area_of_interest)
     # Filter for all sites that are within the catchment area (i.e., all Trues in 'exists' column)
     sites_in_catchment.query("exists == True", inplace=True)
     # Reset the index (i.e., the original index is added as a column, and a new sequential index is used)
