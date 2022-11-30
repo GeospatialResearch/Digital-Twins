@@ -13,7 +13,7 @@ import pathlib
 from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites
-from src.dynamic_boundary_conditions import thiessen_polygon_calculator
+from src.dynamic_boundary_conditions import thiessen_polygons
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
 
