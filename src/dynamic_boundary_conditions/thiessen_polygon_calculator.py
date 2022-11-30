@@ -30,7 +30,8 @@ log.addHandler(stream_handler)
 
 def thiessen_polygons_calculator(area_of_interest: Polygon, sites_within_aoi: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Create thiessen polygons and calculate the area covered by each rainfall site within the area of interest.
+    Create thiessen polygons for all rainfall sites within the area of interest (e.g. New Zealand Boundary) and
+    calculate the area covered by each rainfall site.
 
     Parameters
     ----------
