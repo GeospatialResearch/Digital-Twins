@@ -3,13 +3,11 @@
 Created on Tue Oct 18 16:30:21 2022.
 
 @author: alo78
-
+         xander.cai@pg.canterbury.ac.nz
 
 Used to get the sea level rise predictions (several predictions options to choose from)
 for site closest to the chosen latitude & longitude (Anywhere on the NZ Coastline) point
 from the csv's downloaded from: https://searise.takiwa.co/.
-
-
 """
 
 from datetime import date, datetime, timedelta
@@ -17,92 +15,83 @@ import pandas as pd
 import geopandas as gpd
 from haversine import haversine
 import os
-from shapely.geometry import Polygon, Point
+from shapely.geometry import Polygon
+from src.digitaltwin import setup_environment
 
 
-def read_slr_files(path: str):
-    """Reads in all the SLR data csv's downloaded from https://searise.takiwa.co/ into a pandas dataframe """
-    sea_level_rise_projections_nz = pd.DataFrame()
-    for filename in os.listdir(path):
+def gen_dataframe(file_path: str) -> pd.DataFrame:
+    """ read csv file from input directory."""
+    df_list = []
+    for filename in os.listdir(file_path):
         if filename.endswith('.csv'):
-            sea_level_rise_projections_region = pd.read_csv(path + filename)
-            sea_level_rise_projections_region["Region"] = filename[24:-4]
-            print('LOADED: ', filename)
-
-            sea_level_rise_projections_nz = pd.concat(
-                [sea_level_rise_projections_nz, sea_level_rise_projections_region], ignore_index=True, axis=0)
-
-    # Converting to Geopandas points
-    print('Converting to Geopandas data frame with geometry...')
-    sea_level_rise_projections_nz = gpd.GeoDataFrame(sea_level_rise_projections_nz,
-                                                     geometry=gpd.points_from_xy(sea_level_rise_projections_nz.lon,
-                                                                                 sea_level_rise_projections_nz.lat))
-
-    sea_level_rise_projections_nz.rename(
-        columns={'siteId': 'Site_ID', 'year': 'Projected_Year', 'p17': 'SLR_p17_confidence_interval_meters',
-                 'p50': 'SLR_p50_confidence_interval_meters', 'p83': 'SLR_p83_confidence_interval_meters',
-                 'lon': 'Longitude', 'lat': 'Latitude', 'measurementName': 'Scenario_(VLM_with_confidence)', },
-        inplace=True)
-
-    return sea_level_rise_projections_nz
+            try:
+                print('LOADED CSV file by pyarrow: ', filename)
+                #  pyarrow is faster, need Pandas 1.4, released in January 2022
+                df = pd.read_csv(file_path + filename, engine='pyarrow', dtype={'siteId': int})
+            except:
+                print('LOADED CSV file: ', filename)
+                df = pd.read_csv(file_path + filename, dtype={'siteId': int})
+            df["Region"] = filename[24:-4]
+            df_list.append(df)
+    return pd.concat(df_list, ignore_index=True, axis=0)
 
 
-def unique_locations(sea_level_rise_projections_nz: gpd.geodataframe.GeoDataFrame):
-    """Finds the unique lat lon coordinates (site locations) and appends them to list and returns that list"""
-    locations_lat_lon = []
-    # Acquiring unique pairs
-    unique_location = sea_level_rise_projections_nz.geometry.unique()
-    # Adding pairs to list of dictionarys to map to later on
-    print('Finding unique locations...')
-    for i in unique_location:
-        locations_value_pair = {'lat': i.y, 'lon': i.x}
-        locations_lat_lon.append(locations_value_pair)
-    return locations_lat_lon
+def get_nearest_coordinate(df: pd.DataFrame, target: tuple) -> tuple:
+    """ find the nearest coordinate to target position in the input dataframe."""
+    # get unique coordinate
+    df_site = df.copy()[['lat', 'lon']].drop_duplicates(subset=['lat', 'lon'])
+    # protect input boundary for haversine function
+    assert -90 <= target[0] <= 90, "Latitude is out of range [-90, 90]"
+    assert -180 <= target[0] <= 180, "Longitude is out of range [-180, 180]"
+    # calculate distance from target coordinate
+    df_site['distance'] = df_site.apply(lambda x: (haversine(target, (x['lat'], x['lon']))), axis=1)
+    # sort by distance
+    df_site = df_site.sort_values(by=['distance'], ascending=True).reset_index(drop=True)
+    print("Nearest coordinates: ({}, {})".format(df_site.iloc[0]['lat'], df_site.iloc[0]['lon']))
+    return df_site.iloc[0]['lat'], df_site.iloc[0]['lon']
 
 
-def closest_site_location(locations_lat_lon: list, user_value: dict):
-    """"Returns the haversine closest SLR site location"""
-    return min(locations_lat_lon, key=lambda p: haversine((user_value['lat'], user_value['lon']), (p['lat'], p['lon'])))
+def gen_slr_data(df: pd.DataFrame, target: tuple, crs: str = "epsg:2193") -> gpd.GeoDataFrame:
+    """ generate geopandas dataframe that the coordinate is equal to target position."""
+    # filter the coordinates based on target coordinate.
+    df = df.loc[(df['lat'] == target[0]) & (df['lon'] == target[1])]
+    # convert to geopandas dataframe from pandas dataframe
+    gdf = gpd.GeoDataFrame(df, crs=crs, geometry=gpd.points_from_xy(df.lon, df.lat))
+    gdf.rename(columns={'siteId': 'Site_ID', 'year': 'Projected_Year',
+                        'p17': 'SLR_p17_confidence_interval_meters',
+                        'p50': 'SLR_p50_confidence_interval_meters',
+                        'p83': 'SLR_p83_confidence_interval_meters',
+                        'lon': 'Longitude', 'lat': 'Latitude',
+                        'measurementName': 'Scenario_(VLM_with_confidence)', },
+               inplace=True)
+    return gdf
 
 
-def nearest_site(locations_lat_lon: list, lat_input: float, lon_input: float):
-    """ Returns lat lon coordinates which is then used by site_data function
-        Selecting only the data for chosen site (e.g. 4303 is site just south
-        of Waimakiriri River Mouth which is closest to a selected location of
-        ('lat': -43.391266, 'lon': 172.715979)"""
-
-    user_value = {'lat': lat_input, 'lon': lon_input}
-    site = closest_site_location(locations_lat_lon, user_value)
-    print('Closest Site Location: ', str(site.get("lat")) + "," + str(site.get("lon")))
-    print('Searching for site data: ')
-    return Point(site.get("lon"), site.get("lat"))
-
-
-def site_data(sea_level_rise_projections_nz: gpd.geodataframe.GeoDataFrame, locations_lat_lon: list, lat_input: float,
-              lon_input: float):
-    """ Returns data for closest site by querying user for their desired location (calls nearest_site function) """
-    if lat_input < -90 or lat_input > 90:
-        raise ValueError("Latitude is out of range [-90, 90]")
-    if lon_input < -180 or lon_input > 180:
-        raise ValueError("Longitude is out of range [-180, 180]")
-
-    return sea_level_rise_projections_nz.loc[
-        sea_level_rise_projections_nz['geometry'] == nearest_site(locations_lat_lon, lat_input, lon_input)]
+def save_to_database(connect, gdf: gpd.GeoDataFrame, table_name: str, if_exists: str = 'replace'):
+    """ save dataframe to database """
+    gdf.to_postgis(table_name, connect, index=False, if_exists=if_exists)
 
 
 def main():
-    path = "data/"
 
-    ## Fetching centroid co-ordinate from user selected shapely polygon
+    engine = setup_environment.get_database()
+
+    path = "./src/dynamic_boundary_conditions/data/"
+
+    # Fetching centroid co-ordinate from user selected shapely polygon
     lat = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569], [-43.418953, 172.826698],
                    [-43.407542, 172.536636]]).centroid.coords[0][0]
     long = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569], [-43.418953, 172.826698],
                     [-43.407542, 172.536636]]).centroid.coords[0][1]
 
-    nz_SLR_data = read_slr_files(path)
-    unique_location_pairs = unique_locations(nz_SLR_data)
-    SLR_Site_Data = site_data(nz_SLR_data, unique_location_pairs, lat, long)
-    print(SLR_Site_Data)
+    # start process
+    slr_df = gen_dataframe(path)
+    lat, long = get_nearest_coordinate(slr_df, (lat, long))
+    slr_gdf = gen_slr_data(slr_df, (lat, long))
+    save_to_database(engine, slr_gdf, f'sea_level_rise')
+    # end process
+
+    print(slr_gdf)
 
 
 if __name__ == "__main__":
