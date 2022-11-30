@@ -18,16 +18,16 @@ from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
 
 
-def catchment_area_geometry_info(catchment_file_path) -> Polygon:
+def catchment_area_geometry_info(catchment_file) -> Polygon:
     """
     Extract shapely geometry polygon from the catchment file.
 
     Parameters
     ----------
-    catchment_file_path
+    catchment_file
         The file path of the catchment polygon shapefile.
     """
-    catchment = gpd.read_file(catchment_file_path)
+    catchment = gpd.read_file(catchment_file)
     catchment = catchment.to_crs(4326)
     catchment_polygon = catchment["geometry"][0]
     return catchment_polygon
