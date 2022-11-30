@@ -53,21 +53,17 @@ def bg_model_inputs(
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     outfile = rf"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/model_output/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
-    try:
-        with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
-            param_file.write(f"topo = {dem_path}?{elev_var};\n"
-                             f"gpudevice = {gpudevice};\n"
-                             f"mask = {mask};\n"
-                             f"dx = {resolution};\n"
-                             f"smallnc = {smallnc};\n"
-                             f"outputtimestep = {outputtimestep};\n"
-                             f"endtime = {endtime};\n"
-                             f"river = {river},{extents};\n"
-                             f"outvars = h, hmax, zb, zs, u, v;\n"
-                             f"outfile = {outfile};")
-    except Exception as error:
-        print(error, type(error))
-        sys.exit()
+    with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
+        param_file.write(f"topo = {dem_path}?{elev_var};\n"
+                         f"gpudevice = {gpudevice};\n"
+                         f"mask = {mask};\n"
+                         f"dx = {resolution};\n"
+                         f"smallnc = {smallnc};\n"
+                         f"outputtimestep = {outputtimestep};\n"
+                         f"endtime = {endtime};\n"
+                         f"river = {river},{extents};\n"
+                         f"outvars = h, hmax, zb, zs, u, v;\n"
+                         f"outfile = {outfile};")
     model_output_to_db(outfile, catchment_boundary)
     river_discharge_info(bg_path)
 

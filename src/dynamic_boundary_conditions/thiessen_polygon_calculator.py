@@ -42,8 +42,7 @@ def thiessen_polygons(engine, catchment: Polygon, sites_in_catchment: gpd.GeoDat
         Rainfall sites within the catchment area.
     """
     if catchment.is_empty or sites_in_catchment.empty:
-        log.info("No data available for the catchment or sites_in_catchment passed as arguments.")
-        sys.exit()
+        raise ValueError("No data available for the catchment or sites_in_catchment passed as arguments.")
     elif hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites_coverage"):
         log.info("Rainfall sites coverage data already exists in the database.")
     else:

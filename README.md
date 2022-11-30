@@ -5,10 +5,6 @@ The following list defines the basic steps required to setup and run the digital
 
 1. Set up Docker or PostgreSQL - i.e. creating and running the database
 2. Set up an Anaconda Python environment - using the environment.yml file
-2. Run run.py - adds tables to the database
-3. Run digitaltwin.get_data_from_db.py
-4. Run lidar.lidar_metadata.py - downloads the database
-5. Run lidar.bg_flood_model.py - runs GeoFabrics and then BG-FLOOD
 6. Run dynamic_boundary_conditions.hyetograph.py
 
 <br>

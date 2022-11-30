@@ -80,12 +80,8 @@ def dem_metadata_from_db(instructions, engine):
 def get_dem_path(instructions, engine):
     """Pass dem information to other functions."""
     if check_dem_exist(instructions, engine) is False:
-        try:
-            generate_dem(instructions)
-            dem_metadata_to_db(instructions, engine)
-        except Exception as error:
-            print(error, type(error))
-            sys.exit()
+        generate_dem(instructions)
+        dem_metadata_to_db(instructions, engine)
     dem_filepath = dem_metadata_from_db(instructions, engine)
     return dem_filepath
 
