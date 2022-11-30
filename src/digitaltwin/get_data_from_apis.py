@@ -4,14 +4,13 @@ Created on Thu Sep 23 08:13:42 2021.
 
 @author: pkh35, sli229
 """
-import os
 import json
 import logging
 
 import geopandas as gpd
 import shapely.wkt
-from dotenv import load_dotenv
 
+from src import config
 from src.digitaltwin import tables
 from src.digitaltwin import wfs_request
 
@@ -58,8 +57,7 @@ def wfs_request_from_db(engine, table_names, polygon):
         geometry_name = db_tbl.loc[i, "geometry_col_name"]
         table_name = db_tbl.loc[i, "source_name"]
         key_name = f"{data_provider}_API_KEY"
-        load_dotenv()
-        key = os.getenv(key_name)
+        key = config.get_env_variable(key_name)
         wfs_request.data_from_apis(
             engine, key, base_url, layer, geometry_name, table_name, polygon
         )

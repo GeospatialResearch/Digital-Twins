@@ -5,19 +5,21 @@ Created on Fri Jan 14 14:05:35 2022
 @author: pkh35
 """
 
-import pathlib
-import sys
 import json
-import xarray as xr
-from datetime import datetime
-import subprocess
-from dotenv import load_dotenv
 import os
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+import pathlib
+import subprocess
+import sys
+from datetime import datetime
+
+import xarray as xr
 from geoalchemy2 import Geometry
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String
 from sqlalchemy import DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+from src import config
 from src.digitaltwin import setup_environment
 from src.lidar import dem_metadata_in_db
 
@@ -70,14 +72,12 @@ def bg_model_inputs(
     river_discharge_info(bg_path)
 
 
-def bg_model_path(file):
+def bg_model_path(file_path):
     """Check if the flood_model path exists."""
-    file = pathlib.Path(file)
-    if file.exists():
-        return file
-    else:
-        print("directory doesn't exist")
-        sys.exit()
+    model_file = pathlib.Path(file_path)
+    if model_file.exists():
+        return model_file
+    raise FileNotFoundError(f"flood model {file_path} not found")
 
 
 def model_output_to_db(outfile, catchment_boundary):
@@ -129,18 +129,10 @@ def run_model(
     subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
 
 
-def get_api_key(key_name: str):
-    """Get the required api key from dotenv environment variable file"""
-    env_path = pathlib.Path().cwd() / "src" / ".env"
-    load_dotenv(env_path)
-    api_key = os.getenv(key_name)
-    return api_key
-
-
 def main():
     engine = setup_environment.get_database()
     bg_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
-    linz_api_key = get_api_key("LINZ_API_KEY")
+    linz_api_key = config.get_env_variable("LINZ_API_KEY")
     instruction_file = pathlib.Path("src/lidar/instructions_bgflood.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)

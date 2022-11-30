@@ -6,12 +6,12 @@ Created on Thu Aug  5 17:09:13 2021.
 """
 
 import logging
-import os
 import sys
 
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+
+from src import config
 
 Base = declarative_base()
 
@@ -23,8 +23,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-load_dotenv()
 
 
 def get_database():
@@ -41,7 +39,7 @@ def get_database():
 def get_connection_from_profile():
     """Sets up database connection from config file."""
     connection_keys = ["POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"]
-    host, port, db, username, password = (os.getenv(key) for key in connection_keys)
+    host, port, db, username, password = (config.get_env_variable(key) for key in connection_keys)
 
     if any(connection_cred is None for connection_cred in [host, port, db, username, password]):
         raise ConnectionAbortedError(f"Bad .env file. Not all f{connection_keys} set.")

@@ -76,8 +76,7 @@ Run run.py file from your IDE:
        from src.digitaltwin import insert_api_to_table
        from src.digitaltwin import setup_environment
        engine = setup_environment.get_database()
-       load_dotenv()
-       Stats_NZ_KEY = os.getenv('KEY')
+       config.get_env_variable("StatsNZ_API_KEY")
        # create region_geometry table if it doesn't exist in the db.
        # no need to call region_geometry_table function if region_geometry table exist in the db
        insert_api_to_table.region_geometry_table(engine, Stats_NZ_KEY)
@@ -453,7 +452,7 @@ Install [docker](https://docs.docker.com/desktop/windows/install/)
 When the installation finishes, Docker starts automatically. The whale   in the notification area indicates that Docker is running, and accessible from a terminal.
 
 ### Instructions to run docker
-1. Copy `template.env` to a file named `.env` and fill in passwords with your choice and fill in API keys from their respective sites.
+1. Copy `.env.example` to a file named `.env` and fill in passwords with your choice and fill in API keys from their respective sites.
 2. Save this file in the directory where docker-compose file is stored.
 3. In the command prompt, switch to the directory where docker-compose file is stored.
 4. Run the below command:

@@ -5,11 +5,9 @@ Created on Mon Sep 13 15:21:34 2021
 @author: pkh35
 """
 import json
-import os
 import pathlib
 
-from dotenv import load_dotenv
-
+from src import config
 from src.digitaltwin import insert_api_to_table
 from src.digitaltwin import setup_environment
 
@@ -28,8 +26,7 @@ def input_data(file):
 def main():
     # Read in the database - will fail if the database hasn't been setup.
     engine = setup_environment.get_database()
-    load_dotenv()
-    stats_nz_api_key = os.getenv("StatsNZ_API_KEY")
+    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
     # Create region_geometry table if it doesn't exist in the database
     # No need to call region_geometry_table function if region_geometry
     # table exist in the database
@@ -38,7 +35,7 @@ def main():
     record = input_data("src/instructions_run.json")
 
     # Substitute api key into link template
-    linz_api_key = os.getenv("LINZ_API_KEY")
+    linz_api_key = config.get_env_variable("LINZ_API_KEY")
     record["api"] = record["api"].format(api_key=linz_api_key)
 
     # Call the function to insert record in apilinks table
