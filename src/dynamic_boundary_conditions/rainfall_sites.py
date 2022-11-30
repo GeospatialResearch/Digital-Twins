@@ -105,23 +105,20 @@ def get_sites_locations(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     engine
         Engine used to connect to the database.
     area_of_interest : Polygon
-        New Zealand boundary catchment polygon.
+        Area of interest polygon.
     """
-    # Get all rainfall sites within the New Zealand catchment area.
-    query = f"""SELECT * FROM rainfall_sites AS rs
-        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{area_of_interest}', 4326))"""
-    sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
-    # Get site locations geometry (geometry column)
-    sites_geom = sites_in_catchment["geometry"]
-    # Add new column 'exists' which identifies whether each site is within the catchment area
-    sites_in_catchment["exists"] = sites_geom.within(area_of_interest)
-    # Filter for all sites that are within the catchment area (i.e., all Trues in 'exists' column)
-    sites_in_catchment.query("exists == True", inplace=True)
-    # Reset the index (i.e., the original index is added as a column, and a new sequential index is used)
-    sites_in_catchment.reset_index(inplace=True)
-    # Rename column
-    sites_in_catchment.rename(columns={"index": "order"}, inplace=True)
-    return sites_in_catchment
+    # Get all rainfall sites from the database
+    query = f"SELECT * FROM rainfall_sites;"
+    sites = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
+    # Get all sites' geometry (geometry column)
+    sites_geom = sites["geometry"]
+    # Add new column 'within_aoi' to identify whether each site is within the area of interest
+    sites["within_aoi"] = sites_geom.within(area_of_interest)
+    # Filter for all sites that are within the area of interest (i.e., all Trues in 'within_aoi' column)
+    sites_within_aoi = sites.query("within_aoi == True").drop(columns="within_aoi")
+    # Reset the index
+    sites_within_aoi.reset_index(drop=True, inplace=True)
+    return sites_within_aoi
 
 
 def main():
