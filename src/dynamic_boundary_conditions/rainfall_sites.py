@@ -107,15 +107,10 @@ def get_sites_locations(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     area_of_interest : Polygon
         Area of interest polygon.
     """
-    # Get all rainfall sites from the database
-    query = f"SELECT * FROM rainfall_sites;"
-    sites = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
-    # Get all sites' geometry (geometry column)
-    sites_geom = sites["geometry"]
-    # Add new column 'within_aoi' to identify whether each site is within the area of interest
-    sites["within_aoi"] = sites_geom.within(area_of_interest)
-    # Filter for all sites that are within the area of interest (i.e., all Trues in 'within_aoi' column)
-    sites_within_aoi = sites.query("within_aoi == True").drop(columns="within_aoi")
+    # Get all rainfall sites within the area of interest from the database
+    query = f"SELECT * FROM rainfall_sites AS rs " \
+            f"WHERE ST_Within(rs.geometry, ST_GeomFromText('{area_of_interest}', 4326))"
+    sites_within_aoi = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
     sites_within_aoi.reset_index(drop=True, inplace=True)
     return sites_within_aoi
