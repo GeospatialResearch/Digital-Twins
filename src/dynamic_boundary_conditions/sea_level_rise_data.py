@@ -10,7 +10,6 @@ for site closest to the chosen latitude & longitude (Anywhere on the NZ Coastlin
 from the csv's downloaded from: https://searise.takiwa.co/.
 """
 
-from datetime import date, datetime, timedelta
 import pandas as pd
 import geopandas as gpd
 from haversine import haversine
@@ -25,12 +24,12 @@ def gen_dataframe(file_path: str) -> pd.DataFrame:
     for filename in os.listdir(file_path):
         if filename.endswith('.csv'):
             try:
-                print('LOADED CSV file by pyarrow: ', filename)
                 #  pyarrow is faster, need Pandas 1.4, released in January 2022
                 df = pd.read_csv(file_path + filename, engine='pyarrow', dtype={'siteId': int})
-            except:
-                print('LOADED CSV file: ', filename)
+                print('LOADED CSV file with pyarrow: ', filename)
+            except (Exception, ):
                 df = pd.read_csv(file_path + filename, dtype={'siteId': int})
+                print('LOADED CSV file: ', filename)
             df["Region"] = filename[24:-4]
             df_list.append(df)
     return pd.concat(df_list, ignore_index=True, axis=0)
@@ -76,7 +75,7 @@ def main():
 
     engine = setup_environment.get_database()
 
-    path = "./src/dynamic_boundary_conditions/data/"
+    path = "./data/"
 
     # Fetching centroid co-ordinate from user selected shapely polygon
     lat = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569], [-43.418953, 172.826698],
@@ -88,7 +87,7 @@ def main():
     slr_df = gen_dataframe(path)
     lat, long = get_nearest_coordinate(slr_df, (lat, long))
     slr_gdf = gen_slr_data(slr_df, (lat, long))
-    save_to_database(engine, slr_gdf, f'sea_level_rise')
+    save_to_database(engine, slr_gdf, 'sea_level_rise')
     # end process
 
     print(slr_gdf)

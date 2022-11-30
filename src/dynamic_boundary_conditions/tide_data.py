@@ -13,6 +13,7 @@ that includes the highest tide and either side data.
 """
 
 # Imported packages
+import os
 from dotenv import load_dotenv
 from datetime import date, datetime, timedelta
 import pandas as pd
