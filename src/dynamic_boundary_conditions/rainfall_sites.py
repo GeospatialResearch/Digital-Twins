@@ -95,7 +95,7 @@ def get_new_zealand_boundary(engine) -> Polygon:
     return nz_boundary_polygon
 
 
-def get_sites_locations(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
+def get_sites_within_aoi(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     """
     Get the rainfall sites' locations within the catchment area from the database and return the required data in
     GeoDataFrame format.

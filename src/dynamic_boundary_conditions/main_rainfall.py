@@ -43,7 +43,7 @@ def main():
     sites = rainfall_sites.get_rainfall_sites_in_df()
     rainfall_sites.rainfall_sites_to_db(engine, sites)
     nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
-    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary_polygon)
+    sites_in_catchment = rainfall_sites.get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
     catchment_polygon = catchment_area_geometry_info(catchment_file)
 

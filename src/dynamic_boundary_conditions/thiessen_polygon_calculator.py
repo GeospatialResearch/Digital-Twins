@@ -84,7 +84,7 @@ def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_within_aoi:
 def main():
     engine = setup_environment.get_database()
     nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
-    sites_within_aoi = rainfall_sites.get_sites_locations(engine, nz_boundary_polygon)
+    sites_within_aoi = rainfall_sites.get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_within_aoi)
 
 
