@@ -25,10 +25,10 @@ def gen_dataframe(file_path: str) -> pd.DataFrame:
         if filename.endswith('.csv'):
             try:
                 #  pyarrow is faster, need Pandas 1.4, released in January 2022
-                df = pd.read_csv(file_path + filename, engine='pyarrow', dtype={'siteId': int})
+                df = pd.read_csv(file_path + filename, engine='pyarrow', dtype={'siteId': str})
                 print('LOADED CSV file with pyarrow: ', filename)
             except (Exception, ):
-                df = pd.read_csv(file_path + filename, dtype={'siteId': int})
+                df = pd.read_csv(file_path + filename, dtype={'siteId': str})
                 print('LOADED CSV file: ', filename)
             df["Region"] = filename[24:-4]
             df_list.append(df)
