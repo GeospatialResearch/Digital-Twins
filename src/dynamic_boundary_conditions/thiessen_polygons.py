@@ -55,9 +55,8 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_within_aoi: gp
             voronoi = gpd.GeoDataFrame(crs="epsg:4326", geometry=[region_polys[voronoi_region_id]])
             voronoi = voronoi.assign(area_in_km2=voronoi.to_crs(3857).area / 1e6)
             site_voronoi = pd.concat([site, voronoi], axis=1)
-            site_voronoi = site_voronoi[["site_id", "site_name", "area_in_km2", "geometry"]]
-            rainfall_sites_coverage = gpd.GeoDataFrame(
-                pd.concat([rainfall_sites_coverage, site_voronoi], ignore_index=True))
+            site_voronoi = gpd.GeoDataFrame(site_voronoi[["site_id", "site_name", "area_in_km2", "geometry"]])
+            rainfall_sites_coverage = pd.concat([rainfall_sites_coverage, site_voronoi], ignore_index=True)
         return rainfall_sites_coverage
 
 
