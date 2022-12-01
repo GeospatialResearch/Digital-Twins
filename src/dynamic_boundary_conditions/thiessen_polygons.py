@@ -16,7 +16,7 @@ import logging
 import sys
 from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_rainfall, rainfall_sites, hirds_rainfall_data_to_db
+from src.dynamic_boundary_conditions import main_rainfall, hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -59,10 +59,10 @@ def get_sites_within_aoi(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     # Get all rainfall sites within the area of interest from the database
     query = f"SELECT * FROM rainfall_sites AS rs " \
             f"WHERE ST_Within(rs.geometry, ST_GeomFromText('{area_of_interest}', 4326))"
-    sites_within_aoi = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
+    sites_in_aoi = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
-    sites_within_aoi.reset_index(drop=True, inplace=True)
-    return sites_within_aoi
+    sites_in_aoi.reset_index(drop=True, inplace=True)
+    return sites_in_aoi
 
 
 def thiessen_polygons_calculator(area_of_interest: Polygon, sites_within_aoi: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -131,22 +131,22 @@ def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
     """
     query = f"SELECT * FROM rainfall_sites_coverage AS rsc " \
             f"WHERE ST_Intersects(rsc.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"
-    sites_within_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
+    sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
-    sites_within_catchment.reset_index(drop=True, inplace=True)
-    return sites_within_catchment
+    sites_in_catchment.reset_index(drop=True, inplace=True)
+    return sites_in_catchment
 
 
 def main():
     engine = setup_environment.get_database()
     nz_boundary_polygon = get_new_zealand_boundary(engine)
-    sites_within_nz = get_sites_within_aoi(engine, nz_boundary_polygon)
-    thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_within_nz)
+    sites_in_nz = get_sites_within_aoi(engine, nz_boundary_polygon)
+    thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
 
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
-    sites_within_catchment = thiessen_polygons_from_db(engine, catchment_polygon)
-    print(sites_within_catchment)
+    sites_in_catchment = thiessen_polygons_from_db(engine, catchment_polygon)
+    print(sites_in_catchment)
 
 
 if __name__ == "__main__":
