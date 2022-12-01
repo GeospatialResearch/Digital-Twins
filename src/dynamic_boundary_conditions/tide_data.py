@@ -107,17 +107,9 @@ def main():
     api_key = os.getenv("NIWA_API_KEY")
 
     # Fetching centroid co-ordinate from user selected shapely polygon
-    latitude = Polygon([[-43.298137, 172.568351],
-                        [-43.279144, 172.833569],
-                        [-43.418953, 172.826698],
-                        [-43.407542, 172.536636]
-                        ]).centroid.coords[0][0]
-
-    longitude = Polygon([[-43.298137, 172.568351],
-                         [-43.279144, 172.833569],
-                         [-43.418953, 172.826698],
-                         [-43.407542, 172.536636]
-                         ]).centroid.coords[0][1]
+    example_polygon_centroid = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569],
+                                        [-43.418953, 172.826698], [-43.407542, 172.536636]]).centroid
+    lat, long = example_polygon_centroid.coords[0]
 
     # How many days of tide data to collect (e.g. 365 for 1 years worth):
     total_days = 365
@@ -135,8 +127,8 @@ def main():
 
     request_parameters = {
         'apikey': api_key,
-        'lat': latitude,  # string, latitude range -29 to -53 (- eg: -30.876)
-        'long': longitude,  # string, longitude range 160 to 180 and -175 to -180 (- eg: -175.543)
+        'lat': lat,  # string, latitude range -29 to -53 (- eg: -30.876)
+        'long': long,  # string, longitude range 160 to 180 and -175 to -180 (- eg: -175.543)
         'numberOfDays': total_days,  # number, number of days, range(1 - 31), default: 7
         'startDate': start_date,  # string, start date, format ('yyyy-mm-dd'), default: today (-eg: 2018-05-30)
         'datum': datum  # string, LAT: Lowest astronomical tide; MSL: Mean sea level, default: LAT

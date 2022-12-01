@@ -78,10 +78,9 @@ def main():
     path = "./data/"
 
     # Fetching centroid co-ordinate from user selected shapely polygon
-    lat = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569], [-43.418953, 172.826698],
-                   [-43.407542, 172.536636]]).centroid.coords[0][0]
-    long = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569], [-43.418953, 172.826698],
-                    [-43.407542, 172.536636]]).centroid.coords[0][1]
+    example_polygon_centroid = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569],
+                                        [-43.418953, 172.826698], [-43.407542, 172.536636]]).centroid
+    lat, long = example_polygon_centroid.coords[0]
 
     # start process
     slr_df = gen_dataframe(path)
