@@ -79,22 +79,6 @@ def rainfall_sites_to_db(engine):
         log.info("Stored rainfall sites data in the database.")
 
 
-def get_new_zealand_boundary(engine) -> Polygon:
-    """
-    Get the boundary geometry of New Zealand from the 'region_geometry' table in the database.
-
-    Parameters
-    ----------
-    engine
-        Engine used to connect to the database.
-    """
-    query = "SELECT geometry FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
-    nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=2193)
-    nz_boundary = nz_boundary.to_crs(4326)
-    nz_boundary_polygon = nz_boundary["geometry"][0]
-    return nz_boundary_polygon
-
-
 def get_sites_within_aoi(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     """
     Get all rainfall sites within the catchment area from the database and return the required data in

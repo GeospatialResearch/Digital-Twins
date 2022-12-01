@@ -28,6 +28,22 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
+def get_new_zealand_boundary(engine) -> Polygon:
+    """
+    Get the boundary geometry of New Zealand from the 'region_geometry' table in the database.
+
+    Parameters
+    ----------
+    engine
+        Engine used to connect to the database.
+    """
+    query = "SELECT geometry FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
+    nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=2193)
+    nz_boundary = nz_boundary.to_crs(4326)
+    nz_boundary_polygon = nz_boundary["geometry"][0]
+    return nz_boundary_polygon
+
+
 def thiessen_polygons_calculator(area_of_interest: Polygon, sites_within_aoi: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Create thiessen polygons for all rainfall sites within the area of interest (e.g. New Zealand Boundary) and
@@ -102,7 +118,7 @@ def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
 
 def main():
     engine = setup_environment.get_database()
-    nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
+    nz_boundary_polygon = get_new_zealand_boundary(engine)
     sites_within_nz = rainfall_sites.get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_within_nz)
 
