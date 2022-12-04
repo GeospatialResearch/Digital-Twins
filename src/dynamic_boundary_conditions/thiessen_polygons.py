@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 @Script name: thiessen_polygon_calculator.py
-@Description: Calculate the area covered by each rainfall site and store it in the database.
+@Description: Calculate the area covered by each rainfall site across New Zealand and store it in the database,
+              then get all rainfall sites (thiessen polygons) coverage areas are within the catchment area.
 @Author: pkh35
 @Date: 20/01/2022
 @Last modified by: sli229
@@ -138,12 +139,15 @@ def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
 
 
 def main():
+    # Catchment area shapefile path
+    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    # Connect to the database
     engine = setup_environment.get_database()
+    # Calculate the area covered by each rainfall site across New Zealand and store it in the database.
     nz_boundary_polygon = get_new_zealand_boundary(engine)
     sites_in_nz = get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
-
-    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    # Get all rainfall sites (thiessen polygons) coverage areas are within the catchment area.
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     sites_in_catchment = thiessen_polygons_from_db(engine, catchment_polygon)
     print(sites_in_catchment)
