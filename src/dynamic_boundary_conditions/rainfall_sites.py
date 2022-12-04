@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 @Script name: rainfall_sites.py
-@Description: Store rainfall sites data from the HIRDS website in the database.
+@Description: Fetch rainfall sites data from the HIRDS website and store it to the database.
 @Author: pkh35
 @Date: 23/12/2021
 @Last modified by: sli229
@@ -13,7 +13,6 @@ from requests.structures import CaseInsensitiveDict
 import pandas as pd
 import geopandas as gpd
 import logging
-from shapely.geometry import Polygon
 from geoalchemy2 import Geometry
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
@@ -80,7 +79,9 @@ def rainfall_sites_to_db(engine):
 
 
 def main():
+    # Connect to the database
     engine = setup_environment.get_database()
+    # Fetch rainfall sites data from the HIRDS website and store it to the database
     rainfall_sites_to_db(engine)
 
 
