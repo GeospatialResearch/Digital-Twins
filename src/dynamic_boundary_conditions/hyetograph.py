@@ -304,9 +304,9 @@ def main():
     # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
     # Requested scenario
-    rcp = 2.6  # None
-    time_period = "2031-2050"  # None
-    ari = 100  # 50
+    rcp = 2.6
+    time_period = "2031-2050"
+    ari = 100
     # For a requested scenario, get all rainfall data for sites within the catchment area from the database
     # Set idf to False for rain depth data and to True for rain intensity data
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
