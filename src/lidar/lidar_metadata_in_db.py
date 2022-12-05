@@ -14,7 +14,6 @@ import pathlib
 import pandas as pd
 import zipfile
 import logging
-import pygeos  # for function drop_z()
 from src.digitaltwin import setup_environment
 
 log = logging.getLogger(__name__)
