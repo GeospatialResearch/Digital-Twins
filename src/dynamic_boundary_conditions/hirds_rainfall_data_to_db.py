@@ -15,8 +15,7 @@ import pathlib
 import logging
 from typing import List
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons
-from src.dynamic_boundary_conditions import rainfall_data_from_hirds
+from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, rainfall_data_from_hirds
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
