@@ -15,10 +15,8 @@ from typing import Literal
 from math import floor, ceil
 from scipy.interpolate import interp1d
 import plotly.express as px
-
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_rainfall
-from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
+from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -257,7 +255,7 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     """
     for column_num in range(0, len(hyetograph_data.columns[:-2])):
-        hyeto_site_data = hyetograph_data.iloc[:, [column_num, 6, 7]]
+        hyeto_site_data = hyetograph_data.iloc[:, [column_num, -2, -1]]
         site_id = hyeto_site_data.columns.values[0]
         hyeto_site_data = hyeto_site_data.assign(site_id=site_id)
         hyeto_site_data.columns.values[0] = "rain_depth_mm"
@@ -298,17 +296,22 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
 
 
 def main():
+    # Catchment polygon
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
-    rcp = None
-    time_period = None
-    ari = 50
-
-    engine = setup_environment.get_database()
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
+    # Connect to the database
+    engine = setup_environment.get_database()
+    # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
+    sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
+    # Requested scenario
+    rcp = 2.6  # None
+    time_period = "2031-2050"  # None
+    ari = 100  # 50
+    # For a requested scenario, get all rainfall data for sites within the catchment area from the database
     # Set idf to False for rain depth data and to True for rain intensity data
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
-        engine, catchment_polygon, False, rcp, time_period, ari)
-
+        engine, sites_in_catchment, rcp, time_period, ari, idf=False)
+    # Get hyetograph data for all sites within the catchment area
     hyetograph_data = get_hyetograph_data(
         rain_depth_in_catchment,
         storm_length_hrs=48,
@@ -316,6 +319,7 @@ def main():
         increment_mins=10,
         interp_method="cubic",
         hyeto_method="alt_block")
+    # Create interactive hyetograph plots for sites within the catchment area
     hyetograph(hyetograph_data, ari)
 
 
