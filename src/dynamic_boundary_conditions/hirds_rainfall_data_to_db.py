@@ -165,12 +165,12 @@ def rainfall_data_to_db(engine, sites_in_catchment: gpd.GeoDataFrame, idf: bool)
 
 
 def main():
-    # Catchment area shapefile path
+    # Catchment polygon
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     # Connect to the database
     engine = setup_environment.get_database()
     # Get all rainfall sites (thiessen polygons) coverage areas are within the catchment area
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
     # Store rainfall data of all the sites within the catchment area in the database
     # Set idf to False for rain depth data and to True for rain intensity data
