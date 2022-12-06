@@ -6,6 +6,7 @@ Created on Tue Oct  5 16:34:48 2021.
          xander.cai@pg.canterbury.ac.nz
 """
 
+import collections
 import geoapis.lidar
 import json
 import geopandas as gpd
@@ -36,17 +37,19 @@ def get_lidar_data(file_path_to_store: str, region_of_interest: gpd.GeoDataFrame
     lidar_fetcher.run()
 
 
-def get_files(filetype: str, file_path: str) -> list:
+def get_files(filetype: str, file_path: str, expect: int = -1) -> list:
     """ To get the path of all the files with filetype extension in the input file path. """
     file_path_list = []
     for (path, _, files) in os.walk(file_path):
         for file in files:
             if file.endswith(filetype):
                 file_path_list.append(os.path.join(path, file))
+    if 0 < expect != len(file_path_list):
+        log.debug(f"Error:: Find {len(file_path_list)} {filetype} files in {file_path}, while expect {expect}.")
     return [file_path.replace(os.sep, "/") for file_path in file_path_list]
 
 
-def remove_duplicate_rows(engine: object, table_name: str, column_name: str):
+def remove_duplicate_rows(engine: object, table_name: str, column_1: str, column_2: str):
     """ Remove rows from the table based on a column and add unique_id column in table if it is not exist. """
     # add tbl_id column in each table if not exists
     engine.execute(
@@ -55,7 +58,7 @@ def remove_duplicate_rows(engine: object, table_name: str, column_name: str):
     # delete duplicate rows from the newly created tables if exists
     engine.execute(
         f'DELETE FROM {table_name} a USING {table_name} b \
-        WHERE a.id < b.id AND a."{column_name}" = b."{column_name}";'
+        WHERE a.id < b.id AND a."{column_1}" = b."{column_1}" AND a."{column_2}" = b."{column_2}";'
     )
 
 
@@ -72,24 +75,19 @@ def gen_tile_name(df: object,
     if input dataframe columns match columns_3d, output table_name[1] and column_name[1]
     return output
     """
-    table_name_out = ''
-    column_name_out = ''
     columns_in = df.columns.tolist()
     if columns_in == columns_2d:
-        table_name_out = table_name[0]
-        column_name_out = column_name[0]
+        return table_name[0], column_name[0]
     elif columns_in == columns_3d:
-        table_name_out = table_name[1]
-        column_name_out = column_name[1]
+        return table_name[1], column_name[1]
     else:
-        log.debug(f"Input dataframe is not compatible. The input column names are {columns_in}")
-    return table_name_out, column_name_out
+        log.debug(f"Error:: Invalid column name: {columns_in}.")
 
 
 def drop_z(ds: gpd.GeoSeries) -> gpd.GeoSeries:
     """
     Drop Z coordinates from GeoSeries, returns GeoSeries
-    Requires pygeos to be installed.
+    Requires pygeos to be installed, otherwise it get error without warning.
     source: https://gist.github.com/rmania/8c88377a5c902dfbc134795a7af538d8
     """
     return gpd.GeoSeries.from_wkb(ds.to_wkb(output_dimension=2))
@@ -101,50 +99,63 @@ def gen_tile_to_lidar_data(gdf_tile: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     if geometry in .shp tile file is polygon Z (3d: x, y, z), then convert it to polygon (2d: x, y).
     """
     gdf_to_lidar = gpd.GeoDataFrame()
-    gdf_to_lidar['file_name'] = gdf_tile[gdf_tile.columns[0]]
+    gdf_to_lidar['file_name'] = gdf_tile[gdf_tile.columns[0]].copy()
     if gdf_tile['geometry'][0].has_z:
         gdf_to_lidar['has_z'] = True
         # convert 3d to 2d polygon
-        gdf_to_lidar.geometry = drop_z(gdf_tile.geometry)
+        gdf_to_lidar['geometry'] = drop_z(gdf_tile['geometry'].copy())
     else:
         gdf_to_lidar['has_z'] = False
-        gdf_to_lidar.geometry = gdf_tile.geometry
+        gdf_to_lidar['geometry'] = gdf_tile['geometry'].copy()
     gdf_to_lidar.set_crs(crs="epsg:2193", inplace=True)
     return gdf_to_lidar
 
 
-def store_tile(engine: object, file_path: str) -> list:
+def store_tile(engine: object, file_path: str) -> gpd.GeoDataFrame:
     """
     Store tile information of each point in the point cloud data.
     Function extracts the zip files where tile index files are stored as shape files,
     then shapes files are stored in the database, and feed geometry info to lidar database.
     """
-    gdf_to_lidar = gpd.GeoDataFrame()
-    for zip_file in get_files('.zip', file_path):
-        with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-            zip_ref.extractall(file_path)
-    for shp_file in get_files('.shp', file_path):
-        gdf = gpd.read_file(shp_file)
-        table_name, file_name = gen_tile_name(gdf)
+    zip_file = get_files('.zip', file_path, 1)[0]
+    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+        zip_path = os.path.split(zip_file)[0]
+        dataset = zip_path.split('/')[-1]
+        zip_ref.extractall(zip_path)
+        gdf = gpd.read_file(get_files('.shp', zip_path, 1)[0])
+        table_name, column_name = gen_tile_name(gdf)
+        gdf['dataset'] = pd.Series(dataset).repeat(len(gdf)).reset_index(drop=True)
         gdf.to_postgis(table_name, engine, index=False, if_exists="append")
-        remove_duplicate_rows(engine, table_name, file_name)
-        gdf_to_lidar = pd.concat([gdf_to_lidar, gen_tile_to_lidar_data(gdf)])
-    return gdf_to_lidar
+        remove_duplicate_rows(engine, table_name, column_name, 'dataset')
+        return gen_tile_to_lidar_data(gdf)
 
 
-def store_lidar(engine: object, file_path: str, gdf: gpd.GeoDataFrame):
+def store_lidar(engine: object, file_path: str, gdf_tile: gpd.GeoDataFrame) -> int:
     """ To store the path of downloaded point cloud files with geometry annotation. """
     file_path_list = get_files('.laz', file_path)
-    log.debug(f"Info:: Find total {len(file_path_list)} .laz files in {file_path}.")
     file_name_list = [os.path.basename(file_path) for file_path in file_path_list]
-    data = {'file_name': file_name_list,
-            'file_path': file_path_list}
-    df = pd.DataFrame(data)
+    df = pd.DataFrame({'file_name': file_name_list,
+                       'file_path': file_path_list})
     # remove not exist .laz row in the tile gdf.
-    gdf = gdf.merge(df, on='file_name', how='right')
-    log.debug(f"Info:: Find total {len(gdf)} .laz files match .shp files.")
+    gdf = gdf_tile.merge(df, on='file_name', how='right')
     gdf.to_postgis('lidar', engine, index=False, if_exists="append")
-    remove_duplicate_rows(engine, "lidar", "file_name")
+    remove_duplicate_rows(engine, "lidar", "file_name", "file_path")
+    return len(gdf)
+
+
+def store_tile_lidar(engin: object, data_path: str):
+    """ store tile index and lidar data into database. """
+    count = 0
+    for directory in os.listdir(data_path):
+        file_path = os.path.join(data_path, directory)
+        gdf_tile_to_lidar = store_tile(engin, file_path)
+        count += store_lidar(engin, file_path, gdf_tile_to_lidar)
+    # check .laz file number
+    file_path_list = get_files('.laz', data_path)
+    assert len(file_path_list) == count, \
+        f"Error:: download .laz file number {len(file_path_list)} is different with database {count}."
+    log.debug(f"Info:: Find {len(file_path_list)} .laz files in {data_path}.")
+    log.debug(f"Info:: Store {count} .laz file with tile index geometry in database.")
 
 
 def get_lidar_path(engine: object, region_of_interest: gpd.GeoDataFrame) -> list:
@@ -164,8 +175,7 @@ def main():
         instructions = json.load(file_pointer)
     regin_of_interest = gpd.GeoDataFrame.from_features(instructions["features"])
     get_lidar_data(data_path, regin_of_interest)
-    tile_gdf = store_tile(engine, data_path)
-    store_lidar(engine, data_path, tile_gdf)
+    store_tile_lidar(engine, data_path)
 
     file_path = get_lidar_path(engine, regin_of_interest)
     log.debug(f"Info:: Retrieved total {len(file_path)} .laz files in the region of interest.")
