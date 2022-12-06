@@ -154,11 +154,9 @@ def main():
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
     data_dir = config.get_env_variable("DATA_DIR")
-    file_path_to_store = pathlib.Path(rf"{data_dir}/LiDAR/lidar_data")
-    instruction_file = pathlib.Path("src/lidar/instructions_lidar.json")
-    with open(instruction_file, "r") as file_pointer:
-        instructions = json.load(file_pointer)
-    geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
+    file_path_to_store = pathlib.Path(rf"{data_dir}/LiDAR")
+    input_polygon_file = pathlib.Path("./selected_polygon.geojson")
+    geometry_df = gpd.GeoDataFrame.from_file(input_polygon_file)
     store_lidar_path(engine, file_path_to_store, geometry_df)
     store_tileindex(engine, file_path_to_store)
 

@@ -11,6 +11,5 @@ SHELL ["conda", "run", "-n", "digitaltwin", "/bin/bash", "-c"]
 RUN echo "Check GeoFabrics is installed to test environment"
 RUN python -c "import geofabrics"
 
-COPY db_configure.yml .
 COPY src/ src/
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "digitaltwin", "python", "-m", "src.run"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "digitaltwin", "python", "-m", "src.run_all"]
