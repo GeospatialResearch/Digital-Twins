@@ -88,9 +88,9 @@ def remove_duplicate_rows(engine, table_name):
     )
 
 
-def store_lidar_path(engine, file_path_to_store, instruction_file, filetype=".laz"):
+def store_lidar_path(engine, file_path_to_store, geometry_df, filetype=".laz"):
     """To store the path of downloaded point cloud files."""
-    get_lidar_data(file_path_to_store, instruction_file)
+    get_lidar_data(file_path_to_store, geometry_df)
     laz_files = get_files(filetype, file_path_to_store)
     for filepath in laz_files:
         file_name = os.path.basename(filepath)
