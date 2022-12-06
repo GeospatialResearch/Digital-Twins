@@ -52,7 +52,11 @@ def bg_model_inputs(
     river = "RiverDis.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     data_dir = config.get_env_variable("DATA_DIR")
-    outfile = rf"{data_dir}/model_output/output_{dt_string}.nc"
+    # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
+    output_dir = rf"{data_dir}/model_output"
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
+    outfile = rf"{output_dir}/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
     with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
