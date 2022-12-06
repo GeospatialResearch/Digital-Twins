@@ -51,7 +51,8 @@ def bg_model_inputs(
     elev_var = list(keys)[1]
     river = "RiverDis.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
-    outfile = rf"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/model_output/output_{dt_string}.nc"
+    data_dir = config.get_env_variable("DATA_DIR")
+    outfile = rf"{data_dir}/model_output/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
     with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
@@ -127,7 +128,8 @@ def run_model(
 
 def main():
     engine = setup_environment.get_database()
-    bg_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
+    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
+    bg_path = pathlib.Path(flood_model_dir)
     linz_api_key = config.get_env_variable("LINZ_API_KEY")
     instruction_file = pathlib.Path("src/lidar/instructions_bgflood.json")
     with open(instruction_file, "r") as file_pointer:
