@@ -74,7 +74,7 @@ def main():
     hyetograph_data = hyetograph.get_hyetograph_data(
         rain_depth_in_catchment,
         storm_length_hrs=48,
-        time_to_peak_hrs=24,  # 60
+        time_to_peak_hrs=24,
         increment_mins=10,
         interp_method="cubic",
         hyeto_method="alt_block")

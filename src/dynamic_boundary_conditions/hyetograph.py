@@ -4,7 +4,7 @@
 @Description: Create interactive hyetograph plots for sites within the catchment area.
 @Author: pkh35
 @Last modified by: sli229
-@Last modified date: 5/12/2022
+@Last modified date: 8/12/2022
 """
 
 import logging
@@ -314,7 +314,7 @@ def main():
     hyetograph_data = get_hyetograph_data(
         rain_depth_in_catchment,
         storm_length_hrs=48,
-        time_to_peak_hrs=60,
+        time_to_peak_hrs=24,
         increment_mins=10,
         interp_method="cubic",
         hyeto_method="alt_block")
