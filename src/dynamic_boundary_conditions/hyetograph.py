@@ -156,8 +156,9 @@ def add_time_information(
         mins_end = time_to_peak_mins + site_data["duration_mins"][0]
         mins = np.arange(mins_start, mins_end, increment_mins / 2)
         site_data = site_data.assign(mins=mins)
-    site_data = site_data.assign(hours=site_data["mins"] / 60)
-    site_data = site_data.sort_values(by="mins", ascending=True)
+    site_data = site_data.assign(hours=site_data["mins"] / 60,
+                                 seconds=site_data["mins"] * 60)
+    site_data = site_data.sort_values(by="seconds", ascending=True)
     site_data = site_data.drop(columns=["duration_mins"]).reset_index(drop=True)
     return site_data
 
@@ -254,10 +255,8 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
     ari : float
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     """
-    for column_num in range(0, len(hyetograph_data.columns[:-2])):
-        hyeto_site_data = hyetograph_data.iloc[:, [column_num, -2, -1]]
-        site_id = hyeto_site_data.columns.values[0]
-        hyeto_site_data = hyeto_site_data.assign(site_id=site_id)
+    for site_id in hyetograph_data.columns.values[:-3]:
+        hyeto_site_data = hyetograph_data[[f"{site_id}", "mins", "hours", "seconds"]]
         hyeto_site_data.columns.values[0] = "rain_depth_mm"
         hyeto_fig = px.bar(
             hyeto_site_data,
