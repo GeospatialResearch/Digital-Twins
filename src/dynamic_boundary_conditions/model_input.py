@@ -49,7 +49,8 @@ def spatial_uniform_method(hyetograph_data: pd.DataFrame, sites_coverage: gpd.Ge
 def spatial_uniform_model_input(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame):
     spatial_uniform_data = spatial_uniform_method(hyetograph_data, sites_coverage)
     spatial_uniform_input = spatial_uniform_data[["seconds", "rain_intensity_mmhr"]]
-    spatial_uniform_input.to_csv("P:/DT/BG-Flood/BG-Flood_Win10_v0.6-a/rain_forcing.txt",
+    spatial_uniform_input.to_csv("U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a/"
+                                 "rain_forcing.txt",
                                  header=None, index=None, sep="\t")
 
 
