@@ -6,7 +6,7 @@
 @Author: pkh35
 @Date: 20/01/2022
 @Last modified by: sli229
-@Last modified date: 5/12/2022
+@Last modified date: 8/12/2022
 """
 
 import pathlib
@@ -66,7 +66,7 @@ def get_sites_within_aoi(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     return sites_in_aoi
 
 
-def thiessen_polygons_calculator(area_of_interest: Polygon, sites_within_aoi: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Create thiessen polygons for all rainfall sites within the area of interest (e.g. New Zealand Boundary) and
     calculate the area covered by each rainfall site.
@@ -75,26 +75,25 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_within_aoi: gp
     ----------
     area_of_interest : Polygon
         Area of interest polygon.
-    sites_within_aoi : gpd.GeoDataFrame
+    sites_in_aoi : gpd.GeoDataFrame
         Rainfall sites within the area of interest.
     """
-    if area_of_interest.is_empty or sites_within_aoi.empty:
+    if area_of_interest.is_empty or sites_in_aoi.empty:
         log.info("No data available for area_of_interest or sites_within_aoi passed as arguments "
                  "to the 'thiessen_polygons' function")
         sys.exit()
     else:
-        coords = points_to_coords(sites_within_aoi["geometry"])
-        region_polys, region_pts = voronoi_regions_from_coords(coords, area_of_interest, per_geom=False)
-        rainfall_sites_coverage = gpd.GeoDataFrame()
-        for voronoi_region_id, sites_within_aoi_index in region_pts.items():
-            sites_within_aoi_index = sites_within_aoi_index[0]
-            site = sites_within_aoi.filter(items=[sites_within_aoi_index], axis=0)
-            site = site.reset_index(drop=True).drop(columns=["geometry"])
-            voronoi = gpd.GeoDataFrame(crs="epsg:4326", geometry=[region_polys[voronoi_region_id]])
-            voronoi = voronoi.assign(area_in_km2=voronoi.to_crs(3857).area / 1e6)
-            site_voronoi = pd.concat([site, voronoi], axis=1)
-            site_voronoi = gpd.GeoDataFrame(site_voronoi[["site_id", "site_name", "area_in_km2", "geometry"]])
-            rainfall_sites_coverage = pd.concat([rainfall_sites_coverage, site_voronoi], ignore_index=True)
+        coordinates = points_to_coords(sites_in_aoi["geometry"])
+        region_polys, region_pts = voronoi_regions_from_coords(coordinates, area_of_interest, per_geom=False)
+        voronoi_regions = list(region_polys.values())
+        sites_in_voronoi_order = pd.DataFrame()
+        for site_index in region_pts.values():
+            site_index = site_index[0]
+            site = sites_in_aoi.filter(items=[site_index], axis=0)
+            sites_in_voronoi_order = pd.concat([sites_in_voronoi_order, site])
+        rainfall_sites_coverage = gpd.GeoDataFrame(sites_in_voronoi_order, geometry=voronoi_regions, crs="epsg:4326")
+        rainfall_sites_coverage["area_in_km2"] = rainfall_sites_coverage.to_crs(3857).area / 1e6
+        rainfall_sites_coverage = rainfall_sites_coverage[["site_id", "site_name", "area_in_km2", "geometry"]]
         return rainfall_sites_coverage
 
 
