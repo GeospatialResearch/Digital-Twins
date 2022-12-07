@@ -36,13 +36,13 @@ def sites_coverage_in_catchment(
 def spatial_uniform_method(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> pd.DataFrame:
     increment_mins = hyetograph_data["mins"][1] - hyetograph_data["mins"][0]
     spatial_uniform_data = hyetograph_data.copy()
-    sites_column_list = list(spatial_uniform_data.columns.values[:-2])
+    sites_column_list = list(spatial_uniform_data.columns.values[:-3])
     for site_id in sites_column_list:
         site_area_percent = sites_coverage.query("site_id == @site_id")["area_percent"].values[0]
         spatial_uniform_data[f"{site_id}"] = spatial_uniform_data[f"{site_id}"] * site_area_percent
     spatial_uniform_data["rain_depth_mm"] = spatial_uniform_data[sites_column_list].sum(axis=1)
     spatial_uniform_data["rain_intensity_mmhr"] = spatial_uniform_data["rain_depth_mm"] / increment_mins * 60
-    spatial_uniform_data = spatial_uniform_data[["mins", "hours", "rain_depth_mm", "rain_intensity_mmhr"]]
+    spatial_uniform_data = spatial_uniform_data[["mins", "hours", "seconds", "rain_depth_mm", "rain_intensity_mmhr"]]
     return spatial_uniform_data
 
 
