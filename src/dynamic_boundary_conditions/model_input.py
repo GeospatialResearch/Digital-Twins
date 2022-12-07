@@ -78,7 +78,8 @@ def main():
         increment_mins=10,
         interp_method="cubic",
         hyeto_method="alt_block")
-
+    # Create interactive hyetograph plots for sites within the catchment area
+    hyetograph.hyetograph(hyetograph_data, ari)
     # Spatial uniform model input
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     spatial_uniform_model_input(hyetograph_data, sites_coverage)
