@@ -160,8 +160,9 @@ def store_tile_lidar_data(engin: object, data_path: str):
     # load and save data based on directories can avoid duplicated .laz file name issue.
     for directory in os.listdir(data_path):
         file_path = os.path.join(data_path, directory)
-        gdf_tile_to_lidar = store_tile_data(engin, file_path)
-        count += store_lidar_data(engin, file_path, gdf_tile_to_lidar)
+        if os.path.isdir(file_path):
+            gdf_tile_to_lidar = store_tile_data(engin, file_path)
+            count += store_lidar_data(engin, file_path, gdf_tile_to_lidar)
     # check .laz file number, which should match the .laz number in lidar database.
     file_path_list = get_files('.laz', data_path)
     assert len(file_path_list) == count, \
