@@ -97,7 +97,7 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
         return rainfall_sites_coverage
 
 
-def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_within_aoi: gpd.GeoDataFrame):
+def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame):
     """
     Store thiessen polygon outputs (i.e. rainfall sites coverage) to the database。
 
@@ -107,13 +107,13 @@ def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_within_aoi:
         Engine used to connect to the database.
     area_of_interest : Polygon
         Area of interest polygon.
-    sites_within_aoi : gpd.GeoDataFrame
+    sites_in_aoi : gpd.GeoDataFrame
         Rainfall sites within the area of interest.
     """
     if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites_coverage"):
         log.info("Rainfall sites coverage data already exists in the database.")
     else:
-        rainfall_sites_coverage = thiessen_polygons_calculator(area_of_interest, sites_within_aoi)
+        rainfall_sites_coverage = thiessen_polygons_calculator(area_of_interest, sites_in_aoi)
         rainfall_sites_coverage.to_postgis("rainfall_sites_coverage", engine, if_exists="replace")
         log.info("Stored rainfall sites coverage data in the database.")
 
