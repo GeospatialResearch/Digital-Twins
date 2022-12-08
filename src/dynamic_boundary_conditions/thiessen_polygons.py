@@ -131,10 +131,10 @@ def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
     """
     query = f"SELECT * FROM rainfall_sites_coverage AS rsc " \
             f"WHERE ST_Intersects(rsc.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"
-    sites_coverages_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
+    sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
-    sites_coverages_in_catchment.reset_index(drop=True, inplace=True)
-    return sites_coverages_in_catchment
+    sites_in_catchment.reset_index(drop=True, inplace=True)
+    return sites_in_catchment
 
 
 def main():
@@ -148,8 +148,8 @@ def main():
     sites_in_nz = get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
     # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
-    sites_coverages_in_catchment = thiessen_polygons_from_db(engine, catchment_polygon)
-    print(sites_coverages_in_catchment)
+    sites_in_catchment = thiessen_polygons_from_db(engine, catchment_polygon)
+    print(sites_in_catchment)
 
 
 if __name__ == "__main__":
