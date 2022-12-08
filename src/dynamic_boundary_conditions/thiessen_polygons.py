@@ -99,7 +99,7 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
 
 def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame):
     """
-    Store thiessen polygon outputs (i.e. rainfall sites coverage) to the database。
+    Store thiessen polygon outputs (i.e. rainfall sites coverages) to the database。
 
     Parameters
     ----------
@@ -120,7 +120,7 @@ def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd
 
 def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
     """
-    Get all rainfall sites coverage areas (thiessen polygons) that are within the catchment area.
+    Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area.
 
     Parameters
     ----------
@@ -147,7 +147,7 @@ def main():
     nz_boundary_polygon = get_new_zealand_boundary(engine)
     sites_in_nz = get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
-    # Get all rainfall sites coverage areas (thiessen polygons) that are within the catchment area
+    # Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area
     sites_in_catchment = thiessen_polygons_from_db(engine, catchment_polygon)
     print(sites_in_catchment)
 
