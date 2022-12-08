@@ -14,7 +14,7 @@ def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False
     Reads an environment variable, with settings to allow defaults, empty values, and type casting
 
     :param var_name: The name of the environment variable to retrieve.
-    :param default: Default return value if the environment variable does not exist. Does not override empty env variables.
+    :param default: Default return value if the environment variable does not exist. Doesn't override empty string vars.
     :param allow_empty: If False then a KeyError will be raised if the environment variable is empty.
     :param cast_to: the type that the variable is cast to when returned e.g. int or bool.
     :return: The environment variable, or default if it does not exist.

@@ -9,7 +9,6 @@ import json
 import os
 import pathlib
 import subprocess
-import sys
 from datetime import datetime
 
 import xarray as xr

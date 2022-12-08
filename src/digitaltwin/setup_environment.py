@@ -6,7 +6,6 @@ Created on Thu Aug  5 17:09:13 2021.
 """
 
 import logging
-import sys
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base

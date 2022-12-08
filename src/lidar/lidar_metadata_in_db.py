@@ -5,7 +5,6 @@ Created on Tue Oct  5 16:34:48 2021.
 @author: pkh35
 """
 
-import json
 import logging
 import os
 import pathlib

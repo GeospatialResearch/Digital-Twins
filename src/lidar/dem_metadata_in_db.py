@@ -5,14 +5,14 @@ Created on Wed Nov 10 13:22:27 2021.
 @author: pkh35
 """
 
-import geofabrics.processor
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
-from geoalchemy2 import Geometry
-from sqlalchemy.orm import sessionmaker
-import geopandas as gpd
-import sys
 import pathlib
+
+import geofabrics.processor
+import geopandas as gpd
+from geoalchemy2 import Geometry
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
