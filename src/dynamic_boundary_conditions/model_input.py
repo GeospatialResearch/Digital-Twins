@@ -17,9 +17,20 @@ from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hi
 def sites_voronoi_intersect_catchment(
         sites_in_catchment: gpd.GeoDataFrame,
         catchment_polygon: Polygon) -> gpd.GeoDataFrame:
+    """
+    Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area,
+    i.e. return the overlapped areas (intersections).
+
+    Parameters
+    ----------
+    sites_in_catchment : gpd.GeoDataFrame
+        Rainfall sites coverage areas (thiessen polygons) that are within the catchment area.
+    catchment_polygon : Polygon
+        Desired catchment area.
+    """
     catchment_area = gpd.GeoDataFrame(index=[0], crs='epsg:4326', geometry=[catchment_polygon])
-    sites_intersections = gpd.overlay(sites_in_catchment, catchment_area, how="intersection")
-    return sites_intersections
+    intersections = gpd.overlay(sites_in_catchment, catchment_area, how="intersection")
+    return intersections
 
 
 def sites_coverage_in_catchment(
