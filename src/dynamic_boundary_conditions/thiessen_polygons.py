@@ -147,7 +147,7 @@ def main():
     nz_boundary_polygon = get_new_zealand_boundary(engine)
     sites_in_nz = get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
-    # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
+    # Get all rainfall sites coverage areas (thiessen polygons) that are within the catchment area
     sites_in_catchment = thiessen_polygons_from_db(engine, catchment_polygon)
     print(sites_in_catchment)
 
