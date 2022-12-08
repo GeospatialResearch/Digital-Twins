@@ -12,7 +12,7 @@ import geopandas as gpd
 import pathlib
 from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph
+from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db, hirds_rainfall_data_from_db
 
 
@@ -50,9 +50,9 @@ def main():
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=False)
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=True)
     # Requested scenario
-    rcp = 2.6
-    time_period = "2031-2050"
-    ari = 100
+    rcp = None  # 2.6
+    time_period = None  # "2031-2050"
+    ari = 50  # 100
     # For a requested scenario, get all rainfall data for sites within the catchment area from the database
     # Set idf to False for rain depth data and to True for rain intensity data
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
@@ -67,6 +67,13 @@ def main():
         hyeto_method="alt_block")
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
+
+    # BG-Flood path
+    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
+    # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
+    sites_coverage = model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
+    mean_catchment_rain = model_input.mean_catchment_rainfall(hyetograph_data, sites_coverage)
+    model_input.spatial_uniform_model_input(mean_catchment_rain, bg_flood_path)
 
 
 if __name__ == "__main__":
