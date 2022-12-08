@@ -86,7 +86,7 @@ def get_interpolated_data(
 
 def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataFrame:
     """
-    Get the incremental rainfall data (difference between current and preceding cumulative rainfall)
+    Get the incremental rainfall depths (difference between current and preceding cumulative rainfall)
     for sites within the catchment area and return in Pandas DataFrame format.
 
     Parameters
@@ -104,12 +104,12 @@ def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataF
 
 def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, storm_length_hrs: int) -> pd.DataFrame:
     """
-    Get the incremental rainfall data for sites within the catchment area for a specific storm duration.
+    Get the incremental rainfall depths for sites within the catchment area for a specific storm duration.
 
     Parameters
     ----------
     interp_increment_data : pd.DataFrame
-        Incremental rainfall data for sites within the catchment area.
+        Incremental rainfall depths for sites within the catchment area.
     storm_length_hrs : int
         Storm duration in hours.
     """
@@ -125,7 +125,8 @@ def add_time_information(
         increment_mins: int,
         hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
-    Add time information (minutes column) to the hyetograph data based on the selected hyetograph method.
+    Add time information (seconds, minutes, and hours column) to the hyetograph data based on the
+    selected hyetograph method.
 
     Parameters
     ----------
@@ -169,13 +170,13 @@ def transform_data_for_selected_method(
         increment_mins: int,
         hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
-    Transform the storm length incremental rainfall data for sites within the catchment area based on
+    Transform the storm length incremental rainfall depths for sites within the catchment area based on
     the selected hyetograph method and returns in Pandas DataFrame format.
 
     Parameters
     ----------
     storm_length_data : pd.DataFrame
-        Incremental rainfall data for sites within the catchment area for a specific storm duration.
+        Incremental rainfall depths for sites within the catchment area for a specific storm duration.
     time_to_peak_hrs : int
         The time in hours when rainfall is at its greatest (reaches maximum).
     increment_mins : int
