@@ -120,7 +120,7 @@ def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd
 
 def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
     """
-    Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area.
+    Get all rainfall sites coverage areas (thiessen polygons) that are within the catchment area.
 
     Parameters
     ----------
