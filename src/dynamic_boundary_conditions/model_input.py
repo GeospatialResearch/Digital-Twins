@@ -55,7 +55,7 @@ def sites_coverage_in_catchment(
     return sites_coverage
 
 
-def spatial_uniform_method(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> pd.DataFrame:
+def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> pd.DataFrame:
     """
     Calculate the mean catchment rainfall depths and intensities (weighted average of gauge measurements)
     across all durations using the thiessen polygon method.
@@ -68,20 +68,20 @@ def spatial_uniform_method(hyetograph_data: pd.DataFrame, sites_coverage: gpd.Ge
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     """
     increment_mins = hyetograph_data["mins"][1] - hyetograph_data["mins"][0]
-    spatial_uniform_data = hyetograph_data.copy()
-    sites_column_list = list(spatial_uniform_data.columns.values[:-3])
+    mean_catchment_rain = hyetograph_data.copy()
+    sites_column_list = list(mean_catchment_rain.columns.values[:-3])
     for site_id in sites_column_list:
         site_area_percent = sites_coverage.query("site_id == @site_id")["area_percent"].values[0]
-        spatial_uniform_data[f"{site_id}"] = spatial_uniform_data[f"{site_id}"] * site_area_percent
-    spatial_uniform_data["rain_depth_mm"] = spatial_uniform_data[sites_column_list].sum(axis=1)
-    spatial_uniform_data["rain_intensity_mmhr"] = spatial_uniform_data["rain_depth_mm"] / increment_mins * 60
-    spatial_uniform_data = spatial_uniform_data[["mins", "hours", "seconds", "rain_depth_mm", "rain_intensity_mmhr"]]
-    return spatial_uniform_data
+        mean_catchment_rain[f"{site_id}"] = mean_catchment_rain[f"{site_id}"] * site_area_percent
+    mean_catchment_rain["rain_depth_mm"] = mean_catchment_rain[sites_column_list].sum(axis=1)
+    mean_catchment_rain["rain_intensity_mmhr"] = mean_catchment_rain["rain_depth_mm"] / increment_mins * 60
+    mean_catchment_rain = mean_catchment_rain[["mins", "hours", "seconds", "rain_depth_mm", "rain_intensity_mmhr"]]
+    return mean_catchment_rain
 
 
 def spatial_uniform_model_input(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame):
-    spatial_uniform_data = spatial_uniform_method(hyetograph_data, sites_coverage)
-    spatial_uniform_input = spatial_uniform_data[["seconds", "rain_intensity_mmhr"]]
+    mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
+    spatial_uniform_input = mean_catchment_rain[["seconds", "rain_intensity_mmhr"]]
     spatial_uniform_input.to_csv("U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a/"
                                  "rain_forcing.txt",
                                  header=None, index=None, sep="\t")
