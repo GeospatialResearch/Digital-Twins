@@ -122,9 +122,13 @@ def main():
         hyeto_method="alt_block")
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
-    # Spatial uniform model input
+
+    # BG-Flood path
+    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
+    # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
-    spatial_uniform_model_input(hyetograph_data, sites_coverage)
+    mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
+    spatial_uniform_model_input(mean_catchment_rain, bg_flood_path)
 
 
 if __name__ == "__main__":
