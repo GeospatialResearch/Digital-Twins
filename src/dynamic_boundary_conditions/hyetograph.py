@@ -28,19 +28,19 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_transposed_data(rain_data_in_catchment: pd.DataFrame) -> pd.DataFrame:
+def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:
     """
     Clean and transpose the retrieved scenario data from the database for sites within the catchment area and
     return in Pandas DataFrame format.
 
     Parameters
     ----------
-    rain_data_in_catchment : pd.DataFrame
-        Rainfall data for sites within the catchment area for a specified scenario retrieved from the database.
+    rain_depth_in_catchment : pd.DataFrame
+        Rainfall depths for sites within the catchment area for a specified scenario retrieved from the database.
     """
 
     # drop unnecessary columns
-    catchment_data = rain_data_in_catchment.drop(columns=["category", "rcp", "time_period", "ari", "aep"])
+    catchment_data = rain_depth_in_catchment.drop(columns=["category", "rcp", "time_period", "ari", "aep"])
     # change column names
     for index, column_name in enumerate(catchment_data.columns):
         if column_name.endswith("m"):
@@ -201,7 +201,7 @@ def transform_data_for_selected_method(
 
 
 def get_hyetograph_data(
-        rain_data_in_catchment: pd.DataFrame,
+        rain_depth_in_catchment: pd.DataFrame,
         storm_length_hrs: int,
         time_to_peak_hrs: int,
         increment_mins: int,
@@ -212,8 +212,8 @@ def get_hyetograph_data(
 
     Parameters
     ----------
-    rain_data_in_catchment : pd.DataFrame
-        Rainfall data for sites within the catchment area for a specified scenario retrieved from the database.
+    rain_depth_in_catchment : pd.DataFrame
+        Rainfall depths for sites within the catchment area for a specified scenario retrieved from the database.
     storm_length_hrs : int
         Storm duration in hours.
     time_to_peak_hrs : int
@@ -235,7 +235,7 @@ def get_hyetograph_data(
         log.error("Increment minute is out of range, needs to be at least 10.")
         raise ValueError("Increment minute is out of range, needs to be at least 10.")
     else:
-        transposed_catchment_data = get_transposed_data(rain_data_in_catchment)
+        transposed_catchment_data = get_transposed_data(rain_depth_in_catchment)
         interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
         interp_increment_data = get_interp_incremental_data(interp_catchment_data)
         storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_hrs)
