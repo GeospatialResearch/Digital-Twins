@@ -18,6 +18,7 @@ dependencies:
   - validators  # Try remove in future
   - sqlalchemy
   - geoalchemy2
+  - plotly
   - pip:
     - geofabrics>=0.9.3
     - geovoronoi>=0.4.0
