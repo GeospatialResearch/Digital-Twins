@@ -24,7 +24,7 @@ def sites_voronoi_intersect_catchment(
     Parameters
     ----------
     sites_in_catchment : gpd.GeoDataFrame
-        Rainfall sites coverage areas (thiessen polygons) that are within the catchment area.
+        Rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area.
     catchment_polygon : Polygon
         Desired catchment area.
     """
