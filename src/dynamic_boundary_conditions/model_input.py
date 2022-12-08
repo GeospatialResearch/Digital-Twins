@@ -79,12 +79,20 @@ def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.G
     return mean_catchment_rain
 
 
-def spatial_uniform_model_input(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame):
-    mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
+def spatial_uniform_model_input(mean_catchment_rain: pd.DataFrame, bg_flood_path: pathlib.Path):
+    """
+    Write the relevant mean catchment rainfall data (i.e. 'seconds' and 'rain_intensity_mmhr' columns) in a text file
+    (rain_forcing.txt). This can be used as spatially uniform rainfall input into the BG-Flood model.
+
+    Parameters
+    ----------
+    mean_catchment_rain : pd.DataFrame
+        Mean catchment rainfall depths and intensities (weighted average of gauge measurements) across all durations.
+    bg_flood_path : pathlib.Path
+        BG-Flood file path.
+    """
     spatial_uniform_input = mean_catchment_rain[["seconds", "rain_intensity_mmhr"]]
-    spatial_uniform_input.to_csv("U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a/"
-                                 "rain_forcing.txt",
-                                 header=None, index=None, sep="\t")
+    spatial_uniform_input.to_csv(bg_flood_path/"rain_forcing.txt", header=None, index=None, sep="\t")
 
 
 def main():
