@@ -36,6 +36,17 @@ def sites_voronoi_intersect_catchment(
 def sites_coverage_in_catchment(
         sites_in_catchment: gpd.GeoDataFrame,
         catchment_polygon: Polygon) -> gpd.GeoDataFrame:
+    """
+    Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area, and
+    calculate the area and the percentage of area covered by each rainfall site inside the catchment area.
+
+    Parameters
+    ----------
+    sites_in_catchment : gpd.GeoDataFrame
+        Rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area.
+    catchment_polygon : Polygon
+        Desired catchment area.
+    """
     sites_coverage = sites_voronoi_intersect_catchment(sites_in_catchment, catchment_polygon)
     sites_coverage['area_in_km2'] = sites_coverage.to_crs(3857).area / 1e6
     sites_area_total = sites_coverage['area_in_km2'].sum()
