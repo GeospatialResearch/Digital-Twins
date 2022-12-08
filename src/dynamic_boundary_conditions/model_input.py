@@ -56,6 +56,17 @@ def sites_coverage_in_catchment(
 
 
 def spatial_uniform_method(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> pd.DataFrame:
+    """
+    Calculate the mean catchment rainfall depths and intensities (weighted average of gauge measurements)
+    across all durations using the thiessen polygon method.
+
+    Parameters
+    ----------
+    hyetograph_data: pd.DataFrame
+        Hyetograph data for sites within the catchment area.
+    sites_coverage: gpd.GeoDataFrame
+        Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
+    """
     increment_mins = hyetograph_data["mins"][1] - hyetograph_data["mins"][0]
     spatial_uniform_data = hyetograph_data.copy()
     sites_column_list = list(spatial_uniform_data.columns.values[:-3])
