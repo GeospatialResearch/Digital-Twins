@@ -7,6 +7,7 @@ channels:
 dependencies:
   - pip
   - python-dotenv
+  - lxml
   - pandas
   - geopandas>=0.10.2 # Needs to be explicit otherwise the dependencies required to use sjoin are not installed
   - rasterio # Needs to be explicit as wheel fails to build if insalled as a dependency of geofabrics
