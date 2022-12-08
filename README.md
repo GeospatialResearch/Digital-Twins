@@ -1,39 +1,4 @@
-# Digital-Twins
-
-## Basic running instructions
-The following list defines the basic steps required to setup and run the digital twin.
-
-1. Set up Docker or PostgreSQL - i.e. creating and running the database
-2. Set up an Anaconda Python environment - using the environment.yml file
-6. Run dynamic_boundary_conditions.hyetograph.py
-
-<br>
-
-## Setup
-
-### Create Docker or PostGRESQL
-See the 'Running docker on your machine' section at the bottom of this README.
-
-### Create Conda environment
-Setup a conda environment to run in using the following command run from the repository folder:
-
-```bash
-#!/usr/bin/env bash
-conda env create -f environment.yml
-```
-
-<br>
-
-## Tests
-Tests exist in the `tests/` folder.
-
-### Automated testing
-[Github Actions](https://docs.github.com/en/actions) are used to run tests after each push to remote (i.e. github). [Miniconda](https://github.com/marketplace/actions/setup-miniconda)from the GitHub Actions marketplace is used to install the package dependencies. Linting with [Flake8](https://github.com/py-actions/flake8) and testing with [PyTest](https://docs.pytest.org/en/6.2.x/contents.html) is then performed. Several tests require an API key. This is stored as a GitHub secret and accessed by the workflow.
-### Running tests locally
-See the [geoapis wiki testing page](https://github.com/niwa/geoapis/wiki/Testing) for instructions for setting up a .env file and running the geofabrics test.
-
-<br>
-
+# Digital Twin for Flood Resilience in Aotearoa, New Zealand
 ## Introduction
 
 According to the National Emergency Management Agency, flooding is the greatest hazard in New Zealand, in terms of frequency, losses and civil defence emergencies. With major flood events occurring on average every 8 months [(New Zealand – FloodList)](https://floodlist.com/tag/new-zealand), it is necessary to produce high precision flood models and in order to do better planning, risk assessment and response to flood events, making plans in advance can make all the difference, not just to property owners at risks, it will also help insurance companies who make underwriting decisions on properties, the banks supplying the property finance, the telecommunications and utilities companies providing vital services to homes and offices, and the government agencies tasked with protecting communities and their assets. Digital Twin can provide a better understanding of the degree of impact flood events can have on physical assets like buildings, roads, railways, transmission lines, etc.
@@ -46,7 +11,57 @@ The reason for creating a database are:
 2.	To avoid delays in fetching the same data from the API when required again and again to run the models.
 3.	To store the data only for the Area of Interest.
 
-The digital twin stores API details and a local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, LRIS, opentopography, and NIWA in PostgreSQL.
+The Digital Twin stores API details and a local copy of data for the required Area of Interest provided by LINZ, ECAN, Stats NZ, KiwiRail, LRIS, opentopography, and NIWA in PostgreSQL.
+
+## Basic running instructions
+The following list defines the basic steps required to setup and run the digital twin.
+
+## Requirements
+* [Docker](https://www.docker.com/)
+
+## Required Credentials:
+
+* [Stats NZ API Key](https://datafinder.stats.govt.nz/my/api/)
+* [LINZ API Key](linz.govt.nz/guidance/data-service/linz-data-service-guide/web-services/creating-api-key)
+
+## Starting the Digital Twin application
+1. Set up Docker
+2. Create a file called `.env` in the project root, copy the contents of `.env.example` and fill in all blank fields.
+3. From project root, run the command `docker-compose up -d --build`.
+4. Inspect the logs with `docker logs -f backend_digital_twin`.
+5. Inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin. 
+<br>
+
+## Setup for developers
+
+### Run single Docker service e.g. database
+To run only one isolated service (services defined in `docker-compose.yml`) use the following command:
+`docker-compose up --build [-d] [SERVICES]`
+
+e.g. To run only the database in detached mode:
+```bash
+#!/usr/bin/env bash
+docker-compose up --build -d db_postgres
+```
+
+### Create Conda environment
+Setup a conda environment to allow intelligent code analysis and local development by using the following command run from the repository folder:
+
+```bash
+#!/usr/bin/env bash
+conda env create -f environment.yml
+conda activate digitaltwin
+```
+
+<br>
+
+## Tests
+Tests exist in the `tests/` folder.
+
+### Automated testing
+[Github Actions](https://docs.github.com/en/actions) are used to run tests after each push to remote (i.e. github). [Miniconda](https://github.com/marketplace/actions/setup-miniconda)from the GitHub Actions marketplace is used to install the package dependencies. Linting with [Flake8](https://github.com/py-actions/flake8) and testing with [PyTest](https://docs.pytest.org/en/6.2.x/contents.html) is then performed. Several tests require an API key. This is stored as a GitHub secret and accessed by the workflow.
+### Running tests locally
+See the [geoapis wiki testing page](https://github.com/niwa/geoapis/wiki/Testing) for instructions for setting up a .env file and running the geofabrics test.
 
 <br>
 
@@ -383,20 +398,6 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
 
 <br>
 
-## Requirements
-
-* [Python3](https://www.python.org/downloads/)
-* [pip](https://pypi.org/project/pip/) (**P**ip **I**nstalls **P**ackages - Python package manager)
-* [PostgreSQL](https://www.postgresql.org/download/)
-
-<br>
-
-## Required Credentials:
-
-* [Stats NZ API KEY](https://datafinder.stats.govt.nz/my/api/)
-
-<br>
-
 ## Create extensions in PostgreSQL:
 
 1. Install Postgresql and selet PostGIS application to install along with PostgreSQL
@@ -413,62 +414,12 @@ The script uses geofabrics to generate a hydrologically conditioned DEM if it do
 
 <br>
 
-## Create environment to run the packages
-
-In order to run the code, run the following command in your Anaconda Powershell Prompt:
-
-```bash
-#!/usr/bin/env bash
-conda env create -f create_new_env_window.yml
-conda activate digitaltwin
-pip install git+https://github.com/GeospatialResearch/Digital-Twins.git
-```
-
-### Run codes locally
-
-1. Open Anaconda Powershell Prompt
-2. run the command
-
-```bash
-#!/usr/bin/env bash
-conda activate digitaltwin
-spyder
-```
-
-3. In Spyder IDE: Go to `Run`>`Configuration per file`>`Working directory settings` Select `The following directory:` option
-   and specify the root of the directory
-
-   ![image](https://user-images.githubusercontent.com/86580534/133013167-c7e4541a-5723-4a76-9344-25f9f835b986.png)
-
-<br>
-
-## Running docker on your machine
-
-Install [docker](https://docs.docker.com/desktop/windows/install/)
-
-When the installation finishes, Docker starts automatically. The whale   in the notification area indicates that Docker is running, and accessible from a terminal.
-
-### Instructions to run docker
-1. Copy `.env.example` to a file named `.env` and fill in passwords with your choice and fill in API keys from their respective sites.
-2. Save this file in the directory where docker-compose file is stored.
-3. In the command prompt, switch to the directory where docker-compose file is stored.
-4. Run the below command:
-   ```bash
-   #!/usr/bin/env bash
-   docker-compose build
-   docker-compose up -d
-   ```
-Now your docker is up and running
 
 ### Explore the database that we just created
-1. Get the container name by running the command: `docker ps`
-
-![image](https://user-images.githubusercontent.com/86580534/135923023-c11a04bd-5bf0-4ad7-992b-783f0cbc2c50.png)
-
 2. Run the container in the terminal using bash command, then using psql command to enter the database:
 ```bash
 #!/usr/bin/env bash
-docker exec -it [container id] bash
+docker exec -it db_postgres_digital_twin bash
 psql -U [username]
 ```
 ![image](https://user-images.githubusercontent.com/86580534/135923113-de2579eb-9993-48df-9481-58241f648390.png)
@@ -484,14 +435,7 @@ psql -U [username]
 run the command:
 ```bash
 #!/usr/bin/env bash
-select * from apilinks;
+select * from region_geometry;
 ```
 
-![image](https://user-images.githubusercontent.com/86580534/135923860-d10a2323-100c-446e-bec3-6010cca2ba8b.png)
-
 <br>
-
-## Use a database server running as a container
-
-Work in Progess. To deploy PostgreSQL database on a server.
-
