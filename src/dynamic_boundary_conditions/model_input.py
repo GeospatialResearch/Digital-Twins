@@ -62,9 +62,9 @@ def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.G
 
     Parameters
     ----------
-    hyetograph_data: pd.DataFrame
+    hyetograph_data : pd.DataFrame
         Hyetograph data for sites within the catchment area.
-    sites_coverage: gpd.GeoDataFrame
+    sites_coverage : gpd.GeoDataFrame
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     """
     increment_mins = hyetograph_data["mins"][1] - hyetograph_data["mins"][0]
