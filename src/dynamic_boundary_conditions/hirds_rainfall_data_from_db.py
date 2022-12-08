@@ -113,7 +113,7 @@ def rainfall_data_from_db(
     engine
         Engine used to connect to the database.
     sites_in_catchment : gpd.GeoDataFrame
-        Rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area.
+        Rainfall sites coverage areas (thiessen polygons) that are within the catchment area.
     rcp : Optional[float]
         There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
         RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
