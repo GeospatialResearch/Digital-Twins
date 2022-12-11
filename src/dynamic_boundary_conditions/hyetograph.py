@@ -4,7 +4,7 @@
 @Description: Create interactive hyetograph plots for sites within the catchment area.
 @Author: pkh35
 @Last modified by: sli229
-@Last modified date: 9/12/2022
+@Last modified date: 12/12/2022
 """
 
 import logging
@@ -41,10 +41,13 @@ def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:
 
     # drop unnecessary columns
     catchment_data = rain_depth_in_catchment.drop(columns=["category", "rcp", "time_period", "ari", "aep"])
-    # change column names
+    # change duration column names from text (e.g. 10m, 20m, ... , 1h, 24h) to
+    # duration column names in minutes (e.g. 10, 20, ... , 60, 1440)
     for index, column_name in enumerate(catchment_data.columns):
+        # convert duration column names in minutes (text) to duration columns in minutes (integer)
         if column_name.endswith("m"):
             catchment_data.columns.values[index] = int(column_name[:-1])
+        # convert duration column names in hours (text) to duration columns in minutes (integer)
         elif column_name.endswith("h"):
             catchment_data.columns.values[index] = int(column_name[:-1]) * 60
     # transpose data frame
