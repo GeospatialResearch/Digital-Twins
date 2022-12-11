@@ -235,16 +235,15 @@ def get_hyetograph_data(
     if hyeto_method not in hyeto_methods:
         log.error(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
         raise ValueError(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
-    elif increment_mins < 10:
+    if increment_mins < 10:
         log.error(f"Increment minute {increment_mins} is out of range, needs to be at least 10.")
         raise ValueError(f"Increment minute {increment_mins} is out of range, needs to be at least 10.")
-    else:
-        transposed_catchment_data = get_transposed_data(rain_depth_in_catchment)
-        interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
-        interp_increment_data = get_interp_incremental_data(interp_catchment_data)
-        storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_hrs)
-        hyetograph_data = transform_data_for_selected_method(
-            storm_length_data, time_to_peak_hrs, increment_mins, hyeto_method)
+    transposed_catchment_data = get_transposed_data(rain_depth_in_catchment)
+    interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
+    interp_increment_data = get_interp_incremental_data(interp_catchment_data)
+    storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_hrs)
+    hyetograph_data = transform_data_for_selected_method(
+        storm_length_data, time_to_peak_hrs, increment_mins, hyeto_method)
     return hyetograph_data
 
 
