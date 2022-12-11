@@ -72,8 +72,8 @@ def get_interpolated_data(
     increment_mins : int
         Time interval in minutes.
     interp_method : str
-        Temporal interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
- |      'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
+        Temporal interpolation method to be used. Refer to 'scipy.interpolate.interp1d()' for available methods.
+        One of 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
     """
     duration = transposed_catchment_data['duration_mins']
     duration_new = np.arange(increment_mins, duration.values[-1] + increment_mins, increment_mins)
