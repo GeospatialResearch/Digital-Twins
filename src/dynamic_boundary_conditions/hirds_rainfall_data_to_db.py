@@ -5,7 +5,7 @@
 @Author: pkh35
 @Date: 20/01/2022
 @Last modified by: sli229
-@Last modified date: 11/10/2022
+@Last modified date: 5/12/2022
 """
 
 import pandas as pd
@@ -14,10 +14,8 @@ import sqlalchemy
 import pathlib
 import logging
 from typing import List
-from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import hyetograph
-from src.dynamic_boundary_conditions import rainfall_data_from_hirds
+from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, rainfall_data_from_hirds
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -57,20 +55,15 @@ def check_table_exists(engine, db_table_name: str) -> bool:
     return insp.has_table(db_table_name, schema="public")
 
 
-def get_sites_id_in_catchment(engine, catchment_polygon: Polygon) -> List[str]:
+def get_sites_id_in_catchment(sites_in_catchment: gpd.GeoDataFrame) -> List[str]:
     """
-    Get rainfall sites ids within the catchment area from the 'rainfall_sites' table in the database.
+    Get all rainfall sites ids within the catchment area.
 
     Parameters
     ----------
-    engine
-        Engine used to connect to the database.
-    catchment_polygon : Polygon
-        Desired catchment area.
+    sites_in_catchment : gpd.GeoDataFrame
+        Rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area.
     """
-    query = f"""SELECT * FROM rainfall_sites AS rs
-        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"""
-    sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     sites_id_in_catchment = sites_in_catchment["site_id"].tolist()
     return sites_id_in_catchment
 
@@ -139,7 +132,7 @@ def add_each_site_rainfall_data(engine, sites_id_list: List[str], idf: bool):
         add_rainfall_data_to_db(engine, site_id, idf)
 
 
-def rainfall_data_to_db(engine, catchment_polygon: Polygon, idf: bool):
+def rainfall_data_to_db(engine, sites_in_catchment: gpd.GeoDataFrame, idf: bool):
     """
     Store rainfall data of all the sites within the catchment area in the database.
 
@@ -147,12 +140,12 @@ def rainfall_data_to_db(engine, catchment_polygon: Polygon, idf: bool):
     ----------
     engine
         Engine used to connect to the database.
-    catchment_polygon : Polygon
-        Desired catchment area.
+    sites_in_catchment : gpd.GeoDataFrame
+        Rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
-    sites_id_in_catchment = get_sites_id_in_catchment(engine, catchment_polygon)
+    sites_id_in_catchment = get_sites_id_in_catchment(sites_in_catchment)
     rain_table_name = db_rain_table_name(idf)
     # check if 'rainfall_depth' or 'rainfall_intensity' table is already in the database
     if check_table_exists(engine, rain_table_name):
@@ -171,12 +164,17 @@ def rainfall_data_to_db(engine, catchment_polygon: Polygon, idf: bool):
 
 
 def main():
+    # Catchment polygon
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
+    # Connect to the database
     engine = setup_environment.get_database()
-    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
+    # Get all rainfall sites (thiessen polygons) coverage areas are within the catchment area
+    sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
+    # Store rainfall data of all the sites within the catchment area in the database
     # Set idf to False for rain depth data and to True for rain intensity data
-    rainfall_data_to_db(engine, catchment_polygon, idf=False)
-    rainfall_data_to_db(engine, catchment_polygon, idf=True)
+    rainfall_data_to_db(engine, sites_in_catchment, idf=False)
+    rainfall_data_to_db(engine, sites_in_catchment, idf=True)
 
 
 if __name__ == "__main__":
