@@ -256,17 +256,17 @@ Each rainfall site is associated with a particular area. To store the total size
 ```python
 #!/usr/bin/env python
 if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import rainfall_sites
-    from src.dynamic_boundary_conditions import thiessen_polygon_calculator
-    
-    engine = setup_environment.get_database()
-    nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
-    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary_polygon)
-    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
+   from src.digitaltwin import setup_environment
+   from src.dynamic_boundary_conditions import rainfall_sites
+   from src.dynamic_boundary_conditions import thiessen_polygon_calculator
+
+   engine = setup_environment.get_database()
+   nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
+   sites_in_catchment = rainfall_sites.get_sites_within_aoi(engine, nz_boundary_polygon)
+   thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
 ```
 
-The `get_sites_locations(engine, catchment)` function is used to get the sites with the catchment area from the database. The function requires two arguments:
+The `get_sites_within_aoi(engine, catchment)` function is used to get the sites with the catchment area from the database. The function requires two arguments:
 1. *engine:* Engine used to connect to the database.
 2. *catchment:* New Zealand boundary catchment polygon (polygon type).
 
@@ -304,7 +304,7 @@ A hyetograph is a graphical representation of the distribution of rainfall inten
 >    sites = rainfall_sites.get_rainfall_sites_in_df()
 >    rainfall_sites.rainfall_sites_to_db(engine, sites)
 >    nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
->    sites_in_catchment = rainfall_sites.get_sites_locations(engine, nz_boundary_polygon)
+>    sites_in_catchment = rainfall_sites.get_sites_within_aoi(engine, nz_boundary_polygon)
 >    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
 >    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
 >

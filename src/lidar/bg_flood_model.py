@@ -48,6 +48,7 @@ def bg_model_inputs(
     keys = max_temp_xr.data_vars.keys()
     elev_var = list(keys)[1]
     river = "RiverDis.txt"
+    rainfall = "rain_forcing.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     outfile = rf"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/model_output/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
@@ -60,6 +61,7 @@ def bg_model_inputs(
                              f"smallnc = {smallnc};\n"
                              f"outputtimestep = {outputtimestep};\n"
                              f"endtime = {endtime};\n"
+                             f"rain = {rainfall};\n"
                              f"river = {river},{extents};\n"
                              f"outvars = h, hmax, zb, zs, u, v;\n"
                              f"outfile = {outfile};")

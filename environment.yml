@@ -8,6 +8,7 @@ dependencies:
   - pip
   - python-dotenv
   - lxml
+  - pandas
   - geopandas>=0.10.2 # Needs to be explicit otherwise the dependencies required to use sjoin are not installed
   - rasterio # Needs to be explicit as wheel fails to build if insalled as a dependency of geofabrics
   - python-pdal # Not on PyPI so needs to be added here and not through pip geofabrics
@@ -18,8 +19,9 @@ dependencies:
   - validators  # Try remove in future
   - sqlalchemy
   - geoalchemy2
+  - plotly
   - pip:
     - geofabrics>=0.9.3
-    - geovoronoi==0.4.0
+    - geovoronoi>=0.4.0
 
 prefix: 
