@@ -1,13 +1,26 @@
+import logging
+
 from src import run
 from src.digitaltwin import get_data_from_db
+from src.dynamic_boundary_conditions import main_rainfall
 from src.lidar import lidar_metadata_in_db, bg_flood_model
 
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+log.addHandler(stream_handler)
+
 if __name__ == '__main__':
-    print("run.main()")
+    log.debug("run.main()")
     run.main()
-    print("get_data_from_db.main()")
+    log.debug("get_data_from_db.main()")
     get_data_from_db.main()
-    print("lidar_metadata_in_db.main()")
+    log.debug("lidar_metadata_in_db.main()")
     lidar_metadata_in_db.main()
-    print("bg_flood_model.main()")
+    log.debug("main_rainfall.main()")
+    main_rainfall.main()
+    log.debug("bg_flood_model.main()")
     bg_flood_model.main()
