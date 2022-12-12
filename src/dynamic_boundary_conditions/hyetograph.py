@@ -145,7 +145,11 @@ def add_time_information(
     """
     time_to_peak_mins = time_to_peak_hrs * 60
     if hyeto_method == "alt_block":
+        # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
+        # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
+        # the peak in turn.
         row_count = len(site_data)
+        # Calculate minutes from peak for all incremental rainfall depths data
         mins_from_peak_right = np.arange(1, ceil((row_count + 1) / 2)) * increment_mins
         if (row_count % 2) == 0:
             mins_from_peak_left = np.arange(0, floor((row_count + 1) / 2)) * -increment_mins
@@ -154,12 +158,18 @@ def add_time_information(
             mins_from_peak_left = np.arange(1, floor((row_count + 1) / 2)) * -increment_mins
             mins_from_peak = [mins for sublist in zip(mins_from_peak_right, mins_from_peak_left) for mins in sublist]
             mins_from_peak.insert(0, 0)
+        # Add time (minutes) information using minutes from peak in order to allocate incremental rainfall depths
         site_data = site_data.assign(mins=time_to_peak_mins + np.array(mins_from_peak))
     else:
+        # Chicago Method: the initial incremental rainfall depths is placed at the peak position and split in half
+        # (left and right), the next incremental rainfall depths are further split in half and arranged before and after
+        # (left and right) of the previous split incremental rainfall depths.
+        # Add time (minutes) information in order to allocate the split incremental rainfall depths
         mins_start = time_to_peak_mins - site_data["duration_mins"][0]
         mins_end = time_to_peak_mins + site_data["duration_mins"][0]
         mins = np.arange(mins_start, mins_end, increment_mins / 2)
         site_data = site_data.assign(mins=mins)
+    # Add extra time information, i.e. hours and seconds columns
     site_data = site_data.assign(hours=site_data["mins"] / 60,
                                  seconds=site_data["mins"] * 60)
     site_data = site_data.sort_values(by="seconds", ascending=True)
@@ -192,8 +202,14 @@ def transform_data_for_selected_method(
     for column_num in range(1, len(storm_length_data.columns)):
         site_data = storm_length_data.iloc[:, [0, column_num]]
         if hyeto_method == "alt_block":
+            # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
+            # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
+            # the peak in turn.
             site_data = site_data.sort_values(by=site_data.columns[1], ascending=False)
         else:
+            # Chicago Method: the initial incremental rainfall depths is placed at the peak position and split in half
+            # (left and right), the next incremental rainfall depths are further split in half and arranged before and
+            # after (left and right) of the previous split incremental rainfall depths.
             site_data_right = site_data.div(2)
             site_data_left = site_data_right[::-1]
             site_data = pd.concat([site_data_left, site_data_right]).reset_index(drop=True)
@@ -320,7 +336,7 @@ def main():
         time_to_peak_hrs=24,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method="alt_block")
+        hyeto_method="chicago")
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph(hyetograph_data, ari)
 
