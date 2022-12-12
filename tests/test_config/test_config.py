@@ -4,7 +4,7 @@ import unittest
 from src import config
 
 
-class ConfigTest(unittest.TestCase):
+class GetEnvVariableTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.TEST_VAR_KEY = "TEST_VAR_KEY"
