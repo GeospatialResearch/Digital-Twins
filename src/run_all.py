@@ -1,7 +1,6 @@
 import logging
 
-from src import run
-from src.digitaltwin import get_data_from_db
+from src.digitaltwin import get_data_from_db, run
 from src.dynamic_boundary_conditions import main_rainfall
 from src.lidar import lidar_metadata_in_db, bg_flood_model
 
