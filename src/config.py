@@ -4,15 +4,15 @@ from typing import TypeVar
 from dotenv import load_dotenv
 
 # Generic type, used for static type checking
-T = TypeVar("T")
+T = TypeVar("T", str, bool, int, float)
 
 load_dotenv()
 
 
-def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: T = str) -> T:
+def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: type = str) -> T:
     """
      Reads an environment variable, with settings to allow defaults, empty values, and type casting
-
+     To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
     Parameters
     ----------
     var_name : str
@@ -21,12 +21,18 @@ def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False
         Default return value if the environment variable does not exist. Doesn't override empty string vars.
     allow_empty : bool
         If False then a KeyError will be raised if the environment variable is empty.
-    cast_to : T
-        The type that the variable is cast to when returned e.g. int or bool.
-
-    :return: The environment variable, or default if it does not exist.
-    :raises KeyError if allow_empty is False and the environment variable is empty string or None
-    :raises ValueError if cast_to is not compatible with the value stored.
+    cast_to : Callable[[str], T]
+        The type to cast to eg. str, int, or bool
+    Returns
+    -------
+    The environment variable, or default if it does not exist, as type T.
+    Raises
+    ------
+    LinAlgException
+    KeyError
+        If allow_empty is False and the environment variable is empty string or None
+    ValueError
+        If cast_to is not compatible with the value stored.
     """
     env_var = os.getenv(var_name, default)
     if not allow_empty and env_var in (None, ""):
@@ -37,17 +43,20 @@ def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False
 def _cast_str(str_to_cast: str, cast_to: T) -> T:
     """
     Takes a string and casts it to necessary primitive builtin types. Tested with int, float, and bool.
-    For bools this detects if the value is in the case-insensitive sets {"True", "T", "1"} or {"False", "F", "0"}
-    and raises a ValueError if not
-
+    For bools, this detects if the value is in the case-insensitive sets {"True", "T", "1"} or {"False", "F", "0"}
+    and raises a ValueError if not. For example _cast_str("False", bool) -> False
     Parameters
     ----------
     str_to_cast : str
         The string that is going to be casted to the type
-    cast_to : T
+    cast_to : Callable[[str], T]
         The type to cast to e.g. bool
-    :return: The string casted to cast_to type
-    :raises ValueError if cast_to is not compatible with the value stored
+    Returns
+    -------
+    The string casted to type T defined by cast_to.
+    Raises
+    ------
+    ValueError if [cast_to] is not compatible with the value stored.
     """
     # Special cases i.e. casts that aren't of the form int("7") -> 7
     if cast_to == bool:
