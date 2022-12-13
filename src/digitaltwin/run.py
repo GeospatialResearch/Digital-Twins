@@ -32,7 +32,7 @@ def main():
     # table exist in the database
     insert_api_to_table.region_geometry_table(engine, stats_nz_api_key)
 
-    record = input_data("src/instructions_run.json")
+    record = input_data("src/digitaltwin/instructions_run.json")
 
     # Substitute api key into link template
     linz_api_key = config.get_env_variable("LINZ_API_KEY")
