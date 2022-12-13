@@ -26,7 +26,7 @@ The following list defines the basic steps required to setup and run the digital
 
 ## Starting the Digital Twin application
 1. Set up Docker
-2. Create a file called `.env` in the project root, copy the contents of `.env.example` and fill in all blank fields.
+2. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields.
 3. From project root, run the command `docker-compose up -d --build`.
 4. Inspect the logs with `docker logs -f backend_digital_twin`.
 5. Inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin. 
