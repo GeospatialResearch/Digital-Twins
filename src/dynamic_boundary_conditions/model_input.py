@@ -6,12 +6,25 @@
 @Date: 8/12/2022
 """
 
+import logging
 import pathlib
 import geopandas as gpd
 import pandas as pd
+from typing import Literal
+import xarray
 from shapely.geometry import Polygon
+from geocube.api.core import make_geocube
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db, hyetograph
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
 
 
 def sites_voronoi_intersect_catchment(
@@ -95,6 +108,55 @@ def spatial_uniform_model_input(mean_catchment_rain: pd.DataFrame, bg_flood_path
     spatial_uniform_input.to_csv(bg_flood_path/"rain_forcing.txt", header=None, index=None, sep="\t")
 
 
+def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame):
+    """
+    Create the rainfall depths and intensities data cube for the catchment area across all durations.
+
+    Parameters
+    ----------
+    hyetograph_data : pd.DataFrame
+        Hyetograph data for sites within the catchment area.
+    sites_coverage : gpd.GeoDataFrame
+        Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
+    """
+    increment_mins = hyetograph_data["mins"][1] - hyetograph_data["mins"][0]
+    hyetograph_data_long = pd.DataFrame()
+    for index, row in hyetograph_data.iterrows():
+        hyeto_time_slice = row[:-3].to_frame("rain_depth_mm").rename_axis("site_id").reset_index()
+        hyeto_time_slice["rain_intensity_mmhr"] = hyeto_time_slice["rain_depth_mm"] / increment_mins * 60
+        hyeto_time_slice = hyeto_time_slice.assign(mins=row["mins"], hours=row["hours"], seconds=row["seconds"])
+        hyetograph_data_long = pd.concat([hyetograph_data_long, hyeto_time_slice])
+
+    sites_coverage = sites_coverage.drop(columns=["site_name", "area_in_km2", "area_percent"])
+    hyeto_data_w_geom = hyetograph_data_long.merge(sites_coverage, how="inner")
+    hyeto_data_w_geom = gpd.GeoDataFrame(hyeto_data_w_geom)
+
+    rain_data_cube = make_geocube(
+        vector_data=hyeto_data_w_geom,
+        measurements=["rain_depth_mm", "rain_intensity_mmhr"],
+        resolution=(-0.0001, 0.0001),
+        group_by="seconds",
+        fill=0)
+
+    return rain_data_cube
+
+
+def spatial_varying_model_input(rain_data_cube: xarray.Dataset, bg_flood_path: pathlib.Path):
+    """
+    Write the rainfall intensities data cube out in NetCDF format (rain_forcing.nc).
+    This can be used as spatially varying rainfall input into the BG-Flood model.
+
+    Parameters
+    ----------
+    rain_data_cube : xarray.Dataset
+        Rainfall depths and intensities data cube for the catchment area across all durations.
+    bg_flood_path : pathlib.Path
+        BG-Flood file path.
+    """
+    spatial_varying_input = rain_data_cube.drop_vars("rain_depth_mm")
+    spatial_varying_input.to_netcdf(bg_flood_path/"rain_forcing.nc")
+
+
 def main():
     # Catchment polygon
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
@@ -129,6 +191,10 @@ def main():
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
     spatial_uniform_model_input(mean_catchment_rain, bg_flood_path)
+
+    # Write out data cube in netcdf format (used as spatially varying rainfall input into BG-Flood)
+    rain_data_cube = create_rain_data_cube(hyetograph_data, sites_coverage)
+    spatial_varying_model_input(rain_data_cube, bg_flood_path)
 
 
 if __name__ == "__main__":
