@@ -111,7 +111,7 @@ def spatial_uniform_model_input(
     """
     mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
     spatial_uniform_input = mean_catchment_rain[["seconds", "rain_intensity_mmhr"]]
-    spatial_uniform_input.to_csv(bg_flood_path/"rain_forcing.txt", header=None, index=None, sep="\t")
+    spatial_uniform_input.to_csv(bg_flood_path / "rain_forcing.txt", header=None, index=None, sep="\t")
 
 
 def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame):
@@ -147,20 +147,26 @@ def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.Geo
     return rain_data_cube
 
 
-def spatial_varying_model_input(rain_data_cube: xarray.Dataset, bg_flood_path: pathlib.Path):
+def spatial_varying_model_input(
+        hyetograph_data: pd.DataFrame,
+        sites_coverage: gpd.GeoDataFrame,
+        bg_flood_path: pathlib.Path):
     """
     Write the rainfall intensities data cube out in NetCDF format (rain_forcing.nc).
     This can be used as spatially varying rainfall input into the BG-Flood model.
 
     Parameters
     ----------
-    rain_data_cube : xarray.Dataset
-        Rainfall depths and intensities data cube for the catchment area across all durations.
+    hyetograph_data : pd.DataFrame
+        Hyetograph data for sites within the catchment area.
+    sites_coverage : gpd.GeoDataFrame
+        Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     bg_flood_path : pathlib.Path
         BG-Flood file path.
     """
+    rain_data_cube = create_rain_data_cube(hyetograph_data, sites_coverage)
     spatial_varying_input = rain_data_cube.drop_vars("rain_depth_mm")
-    spatial_varying_input.to_netcdf(bg_flood_path/"rain_forcing.nc")
+    spatial_varying_input.to_netcdf(bg_flood_path / "rain_forcing.nc")
 
 
 def main():
@@ -197,9 +203,8 @@ def main():
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     spatial_uniform_model_input(hyetograph_data, sites_coverage, bg_flood_path)
 
-    # Write out data cube in netcdf format (used as spatially varying rainfall input into BG-Flood)
-    rain_data_cube = create_rain_data_cube(hyetograph_data, sites_coverage)
-    spatial_varying_model_input(rain_data_cube, bg_flood_path)
+    # Write out rainfall intensities data cube in NetCDF format (used as spatially varying rainfall input into BG-Flood)
+    spatial_varying_model_input(hyetograph_data, sites_coverage, bg_flood_path)
 
 
 if __name__ == "__main__":
