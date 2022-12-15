@@ -11,7 +11,6 @@ import pathlib
 import geopandas as gpd
 import pandas as pd
 from typing import Literal
-import xarray
 from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 from src.digitaltwin import setup_environment
@@ -169,6 +168,40 @@ def spatial_varying_model_input(
     spatial_varying_input.to_netcdf(bg_flood_path / "rain_forcing.nc")
 
 
+def generate_rain_model_input(
+        hyetograph_data: pd.DataFrame,
+        sites_coverage: gpd.GeoDataFrame,
+        bg_flood_path: pathlib.Path,
+        input_type: Literal["uniform", "varying"]):
+    """
+    Generate the requested rainfall model input for BG-Flood, i.e. spatially uniform rain input ('rain_forcing.txt'
+    text file) or spatially varying rain input ('rain_forcing.nc' NetCDF file).
+
+    Parameters
+    ----------
+    hyetograph_data : pd.DataFrame
+        Hyetograph data for sites within the catchment area.
+    sites_coverage : gpd.GeoDataFrame
+        Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
+    bg_flood_path : pathlib.Path
+        BG-Flood file path.
+    input_type : Literal["uniform", "varying"]
+        Type of rainfall model input to be generated. One of 'uniform' or 'varying',
+        i.e. spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
+    """
+    input_types = ["uniform", "varying"]
+    if input_type not in input_types:
+        log.error(f"Invalid rainfall model input type. '{input_type}' not in {input_types}")
+        raise ValueError(f"Invalid rainfall model input type. '{input_type}' not in {input_types}")
+
+    if input_type == "uniform":
+        spatial_uniform_model_input(hyetograph_data, sites_coverage, bg_flood_path)
+        log.info(f"Successfully generated the spatially uniform rain input for BG-Flood. Located in: {bg_flood_path}")
+    else:
+        spatial_varying_model_input(hyetograph_data, sites_coverage, bg_flood_path)
+        log.info(f"Successfully generated the spatially varying rain input for BG-Flood. Located in: {bg_flood_path}")
+
+
 def main():
     # BG-Flood path
     bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
@@ -201,10 +234,9 @@ def main():
 
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
-    # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
-    spatial_uniform_model_input(hyetograph_data, sites_coverage, bg_flood_path)
-    # Write out rainfall intensities data cube in NetCDF format (used as spatially varying rainfall input into BG-Flood)
-    spatial_varying_model_input(hyetograph_data, sites_coverage, bg_flood_path)
+    # Write out the requested rainfall model input for BG-Flood
+    generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type="uniform")
+    generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type="varying")
 
 
 if __name__ == "__main__":
