@@ -92,18 +92,24 @@ def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.G
     return mean_catchment_rain
 
 
-def spatial_uniform_model_input(mean_catchment_rain: pd.DataFrame, bg_flood_path: pathlib.Path):
+def spatial_uniform_model_input(
+        hyetograph_data: pd.DataFrame,
+        sites_coverage: gpd.GeoDataFrame,
+        bg_flood_path: pathlib.Path):
     """
     Write the relevant mean catchment rainfall data (i.e. 'seconds' and 'rain_intensity_mmhr' columns) in a text file
     (rain_forcing.txt). This can be used as spatially uniform rainfall input into the BG-Flood model.
 
     Parameters
     ----------
-    mean_catchment_rain : pd.DataFrame
-        Mean catchment rainfall depths and intensities (weighted average of gauge measurements) across all durations.
+    hyetograph_data : pd.DataFrame
+        Hyetograph data for sites within the catchment area.
+    sites_coverage : gpd.GeoDataFrame
+        Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     bg_flood_path : pathlib.Path
         BG-Flood file path.
     """
+    mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
     spatial_uniform_input = mean_catchment_rain[["seconds", "rain_intensity_mmhr"]]
     spatial_uniform_input.to_csv(bg_flood_path/"rain_forcing.txt", header=None, index=None, sep="\t")
 
@@ -158,6 +164,8 @@ def spatial_varying_model_input(rain_data_cube: xarray.Dataset, bg_flood_path: p
 
 
 def main():
+    # BG-Flood path
+    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
     # Catchment polygon
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
@@ -185,12 +193,9 @@ def main():
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
 
-    # BG-Flood path
-    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
     # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
-    mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
-    spatial_uniform_model_input(mean_catchment_rain, bg_flood_path)
+    spatial_uniform_model_input(hyetograph_data, sites_coverage, bg_flood_path)
 
     # Write out data cube in netcdf format (used as spatially varying rainfall input into BG-Flood)
     rain_data_cube = create_rain_data_cube(hyetograph_data, sites_coverage)
