@@ -199,10 +199,10 @@ def main():
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
 
-    # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
+    # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
+    # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
     spatial_uniform_model_input(hyetograph_data, sites_coverage, bg_flood_path)
-
     # Write out rainfall intensities data cube in NetCDF format (used as spatially varying rainfall input into BG-Flood)
     spatial_varying_model_input(hyetograph_data, sites_coverage, bg_flood_path)
 
