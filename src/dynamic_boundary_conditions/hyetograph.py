@@ -282,6 +282,23 @@ def get_hyetograph_data(
     return hyetograph_intensity
 
 
+def hyetograph_data_wide_to_long(hyetograph_data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transform hyetograph intensities data for all sites within the catchment area from wide format to long format.
+
+    Parameters
+    ----------
+    hyetograph_data : pd.DataFrame
+        Hyetograph intensities data for sites within the catchment area.
+    """
+    hyetograph_data_long = pd.DataFrame()
+    for index, row in hyetograph_data.iterrows():
+        hyeto_time_slice = row[:-3].to_frame("rain_intensity_mmhr").rename_axis("site_id").reset_index()
+        hyeto_time_slice = hyeto_time_slice.assign(mins=row["mins"], hours=row["hours"], seconds=row["seconds"])
+        hyetograph_data_long = pd.concat([hyetograph_data_long, hyeto_time_slice])
+    return hyetograph_data_long
+
+
 def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
     """
     Create interactive individual hyetograph plots for sites within the catchment area.
