@@ -184,7 +184,8 @@ def transform_data_for_selected_method(
         hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
     Transform the storm length incremental rainfall depths for sites within the catchment area based on
-    the selected hyetograph method and returns hyetograph depths data in Pandas DataFrame format.
+    the selected hyetograph method and returns hyetograph depths data for all sites within the catchment area
+    in Pandas DataFrame format.
 
     Parameters
     ----------
