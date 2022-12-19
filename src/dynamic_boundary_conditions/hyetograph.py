@@ -222,7 +222,7 @@ def transform_data_for_selected_method(
 
 def hyetograph_depth_to_intensity(hyetograph_depth: pd.DataFrame) -> pd.DataFrame:
     """
-    Convert hyetograph depths data to hyetograph intensities data.
+    Convert hyetograph depths data for all sites within the catchment area to hyetograph intensities data.
 
     Parameters
     ----------
