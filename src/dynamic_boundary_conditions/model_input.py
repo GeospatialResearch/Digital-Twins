@@ -151,15 +151,14 @@ def spatial_varying_model_input(
     Parameters
     ----------
     hyetograph_data : pd.DataFrame
-        Hyetograph data for sites within the catchment area.
+        Hyetograph intensities data for sites within the catchment area.
     sites_coverage : gpd.GeoDataFrame
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     bg_flood_path : pathlib.Path
         BG-Flood file path.
     """
     rain_data_cube = create_rain_data_cube(hyetograph_data, sites_coverage)
-    spatial_varying_input = rain_data_cube.drop_vars("rain_depth_mm")
-    spatial_varying_input.to_netcdf(bg_flood_path / "rain_forcing.nc")
+    rain_data_cube.to_netcdf(bg_flood_path / "rain_forcing.nc")
 
 
 def generate_rain_model_input(
