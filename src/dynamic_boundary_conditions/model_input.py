@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 @Script name: model_input.py
-@Description:
+@Description: Generate the requested rainfall model input for BG-Flood, i.e. spatially uniform rain input
+              ('rain_forcing.txt' text file) or spatially varying rain input ('rain_forcing.nc' NetCDF file).
 @Author: sli229
 @Date: 8/12/2022
 """
