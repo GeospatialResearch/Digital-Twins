@@ -140,7 +140,7 @@ def create_rain_data_cube(
     return rain_data_cube
 
 
-def spatial_varying_model_input(
+def spatial_varying_rain_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
         bg_flood_path: pathlib.Path):
@@ -191,7 +191,7 @@ def generate_rain_model_input(
         spatial_uniform_rain_input(hyetograph_data, sites_coverage, bg_flood_path)
         log.info(f"Successfully generated the spatially uniform rain input for BG-Flood. Located in: {bg_flood_path}")
     else:
-        spatial_varying_model_input(hyetograph_data, sites_coverage, bg_flood_path)
+        spatial_varying_rain_input(hyetograph_data, sites_coverage, bg_flood_path)
         log.info(f"Successfully generated the spatially varying rain input for BG-Flood. Located in: {bg_flood_path}")
 
 
