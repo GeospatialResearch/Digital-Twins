@@ -278,8 +278,8 @@ def get_hyetograph_data(
     storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_hrs)
     hyetograph_depth = transform_data_for_selected_method(
         storm_length_data, time_to_peak_hrs, increment_mins, hyeto_method)
-    hyetograph_intensity = hyetograph_depth_to_intensity(hyetograph_depth)
-    return hyetograph_intensity
+    hyetograph_data = hyetograph_depth_to_intensity(hyetograph_depth)
+    return hyetograph_data
 
 
 def hyetograph_data_wide_to_long(hyetograph_data: pd.DataFrame) -> pd.DataFrame:
