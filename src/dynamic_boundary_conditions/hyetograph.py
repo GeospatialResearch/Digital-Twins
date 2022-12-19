@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 @Script name: hyetograph.py
-@Description: Create interactive hyetograph plots for sites within the catchment area.
+@Description: Get hyetograph data and create interactive hyetograph plots for sites within the catchment area.
 @Author: pkh35
 @Last modified by: sli229
 @Last modified date: 19/12/2022
@@ -184,7 +184,7 @@ def transform_data_for_selected_method(
         hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
     Transform the storm length incremental rainfall depths for sites within the catchment area based on
-    the selected hyetograph method and returns in Pandas DataFrame format.
+    the selected hyetograph method and returns hyetograph depths data in Pandas DataFrame format.
 
     Parameters
     ----------
@@ -215,9 +215,26 @@ def transform_data_for_selected_method(
             site_data = pd.concat([site_data_left, site_data_right]).reset_index(drop=True)
         site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
         hyetograph_sites_data.append(site_data)
-    hyetograph_data = pd.concat(hyetograph_sites_data, axis=1, ignore_index=False)
-    hyetograph_data = hyetograph_data.loc[:, ~hyetograph_data.columns.duplicated(keep="last")]
-    return hyetograph_data
+    hyetograph_depth = pd.concat(hyetograph_sites_data, axis=1, ignore_index=False)
+    hyetograph_depth = hyetograph_depth.loc[:, ~hyetograph_depth.columns.duplicated(keep="last")]
+    return hyetograph_depth
+
+
+def hyetograph_depth_to_intensity(hyetograph_depth: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convert hyetograph depths data to hyetograph intensities data.
+
+    Parameters
+    ----------
+    hyetograph_depth: pd.DataFrame
+        Hyetograph depths data for sites within the catchment area.
+    """
+    time_interval = hyetograph_depth["mins"][1] - hyetograph_depth["mins"][0]
+    hyetograph_intensity = hyetograph_depth.copy()
+    sites_column_list = list(hyetograph_intensity.columns.values[:-3])
+    for site_id in sites_column_list:
+        hyetograph_intensity[f"{site_id}"] = hyetograph_intensity[f"{site_id}"] / time_interval * 60
+    return hyetograph_intensity
 
 
 def get_hyetograph_data(
@@ -228,7 +245,7 @@ def get_hyetograph_data(
         interp_method: str,
         hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
-    Get hyetograph data for all sites within the catchment area and returns in Pandas DataFrame format.
+    Get hyetograph intensities data for all sites within the catchment area and returns in Pandas DataFrame format.
 
     Parameters
     ----------
@@ -258,9 +275,10 @@ def get_hyetograph_data(
     interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
     interp_increment_data = get_interp_incremental_data(interp_catchment_data)
     storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_hrs)
-    hyetograph_data = transform_data_for_selected_method(
+    hyetograph_depth = transform_data_for_selected_method(
         storm_length_data, time_to_peak_hrs, increment_mins, hyeto_method)
-    return hyetograph_data
+    hyetograph_intensity = hyetograph_depth_to_intensity(hyetograph_depth)
+    return hyetograph_intensity
 
 
 def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
@@ -270,20 +288,20 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
     Parameters
     ----------
     hyetograph_data : pd.DataFrame
-        Hyetograph data for sites within the catchment area.
+        Hyetograph intensities data for sites within the catchment area.
     ari : float
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     """
     for site_id in hyetograph_data.columns.values[:-3]:
         hyeto_site_data = hyetograph_data[[f"{site_id}", "mins", "hours", "seconds"]]
-        hyeto_site_data.columns.values[0] = "rain_depth_mm"
+        hyeto_site_data.columns.values[0] = "rain_intensity_mmhr"
         hyeto_fig = px.bar(
             hyeto_site_data,
             title=f"{ari}-year storm: site {site_id}",
             x="mins",
-            y="rain_depth_mm",
+            y="rain_intensity_mmhr",
             labels={"mins": "Time (Minutes)",
-                    "rain_depth_mm": "Rainfall Depth (mm)"}
+                    "rain_intensity_mmhr": "Rainfall Intensity (mm/hr)"}
         )
         hyeto_fig.update_layout(
             title_font_size=20,
