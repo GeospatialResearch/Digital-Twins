@@ -112,11 +112,10 @@ def spatial_uniform_rain_input(
     spatial_uniform_input.to_csv(bg_flood_path / "rain_forcing.txt", header=None, index=None, sep="\t")
 
 
-def create_rain_data_cube(
-        hyetograph_data: pd.DataFrame,
-        sites_coverage: gpd.GeoDataFrame) -> xarray.Dataset:
+def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> xarray.Dataset:
     """
-    Create rainfall intensities data cube for the catchment area across all durations.
+    Create rainfall intensities data cube (xarray data) for the catchment area across all durations,
+    i.e. convert rainfall intensities vector data into rasterized xarray data.
 
     Parameters
     ----------
