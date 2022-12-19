@@ -11,6 +11,7 @@ import pathlib
 import geopandas as gpd
 import pandas as pd
 from typing import Literal
+import xarray
 from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 from src.digitaltwin import setup_environment
@@ -111,36 +112,31 @@ def spatial_uniform_model_input(
     spatial_uniform_input.to_csv(bg_flood_path / "rain_forcing.txt", header=None, index=None, sep="\t")
 
 
-def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame):
+def create_rain_data_cube(
+        hyetograph_data: pd.DataFrame,
+        sites_coverage: gpd.GeoDataFrame) -> xarray.Dataset:
     """
-    Create the rainfall depths and intensities data cube for the catchment area across all durations.
+    Create rainfall intensities data cube for the catchment area across all durations.
 
     Parameters
     ----------
     hyetograph_data : pd.DataFrame
-        Hyetograph data for sites within the catchment area.
+        Hyetograph intensities data for sites within the catchment area.
     sites_coverage : gpd.GeoDataFrame
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     """
-    increment_mins = hyetograph_data["mins"][1] - hyetograph_data["mins"][0]
-    hyetograph_data_long = pd.DataFrame()
-    for index, row in hyetograph_data.iterrows():
-        hyeto_time_slice = row[:-3].to_frame("rain_depth_mm").rename_axis("site_id").reset_index()
-        hyeto_time_slice["rain_intensity_mmhr"] = hyeto_time_slice["rain_depth_mm"] / increment_mins * 60
-        hyeto_time_slice = hyeto_time_slice.assign(mins=row["mins"], hours=row["hours"], seconds=row["seconds"])
-        hyetograph_data_long = pd.concat([hyetograph_data_long, hyeto_time_slice])
-
-    sites_coverage = sites_coverage.drop(columns=["site_name", "area_in_km2", "area_percent"])
-    hyeto_data_w_geom = hyetograph_data_long.merge(sites_coverage, how="inner")
-    hyeto_data_w_geom = gpd.GeoDataFrame(hyeto_data_w_geom)
+    hyetograph_data_long = hyetograph.hyetograph_data_wide_to_long(hyetograph_data)
+    hyetograph_data_long = hyetograph_data_long.merge(sites_coverage, how="inner")
+    hyetograph_data_long.drop(columns=["site_name", "area_in_km2", "area_percent", "mins", "hours"], inplace=True)
+    hyetograph_data_long.rename(columns={"seconds": "time"}, inplace=True)
+    hyetograph_data_long = gpd.GeoDataFrame(hyetograph_data_long)
 
     rain_data_cube = make_geocube(
-        vector_data=hyeto_data_w_geom,
-        measurements=["rain_depth_mm", "rain_intensity_mmhr"],
+        vector_data=hyetograph_data_long,
+        measurements=["rain_intensity_mmhr"],
         resolution=(-0.0001, 0.0001),
-        group_by="seconds",
+        group_by="time",
         fill=0)
-
     return rain_data_cube
 
 
@@ -227,7 +223,6 @@ def main():
         increment_mins=10,
         interp_method="cubic",
         hyeto_method="alt_block")
-    print(hyetograph_data)
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
 
