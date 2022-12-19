@@ -69,25 +69,23 @@ def sites_coverage_in_catchment(
 
 def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> pd.DataFrame:
     """
-    Calculate the mean catchment rainfall depths and intensities (weighted average of gauge measurements)
+    Calculate the mean catchment rainfall intensities (weighted average of gauge measurements)
     across all durations using the thiessen polygon method.
 
     Parameters
     ----------
     hyetograph_data : pd.DataFrame
-        Hyetograph data for sites within the catchment area.
+        Hyetograph intensities data for sites within the catchment area.
     sites_coverage : gpd.GeoDataFrame
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     """
-    increment_mins = hyetograph_data["mins"][1] - hyetograph_data["mins"][0]
     mean_catchment_rain = hyetograph_data.copy()
     sites_column_list = list(mean_catchment_rain.columns.values[:-3])
     for site_id in sites_column_list:
         site_area_percent = sites_coverage.query("site_id == @site_id")["area_percent"].values[0]
         mean_catchment_rain[f"{site_id}"] = mean_catchment_rain[f"{site_id}"] * site_area_percent
-    mean_catchment_rain["rain_depth_mm"] = mean_catchment_rain[sites_column_list].sum(axis=1)
-    mean_catchment_rain["rain_intensity_mmhr"] = mean_catchment_rain["rain_depth_mm"] / increment_mins * 60
-    mean_catchment_rain = mean_catchment_rain[["mins", "hours", "seconds", "rain_depth_mm", "rain_intensity_mmhr"]]
+    mean_catchment_rain["rain_intensity_mmhr"] = mean_catchment_rain[sites_column_list].sum(axis=1)
+    mean_catchment_rain = mean_catchment_rain[["mins", "hours", "seconds", "rain_intensity_mmhr"]]
     return mean_catchment_rain
 
 
