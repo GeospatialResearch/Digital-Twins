@@ -94,13 +94,13 @@ def spatial_uniform_model_input(
         sites_coverage: gpd.GeoDataFrame,
         bg_flood_path: pathlib.Path):
     """
-    Write the relevant mean catchment rainfall data (i.e. 'seconds' and 'rain_intensity_mmhr' columns) in a text file
-    (rain_forcing.txt). This can be used as spatially uniform rainfall input into the BG-Flood model.
+    Write the relevant mean catchment rainfall intensities data (i.e. 'seconds' and 'rain_intensity_mmhr' columns)
+    in a text file (rain_forcing.txt). This can be used as spatially uniform rainfall input into the BG-Flood model.
 
     Parameters
     ----------
     hyetograph_data : pd.DataFrame
-        Hyetograph data for sites within the catchment area.
+        Hyetograph intensities data for sites within the catchment area.
     sites_coverage : gpd.GeoDataFrame
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     bg_flood_path : pathlib.Path
