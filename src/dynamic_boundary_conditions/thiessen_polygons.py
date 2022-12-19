@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: thiessen_polygon_calculator.py
 @Description: Calculate the area covered by each rainfall site across New Zealand and store it in the database,
               then get all rainfall sites voronoi (thiessen polygons) areas that are within the catchment area.
-@Author: pkh35
-@Date: 20/01/2022
-@Last modified by: sli229
-@Last modified date: 19/12/2022
+@Author: pkh35, sli229
 """
 
 import pathlib

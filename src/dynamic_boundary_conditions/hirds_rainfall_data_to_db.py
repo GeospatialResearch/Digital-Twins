@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: hirds_rainfall_data_to_db.py
 @Description: Store rainfall data of all the sites within the catchment area in the database.
-@Author: pkh35
-@Date: 20/01/2022
-@Last modified by: sli229
-@Last modified date: 5/12/2022
+@Author: pkh35, sli229
 """
 
 import pandas as pd

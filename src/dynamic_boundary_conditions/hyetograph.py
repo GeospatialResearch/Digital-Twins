@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: hyetograph.py
 @Description: Get hyetograph data and create interactive hyetograph plots for sites within the catchment area.
-@Author: pkh35
-@Last modified by: sli229
-@Last modified date: 19/12/2022
+@Author: sli229
 """
 
 import logging

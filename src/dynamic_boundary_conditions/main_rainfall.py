@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: main.py
 @Description:
-@Author: pkh35
-@Date: 17/01/2022
-@Last modified by: sli229
-@Last modified date: 8/12/2022
+@Author: pkh35, sli229
 """
 
 import geopandas as gpd
