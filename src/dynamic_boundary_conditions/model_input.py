@@ -90,7 +90,7 @@ def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.G
     return mean_catchment_rain
 
 
-def spatial_uniform_model_input(
+def spatial_uniform_rain_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
         bg_flood_path: pathlib.Path):
@@ -188,7 +188,7 @@ def generate_rain_model_input(
         raise ValueError(f"Invalid rainfall model input type. '{input_type}' not in {input_types}")
 
     if input_type == "uniform":
-        spatial_uniform_model_input(hyetograph_data, sites_coverage, bg_flood_path)
+        spatial_uniform_rain_input(hyetograph_data, sites_coverage, bg_flood_path)
         log.info(f"Successfully generated the spatially uniform rain input for BG-Flood. Located in: {bg_flood_path}")
     else:
         spatial_varying_model_input(hyetograph_data, sites_coverage, bg_flood_path)
