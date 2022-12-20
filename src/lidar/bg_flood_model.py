@@ -12,6 +12,7 @@ import xarray as xr
 from datetime import datetime
 import subprocess
 from dotenv import load_dotenv
+from typing import Literal
 import os
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
@@ -31,9 +32,10 @@ def bg_model_inputs(
         resolution,
         endtime,
         outputtimestep,
+        rain_input_type: Literal["uniform", "varying"],
         mask=15,
         gpudevice=0,
-        smallnc=0,
+        smallnc=0
 ):
     """Set parameters to run the flood model.
     mask is used for visualising all the values larger than 15.
@@ -48,7 +50,7 @@ def bg_model_inputs(
     keys = max_temp_xr.data_vars.keys()
     elev_var = list(keys)[1]
     river = "RiverDis.txt"
-    rainfall = "rain_forcing.txt"
+    rainfall = "rain_forcing.txt" if rain_input_type == "uniform" else "rain_forcing.nc?rain_intensity_mmhr"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     outfile = rf"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/model_output/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
@@ -120,12 +122,13 @@ def run_model(
         resolution,
         endtime,
         outputtimestep,
-        engine,
+        rain_input_type: Literal["uniform", "varying"],
+        engine
 ):
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
     bg_model_inputs(
-        bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
+        bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep, rain_input_type
     )
     os.chdir(bg_path)
     subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
@@ -161,7 +164,8 @@ def main():
         resolution=resolution,
         endtime=endtime,
         outputtimestep=outputtimestep,
-        engine=engine,
+        rain_input_type="varying",
+        engine=engine
     )
 
 
