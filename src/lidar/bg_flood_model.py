@@ -164,7 +164,7 @@ def main():
         resolution=resolution,
         end_time=end_time,
         output_timestep=output_timestep,
-        rain_input_type="varying",
+        rain_input_type="uniform",
         engine=engine
     )
 
