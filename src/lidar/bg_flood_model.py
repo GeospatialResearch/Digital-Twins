@@ -2,7 +2,7 @@
 """
 Created on Fri Jan 14 14:05:35 2022
 
-@author: pkh35
+@author: pkh35, sli229
 """
 
 import pathlib
@@ -30,12 +30,12 @@ def bg_model_inputs(
         dem_path,
         catchment_boundary,
         resolution,
-        endtime,
-        outputtimestep,
+        end_time,
+        output_timestep,
         rain_input_type: Literal["uniform", "varying"],
         mask=15,
-        gpudevice=0,
-        smallnc=0
+        gpu_device=0,
+        small_nc=0
 ):
     """Set parameters to run the flood model.
     mask is used for visualising all the values larger than 15.
@@ -57,12 +57,12 @@ def bg_model_inputs(
     try:
         with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
             param_file.write(f"topo = {dem_path}?{elev_var};\n"
-                             f"gpudevice = {gpudevice};\n"
+                             f"gpudevice = {gpu_device};\n"
                              f"mask = {mask};\n"
                              f"dx = {resolution};\n"
-                             f"smallnc = {smallnc};\n"
-                             f"outputtimestep = {outputtimestep};\n"
-                             f"endtime = {endtime};\n"
+                             f"smallnc = {small_nc};\n"
+                             f"outputtimestep = {output_timestep};\n"
+                             f"endtime = {end_time};\n"
                              f"rain = {rainfall};\n"
                              f"river = {river},{extents};\n"
                              f"outvars = h, hmax, zb, zs, u, v;\n"
@@ -120,15 +120,15 @@ def run_model(
         instructions,
         catchment_boundary,
         resolution,
-        endtime,
-        outputtimestep,
+        end_time,
+        output_timestep,
         rain_input_type: Literal["uniform", "varying"],
         engine
 ):
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
     bg_model_inputs(
-        bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep, rain_input_type
+        bg_path, dem_path, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
     )
     os.chdir(bg_path)
     subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
@@ -153,17 +153,17 @@ def main():
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary(instructions)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
-    outputtimestep = 100.0
+    output_timestep = 100.0
     # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
     # is the last one)
-    endtime = 900.0
+    end_time = 900.0
     run_model(
         bg_path=bg_path,
         instructions=instructions,
         catchment_boundary=catchment_boundary,
         resolution=resolution,
-        endtime=endtime,
-        outputtimestep=outputtimestep,
+        end_time=end_time,
+        output_timestep=output_timestep,
         rain_input_type="varying",
         engine=engine
     )
