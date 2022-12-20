@@ -203,11 +203,10 @@ def main():
     engine = setup_environment.get_database()
     # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
-
     # Requested scenario
-    rcp = None
-    time_period = None
-    ari = 50
+    rcp = 2.6
+    time_period = "2031-2050"
+    ari = 100
     # For a requested scenario, get all rainfall data for sites within the catchment area from the database
     # Set idf to False for rain depth data and to True for rain intensity data
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
@@ -222,7 +221,6 @@ def main():
         hyeto_method="alt_block")
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
-
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     # Write out the requested rainfall model input for BG-Flood
