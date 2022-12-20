@@ -197,7 +197,7 @@ def main():
     # BG-Flood path
     bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
     # Catchment polygon
-    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    catchment_file = pathlib.Path(r"src/dynamic_boundary_conditions/catchment_polygon.shp")
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     # Connect to the database
     engine = setup_environment.get_database()

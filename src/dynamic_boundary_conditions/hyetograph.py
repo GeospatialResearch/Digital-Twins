@@ -348,7 +348,7 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
 
 def main():
     # Catchment polygon
-    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    catchment_file = pathlib.Path(r"src/dynamic_boundary_conditions/catchment_polygon.shp")
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     # Connect to the database
     engine = setup_environment.get_database()
