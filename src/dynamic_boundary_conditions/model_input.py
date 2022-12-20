@@ -10,7 +10,7 @@ import pathlib
 import geopandas as gpd
 import pandas as pd
 from typing import Literal
-import xarray
+import xarray as xr
 from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 from src.digitaltwin import setup_environment
@@ -111,7 +111,7 @@ def spatial_uniform_rain_input(
     spatial_uniform_input.to_csv(bg_flood_path / "rain_forcing.txt", header=None, index=None, sep="\t")
 
 
-def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> xarray.Dataset:
+def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> xr.Dataset:
     """
     Create rainfall intensities data cube (xarray data) for the catchment area across all durations,
     i.e. convert rainfall intensities vector data into rasterized xarray data.
