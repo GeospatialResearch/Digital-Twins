@@ -28,6 +28,8 @@ def catchment_area_geometry_info(catchment_file) -> Polygon:
 
 
 def main():
+    # BG-Flood path
+    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
     # Catchment polygon
     catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
     catchment_polygon = catchment_area_geometry_info(catchment_file)
@@ -63,13 +65,11 @@ def main():
         hyeto_method="alt_block")
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
-
-    # BG-Flood path
-    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
-    # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
+    # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
-    mean_catchment_rain = model_input.mean_catchment_rainfall(hyetograph_data, sites_coverage)
-    model_input.spatial_uniform_model_input(mean_catchment_rain, bg_flood_path)
+    # Write out the requested rainfall model input for BG-Flood
+    model_input.generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type="uniform")
+    model_input.generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type="varying")
 
 
 if __name__ == "__main__":
