@@ -93,7 +93,7 @@ def insert_records(
 ):
     """Insert user inputs as a row in the apilinks table."""
     if not source_name[0].isalpha() \
-            and not source_name[0].startswith("_"):
+            and not source_name.startswith("_"):
         raise ValueError("source_name should start with _ or a letter")
 
     valid_url = url_validator(url)
