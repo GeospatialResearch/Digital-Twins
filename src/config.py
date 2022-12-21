@@ -28,7 +28,6 @@ def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False
     The environment variable, or default if it does not exist, as type T.
     Raises
     ------
-    LinAlgException
     KeyError
         If allow_empty is False and the environment variable is empty string or None
     ValueError
