@@ -2,7 +2,8 @@ import logging
 
 from src.digitaltwin import get_data_from_db, run
 from src.dynamic_boundary_conditions import main_rainfall
-from src.lidar import lidar_metadata_in_db, bg_flood_model
+from src.lidar import lidar_metadata_in_db
+from src.flood_model import bg_flood_model
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

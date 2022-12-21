@@ -131,16 +131,24 @@ def run_model(
     subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
 
 
+def read_and_fill_instructions():
+    """Reads instruction file and adds keys and uses selected_polygon.geojson as catchment_boundary"""
+    linz_api_key = config.get_env_variable("LINZ_API_KEY")
+    instruction_file = pathlib.Path("src/flood_model/instructions_bgflood.json")
+    with open(instruction_file, "r") as file_pointer:
+        instructions = json.load(file_pointer)
+        instructions["instructions"]["apis"]["linz"]["key"] = linz_api_key
+        instructions["instructions"]["data_paths"]["catchment_boundary"] = (
+                    pathlib.Path(os.getcwd()) / pathlib.Path("selected_polygon.geojson")).as_posix()
+    return instructions
+
+
 def main():
     engine = setup_environment.get_database()
     flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
     bg_path = pathlib.Path(flood_model_dir)
-    linz_api_key = config.get_env_variable("LINZ_API_KEY")
-    instruction_file = pathlib.Path("src/lidar/instructions_bgflood.json")
-    with open(instruction_file, "r") as file_pointer:
-        instructions = json.load(file_pointer)
-        instructions["instructions"]["apis"]["linz"]["key"] = linz_api_key
-    catchment_boundary = dem_metadata_in_db.get_catchment_boundary(instructions)
+    instructions = read_and_fill_instructions()
+    catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
     outputtimestep = 100.0
