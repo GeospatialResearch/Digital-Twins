@@ -51,7 +51,7 @@ jobs:
           activate-environment: digitaltwin
           environment-file: environment.yml
           auto-activate-base: false
-          channels: conda-forge, defaults
+          channels: conda-forge
           channel-priority: strict
           use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
           python-version: ${{ matrix.python-version }}
