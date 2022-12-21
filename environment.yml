@@ -20,6 +20,7 @@ dependencies:
   - sqlalchemy
   - geoalchemy2
   - plotly
+  - geocube
   - pip:
     - geofabrics>=0.9.3
     - geovoronoi>=0.4.0
