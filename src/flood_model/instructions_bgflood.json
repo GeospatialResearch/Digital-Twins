@@ -14,7 +14,7 @@
 			"number_of_cores": 3
 		},
 		"data_paths": {
-			"local_cache": "U:/Research/FloodRiskResearch/DigitalTwin/stored_data/cache",
+			"local_cache": "{data_dir}/cache",
 			"subfolder": "results",
 			"raw_dem": "raw_dem.nc",
 			"raw_dem_extents": "raw_extents.geojson",
