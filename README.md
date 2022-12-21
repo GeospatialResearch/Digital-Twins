@@ -342,7 +342,7 @@ if __name__ == '__main__':
     instruction_file = pathlib.Path("src/lidar/instructions_bgflood.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
-        instructions["instructions"]["apis"]["linz"]["key"] = linz_api_key
+        instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds

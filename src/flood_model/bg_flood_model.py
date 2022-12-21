@@ -137,7 +137,7 @@ def read_and_fill_instructions():
     instruction_file = pathlib.Path("src/flood_model/instructions_bgflood.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
-        instructions["instructions"]["apis"]["linz"]["key"] = linz_api_key
+        instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
         instructions["instructions"]["data_paths"]["catchment_boundary"] = (
                     pathlib.Path(os.getcwd()) / pathlib.Path("selected_polygon.geojson")).as_posix()
     return instructions
