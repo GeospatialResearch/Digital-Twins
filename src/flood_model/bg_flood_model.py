@@ -134,7 +134,7 @@ def run_model(
 def read_and_fill_instructions():
     """Reads instruction file and adds keys and uses selected_polygon.geojson as catchment_boundary"""
     linz_api_key = config.get_env_variable("LINZ_API_KEY")
-    instruction_file = pathlib.Path("src/flood_model/instructions_bgflood.json")
+    instruction_file = pathlib.Path("src/flood_model/instructions_geofabrics.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
     instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key

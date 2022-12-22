@@ -339,7 +339,7 @@ if __name__ == '__main__':
     engine = setup_environment.get_database()
     bg_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
     linz_api_key = get_api_key("LINZ_API_KEY")
-    instruction_file = pathlib.Path("src/lidar/instructions_bgflood.json")
+    instruction_file = pathlib.Path("src/lidar/instructions_geofabrics.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
         instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
