@@ -74,23 +74,22 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
     sites_in_aoi : gpd.GeoDataFrame
         Rainfall sites within the area of interest.
     """
-    if area_of_interest.is_empty or sites_in_aoi.empty:
-        log.info("No data available for area_of_interest or sites_within_aoi passed as arguments "
-                 "to the 'thiessen_polygons' function")
-        sys.exit()
-    else:
-        coordinates = points_to_coords(sites_in_aoi["geometry"])
-        region_polys, region_pts = voronoi_regions_from_coords(coordinates, area_of_interest, per_geom=False)
-        voronoi_regions = list(region_polys.values())
-        sites_in_voronoi_order = pd.DataFrame()
-        for site_index in region_pts.values():
-            site_index = site_index[0]
-            site = sites_in_aoi.filter(items=[site_index], axis=0)
-            sites_in_voronoi_order = pd.concat([sites_in_voronoi_order, site])
-        rainfall_sites_voronoi = gpd.GeoDataFrame(sites_in_voronoi_order, geometry=voronoi_regions, crs="epsg:4326")
-        rainfall_sites_voronoi["area_in_km2"] = rainfall_sites_voronoi.to_crs(3857).area / 1e6
-        rainfall_sites_voronoi = rainfall_sites_voronoi[["site_id", "site_name", "area_in_km2", "geometry"]]
-        return rainfall_sites_voronoi
+    if area_of_interest.is_empty:
+        raise ValueError("No data available for area_of_interest passed as argument")
+    if sites_in_aoi.empty:
+        raise ValueError("No data available for sites_in_aoi passed as argument")
+    coordinates = points_to_coords(sites_in_aoi["geometry"])
+    region_polys, region_pts = voronoi_regions_from_coords(coordinates, area_of_interest, per_geom=False)
+    voronoi_regions = list(region_polys.values())
+    sites_in_voronoi_order = pd.DataFrame()
+    for site_index in region_pts.values():
+        site_index = site_index[0]
+        site = sites_in_aoi.filter(items=[site_index], axis=0)
+        sites_in_voronoi_order = pd.concat([sites_in_voronoi_order, site])
+    rainfall_sites_voronoi = gpd.GeoDataFrame(sites_in_voronoi_order, geometry=voronoi_regions, crs="epsg:4326")
+    rainfall_sites_voronoi["area_in_km2"] = rainfall_sites_voronoi.to_crs(3857).area / 1e6
+    rainfall_sites_voronoi = rainfall_sites_voronoi[["site_id", "site_name", "area_in_km2", "geometry"]]
+    return rainfall_sites_voronoi
 
 
 def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame):
