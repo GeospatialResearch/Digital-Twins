@@ -30,11 +30,11 @@ class RainfallSitesTest(unittest.TestCase):
         mock_sites_data.return_value = cls.open_file(r"tests/test_dynamic_boundary_conditions/data/rainfall_sites.txt")
         cls.sites = rainfall_sites.get_rainfall_sites_in_df()
 
-    def test_rainfall_sites_in_df_correct_frame_type(self):
+    def test_get_rainfall_sites_in_df_correct_frame_type(self):
         """Test to ensure tabular data is returned in GeoDataFrame format."""
         self.assertIsInstance(self.sites, gpd.GeoDataFrame)
 
-    def test_rainfall_sites_in_df_added_geom_column(self):
+    def test_get_rainfall_sites_in_df_added_geom_column(self):
         """Test to ensure the 'geometry' column was added."""
         column_name = self.sites.columns[-1]
         self.assertEqual(column_name, "geometry")
