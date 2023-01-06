@@ -68,9 +68,9 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
 
     def test_get_layout_structure_of_data_correct_blocks(self):
         """Test to ensure the right number of blocks or BlockStructures are returned."""
-        self.assertEqual(len(self.depth_layout), 10)
-        self.assertEqual(len(self.intensity_layout), 10)
-        self.assertEqual(len(self.depth_hist_layout), 1)
+        self.assertEqual(10, len(self.depth_layout))
+        self.assertEqual(10, len(self.intensity_layout))
+        self.assertEqual(1, len(self.depth_hist_layout))
 
     def test_get_layout_structure_of_data_correct_data_types(self):
         """Test to ensure the arguments in each BlockStructure are of the correct data type."""
@@ -112,21 +112,21 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
         """Test to ensure that category is 'hist' for the first BlockStructure in both depth and intensity layouts."""
         block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, end=1)
         for block_structure in block_structures:
-            self.assertEqual(block_structure.category, "hist")
+            self.assertEqual("hist", block_structure.category)
 
     def test_get_layout_structure_of_data_category_hist_stderr(self):
         """Test to ensure that category is 'hist_stderr' for the second BlockStructure in both depth and intensity
         layouts."""
         block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, start=1, end=2)
         for block_structure in block_structures:
-            self.assertEqual(block_structure.category, "hist_stderr")
+            self.assertEqual("hist_stderr", block_structure.category)
 
     def test_get_layout_structure_of_data_category_proj(self):
         """Test to ensure that category is 'proj' for the rest of the BlockStructure (i.e., except the first two
         BlockStructures) in both depth and intensity layouts."""
         block_structures = self.get_block_structures(self.depth_layout, self.intensity_layout, start=2)
         for block_structure in block_structures:
-            self.assertEqual(block_structure.category, "proj")
+            self.assertEqual("proj", block_structure.category)
 
     def test_convert_to_tabular_data_correct_frame_type(self):
         """Test that each block of rainfall depths and intensities data has been converted to a DataFrame."""
@@ -148,7 +148,7 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
             for block_structure in layout_structure[i]:
                 rain_table = rainfall_data_from_hirds.convert_to_tabular_data(
                     site_data[i], self.example_site_id, block_structure)
-                self.assertEqual(rain_table.shape, (12, 18))
+                self.assertEqual((12, 18), rain_table.shape)
 
     def test_get_site_url_key_not_empty(self):
         """Test to ensure that the site url key for both rainfall depths and intensities data fetched from
