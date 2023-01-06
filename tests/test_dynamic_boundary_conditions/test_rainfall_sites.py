@@ -37,7 +37,7 @@ class RainfallSitesTest(unittest.TestCase):
     def test_get_rainfall_sites_in_df_added_geom_column(self):
         """Test to ensure the 'geometry' column was added."""
         column_name = self.sites.columns[-1]
-        self.assertEqual(column_name, "geometry")
+        self.assertEqual("geometry", column_name)
 
     def test_get_rainfall_sites_data_not_empty(self):
         """Test to ensure that the rainfall sites data fetched from the HIRDS website is not empty."""
