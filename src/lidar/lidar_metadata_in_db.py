@@ -5,20 +5,22 @@ Created on Tue Oct  5 16:34:48 2021.
 @author: pkh35
 """
 
-import geoapis.lidar
-import json
-import geopandas as gpd
+import logging
 import os
 import pathlib
+import zipfile
+
+import geoapis.lidar
+import geopandas as gpd
 import numpy as np
 import pandas as pd
-import zipfile
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
-from geoalchemy2 import Geometry
-from sqlalchemy.orm import sessionmaker
-import logging
 import psycopg2
+from geoalchemy2 import Geometry
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+from src import config
 from src.digitaltwin import setup_environment
 
 log = logging.getLogger(__name__)
@@ -85,9 +87,9 @@ def remove_duplicate_rows(engine, table_name):
     )
 
 
-def store_lidar_path(engine, file_path_to_store, instruction_file, filetype=".laz"):
+def store_lidar_path(engine, file_path_to_store, geometry_df, filetype=".laz"):
     """To store the path of downloaded point cloud files."""
-    get_lidar_data(file_path_to_store, instruction_file)
+    get_lidar_data(file_path_to_store, geometry_df)
     laz_files = get_files(filetype, file_path_to_store)
     for filepath in laz_files:
         file_name = os.path.basename(filepath)
@@ -150,11 +152,10 @@ def get_lidar_path(engine, geometry_df):
 def main():
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
-    file_path_to_store = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/lidar_data")
-    instruction_file = pathlib.Path("src/lidar/instructions_lidar.json")
-    with open(instruction_file, "r") as file_pointer:
-        instructions = json.load(file_pointer)
-    geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
+    data_dir = config.get_env_variable("DATA_DIR")
+    file_path_to_store = pathlib.Path(rf"{data_dir}/LiDAR")
+    input_polygon_file = pathlib.Path("./selected_polygon.geojson")
+    geometry_df = gpd.GeoDataFrame.from_file(input_polygon_file)
     store_lidar_path(engine, file_path_to_store, geometry_df)
     store_tileindex(engine, file_path_to_store)
 

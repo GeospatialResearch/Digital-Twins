@@ -1,11 +1,15 @@
-FROM python:3.8 as base
+FROM continuumio/miniconda3 as base
+
 WORKDIR app/
-RUN pip install --upgrade pip
-COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
 
-COPY db_configure.yml .
+COPY environment.yml .
+RUN conda env create -f environment.yml
+# Make RUN commands use the new environment:
+SHELL ["conda", "run", "-n", "digitaltwin", "/bin/bash", "-c"]
+
+RUN echo "Check GeoFabrics is installed to test environment"
+RUN python -c "import geofabrics"
+
 COPY src/ src/
-
-CMD ["python", "src/run.py"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "digitaltwin", "python", "-m", "src.run_all"]

@@ -5,19 +5,20 @@ Created on Fri Jan 14 14:05:35 2022
 @author: pkh35
 """
 
-import pathlib
-import sys
 import json
-import xarray as xr
-from datetime import datetime
-import subprocess
-from dotenv import load_dotenv
 import os
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+import pathlib
+import subprocess
+from datetime import datetime
+
+import xarray as xr
 from geoalchemy2 import Geometry
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String
 from sqlalchemy import DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+from src import config
 from src.digitaltwin import setup_environment
 from src.lidar import dem_metadata_in_db
 
@@ -50,36 +51,35 @@ def bg_model_inputs(
     river = "RiverDis.txt"
     rainfall = "rain_forcing.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
-    outfile = rf"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/model_output/output_{dt_string}.nc"
+    data_dir = config.get_env_variable("DATA_DIR")
+    # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
+    output_dir = rf"{data_dir}/model_output"
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
+    outfile = rf"{output_dir}/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
-    try:
-        with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
-            param_file.write(f"topo = {dem_path}?{elev_var};\n"
-                             f"gpudevice = {gpudevice};\n"
-                             f"mask = {mask};\n"
-                             f"dx = {resolution};\n"
-                             f"smallnc = {smallnc};\n"
-                             f"outputtimestep = {outputtimestep};\n"
-                             f"endtime = {endtime};\n"
-                             f"rain = {rainfall};\n"
-                             f"river = {river},{extents};\n"
-                             f"outvars = h, hmax, zb, zs, u, v;\n"
-                             f"outfile = {outfile};")
-    except Exception as error:
-        print(error, type(error))
-        sys.exit()
+    with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
+        param_file.write(f"topo = {dem_path}?{elev_var};\n"
+                         f"gpudevice = {gpudevice};\n"
+                         f"mask = {mask};\n"
+                         f"dx = {resolution};\n"
+                         f"smallnc = {smallnc};\n"
+                         f"outputtimestep = {outputtimestep};\n"
+                         f"endtime = {endtime};\n"
+                         f"rain = {rainfall};\n"
+                         f"river = {river},{extents};\n"
+                         f"outvars = h, hmax, zb, zs, u, v;\n"
+                         f"outfile = {outfile};")
     model_output_to_db(outfile, catchment_boundary)
     river_discharge_info(bg_path)
 
 
-def bg_model_path(file):
+def bg_model_path(file_path):
     """Check if the flood_model path exists."""
-    file = pathlib.Path(file)
-    if file.exists():
-        return file
-    else:
-        print("directory doesn't exist")
-        sys.exit()
+    model_file = pathlib.Path(file_path)
+    if model_file.exists():
+        return model_file
+    raise FileNotFoundError(f"flood model {file_path} not found")
 
 
 def model_output_to_db(outfile, catchment_boundary):
@@ -131,23 +131,26 @@ def run_model(
     subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
 
 
-def get_api_key(key_name: str):
-    """Get the required api key from dotenv environment variable file"""
-    env_path = pathlib.Path().cwd() / "src" / ".env"
-    load_dotenv(env_path)
-    api_key = os.getenv(key_name)
-    return api_key
+def read_and_fill_instructions():
+    """Reads instruction file and adds keys and uses selected_polygon.geojson as catchment_boundary"""
+    linz_api_key = config.get_env_variable("LINZ_API_KEY")
+    instruction_file = pathlib.Path("src/flood_model/instructions_geofabrics.json")
+    with open(instruction_file, "r") as file_pointer:
+        instructions = json.load(file_pointer)
+    instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
+    instructions["instructions"]["data_paths"]["catchment_boundary"] = (
+                pathlib.Path(os.getcwd()) / pathlib.Path("selected_polygon.geojson")).as_posix()
+    instructions["instructions"]["data_paths"]["local_cache"] = instructions["instructions"]["data_paths"][
+        "local_cache"].format(data_dir=config.get_env_variable("DATA_DIR"))
+    return instructions
 
 
 def main():
     engine = setup_environment.get_database()
-    bg_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
-    linz_api_key = get_api_key("LINZ_API_KEY")
-    instruction_file = pathlib.Path("src/lidar/instructions_bgflood.json")
-    with open(instruction_file, "r") as file_pointer:
-        instructions = json.load(file_pointer)
-        instructions["instructions"]["apis"]["linz"]["key"] = linz_api_key
-    catchment_boundary = dem_metadata_in_db.get_catchment_boundary(instructions)
+    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
+    bg_path = pathlib.Path(flood_model_dir)
+    instructions = read_and_fill_instructions()
+    catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
     outputtimestep = 100.0

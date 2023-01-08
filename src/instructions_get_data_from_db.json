@@ -1,38 +1,5 @@
 {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              1567800,
-              5199800
-            ],
-            [
-              1567800,
-              5191800
-            ],
-            [
-              1577800,
-              5191800
-            ],
-            [
-              1577800,
-              5199800
-            ],
-            [
-              1567800,
-              5199800
-            ]
-          ]
-        ]
-      }
-    }
-  ],
+  "selected_area": "./selected_polygon.geojson",
   "source_name": [
     "_50327-nz-river-centrelines"
   ]

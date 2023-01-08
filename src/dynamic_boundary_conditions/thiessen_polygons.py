@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: thiessen_polygon_calculator.py
+@Script name: thiessen_polygons.py
 @Description: Calculate the area covered by each rainfall site across New Zealand and store it in the database,
               then get all rainfall sites (thiessen polygons) coverage areas are within the catchment area.
 @Author: pkh35
@@ -9,13 +9,14 @@
 @Last modified date: 8/12/2022
 """
 
-import pathlib
-import pandas as pd
-import geopandas as gpd
-from geovoronoi import voronoi_regions_from_coords, points_to_coords
 import logging
-import sys
+import pathlib
+
+import geopandas as gpd
+import pandas as pd
+from geovoronoi import voronoi_regions_from_coords, points_to_coords
 from shapely.geometry import Polygon
+
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, hirds_rainfall_data_to_db
 
@@ -78,23 +79,22 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
     sites_in_aoi : gpd.GeoDataFrame
         Rainfall sites within the area of interest.
     """
-    if area_of_interest.is_empty or sites_in_aoi.empty:
-        log.info("No data available for area_of_interest or sites_within_aoi passed as arguments "
-                 "to the 'thiessen_polygons' function")
-        sys.exit()
-    else:
-        coordinates = points_to_coords(sites_in_aoi["geometry"])
-        region_polys, region_pts = voronoi_regions_from_coords(coordinates, area_of_interest, per_geom=False)
-        voronoi_regions = list(region_polys.values())
-        sites_in_voronoi_order = pd.DataFrame()
-        for site_index in region_pts.values():
-            site_index = site_index[0]
-            site = sites_in_aoi.filter(items=[site_index], axis=0)
-            sites_in_voronoi_order = pd.concat([sites_in_voronoi_order, site])
-        rainfall_sites_coverage = gpd.GeoDataFrame(sites_in_voronoi_order, geometry=voronoi_regions, crs="epsg:4326")
-        rainfall_sites_coverage["area_in_km2"] = rainfall_sites_coverage.to_crs(3857).area / 1e6
-        rainfall_sites_coverage = rainfall_sites_coverage[["site_id", "site_name", "area_in_km2", "geometry"]]
-        return rainfall_sites_coverage
+    if area_of_interest.is_empty:
+        raise ValueError("No data available for area_of_interest passed as argument")
+    if sites_in_aoi.empty:
+        raise ValueError("No data available for sites_in_aoi passed as argument")
+    coordinates = points_to_coords(sites_in_aoi["geometry"])
+    region_polys, region_pts = voronoi_regions_from_coords(coordinates, area_of_interest, per_geom=False)
+    voronoi_regions = list(region_polys.values())
+    sites_in_voronoi_order = pd.DataFrame()
+    for site_index in region_pts.values():
+        site_index = site_index[0]
+        site = sites_in_aoi.filter(items=[site_index], axis=0)
+        sites_in_voronoi_order = pd.concat([sites_in_voronoi_order, site])
+    rainfall_sites_coverage = gpd.GeoDataFrame(sites_in_voronoi_order, geometry=voronoi_regions, crs="epsg:4326")
+    rainfall_sites_coverage["area_in_km2"] = rainfall_sites_coverage.to_crs(3857).area / 1e6
+    rainfall_sites_coverage = rainfall_sites_coverage[["site_id", "site_name", "area_in_km2", "geometry"]]
+    return rainfall_sites_coverage
 
 
 def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame):
@@ -139,7 +139,7 @@ def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
 
 def main():
     # Catchment polygon
-    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
+    catchment_file = pathlib.Path(r"selected_polygon.geojson")
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
     # Connect to the database
     engine = setup_environment.get_database()

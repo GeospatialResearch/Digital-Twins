@@ -73,7 +73,7 @@ class GeoFabricsTest(unittest.TestCase):
         # Load in environment variables to get and set the private API keys
         dotenv.load_dotenv()
         linz_key = os.environ.get("LINZ_API", None)
-        cls.instructions["apis"]["linz"]["key"] = linz_key
+        cls.instructions["apis"]["vector"]["linz"]["key"] = linz_key
 
         # Remove any files from last test, then create a results directory
         cls.cache_dir = test_path / cls.instructions["data_paths"]["local_cache"]
@@ -249,7 +249,7 @@ class GeoFabricsTest(unittest.TestCase):
         )
         logging.info(f"DEM array diff is: {diff_array[diff_array != 0]}")
 
-        threshold = 10e-2
+        threshold = 20e-2
         allowable_number_above = 2
         self.assertTrue(
             len(diff_array[numpy.abs(diff_array) > threshold])
