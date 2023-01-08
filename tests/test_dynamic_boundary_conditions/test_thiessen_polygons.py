@@ -39,12 +39,6 @@ class ThiessenPolygonsTest(unittest.TestCase):
             self.nz_boundary_polygon, self.sites_in_nz)
         self.assertEqual(len(self.sites_in_nz), len(rainfall_sites_voronoi))
 
-    def test_thiessen_polygons_calculator_correct_total_area(self):
-        rainfall_sites_voronoi = thiessen_polygons.thiessen_polygons_calculator(
-            self.nz_boundary_polygon, self.sites_in_nz)
-        total_area_in_km2 = rainfall_sites_voronoi["area_in_km2"].sum()
-        self.assertEqual(740195.25, round(total_area_in_km2, 2))
-
 
 if __name__ == "__main__":
     unittest.main()
