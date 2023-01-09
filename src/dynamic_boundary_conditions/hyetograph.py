@@ -72,9 +72,12 @@ def get_interpolated_data(
         Temporal interpolation method to be used. Refer to 'scipy.interpolate.interp1d()' for available methods.
         One of 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
     """
-    duration = transposed_catchment_data['duration_mins']
-    duration_new = np.arange(increment_mins, duration.values[-1] + increment_mins, increment_mins)
-    duration_new = duration_new[:-1] if duration_new[-1] > duration.values[-1] else duration_new
+    duration = np.array(transposed_catchment_data['duration_mins'])
+    if increment_mins < duration[0] or increment_mins > duration[-1]:
+        raise ValueError(f"Increment minute {increment_mins} is out of range, "
+                         f"needs to be between {duration[0]} and {duration[-1]}.")
+    duration_new = np.arange(increment_mins, duration[-1] + increment_mins, increment_mins)
+    duration_new = duration_new[:-1] if duration_new[-1] > duration[-1] else duration_new
     interp_catchment_data = pd.DataFrame(duration_new, columns=["duration_mins"])
     for column_num in range(1, len(transposed_catchment_data.columns)):
         depth = transposed_catchment_data.iloc[:, column_num]
@@ -267,9 +270,6 @@ def get_hyetograph_data(
     if hyeto_method not in hyeto_methods:
         log.error(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
         raise ValueError(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
-    if increment_mins < 10:
-        log.error(f"Increment minute {increment_mins} is out of range, needs to be at least 10.")
-        raise ValueError(f"Increment minute {increment_mins} is out of range, needs to be at least 10.")
     transposed_catchment_data = get_transposed_data(rain_depth_in_catchment)
     interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
     interp_increment_data = get_interp_incremental_data(interp_catchment_data)
