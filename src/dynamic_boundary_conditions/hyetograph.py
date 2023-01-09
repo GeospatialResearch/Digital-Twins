@@ -222,7 +222,9 @@ def transform_data_for_selected_method(
     return hyetograph_depth
 
 
-def hyetograph_depth_to_intensity(hyetograph_depth: pd.DataFrame) -> pd.DataFrame:
+def hyetograph_depth_to_intensity(hyetograph_depth: pd.DataFrame,
+                                  increment_mins: int,
+                                  hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
     Convert hyetograph depths data to hyetograph intensities data for all sites within the catchment area.
 
@@ -230,12 +232,17 @@ def hyetograph_depth_to_intensity(hyetograph_depth: pd.DataFrame) -> pd.DataFram
     ----------
     hyetograph_depth: pd.DataFrame
         Hyetograph depths data for sites within the catchment area.
+    increment_mins : int
+        Time interval in minutes.
+    hyeto_method : Literal["alt_block", "chicago"]
+        Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
+        Chicago Method.
     """
-    time_interval = hyetograph_depth["mins"][1] - hyetograph_depth["mins"][0]
+    duration_interval = increment_mins if hyeto_method == "alt_block" else (increment_mins / 2)
     hyetograph_intensity = hyetograph_depth.copy()
     sites_column_list = list(hyetograph_intensity.columns.values[:-3])
     for site_id in sites_column_list:
-        hyetograph_intensity[f"{site_id}"] = hyetograph_intensity[f"{site_id}"] / time_interval * 60
+        hyetograph_intensity[f"{site_id}"] = hyetograph_intensity[f"{site_id}"] / duration_interval * 60
     return hyetograph_intensity
 
 
@@ -276,7 +283,7 @@ def get_hyetograph_data(
     storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_hrs)
     hyetograph_depth = transform_data_for_selected_method(
         storm_length_data, time_to_peak_hrs, increment_mins, hyeto_method)
-    hyetograph_data = hyetograph_depth_to_intensity(hyetograph_depth)
+    hyetograph_data = hyetograph_depth_to_intensity(hyetograph_depth, increment_mins, hyeto_method)
     return hyetograph_data
 
 
