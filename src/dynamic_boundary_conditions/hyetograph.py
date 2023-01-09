@@ -74,6 +74,7 @@ def get_interpolated_data(
     """
     duration = transposed_catchment_data['duration_mins']
     duration_new = np.arange(increment_mins, duration.values[-1] + increment_mins, increment_mins)
+    duration_new = duration_new[:-1] if duration_new[-1] > duration.values[-1] else duration_new
     interp_catchment_data = pd.DataFrame(duration_new, columns=["duration_mins"])
     for column_num in range(1, len(transposed_catchment_data.columns)):
         depth = transposed_catchment_data.iloc[:, column_num]
