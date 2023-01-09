@@ -51,6 +51,25 @@ class HyetographTest(unittest.TestCase):
         self.assertEqual(orig_top_right, tps_bottom_left)
         self.assertEqual(orig_bottom_left, tps_top_right)
 
+    def test_get_interpolated_data_increment_mins_out_range(self):
+        increment_mins_list = list(range(0, 10)) + list(range(7201, 7211))
+
+        for increment_mins in increment_mins_list:
+            with self.assertRaises(ValueError) as context:
+                hyetograph.get_interpolated_data(
+                    self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
+            self.assertEqual(
+                f"Increment minute {increment_mins} is out of range, needs to be between 10 and 7200.",
+                str(context.exception))
+
+    def test_get_interpolated_data_increment_mins_in_range(self):
+        increment_mins_list = list(range(10, 7201))
+
+        for increment_mins in increment_mins_list:
+            interp_catchment_data = hyetograph.get_interpolated_data(
+                self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
+            self.assertGreater(len(interp_catchment_data), 0)
+
 
 if __name__ == "__main__":
     unittest.main()
