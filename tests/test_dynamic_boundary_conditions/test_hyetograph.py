@@ -62,14 +62,6 @@ class HyetographTest(unittest.TestCase):
                 f"Increment minute {increment_mins} is out of range, needs to be between 10 and 7200.",
                 str(context.exception))
 
-    def test_get_interpolated_data_increment_mins_in_range(self):
-        increment_mins_list = list(range(10, 7201))
-
-        for increment_mins in increment_mins_list:
-            interp_catchment_data = hyetograph.get_interpolated_data(
-                self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
-            self.assertGreater(len(interp_catchment_data), 0)
-
     def test_get_interpolated_data_invalid_interp_method(self):
         interp_method = "invalid"
 
@@ -80,6 +72,14 @@ class HyetographTest(unittest.TestCase):
             f"Invalid interpolation method '{interp_method}'. "
             f"Refer to 'scipy.interpolate.interp1d()' for available methods.",
             str(context.exception))
+
+    def test_get_interpolated_data_valid_mins_and_method(self):
+        increment_mins_list = list(range(10, 7201))
+
+        for increment_mins in increment_mins_list:
+            interp_catchment_data = hyetograph.get_interpolated_data(
+                self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
+            self.assertGreater(len(interp_catchment_data), 0)
 
 
 if __name__ == "__main__":
