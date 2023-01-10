@@ -70,6 +70,17 @@ class HyetographTest(unittest.TestCase):
                 self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
             self.assertGreater(len(interp_catchment_data), 0)
 
+    def test_get_interpolated_data_invalid_interp_method(self):
+        interp_method = "invalid"
+
+        with self.assertRaises(ValueError) as context:
+            hyetograph.get_interpolated_data(
+                self.transposed_catchment_data, increment_mins=10, interp_method=interp_method)
+        self.assertEqual(
+            f"Invalid interpolation method '{interp_method}'. "
+            f"Refer to 'scipy.interpolate.interp1d()' for available methods.",
+            str(context.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
