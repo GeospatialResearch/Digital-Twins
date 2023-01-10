@@ -51,7 +51,7 @@ class HyetographTest(unittest.TestCase):
         self.assertEqual(orig_top_right, tps_bottom_left)
         self.assertEqual(orig_bottom_left, tps_top_right)
 
-    def test_get_interpolated_data_increment_mins_out_range(self):
+    def test_get_interpolated_data_invalid_increment_mins(self):
         increment_mins_list = list(range(0, 10)) + list(range(7201, 7211))
 
         for increment_mins in increment_mins_list:
