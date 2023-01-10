@@ -81,7 +81,11 @@ def get_interpolated_data(
     interp_catchment_data = pd.DataFrame(duration_new, columns=["duration_mins"])
     for column_num in range(1, len(transposed_catchment_data.columns)):
         depth = transposed_catchment_data.iloc[:, column_num]
-        f_func = interp1d(duration, depth, kind=interp_method)
+        try:
+            f_func = interp1d(duration, depth, kind=interp_method)
+        except NotImplementedError as error:
+            raise ValueError(f"Invalid interpolation method '{interp_method}'. "
+                             f"Refer to 'scipy.interpolate.interp1d()' for available methods.") from error
         site_id = depth.name
         depth_new = pd.Series(f_func(duration_new), name=site_id)
         interp_catchment_data = pd.concat([interp_catchment_data, depth_new], axis=1)
