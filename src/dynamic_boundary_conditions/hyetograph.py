@@ -267,8 +267,8 @@ def get_hyetograph_data(
     increment_mins : int
         Time interval in minutes.
     interp_method : str
-        Temporal interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
-        'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
+        Temporal interpolation method to be used. Refer to 'scipy.interpolate.interp1d()' for available methods.
+        One of 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
     hyeto_method : Literal["alt_block", "chicago"]
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
