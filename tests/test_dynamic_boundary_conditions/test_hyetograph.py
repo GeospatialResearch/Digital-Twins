@@ -63,15 +63,16 @@ class HyetographTest(unittest.TestCase):
                 str(context.exception))
 
     def test_get_interpolated_data_invalid_interp_method(self):
-        interp_method = "invalid"
+        interp_method_list = ["invalid", "test", "abc", "123"]
 
-        with self.assertRaises(ValueError) as context:
-            hyetograph.get_interpolated_data(
-                self.transposed_catchment_data, increment_mins=10, interp_method=interp_method)
-        self.assertEqual(
-            f"Invalid interpolation method '{interp_method}'. "
-            f"Refer to 'scipy.interpolate.interp1d()' for available methods.",
-            str(context.exception))
+        for interp_method in interp_method_list:
+            with self.assertRaises(ValueError) as context:
+                hyetograph.get_interpolated_data(
+                    self.transposed_catchment_data, increment_mins=10, interp_method=interp_method)
+            self.assertEqual(
+                f"Invalid interpolation method '{interp_method}'. "
+                f"Refer to 'scipy.interpolate.interp1d()' for available methods.",
+                str(context.exception))
 
     def test_get_interpolated_data_valid_mins_and_method(self):
         increment_mins_list = list(range(10, 7201))
