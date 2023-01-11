@@ -70,7 +70,7 @@ class HyetographTest(unittest.TestCase):
                 hyetograph.get_interpolated_data(
                     self.transposed_catchment_data, increment_mins=10, interp_method=interp_method)
             self.assertEqual(
-                f"Invalid interpolation method '{interp_method}'. "
+                f"Invalid interpolation method: '{interp_method}'. "
                 f"Refer to 'scipy.interpolate.interp1d()' for available methods.",
                 str(context.exception))
 

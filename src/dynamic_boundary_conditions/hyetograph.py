@@ -84,7 +84,7 @@ def get_interpolated_data(
         try:
             f_func = interp1d(duration, depth, kind=interp_method)
         except NotImplementedError as error:
-            raise ValueError(f"Invalid interpolation method '{interp_method}'. "
+            raise ValueError(f"Invalid interpolation method: '{interp_method}'. "
                              f"Refer to 'scipy.interpolate.interp1d()' for available methods.") from error
         site_id = depth.name
         depth_new = pd.Series(f_func(duration_new), name=site_id)
