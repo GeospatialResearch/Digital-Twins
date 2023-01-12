@@ -13,6 +13,8 @@ class HyetographTest(unittest.TestCase):
     def setUpClass(cls):
         cls.rain_depth_in_catchment = pd.read_csv(
             r"tests/test_dynamic_boundary_conditions/data/rain_depth_in_catchment.txt")
+        cls.transposed_catchment_data = pd.read_csv(
+            r"tests/test_dynamic_boundary_conditions/data/transposed_catchment_data.txt")
 
     def test_get_transposed_data_matching_site_ids(self):
         transposed_catchment_data = hyetograph.get_transposed_data(self.rain_depth_in_catchment)
