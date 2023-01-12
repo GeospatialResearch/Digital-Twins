@@ -1,5 +1,6 @@
 import unittest
 import pandas as pd
+from typing import List
 import pathlib
 from shapely.geometry import Polygon
 from src.dynamic_boundary_conditions import hyetograph
@@ -11,7 +12,7 @@ class HyetographTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rain_depth_in_catchment = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/rain_depth_in_catchment.csv")
+            r"tests/test_dynamic_boundary_conditions/data/rain_depth_in_catchment.txt")
         cls.transposed_catchment_data = hyetograph.get_transposed_data(cls.rain_depth_in_catchment)
 
     def test_get_transposed_data_matching_site_ids(self):
