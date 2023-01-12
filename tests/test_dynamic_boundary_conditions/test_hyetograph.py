@@ -53,7 +53,6 @@ class HyetographTest(unittest.TestCase):
         tps_top_right = transposed_data.iloc[0][-1]
         tps_bottom_left = transposed_data.iloc[-1][0]
         tps_bottom_right = transposed_data.iloc[-1][-1]
-
         self.assertEqual(orig_top_left, tps_top_left)
         self.assertNotEqual(orig_top_right, tps_top_right)
         self.assertNotEqual(orig_bottom_left, tps_bottom_left)
@@ -63,7 +62,6 @@ class HyetographTest(unittest.TestCase):
 
     def test_get_interpolated_data_invalid_increment_mins(self):
         increment_mins_list = list(range(0, 10)) + list(range(7201, 7211))
-
         for increment_mins in increment_mins_list:
             with self.assertRaises(ValueError) as context:
                 hyetograph.get_interpolated_data(
@@ -74,7 +72,6 @@ class HyetographTest(unittest.TestCase):
 
     def test_get_interpolated_data_invalid_interp_method(self):
         interp_method_list = ["invalid", "test", "abc", "123"]
-
         for interp_method in interp_method_list:
             with self.assertRaises(ValueError) as context:
                 hyetograph.get_interpolated_data(
@@ -86,7 +83,6 @@ class HyetographTest(unittest.TestCase):
 
     def test_get_interpolated_data_valid_mins_and_method(self):
         increment_mins_list = list(range(10, 7201))
-
         for increment_mins in increment_mins_list:
             interp_catchment_data = hyetograph.get_interpolated_data(
                 self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
