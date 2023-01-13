@@ -88,6 +88,35 @@ class HyetographTest(unittest.TestCase):
                 self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
             self.assertGreater(len(interp_catchment_data), 0)
 
+    def test_get_interp_incremental_data_row_difference(self):
+
+        def get_interp_catchment_data_row_difference(index: int) -> List[float]:
+            if index == 0:
+                row_diff = self.interp_catchment_data.iloc[index]
+            else:
+                row_diff = (self.interp_catchment_data.iloc[index] - self.interp_catchment_data.iloc[index - 1])
+                row_diff["duration_mins"] = self.interp_catchment_data.iloc[index]["duration_mins"]
+            return row_diff.to_list()
+
+        interp_increment_data = hyetograph.get_interp_incremental_data(self.interp_catchment_data)
+        self.assertEqual(self.interp_catchment_data.shape, interp_increment_data.shape)
+
+        expected_first_row = get_interp_catchment_data_row_difference(index=0)
+        actual_first_row = interp_increment_data.iloc[0].to_list()
+        self.assertEqual(expected_first_row, actual_first_row)
+
+        expected_second_row = get_interp_catchment_data_row_difference(index=1)
+        actual_second_row = interp_increment_data.iloc[1].to_list()
+        self.assertEqual(expected_second_row, actual_second_row)
+
+        expected_second_last_row = get_interp_catchment_data_row_difference(index=-2)
+        actual_second_last_row = interp_increment_data.iloc[-2].to_list()
+        self.assertEqual(expected_second_last_row, actual_second_last_row)
+
+        expected_last_row = get_interp_catchment_data_row_difference(index=-1)
+        actual_last_row = interp_increment_data.iloc[-1].to_list()
+        self.assertEqual(expected_last_row, actual_last_row)
+
 
 if __name__ == "__main__":
     unittest.main()
