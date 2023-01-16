@@ -206,6 +206,10 @@ def transform_data_for_selected_method(
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
     """
+    hyeto_methods = ["alt_block", "chicago"]
+    if hyeto_method not in hyeto_methods:
+        raise ValueError(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
+
     hyetograph_sites_data = []
     for column_num in range(1, len(storm_length_data.columns)):
         site_data = storm_length_data.iloc[:, [0, column_num]]
@@ -279,10 +283,6 @@ def get_hyetograph_data(
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
     """
-    hyeto_methods = ["alt_block", "chicago"]
-    if hyeto_method not in hyeto_methods:
-        log.error(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
-        raise ValueError(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
     transposed_catchment_data = get_transposed_data(rain_depth_in_catchment)
     interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
     interp_increment_data = get_interp_incremental_data(interp_catchment_data)
