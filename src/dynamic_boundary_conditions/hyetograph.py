@@ -248,6 +248,10 @@ def hyetograph_depth_to_intensity(hyetograph_depth: pd.DataFrame,
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
     """
+    hyeto_methods = ["alt_block", "chicago"]
+    if hyeto_method not in hyeto_methods:
+        raise ValueError(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
+
     duration_interval = increment_mins if hyeto_method == "alt_block" else (increment_mins / 2)
     hyetograph_intensity = hyetograph_depth.copy()
     sites_column_list = list(hyetograph_intensity.columns.values[:-3])
