@@ -380,7 +380,7 @@ def main():
     # Get hyetograph data for all sites within the catchment area
     hyetograph_data = get_hyetograph_data(
         rain_depth_in_catchment,
-        storm_length_mins=48,
+        storm_length_mins=2880,
         time_to_peak_hrs=24,
         increment_mins=10,
         interp_method="cubic",
