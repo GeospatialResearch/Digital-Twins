@@ -123,8 +123,7 @@ def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, sto
     """
     min_storm_length_mins = interp_increment_data["duration_mins"].iloc[0]
     if storm_length_mins < min_storm_length_mins:
-        raise ValueError(f"Storm duration (storm_length_mins) needs to be at least '{min_storm_length_mins}' "
-                         f"to correspond to the chosen time interval (increment_mins).")
+        raise ValueError(f"Storm duration (storm_length_mins) needs to be at least '{int(min_storm_length_mins)}'.")
     storm_length_filter = (interp_increment_data["duration_mins"] <= storm_length_mins)
     storm_length_data = interp_increment_data[storm_length_filter]
     return storm_length_data
