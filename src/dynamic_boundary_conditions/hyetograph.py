@@ -110,7 +110,7 @@ def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataF
     return interp_increment_data
 
 
-def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, storm_length_mins: int) -> pd.DataFrame:
+def get_storm_length_increment_data(interp_increment_data: pd.DataFrame, storm_length_mins: int) -> pd.DataFrame:
     """
     Get the incremental rainfall depths for sites within the catchment area for a specific storm duration.
 
@@ -300,7 +300,7 @@ def get_hyetograph_data(
     transposed_catchment_data = get_transposed_data(rain_depth_in_catchment)
     interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
     interp_increment_data = get_interp_incremental_data(interp_catchment_data)
-    storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_mins)
+    storm_length_data = get_storm_length_increment_data(interp_increment_data, storm_length_mins)
     hyetograph_depth = transform_data_for_selected_method(
         storm_length_data, storm_length_mins, time_to_peak_mins, increment_mins, hyeto_method)
     hyetograph_data = hyetograph_depth_to_intensity(hyetograph_depth, increment_mins, hyeto_method)

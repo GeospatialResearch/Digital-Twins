@@ -122,7 +122,7 @@ class HyetographTest(unittest.TestCase):
         storm_lengths_mins_list = list(range(0, 10))
         for storm_lengths_mins in storm_lengths_mins_list:
             with self.assertRaises(ValueError) as context:
-                hyetograph.get_increment_data_for_storm_length(
+                hyetograph.get_storm_length_increment_data(
                     self.interp_increment_data, storm_length_mins=storm_lengths_mins)
             self.assertEqual(
                 f"Storm duration (storm_length_mins) needs to be at least '{min_storm_length_mins}' "
@@ -132,7 +132,7 @@ class HyetographTest(unittest.TestCase):
     def test_get_increment_data_for_storm_length_valid_storm_length_mins(self):
         storm_lengths_mins_list = list(range(10, 7261))
         for storm_lengths_mins in storm_lengths_mins_list:
-            storm_length_data = hyetograph.get_increment_data_for_storm_length(
+            storm_length_data = hyetograph.get_storm_length_increment_data(
                     self.interp_increment_data, storm_length_mins=storm_lengths_mins)
             self.assertGreater(len(storm_length_data), 0)
 
