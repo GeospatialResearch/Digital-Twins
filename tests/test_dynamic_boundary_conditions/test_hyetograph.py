@@ -125,8 +125,7 @@ class HyetographTest(unittest.TestCase):
                 hyetograph.get_storm_length_increment_data(
                     self.interp_increment_data, storm_length_mins=storm_lengths_mins)
             self.assertEqual(
-                f"Storm duration (storm_length_mins) needs to be at least '{min_storm_length_mins}' "
-                f"to correspond to the chosen time interval (increment_mins).",
+                f"Storm duration (storm_length_mins) needs to be at least '{int(min_storm_length_mins)}'.",
                 str(context.exception))
 
     def test_get_storm_length_increment_data_valid_storm_length_mins(self):
