@@ -117,7 +117,7 @@ class HyetographTest(unittest.TestCase):
         actual_last_row = interp_increment_data.iloc[-1].to_list()
         self.assertEqual(expected_last_row, actual_last_row)
 
-    def test_get_increment_data_for_storm_length_invalid_storm_length_mins(self):
+    def test_get_storm_length_increment_data_invalid_storm_length_mins(self):
         min_storm_length_mins = self.interp_increment_data["duration_mins"].iloc[0]
         storm_lengths_mins_list = list(range(0, 10))
         for storm_lengths_mins in storm_lengths_mins_list:
@@ -129,7 +129,7 @@ class HyetographTest(unittest.TestCase):
                 f"to correspond to the chosen time interval (increment_mins).",
                 str(context.exception))
 
-    def test_get_increment_data_for_storm_length_valid_storm_length_mins(self):
+    def test_get_storm_length_increment_data_valid_storm_length_mins(self):
         storm_lengths_mins_list = list(range(10, 7261))
         for storm_lengths_mins in storm_lengths_mins_list:
             storm_length_data = hyetograph.get_storm_length_increment_data(
