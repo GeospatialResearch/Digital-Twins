@@ -153,11 +153,16 @@ def add_time_information(
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
     """
+    hyeto_methods = ["alt_block", "chicago"]
+    if hyeto_method not in hyeto_methods:
+        raise ValueError(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
+
     min_time_to_peak_mins = storm_length_mins / 2
     if time_to_peak_mins < min_time_to_peak_mins:
         raise ValueError(
             "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
             "at least half of 'storm_length_mins' (storm duration).")
+
     if hyeto_method == "alt_block":
         # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
         # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
