@@ -192,7 +192,7 @@ def add_time_information(
 
 
 def transform_data_for_selected_method(
-        storm_length_data: pd.DataFrame,
+        interp_increment_data: pd.DataFrame,
         storm_length_mins: int,
         time_to_peak_mins: Union[int, float],
         increment_mins: int,
@@ -204,8 +204,8 @@ def transform_data_for_selected_method(
 
     Parameters
     ----------
-    storm_length_data : pd.DataFrame
-        Incremental rainfall depths for sites within the catchment area for a specific storm duration.
+    interp_increment_data : pd.DataFrame
+        Incremental rainfall depths for sites within the catchment area.
     storm_length_mins : int
         Storm duration in minutes.
     time_to_peak_mins : Union[int, float]
@@ -219,6 +219,8 @@ def transform_data_for_selected_method(
     hyeto_methods = ["alt_block", "chicago"]
     if hyeto_method not in hyeto_methods:
         raise ValueError(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
+
+    storm_length_data = get_storm_length_increment_data(interp_increment_data, storm_length_mins)
 
     hyetograph_sites_data = []
     for column_num in range(1, len(storm_length_data.columns)):
@@ -300,9 +302,8 @@ def get_hyetograph_data(
     transposed_catchment_data = get_transposed_data(rain_depth_in_catchment)
     interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
     interp_increment_data = get_interp_incremental_data(interp_catchment_data)
-    storm_length_data = get_storm_length_increment_data(interp_increment_data, storm_length_mins)
     hyetograph_depth = transform_data_for_selected_method(
-        storm_length_data, storm_length_mins, time_to_peak_mins, increment_mins, hyeto_method)
+        interp_increment_data, storm_length_mins, time_to_peak_mins, increment_mins, hyeto_method)
     hyetograph_data = hyetograph_depth_to_intensity(hyetograph_depth, increment_mins, hyeto_method)
     return hyetograph_data
 
