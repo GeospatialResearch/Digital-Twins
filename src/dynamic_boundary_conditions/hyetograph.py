@@ -244,9 +244,10 @@ def transform_data_for_selected_method(
     return hyetograph_depth
 
 
-def hyetograph_depth_to_intensity(hyetograph_depth: pd.DataFrame,
-                                  increment_mins: int,
-                                  hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
+def hyetograph_depth_to_intensity(
+        hyetograph_depth: pd.DataFrame,
+        increment_mins: int,
+        hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
     """
     Convert hyetograph depths data to hyetograph intensities data for all sites within the catchment area.
 
