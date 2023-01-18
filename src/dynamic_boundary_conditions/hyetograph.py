@@ -153,12 +153,12 @@ def add_time_information(
         Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
         Chicago Method.
     """
+    min_time_to_peak_mins = storm_length_mins / 2
+    if time_to_peak_mins < min_time_to_peak_mins:
+        raise ValueError(
+            f"'time_to_peak_mins' (time in minutes when rainfall is at its greatest) "
+            f"needs to be at least half of 'storm_length_mins' (storm duration).")
     if hyeto_method == "alt_block":
-        min_time_to_peak_mins = storm_length_mins / 2
-        if time_to_peak_mins < min_time_to_peak_mins:
-            raise ValueError(
-                f"'time_to_peak_mins' (time in minutes when rainfall is at its greatest) "
-                f"needs to be at least half of 'storm_length_mins' (storm duration).")
         # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
         # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
         # the peak in turn.
@@ -175,11 +175,6 @@ def add_time_information(
         # Add time (minutes) information using minutes from peak in order to allocate incremental rainfall depths
         site_data = site_data.assign(mins=time_to_peak_mins + np.array(mins_from_peak))
     else:
-        # min_time_to_peak_mins = min(site_data["duration_mins"]) * 2
-        # if time_to_peak_mins < min_time_to_peak_mins:
-        #     raise ValueError(
-        #         f"The time in minutes when rainfall is at its greatest (reaches maximum) needs to be at least "
-        #         f"'{int(min_time_to_peak_mins)}' to correspond to the chosen time interval (increment_mins).")
         # Chicago Method: the initial incremental rainfall depths is placed at the peak position and split in half
         # (left and right), the next incremental rainfall depths are further split in half and arranged before and after
         # (left and right) of the previous split incremental rainfall depths.
