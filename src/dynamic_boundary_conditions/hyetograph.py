@@ -184,8 +184,8 @@ def add_time_information(
         # (left and right), the next incremental rainfall depths are further split in half and arranged before and after
         # (left and right) of the previous split incremental rainfall depths.
         # Add time (minutes) information in order to allocate the split incremental rainfall depths
-        mins_start = time_to_peak_mins - site_data["duration_mins"][0]
-        mins_end = time_to_peak_mins + site_data["duration_mins"][0]
+        mins_start = time_to_peak_mins - site_data["duration_mins"][0] + increment_mins / 2
+        mins_end = time_to_peak_mins + site_data["duration_mins"][0] + increment_mins / 2
         mins = np.arange(mins_start, mins_end, increment_mins / 2)
         site_data = site_data.assign(mins=mins)
     # Add extra time information, i.e. hours and seconds columns
