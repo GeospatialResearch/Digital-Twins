@@ -156,8 +156,8 @@ def add_time_information(
     min_time_to_peak_mins = storm_length_mins / 2
     if time_to_peak_mins < min_time_to_peak_mins:
         raise ValueError(
-            f"'time_to_peak_mins' (time in minutes when rainfall is at its greatest) "
-            f"needs to be at least half of 'storm_length_mins' (storm duration).")
+            "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
+            "at least half of 'storm_length_mins' (storm duration).")
     if hyeto_method == "alt_block":
         # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
         # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
