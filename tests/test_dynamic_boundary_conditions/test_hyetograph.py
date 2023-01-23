@@ -147,25 +147,33 @@ class HyetographTest(unittest.TestCase):
             self.assertGreater(len(storm_length_data), 0)
 
     def test_add_time_information_invalid_time_to_peak_mins(self):
-        hyeto_method_site_data_list = [(self.hyeto_method_alt_block, self.site_data_alt_block),
-                                       (self.hyeto_method_chicago, self.site_data_chicago)]
-
         min_time_to_peak_mins = int(self.storm_length_mins / 2)
         time_to_peak_mins_list = list(range(0, min_time_to_peak_mins))
 
-        for hyeto_method, site_data in hyeto_method_site_data_list:
-            for time_to_peak_mins in time_to_peak_mins_list:
-                with self.assertRaises(ValueError) as context:
-                    hyetograph.add_time_information(
-                        site_data=site_data,
-                        storm_length_mins=self.storm_length_mins,
-                        time_to_peak_mins=time_to_peak_mins,
-                        increment_mins=self.increment_mins,
-                        hyeto_method=hyeto_method)
-                    self.assertEqual(
-                        "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
-                        "at least half of 'storm_length_mins' (storm duration).",
-                        str(context.exception))
+        for time_to_peak_mins in time_to_peak_mins_list:
+            with self.assertRaises(ValueError) as context_alt_block:
+                hyetograph.add_time_information(
+                    site_data=self.site_data_alt_block,
+                    storm_length_mins=self.storm_length_mins,
+                    time_to_peak_mins=time_to_peak_mins,
+                    increment_mins=self.increment_mins,
+                    hyeto_method=self.hyeto_method_alt_block)
+                self.assertEqual(
+                    "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
+                    "at least half of 'storm_length_mins' (storm duration).",
+                    str(context_alt_block.exception))
+
+            with self.assertRaises(ValueError) as context_chicago:
+                hyetograph.add_time_information(
+                    site_data=self.site_data_chicago,
+                    storm_length_mins=self.storm_length_mins,
+                    time_to_peak_mins=time_to_peak_mins,
+                    increment_mins=self.increment_mins,
+                    hyeto_method=self.hyeto_method_chicago)
+                self.assertEqual(
+                    "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
+                    "at least half of 'storm_length_mins' (storm duration).",
+                    str(context_chicago.exception))
 
 
 if __name__ == "__main__":
