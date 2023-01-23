@@ -1,5 +1,6 @@
 import unittest
 import pandas as pd
+import numpy as np
 from typing import List
 import pathlib
 from shapely.geometry import Polygon
@@ -29,6 +30,7 @@ class HyetographTest(unittest.TestCase):
         cls.increment_mins = 10
         cls.interp_method = "cubic"
         cls.storm_length_mins = 2880
+        cls.time_to_peak_mins = 1440
         cls.hyeto_method_alt_block = hyetograph.HyetoMethod.ALT_BLOCK
         cls.hyeto_method_chicago = hyetograph.HyetoMethod.CHICAGO
 
@@ -166,6 +168,24 @@ class HyetographTest(unittest.TestCase):
                         "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
                         "at least half of 'storm_length_mins' (storm duration).",
                         str(context_alt_block.exception))
+
+    def test_add_time_information_increment_mins_correct_increment_mins_diff(self):
+        combined_list = [(self.site_data_alt_block, self.hyeto_method_alt_block),
+                         (self.site_data_chicago, self.hyeto_method_chicago)]
+
+        for site_data, hyeto_method in combined_list:
+            data_output = hyetograph.add_time_information(
+                site_data=site_data,
+                storm_length_mins=self.storm_length_mins,
+                time_to_peak_mins=self.time_to_peak_mins,
+                increment_mins=self.increment_mins,
+                hyeto_method=hyeto_method)
+            data_output_mins = data_output["mins"].to_list()
+            mins_diff = np.unique(np.diff(data_output_mins))
+            if hyeto_method == "alt_block":
+                self.assertEqual(self.increment_mins, mins_diff)
+            else:
+                self.assertEqual(self.increment_mins / 2, mins_diff)
 
 
 if __name__ == "__main__":
