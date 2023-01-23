@@ -23,6 +23,7 @@ class HyetographTest(unittest.TestCase):
             r"tests/test_dynamic_boundary_conditions/data/storm_length_data.txt")
         cls.increment_mins = 10
         cls.interp_method = "cubic"
+        cls.storm_length_mins = 2880
 
     def test_get_transposed_data_matching_site_ids(self):
         transposed_catchment_data = hyetograph.get_transposed_data(self.rain_depth_in_catchment)
@@ -135,7 +136,7 @@ class HyetographTest(unittest.TestCase):
         storm_lengths_mins_list = list(range(min_storm_length_mins, 7261))
         for storm_lengths_mins in storm_lengths_mins_list:
             storm_length_data = hyetograph.get_storm_length_increment_data(
-                    self.interp_increment_data, storm_length_mins=storm_lengths_mins)
+                self.interp_increment_data, storm_length_mins=storm_lengths_mins)
             self.assertGreater(len(storm_length_data), 0)
 
 
