@@ -21,6 +21,8 @@ class HyetographTest(unittest.TestCase):
             r"tests/test_dynamic_boundary_conditions/data/interp_increment_data.txt")
         cls.storm_length_data = pd.read_csv(
             r"tests/test_dynamic_boundary_conditions/data/storm_length_data.txt")
+        cls.increment_mins = 10
+        cls.interp_method = "cubic"
 
     def test_get_transposed_data_matching_site_ids(self):
         transposed_catchment_data = hyetograph.get_transposed_data(self.rain_depth_in_catchment)
@@ -65,7 +67,7 @@ class HyetographTest(unittest.TestCase):
         for increment_mins in increment_mins_list:
             with self.assertRaises(ValueError) as context:
                 hyetograph.get_interpolated_data(
-                    self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
+                    self.transposed_catchment_data, increment_mins=increment_mins, interp_method=self.interp_method)
             self.assertEqual(
                 f"Increment minute {increment_mins} is out of range, needs to be between 10 and 7200.",
                 str(context.exception))
@@ -75,7 +77,7 @@ class HyetographTest(unittest.TestCase):
         for interp_method in interp_method_list:
             with self.assertRaises(ValueError) as context:
                 hyetograph.get_interpolated_data(
-                    self.transposed_catchment_data, increment_mins=10, interp_method=interp_method)
+                    self.transposed_catchment_data, increment_mins=self.increment_mins, interp_method=interp_method)
             self.assertEqual(
                 f"Invalid interpolation method: '{interp_method}'. "
                 f"Refer to 'scipy.interpolate.interp1d()' for available methods.",
@@ -85,7 +87,7 @@ class HyetographTest(unittest.TestCase):
         increment_mins_list = list(range(10, 7201))
         for increment_mins in increment_mins_list:
             interp_catchment_data = hyetograph.get_interpolated_data(
-                self.transposed_catchment_data, increment_mins=increment_mins, interp_method="cubic")
+                self.transposed_catchment_data, increment_mins=increment_mins, interp_method=self.interp_method)
             self.assertGreater(len(interp_catchment_data), 0)
 
     def test_get_interp_incremental_data_row_difference(self):
