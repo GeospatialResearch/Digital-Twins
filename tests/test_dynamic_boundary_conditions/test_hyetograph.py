@@ -29,6 +29,10 @@ class HyetographTest(unittest.TestCase):
             r"tests/test_dynamic_boundary_conditions/data/site_data_alt_block.txt")
         cls.site_data_chicago = pd.read_csv(
             r"tests/test_dynamic_boundary_conditions/data/site_data_chicago.txt")
+        cls.hyetograph_depth_alt_block = pd.read_csv(
+            r"tests/test_dynamic_boundary_conditions/data/hyetograph_depth_alt_block.txt")
+        cls.hyetograph_depth_chicago = pd.read_csv(
+            r"tests/test_dynamic_boundary_conditions/data/hyetograph_depth_chicago.txt")
 
         cls.increment_mins = 10
         cls.interp_method = "cubic"
@@ -227,7 +231,13 @@ class HyetographTest(unittest.TestCase):
             last_row = hyetograph_depth.iloc[-1, :-3]
             result = first_row.equals(last_row)
 
-            self.assertFalse(result) if hyeto_method == "alt_block" else self.assertTrue(result)
+            if hyeto_method == "alt_block":
+                self.assertFalse(result)
+                self.assertEqual(288, len(hyetograph_depth))
+            else:
+                self.assertTrue(result)
+                self.assertEqual(576, len(hyetograph_depth))
+
             self.assertEqual(site_ids, hyetograph_depth.columns.values[:-3].tolist())
             self.assertEqual(["mins", "hours", "seconds"], hyetograph_depth.columns.values[-3:].tolist())
             self.assertEqual(self.storm_length_mins, hyetograph_depth["mins"].iloc[-1])
