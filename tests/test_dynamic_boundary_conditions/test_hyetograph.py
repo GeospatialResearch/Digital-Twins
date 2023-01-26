@@ -2,8 +2,11 @@ import unittest
 import pandas as pd
 import numpy as np
 from typing import List
+from unittest.mock import patch
 import pathlib
 from shapely.geometry import Polygon
+
+import src.dynamic_boundary_conditions.hyetograph
 from src.dynamic_boundary_conditions import hyetograph
 
 
@@ -186,6 +189,26 @@ class HyetographTest(unittest.TestCase):
                 self.assertEqual(self.increment_mins, mins_diff)
             else:
                 self.assertEqual(self.increment_mins / 2, mins_diff)
+
+    def test_add_time_information_correct_time_calculation(self):
+        combined_list = [(self.site_data_alt_block, self.hyeto_method_alt_block),
+                         (self.site_data_chicago, self.hyeto_method_chicago)]
+
+        for site_data, hyeto_method in combined_list:
+            site_data_output = hyetograph.add_time_information(
+                site_data=site_data,
+                storm_length_mins=self.storm_length_mins,
+                time_to_peak_mins=self.time_to_peak_mins,
+                increment_mins=self.increment_mins,
+                hyeto_method=hyeto_method)
+            if hyeto_method == "alt_block":
+                self.assertEqual(self.increment_mins, site_data_output["mins"][0])
+                self.assertEqual(self.increment_mins / 60, site_data_output["hours"][0])
+                self.assertEqual(self.increment_mins * 60, site_data_output["seconds"][0])
+            else:
+                self.assertEqual(self.increment_mins / 2, site_data_output["mins"][0])
+                self.assertEqual(self.increment_mins / 2 / 60, site_data_output["hours"][0])
+                self.assertEqual(self.increment_mins / 2 * 60, site_data_output["seconds"][0])
 
 
 if __name__ == "__main__":
