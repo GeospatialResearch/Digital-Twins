@@ -210,6 +210,28 @@ class HyetographTest(unittest.TestCase):
                 self.assertEqual(self.increment_mins / 2 / 60, site_data_output["hours"][0])
                 self.assertEqual(self.increment_mins / 2 * 60, site_data_output["seconds"][0])
 
+    @patch("src.dynamic_boundary_conditions.hyetograph.get_storm_length_increment_data")
+    def test_transform_data_for_selected_method_correct_output_structure(self, mock_storm_length_data):
+        mock_storm_length_data.return_value = self.storm_length_data
+        site_ids = self.interp_increment_data.columns[1:].tolist()
+        hyeto_method_list = [self.hyeto_method_alt_block, self.hyeto_method_chicago]
+        for hyeto_method in hyeto_method_list:
+            hyetograph_depth = hyetograph.transform_data_for_selected_method(
+                interp_increment_data=pd.DataFrame(),
+                storm_length_mins=self.storm_length_mins,
+                time_to_peak_mins=self.time_to_peak_mins,
+                increment_mins=self.increment_mins,
+                hyeto_method=hyeto_method)
+
+            first_row = hyetograph_depth.iloc[0, :-3]
+            last_row = hyetograph_depth.iloc[-1, :-3]
+            result = first_row.equals(last_row)
+
+            self.assertFalse(result) if hyeto_method == "alt_block" else self.assertTrue(result)
+            self.assertEqual(site_ids, hyetograph_depth.columns.values[:-3].tolist())
+            self.assertEqual(["mins", "hours", "seconds"], hyetograph_depth.columns.values[-3:].tolist())
+            self.assertEqual(self.storm_length_mins, hyetograph_depth["mins"].iloc[-1])
+
 
 if __name__ == "__main__":
     unittest.main()
