@@ -3,10 +3,7 @@ import pandas as pd
 import numpy as np
 from typing import List
 from unittest.mock import patch
-import pathlib
-from shapely.geometry import Polygon
 
-import src.dynamic_boundary_conditions.hyetograph
 from src.dynamic_boundary_conditions import hyetograph
 
 
@@ -241,6 +238,23 @@ class HyetographTest(unittest.TestCase):
             self.assertEqual(site_ids, hyetograph_depth.columns.values[:-3].tolist())
             self.assertEqual(["mins", "hours", "seconds"], hyetograph_depth.columns.values[-3:].tolist())
             self.assertEqual(self.storm_length_mins, hyetograph_depth["mins"].iloc[-1])
+
+    def test_hyetograph_depth_to_intensity(self):
+        combined_list = [(self.hyetograph_depth_alt_block, self.hyeto_method_alt_block),
+                         (self.hyetograph_depth_chicago, self.hyeto_method_chicago)]
+
+        for hyetograph_depth, hyeto_method in combined_list:
+            hyetograph_intensity = hyetograph.hyetograph_depth_to_intensity(
+                hyetograph_depth=hyetograph_depth,
+                increment_mins=self.increment_mins,
+                hyeto_method=hyeto_method)
+
+            duration_interval = self.increment_mins if hyeto_method == "alt_block" else (self.increment_mins / 2)
+            for row_index in range(0, len(hyetograph_depth)):
+                sites_intensity = hyetograph_depth.iloc[row_index, :-3] / duration_interval * 60
+                sites_time = hyetograph_depth.iloc[row_index, -3:]
+                expected_hyetograph_intensity = pd.concat([sites_intensity, sites_time])
+                pd.testing.assert_series_equal(expected_hyetograph_intensity, hyetograph_intensity.iloc[row_index])
 
 
 if __name__ == "__main__":
