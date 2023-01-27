@@ -270,10 +270,10 @@ def hyetograph_depth_to_intensity(
         Hyetograph method to be used.
     """
     duration_interval = increment_mins if hyeto_method.value == "alt_block" else (increment_mins / 2)
-    hyetograph_intensity = hyetograph_depth.copy()
-    sites_column_list = list(hyetograph_intensity.columns.values[:-3])
-    for site_id in sites_column_list:
-        hyetograph_intensity[f"{site_id}"] = hyetograph_intensity[f"{site_id}"] / duration_interval * 60
+    sites_depth = hyetograph_depth.drop(columns=["mins", "hours", "seconds"])
+    sites_intensity = sites_depth / duration_interval * 60
+    sites_time = hyetograph_depth[["mins", "hours", "seconds"]]
+    hyetograph_intensity = pd.concat([sites_intensity, sites_time], axis=1)
     return hyetograph_intensity
 
 
