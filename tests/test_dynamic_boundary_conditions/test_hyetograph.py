@@ -226,13 +226,13 @@ class HyetographTest(unittest.TestCase):
 
             first_row = hyetograph_depth.iloc[0, :-3]
             last_row = hyetograph_depth.iloc[-1, :-3]
-            result = first_row.equals(last_row)
 
             if hyeto_method == "alt_block":
-                self.assertFalse(result)
+                with self.assertRaises(AssertionError):
+                    pd.testing.assert_series_equal(first_row, last_row, check_names=False)
                 self.assertEqual(288, len(hyetograph_depth))
             else:
-                self.assertTrue(result)
+                pd.testing.assert_series_equal(first_row, last_row, check_names=False)
                 self.assertEqual(576, len(hyetograph_depth))
 
             self.assertEqual(site_ids, hyetograph_depth.columns.values[:-3].tolist())
