@@ -239,7 +239,7 @@ class HyetographTest(unittest.TestCase):
             self.assertEqual(["mins", "hours", "seconds"], hyetograph_depth.columns.values[-3:].tolist())
             self.assertEqual(self.storm_length_mins, hyetograph_depth["mins"].iloc[-1])
 
-    def test_hyetograph_depth_to_intensity(self):
+    def test_hyetograph_depth_to_intensity_correct_output(self):
         combined_list = [(self.hyetograph_depth_alt_block, self.hyeto_method_alt_block),
                          (self.hyetograph_depth_chicago, self.hyeto_method_chicago)]
 
