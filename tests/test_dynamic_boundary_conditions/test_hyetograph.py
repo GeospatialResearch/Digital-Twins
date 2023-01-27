@@ -249,6 +249,17 @@ class HyetographTest(unittest.TestCase):
                 increment_mins=self.increment_mins,
                 hyeto_method=hyeto_method)
 
+            first_row = hyetograph_intensity.iloc[0, :-3]
+            last_row = hyetograph_intensity.iloc[-1, :-3]
+
+            if hyeto_method == "alt_block":
+                with self.assertRaises(AssertionError):
+                    pd.testing.assert_series_equal(first_row, last_row, check_names=False)
+                self.assertEqual(288, len(hyetograph_intensity))
+            else:
+                pd.testing.assert_series_equal(first_row, last_row, check_names=False)
+                self.assertEqual(576, len(hyetograph_intensity))
+
             duration_interval = self.increment_mins if hyeto_method == "alt_block" else (self.increment_mins / 2)
             for row_index in range(0, len(hyetograph_depth)):
                 sites_intensity = hyetograph_depth.iloc[row_index, :-3] / duration_interval * 60
