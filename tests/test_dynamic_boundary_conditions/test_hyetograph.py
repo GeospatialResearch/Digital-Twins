@@ -212,7 +212,7 @@ class HyetographTest(unittest.TestCase):
                 self.assertEqual(self.increment_mins / 2 * 60, site_data_output["seconds"][0])
 
     @patch("src.dynamic_boundary_conditions.hyetograph.get_storm_length_increment_data")
-    def test_transform_data_for_selected_method_correct_output_structure(self, mock_storm_length_data):
+    def test_transform_data_for_selected_method_correct_output(self, mock_storm_length_data):
         mock_storm_length_data.return_value = self.storm_length_data
         site_ids = self.interp_increment_data.columns[1:].tolist()
         hyeto_method_list = [self.hyeto_method_alt_block, self.hyeto_method_chicago]
