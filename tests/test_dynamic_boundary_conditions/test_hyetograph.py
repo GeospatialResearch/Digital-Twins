@@ -30,6 +30,10 @@ class HyetographTest(unittest.TestCase):
             r"tests/test_dynamic_boundary_conditions/data/hyetograph_depth_alt_block.txt")
         cls.hyetograph_depth_chicago = pd.read_csv(
             r"tests/test_dynamic_boundary_conditions/data/hyetograph_depth_chicago.txt")
+        cls.hyetograph_data_alt_block = pd.read_csv(
+            r"tests/test_dynamic_boundary_conditions/data/hyetograph_data_alt_block.txt")
+        cls.hyetograph_data_chicago = pd.read_csv(
+            r"tests/test_dynamic_boundary_conditions/data/hyetograph_data_chicago.txt")
 
         cls.increment_mins = 10
         cls.interp_method = "cubic"
@@ -266,6 +270,11 @@ class HyetographTest(unittest.TestCase):
                 sites_time = hyetograph_depth.iloc[row_index, -3:]
                 expected_hyetograph_intensity = pd.concat([sites_intensity, sites_time])
                 pd.testing.assert_series_equal(expected_hyetograph_intensity, hyetograph_intensity.iloc[row_index])
+
+    def test_hyetograph_data_wide_to_long(self):
+
+
+
 
 
 if __name__ == "__main__":
