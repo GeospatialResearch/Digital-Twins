@@ -271,10 +271,17 @@ class HyetographTest(unittest.TestCase):
                 expected_hyetograph_intensity = pd.concat([sites_intensity, sites_time])
                 pd.testing.assert_series_equal(expected_hyetograph_intensity, hyetograph_intensity.iloc[row_index])
 
-    def test_hyetograph_data_wide_to_long(self):
+    def test_hyetograph_data_wide_to_long_correct_transposition(self):
+        hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
 
-
-
+        for hyetograph_data in hyetograph_data_list:
+            hyetograph_data_long = hyetograph.hyetograph_data_wide_to_long(hyetograph_data)
+            site_ids = hyetograph_data.drop(columns=["mins", "hours", "seconds"]).columns.to_list()
+            self.assertEqual(site_ids, hyetograph_data_long["site_id"].unique().tolist())
+            self.assertEqual(hyetograph_data["mins"].to_list(), hyetograph_data_long["mins"].unique().tolist())
+            self.assertEqual(hyetograph_data["hours"].to_list(), hyetograph_data_long["hours"].unique().tolist())
+            self.assertEqual(hyetograph_data["seconds"].to_list(), hyetograph_data_long["seconds"].unique().tolist())
+            self.assertEqual(len(hyetograph_data) * len(site_ids), len(hyetograph_data_long))
 
 
 if __name__ == "__main__":
