@@ -58,11 +58,11 @@ def main():
     # Get hyetograph data for all sites within the catchment area
     hyetograph_data = hyetograph.get_hyetograph_data(
         rain_depth_in_catchment,
-        storm_length_hrs=48,
-        time_to_peak_hrs=24,
+        storm_length_mins=2880,
+        time_to_peak_mins=1440,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method="alt_block")
+        hyeto_method=hyetograph.HyetoMethod.ALT_BLOCK)
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
