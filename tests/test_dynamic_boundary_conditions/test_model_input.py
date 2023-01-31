@@ -33,7 +33,7 @@ class ModelInputTest(unittest.TestCase):
         self.assertTrue(intersections.within(self.selected_polygon.buffer(1 / 1e13)).unique())
 
     @patch("src.dynamic_boundary_conditions.model_input.sites_voronoi_intersect_catchment")
-    def test_sites_coverage_in_catchment(self, mock_intersections):
+    def test_sites_coverage_in_catchment_correct_area_percent(self, mock_intersections):
         mock_intersections.return_value = self.intersections.copy()
         sites_coverage = model_input.sites_coverage_in_catchment(
             sites_in_catchment=gpd.GeoDataFrame(),
