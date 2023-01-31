@@ -21,8 +21,16 @@ class ModelInputTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.selected_polygon = cls.get_catchment_polygon(
+            r"tests/test_dynamic_boundary_conditions/data/selected_polygon.geojson")
+        cls.sites_in_catchment = gpd.read_file(
+            r"tests/test_dynamic_boundary_conditions/data/sites_in_catchment.geojson")
         cls.intersections = gpd.read_file(
             r"tests/test_dynamic_boundary_conditions/data/intersections.geojson")
+
+    def test_sites_voronoi_intersect_catchment_in_catchment(self):
+        intersections = model_input.sites_voronoi_intersect_catchment(self.sites_in_catchment, self.selected_polygon)
+        self.assertTrue(intersections.within(self.selected_polygon.buffer(1 / 1e13)).unique())
 
     @patch("src.dynamic_boundary_conditions.model_input.sites_voronoi_intersect_catchment")
     def test_sites_coverage_in_catchment(self, mock_intersections):
