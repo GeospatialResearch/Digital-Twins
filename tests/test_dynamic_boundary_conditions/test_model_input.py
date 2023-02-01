@@ -51,7 +51,7 @@ class ModelInputTest(unittest.TestCase):
         self.assertEqual(1, sites_coverage["area_percent"].sum())
 
     def test_mean_catchment_rainfall_correct_length_and_calculation(self):
-        hyetograph_data_list = [self.hyetograph_data_chicago, self.hyetograph_data_alt_block]
+        hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
 
         for hyetograph_data in hyetograph_data_list:
             mean_catchment_rain = model_input.mean_catchment_rainfall(hyetograph_data, self.sites_coverage)
