@@ -12,7 +12,6 @@ import xarray as xr
 from datetime import datetime
 import subprocess
 from dotenv import load_dotenv
-from typing import Literal
 import os
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
@@ -21,6 +20,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import DateTime
 from src.digitaltwin import setup_environment
 from src.lidar import dem_metadata_in_db
+from src.dynamic_boundary_conditions.model_input import RainInputType
 
 Base = declarative_base()
 
@@ -32,7 +32,7 @@ def bg_model_inputs(
         resolution,
         end_time,
         output_timestep,
-        rain_input_type: Literal["uniform", "varying"],
+        rain_input_type: RainInputType,
         mask=15,
         gpu_device=0,
         small_nc=0
@@ -49,8 +49,8 @@ def bg_model_inputs(
         max_temp_xr = file_nc
     keys = max_temp_xr.data_vars.keys()
     elev_var = list(keys)[1]
+    rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
     river = "RiverDis.txt"
-    rainfall = "rain_forcing.txt" if rain_input_type == "uniform" else "rain_forcing.nc?rain_intensity_mmhr"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     outfile = rf"U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/model_output/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
@@ -122,7 +122,7 @@ def run_model(
         resolution,
         end_time,
         output_timestep,
-        rain_input_type: Literal["uniform", "varying"],
+        rain_input_type: RainInputType,
         engine
 ):
     """Call the functions."""
@@ -164,7 +164,7 @@ def main():
         resolution=resolution,
         end_time=end_time,
         output_timestep=output_timestep,
-        rain_input_type="uniform",
+        rain_input_type=RainInputType.UNIFORM,
         engine=engine
     )
 
