@@ -50,7 +50,7 @@ class ModelInputTest(unittest.TestCase):
         pd.testing.assert_series_equal(sites_area_percent, sites_coverage["area_percent"], check_names=False)
         self.assertEqual(1, sites_coverage["area_percent"].sum())
 
-    def test_mean_catchment_rainfall_correct_calculation(self):
+    def test_mean_catchment_rainfall_correct_length_and_calculation(self):
         hyetograph_data_list = [self.hyetograph_data_chicago, self.hyetograph_data_alt_block]
 
         for hyetograph_data in hyetograph_data_list:
