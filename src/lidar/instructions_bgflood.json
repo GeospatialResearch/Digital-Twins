@@ -16,7 +16,7 @@
 		"data_paths": {
 			"local_cache": "U:/Research/FloodRiskResearch/DigitalTwin/LiDAR/cache",
 			"subfolder": "results",
-			"catchment_boundary": "small_catchment.geojson",
+			"catchment_boundary": "selected_polygon.geojson",
 			"raw_dem": "raw_dem.nc",
 			"raw_dem_extents": "raw_extents.geojson",
 			"result_dem": "generated_dem.nc"
