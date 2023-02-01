@@ -9,7 +9,7 @@ import logging
 import pathlib
 import geopandas as gpd
 import pandas as pd
-from typing import Literal
+from enum import StrEnum
 import xarray as xr
 from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
@@ -24,6 +24,19 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
+
+
+class RainInputType(StrEnum):
+    """
+    Attributes
+    ----------
+    UNIFORM : str
+        Spatially uniform rain input.
+    VARYING : str
+        Spatially varying rain input.
+    """
+    UNIFORM = "uniform"
+    VARYING = "varying"
 
 
 def sites_voronoi_intersect_catchment(
@@ -163,7 +176,7 @@ def generate_rain_model_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
         bg_flood_path: pathlib.Path,
-        input_type: Literal["uniform", "varying"]):
+        input_type: RainInputType):
     """
     Generate the requested rainfall model input for BG-Flood, i.e. spatially uniform rain input ('rain_forcing.txt'
     text file) or spatially varying rain input ('rain_forcing.nc' NetCDF file).
@@ -176,16 +189,11 @@ def generate_rain_model_input(
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
     bg_flood_path : pathlib.Path
         BG-Flood file path.
-    input_type : Literal["uniform", "varying"]
+    input_type: RainInputType
         Type of rainfall model input to be generated. One of 'uniform' or 'varying',
         i.e. spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
     """
-    input_types = ["uniform", "varying"]
-    if input_type not in input_types:
-        log.error(f"Invalid rainfall model input type. '{input_type}' not in {input_types}")
-        raise ValueError(f"Invalid rainfall model input type. '{input_type}' not in {input_types}")
-
-    if input_type == "uniform":
+    if input_type.value == "uniform":
         spatial_uniform_rain_input(hyetograph_data, sites_coverage, bg_flood_path)
         log.info(f"Successfully generated the spatially uniform rain input for BG-Flood. Located in: {bg_flood_path}")
     else:
@@ -224,8 +232,8 @@ def main():
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     # Write out the requested rainfall model input for BG-Flood
-    generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type="uniform")
-    generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type="varying")
+    generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.UNIFORM)
+    generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.VARYING)
 
 
 if __name__ == "__main__":
