@@ -3,6 +3,7 @@ import pathlib
 from shapely.geometry import Polygon
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 from unittest.mock import patch
 
 from src.dynamic_boundary_conditions import model_input
@@ -66,3 +67,16 @@ class ModelInputTest(unittest.TestCase):
                 self.assertEqual(
                     round(row_mean_catchment_rain, 6),
                     round(mean_catchment_rain["rain_intensity_mmhr"].iloc[row_index], 6))
+
+    def test_create_rain_data_cube_correct_intensity_in_data_cube(self):
+        hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
+
+        for hyetograph_data in hyetograph_data_list:
+            for row_index in [0, -1]:
+                row_unique_intensity = np.sort(hyetograph_data.iloc[row_index, :-3].unique()).tolist()
+                rain_data_cube = model_input.create_rain_data_cube(hyetograph_data, self.sites_coverage)
+                time_slice = rain_data_cube.sel(time=hyetograph_data.iloc[row_index]["seconds"])
+                time_slice_intensity = time_slice.data_vars["rain_intensity_mmhr"]
+                time_slice_unique_intensity = np.unique(time_slice_intensity)[np.unique(time_slice_intensity) != 0]
+                time_slice_unique_intensity = np.sort(time_slice_unique_intensity).tolist()
+                self.assertEqual(row_unique_intensity, time_slice_unique_intensity)
