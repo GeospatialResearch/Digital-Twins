@@ -193,10 +193,10 @@ def generate_rain_model_input(
         Type of rainfall model input to be generated. One of 'uniform' or 'varying',
         i.e. spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
     """
-    if input_type.value == "uniform":
+    if input_type == RainInputType.UNIFORM:
         spatial_uniform_rain_input(hyetograph_data, sites_coverage, bg_flood_path)
         log.info(f"Successfully generated the spatially uniform rain input for BG-Flood. Located in: {bg_flood_path}")
-    else:
+    elif input_type == RainInputType.VARYING:
         spatial_varying_rain_input(hyetograph_data, sites_coverage, bg_flood_path)
         log.info(f"Successfully generated the spatially varying rain input for BG-Flood. Located in: {bg_flood_path}")
 
