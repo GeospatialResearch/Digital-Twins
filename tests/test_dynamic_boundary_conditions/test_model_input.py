@@ -66,14 +66,3 @@ class ModelInputTest(unittest.TestCase):
                 self.assertEqual(
                     round(row_mean_catchment_rain, 6),
                     round(mean_catchment_rain["rain_intensity_mmhr"].iloc[row_index], 6))
-
-        # for hyetograph_data in hyetograph_data_list:
-        #     sites_rain = pd.DataFrame()
-        #     site_id_list = hyetograph_data.drop(columns=["mins", "hours", "seconds"]).columns.values
-        #     for site_id in site_id_list:
-        #         site_org_data = self.sites_coverage[self.sites_coverage["site_id"] == f"{site_id}"]
-        #         site_area_percent = site_org_data["area_percent"].iloc[0]
-        #         site_data = hyetograph_data[f"{site_id}"] * site_area_percent
-        #         sites_rain = pd.concat([sites_rain, site_data], axis=1)
-        #     mean_catchment_rainfall = hyetograph_data[["mins", "hours", "seconds"]]
-        #     mean_catchment_rainfall["rain_intensity_mmhr"] = sites_rain.sum(axis="columns")
