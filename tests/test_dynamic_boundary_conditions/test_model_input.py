@@ -27,6 +27,12 @@ class ModelInputTest(unittest.TestCase):
             r"tests/test_dynamic_boundary_conditions/data/sites_in_catchment.geojson")
         cls.intersections = gpd.read_file(
             r"tests/test_dynamic_boundary_conditions/data/intersections.geojson")
+        cls.sites_coverage = gpd.read_file(
+            r"tests/test_dynamic_boundary_conditions/data/sites_coverage.geojson")
+        cls.hyetograph_data_alt_block = pd.read_csv(
+            r"tests/test_dynamic_boundary_conditions/data/hyetograph_data_alt_block.txt")
+        cls.hyetograph_data_chicago = pd.read_csv(
+            r"tests/test_dynamic_boundary_conditions/data/hyetograph_data_chicago.txt")
 
     def test_sites_voronoi_intersect_catchment_in_catchment(self):
         intersections = model_input.sites_voronoi_intersect_catchment(self.sites_in_catchment, self.selected_polygon)
@@ -43,3 +49,31 @@ class ModelInputTest(unittest.TestCase):
         sites_area_percent = sites_area / sites_area.sum()
         pd.testing.assert_series_equal(sites_area_percent, sites_coverage["area_percent"], check_names=False)
         self.assertEqual(1, sites_coverage["area_percent"].sum())
+
+    def test_mean_catchment_rainfall_correct_calculation(self):
+        hyetograph_data_list = [self.hyetograph_data_chicago, self.hyetograph_data_alt_block]
+
+        for hyetograph_data in hyetograph_data_list:
+            mean_catchment_rain = model_input.mean_catchment_rainfall(hyetograph_data, self.sites_coverage)
+            self.assertEqual(len(hyetograph_data), len(mean_catchment_rain))
+
+            for row_index in [0, -1]:
+                hyeto_data = hyetograph_data.iloc[row_index, :-3]
+                hyeto_data = hyeto_data.to_frame(name="rain_intensity_mmhr").reset_index(names="site_id")
+                site_area_percent = self.sites_coverage[["site_id", "area_percent"]]
+                hyeto_data = pd.merge(hyeto_data, site_area_percent, how="left", on="site_id")
+                row_mean_catchment_rain = (hyeto_data["rain_intensity_mmhr"] * hyeto_data["area_percent"]).sum()
+                self.assertEqual(
+                    round(row_mean_catchment_rain, 6),
+                    round(mean_catchment_rain["rain_intensity_mmhr"].iloc[row_index], 6))
+
+        # for hyetograph_data in hyetograph_data_list:
+        #     sites_rain = pd.DataFrame()
+        #     site_id_list = hyetograph_data.drop(columns=["mins", "hours", "seconds"]).columns.values
+        #     for site_id in site_id_list:
+        #         site_org_data = self.sites_coverage[self.sites_coverage["site_id"] == f"{site_id}"]
+        #         site_area_percent = site_org_data["area_percent"].iloc[0]
+        #         site_data = hyetograph_data[f"{site_id}"] * site_area_percent
+        #         sites_rain = pd.concat([sites_rain, site_data], axis=1)
+        #     mean_catchment_rainfall = hyetograph_data[["mins", "hours", "seconds"]]
+        #     mean_catchment_rainfall["rain_intensity_mmhr"] = sites_rain.sum(axis="columns")
