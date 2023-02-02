@@ -145,7 +145,8 @@ def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.Geo
     rain_data_cube = make_geocube(
         vector_data=hyetograph_data_long,
         measurements=["rain_intensity_mmhr"],
-        resolution=(-0.0001, 0.0001),
+        output_crs=2193,
+        resolution=(-10, 10),
         group_by="time",
         fill=0)
     return rain_data_cube
