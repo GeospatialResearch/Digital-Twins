@@ -26,6 +26,7 @@ class ThiessenPolygonsTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Get the New Zealand boundary polygon and rainfall sites data."""
         cls.nz_boundary_polygon = cls.get_nz_boundary_polygon(
             r"tests/test_dynamic_boundary_conditions/data/nz_boundary.geojson")
         cls.sites_in_nz = gpd.read_file(r"tests/test_dynamic_boundary_conditions/data/sites_in_nz.geojson")
