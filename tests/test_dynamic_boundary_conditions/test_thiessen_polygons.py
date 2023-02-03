@@ -50,6 +50,15 @@ class ThiessenPolygonsTest(unittest.TestCase):
             self.nz_boundary_polygon, self.sites_in_nz)
         self.assertEqual(len(self.sites_in_nz), len(rainfall_sites_voronoi))
 
+    def test_thiessen_polygons_calculator_correct_area_in_km2(self):
+        """Test to ensure correct area calculation for all rainfall sites thiessen polygons."""
+        nz_boundary = gpd.GeoDataFrame(index=[0], crs="EPSG:4326", geometry=[self.nz_boundary_polygon])
+        nz_boundary_area = float(nz_boundary.to_crs(3857).area / 1e6)
+        rainfall_sites_voronoi = thiessen_polygons.thiessen_polygons_calculator(
+            self.nz_boundary_polygon, self.sites_in_nz)
+        voronoi_area_sum = sum(rainfall_sites_voronoi["area_in_km2"])
+        self.assertAlmostEqual(nz_boundary_area, voronoi_area_sum, places=2)
+
 
 if __name__ == "__main__":
     unittest.main()
