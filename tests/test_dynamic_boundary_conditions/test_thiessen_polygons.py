@@ -10,6 +10,14 @@ class ThiessenPolygonsTest(unittest.TestCase):
 
     @staticmethod
     def get_nz_boundary_polygon(filepath: str) -> Polygon:
+        """
+        Get the New Zealand boundary geometry (polygon).
+
+        Parameters
+        ----------
+        filepath
+            The file path of the New Zealand boundary GeoJSON data file.
+        """
         nz_boundary_file = pathlib.Path(filepath)
         nz_boundary = gpd.read_file(nz_boundary_file)
         nz_boundary = nz_boundary.to_crs(4326)
