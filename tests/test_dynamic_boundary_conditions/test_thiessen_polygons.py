@@ -31,6 +31,7 @@ class ThiessenPolygonsTest(unittest.TestCase):
         cls.sites_in_nz = gpd.read_file(r"tests/test_dynamic_boundary_conditions/data/sites_in_nz.geojson")
 
     def test_thiessen_polygons_calculator_area_of_interest_empty(self):
+        """Test to ensure ValueError is raised when 'area_of_interest' is empty."""
         empty_area_of_interest = Polygon()
         with self.assertRaises(ValueError) as context:
             thiessen_polygons.thiessen_polygons_calculator(empty_area_of_interest, self.sites_in_nz)
