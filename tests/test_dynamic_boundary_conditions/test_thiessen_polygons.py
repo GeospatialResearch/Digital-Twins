@@ -38,6 +38,7 @@ class ThiessenPolygonsTest(unittest.TestCase):
         self.assertEqual("No data available for area_of_interest passed as argument", str(context.exception))
 
     def test_thiessen_polygons_calculator_sites_in_aoi_empty(self):
+        """Test to ensure ValueError is raised when 'sites_in_aoi' is empty."""
         empty_sites_in_aoi = gpd.GeoDataFrame()
         with self.assertRaises(ValueError) as context:
             thiessen_polygons.thiessen_polygons_calculator(self.nz_boundary_polygon, empty_sites_in_aoi)
