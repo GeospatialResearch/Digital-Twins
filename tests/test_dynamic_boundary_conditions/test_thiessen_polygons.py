@@ -45,6 +45,7 @@ class ThiessenPolygonsTest(unittest.TestCase):
         self.assertEqual("No data available for sites_in_aoi passed as argument", str(context.exception))
 
     def test_thiessen_polygons_calculator_correct_voronoi_number(self):
+        """Test to ensure thiessen polygons are created for all rainfall sites within New Zealand."""
         rainfall_sites_voronoi = thiessen_polygons.thiessen_polygons_calculator(
             self.nz_boundary_polygon, self.sites_in_nz)
         self.assertEqual(len(self.sites_in_nz), len(rainfall_sites_voronoi))
