@@ -114,9 +114,23 @@ class HyetographTest(unittest.TestCase):
                 self.transposed_catchment_data, increment_mins=increment_mins, interp_method=self.interp_method)
             self.assertGreater(len(interp_catchment_data), 0)
 
-    def test_get_interp_incremental_data_row_difference(self):
+    def test_get_interp_incremental_data_correct_shape(self):
+        """Test to ensure returned data have correct number of rows and columns."""
+        interp_increment_data = hyetograph.get_interp_incremental_data(self.interp_catchment_data)
+        self.assertEqual(self.interp_catchment_data.shape, interp_increment_data.shape)
+
+    def test_get_interp_incremental_data_correct_row_difference(self):
+        """Test to ensure returned data have correct row differences, i.e. correct interpolated incremental data."""
 
         def get_interp_catchment_data_row_difference(index: int) -> List[float]:
+            """
+            Return interpolated catchment data row difference between selected row and its previous row.
+
+            Parameters
+            ----------
+            index : int
+                An integer number specifying the index position of the selected row.
+            """
             if index == 0:
                 row_diff = self.interp_catchment_data.iloc[index]
             else:
@@ -125,23 +139,10 @@ class HyetographTest(unittest.TestCase):
             return row_diff.to_list()
 
         interp_increment_data = hyetograph.get_interp_incremental_data(self.interp_catchment_data)
-        self.assertEqual(self.interp_catchment_data.shape, interp_increment_data.shape)
-
-        expected_first_row = get_interp_catchment_data_row_difference(index=0)
-        actual_first_row = interp_increment_data.iloc[0].to_list()
-        self.assertEqual(expected_first_row, actual_first_row)
-
-        expected_second_row = get_interp_catchment_data_row_difference(index=1)
-        actual_second_row = interp_increment_data.iloc[1].to_list()
-        self.assertEqual(expected_second_row, actual_second_row)
-
-        expected_second_last_row = get_interp_catchment_data_row_difference(index=-2)
-        actual_second_last_row = interp_increment_data.iloc[-2].to_list()
-        self.assertEqual(expected_second_last_row, actual_second_last_row)
-
-        expected_last_row = get_interp_catchment_data_row_difference(index=-1)
-        actual_last_row = interp_increment_data.iloc[-1].to_list()
-        self.assertEqual(expected_last_row, actual_last_row)
+        for row_index in range(len(interp_increment_data)):
+            expected_row = get_interp_catchment_data_row_difference(index=row_index)
+            actual_row = interp_increment_data.iloc[row_index].to_list()
+            self.assertEqual(expected_row, actual_row)
 
     def test_get_storm_length_increment_data_invalid_storm_length_mins(self):
         min_storm_length_mins = self.interp_increment_data["duration_mins"].iloc[0]
