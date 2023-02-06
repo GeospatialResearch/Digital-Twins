@@ -165,6 +165,20 @@ class HyetographTest(unittest.TestCase):
                 self.interp_increment_data, storm_length_mins=storm_lengths_mins)
             self.assertGreater(len(storm_length_data), 0)
 
+    def test_get_storm_length_increment_data_correct_rows(self):
+        """Test to ensure the correct number of rows are returned when valid 'storm_length_mins' is used."""
+        min_storm_mins = self.interp_increment_data["duration_mins"].iloc[0]
+        max_storm_mins = self.interp_increment_data["duration_mins"].iloc[-1]
+        storm_lengths_mins_list = range(min_storm_mins, 7261)
+        for storm_lengths_mins in storm_lengths_mins_list:
+            if storm_lengths_mins > max_storm_mins:
+                expected_row = max_storm_mins // self.increment_mins
+            else:
+                expected_row = storm_lengths_mins // self.increment_mins
+            storm_length_data = hyetograph.get_storm_length_increment_data(
+                self.interp_increment_data, storm_length_mins=storm_lengths_mins)
+            self.assertEqual(expected_row, len(storm_length_data))
+
     def test_add_time_information_invalid_time_to_peak_mins(self):
         combined_list = [(self.site_data_alt_block, self.hyeto_method_alt_block),
                          (self.site_data_chicago, self.hyeto_method_chicago)]
