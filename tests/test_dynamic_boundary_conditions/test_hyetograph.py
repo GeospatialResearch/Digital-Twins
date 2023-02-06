@@ -84,6 +84,7 @@ class HyetographTest(unittest.TestCase):
         self.assertEqual(orig_bottom_left, tps_top_right)
 
     def test_get_interpolated_data_invalid_increment_mins(self):
+        """Test to ensure ValueError is raised when 'increment_mins' is invalid."""
         increment_mins_list = list(range(0, 10)) + list(range(7201, 7211))
         for increment_mins in increment_mins_list:
             with self.assertRaises(ValueError) as context:
@@ -94,6 +95,7 @@ class HyetographTest(unittest.TestCase):
                 str(context.exception))
 
     def test_get_interpolated_data_invalid_interp_method(self):
+        """Test to ensure ValueError is raised when 'interp_method' is invalid."""
         interp_method_list = ["invalid", "test", "abc", "123"]
         for interp_method in interp_method_list:
             with self.assertRaises(ValueError) as context:
@@ -105,6 +107,7 @@ class HyetographTest(unittest.TestCase):
                 str(context.exception))
 
     def test_get_interpolated_data_valid_mins_and_method(self):
+        """Test to ensure returned data is not empty when valid 'increment_mins' and 'interp_method' are used."""
         increment_mins_list = list(range(10, 7201))
         for increment_mins in increment_mins_list:
             interp_catchment_data = hyetograph.get_interpolated_data(
