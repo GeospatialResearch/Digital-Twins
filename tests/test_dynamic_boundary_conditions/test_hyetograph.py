@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from typing import List
 from unittest.mock import patch
-
 from src.dynamic_boundary_conditions import hyetograph
 
 
@@ -12,6 +11,7 @@ class HyetographTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Get all relevant data and set up default arguments used for testing."""
         cls.rain_depth_in_catchment = pd.read_csv(
             r"tests/test_dynamic_boundary_conditions/data/rain_depth_in_catchment.txt")
         cls.transposed_catchment_data = pd.read_csv(
@@ -42,13 +42,15 @@ class HyetographTest(unittest.TestCase):
         cls.hyeto_method_alt_block = hyetograph.HyetoMethod.ALT_BLOCK
         cls.hyeto_method_chicago = hyetograph.HyetoMethod.CHICAGO
 
-    def test_get_transposed_data_matching_site_ids(self):
+    def test_get_transposed_data_correct_site_ids(self):
+        """Test to ensure correct rainfall site ids after transposition."""
         transposed_catchment_data = hyetograph.get_transposed_data(self.rain_depth_in_catchment)
         orig_site_ids = self.rain_depth_in_catchment["site_id"].to_list()
         tps_site_ids = transposed_catchment_data.columns[1:].to_list()
         self.assertEqual(orig_site_ids, tps_site_ids)
 
-    def test_get_transposed_data_matching_duration_mins(self):
+    def test_get_transposed_data_correct_duration_mins(self):
+        """Test to ensure correct duration mins after transposition."""
         transposed_catchment_data = hyetograph.get_transposed_data(self.rain_depth_in_catchment)
         org_duration_mins = []
         for column_name in self.rain_depth_in_catchment.columns:
@@ -61,13 +63,14 @@ class HyetographTest(unittest.TestCase):
         self.assertEqual(org_duration_mins, trans_duration_mins)
 
     def test_get_transposed_data_correct_corner_values(self):
-        transposed_catchment_data = hyetograph.get_transposed_data(self.rain_depth_in_catchment)
+        """Test to ensure correct rainfall data values after transposition."""
         original_data = self.rain_depth_in_catchment.drop(
             columns=["site_id", "category", "rcp", "time_period", "ari", "aep"])
         orig_top_left = original_data.iloc[0][0]
         orig_top_right = original_data.iloc[0][-1]
         orig_bottom_left = original_data.iloc[-1][0]
         orig_bottom_right = original_data.iloc[-1][-1]
+        transposed_catchment_data = hyetograph.get_transposed_data(self.rain_depth_in_catchment)
         transposed_data = transposed_catchment_data.drop(columns="duration_mins")
         tps_top_left = transposed_data.iloc[0][0]
         tps_top_right = transposed_data.iloc[0][-1]
