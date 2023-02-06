@@ -145,6 +145,7 @@ class HyetographTest(unittest.TestCase):
             self.assertEqual(expected_row, actual_row)
 
     def test_get_storm_length_increment_data_invalid_storm_length_mins(self):
+        """Test to ensure ValueError is raised when 'storm_length_mins' is invalid."""
         min_storm_length_mins = self.interp_increment_data["duration_mins"].iloc[0]
         storm_lengths_mins_list = list(range(0, min_storm_length_mins))
         for storm_lengths_mins in storm_lengths_mins_list:
@@ -156,8 +157,9 @@ class HyetographTest(unittest.TestCase):
                 str(context.exception))
 
     def test_get_storm_length_increment_data_valid_storm_length_mins(self):
+        """Test to ensure returned data is not empty when valid 'storm_length_mins' is used."""
         min_storm_length_mins = self.interp_increment_data["duration_mins"].iloc[0]
-        storm_lengths_mins_list = list(range(min_storm_length_mins, 7261))
+        storm_lengths_mins_list = range(min_storm_length_mins, 7261)
         for storm_lengths_mins in storm_lengths_mins_list:
             storm_length_data = hyetograph.get_storm_length_increment_data(
                 self.interp_increment_data, storm_length_mins=storm_lengths_mins)
