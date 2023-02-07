@@ -324,8 +324,8 @@ class HyetographTest(unittest.TestCase):
                 self.assertEqual(len(hyetograph_depth), len(hyetograph_intensity))
 
     def test_hyetograph_data_wide_to_long_correct_transposition(self):
+        """Test to ensure transposed data have correct information as the original and accurate number of rows."""
         hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
-
         for hyetograph_data in hyetograph_data_list:
             hyetograph_data_long = hyetograph.hyetograph_data_wide_to_long(hyetograph_data)
             site_ids = hyetograph_data.drop(columns=["mins", "hours", "seconds"]).columns.to_list()
