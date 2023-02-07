@@ -200,9 +200,9 @@ class HyetographTest(unittest.TestCase):
                         str(context.exception))
 
     def test_add_time_information_increment_mins_correct_increment_mins_diff(self):
+        """Test to ensure returned data have correct consistent increment minutes difference."""
         combined_list = [(self.site_data_alt_block, self.hyeto_method_alt_block),
                          (self.site_data_chicago, self.hyeto_method_chicago)]
-
         for site_data, hyeto_method in combined_list:
             data_output = hyetograph.add_time_information(
                 site_data=site_data,
