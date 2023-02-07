@@ -239,9 +239,8 @@ class HyetographTest(unittest.TestCase):
                         self.assertEqual(self.increment_mins / 2, row["mins"])
 
     @patch("src.dynamic_boundary_conditions.hyetograph.get_storm_length_increment_data")
-    def test_transform_data_for_selected_method_correct_output(self, mock_storm_length_data):
+    def test_transform_data_for_selected_method_correct_columns_and_storm_length(self, mock_storm_length_data):
         mock_storm_length_data.return_value = self.storm_length_data
-        site_ids = self.interp_increment_data.columns[1:].tolist()
         hyeto_method_list = [self.hyeto_method_alt_block, self.hyeto_method_chicago]
         for hyeto_method in hyeto_method_list:
             hyetograph_depth = hyetograph.transform_data_for_selected_method(
@@ -250,21 +249,37 @@ class HyetographTest(unittest.TestCase):
                 time_to_peak_mins=self.time_to_peak_mins,
                 increment_mins=self.increment_mins,
                 hyeto_method=hyeto_method)
+            expected_columns = list(self.interp_increment_data.columns[1:]) + ["mins", "hours", "seconds"]
+            actual_columns = hyetograph_depth.columns.tolist()
+            self.assertEqual(expected_columns, actual_columns)
+            expected_storm_length = self.storm_length_mins
+            actual_storm_length = hyetograph_depth["mins"].iloc[-1]
+            self.assertEqual(expected_storm_length, actual_storm_length)
 
+    @patch("src.dynamic_boundary_conditions.hyetograph.get_storm_length_increment_data")
+    def test_transform_data_for_selected_method_correct_output_and_rows(self, mock_storm_length_data):
+        mock_storm_length_data.return_value = self.storm_length_data
+        hyeto_method_list = [self.hyeto_method_alt_block, self.hyeto_method_chicago]
+        for hyeto_method in hyeto_method_list:
+            hyetograph_depth = hyetograph.transform_data_for_selected_method(
+                interp_increment_data=pd.DataFrame(),
+                storm_length_mins=self.storm_length_mins,
+                time_to_peak_mins=self.time_to_peak_mins,
+                increment_mins=self.increment_mins,
+                hyeto_method=hyeto_method)
             first_row = hyetograph_depth.iloc[0, :-3]
             last_row = hyetograph_depth.iloc[-1, :-3]
-
             if hyeto_method == "alt_block":
+                # check that first row and last row does not match
                 with self.assertRaises(AssertionError):
                     pd.testing.assert_series_equal(first_row, last_row, check_names=False)
-                self.assertEqual(288, len(hyetograph_depth))
+                # check the number of returned rows
+                self.assertEqual(len(mock_storm_length_data.return_value), len(hyetograph_depth))
             else:
+                # check that first row and last row match
                 pd.testing.assert_series_equal(first_row, last_row, check_names=False)
-                self.assertEqual(576, len(hyetograph_depth))
-
-            self.assertEqual(site_ids, hyetograph_depth.columns.values[:-3].tolist())
-            self.assertEqual(["mins", "hours", "seconds"], hyetograph_depth.columns.values[-3:].tolist())
-            self.assertEqual(self.storm_length_mins, hyetograph_depth["mins"].iloc[-1])
+                # check the number of returned rows
+                self.assertEqual(len(mock_storm_length_data.return_value) * 2, len(hyetograph_depth))
 
     def test_hyetograph_depth_to_intensity_correct_output(self):
         combined_list = [(self.hyetograph_depth_alt_block, self.hyeto_method_alt_block),
