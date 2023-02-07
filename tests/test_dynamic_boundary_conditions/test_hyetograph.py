@@ -258,8 +258,8 @@ class HyetographTest(unittest.TestCase):
             self.assertEqual(expected_storm_length, actual_storm_length)
 
     @patch("src.dynamic_boundary_conditions.hyetograph.get_storm_length_increment_data")
-    def test_transform_data_for_selected_method_correct_output_and_rows(self, mock_storm_length_data):
-        """Test to ensure returned data have correct output and number of rows."""
+    def test_transform_data_for_selected_method_correct_layout_and_rows(self, mock_storm_length_data):
+        """Test to ensure returned data have correct output layout and number of rows."""
         mock_storm_length_data.return_value = self.storm_length_data
         hyeto_method_list = [self.hyeto_method_alt_block, self.hyeto_method_chicago]
         for hyeto_method in hyeto_method_list:
