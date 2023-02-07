@@ -5,7 +5,6 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 from unittest.mock import patch
-
 from src.dynamic_boundary_conditions import model_input
 
 
@@ -80,3 +79,7 @@ class ModelInputTest(unittest.TestCase):
                 time_slice_unique_intensity = np.unique(time_slice_intensity)[np.unique(time_slice_intensity) != 0]
                 time_slice_unique_intensity = np.sort(time_slice_unique_intensity).tolist()
                 self.assertEqual(row_unique_intensity, time_slice_unique_intensity)
+
+
+if __name__ == "__main__":
+    unittest.main()
