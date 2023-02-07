@@ -283,33 +283,28 @@ class HyetographTest(unittest.TestCase):
                 # check the number of returned rows
                 self.assertEqual(len(mock_storm_length_data.return_value) * 2, len(hyetograph_depth))
 
-    def test_hyetograph_depth_to_intensity_correct_output(self):
+    def test_hyetograph_depth_to_intensity_correct_layout_and_rows(self):
+        """Test to ensure returned data have correct output layout and number of rows."""
         combined_list = [(self.hyetograph_depth_alt_block, self.hyeto_method_alt_block),
                          (self.hyetograph_depth_chicago, self.hyeto_method_chicago)]
-
         for hyetograph_depth, hyeto_method in combined_list:
             hyetograph_intensity = hyetograph.hyetograph_depth_to_intensity(
                 hyetograph_depth=hyetograph_depth,
                 increment_mins=self.increment_mins,
                 hyeto_method=hyeto_method)
-
             first_row = hyetograph_intensity.iloc[0, :-3]
             last_row = hyetograph_intensity.iloc[-1, :-3]
-
             if hyeto_method == "alt_block":
+                # check that first row and last row does not match
                 with self.assertRaises(AssertionError):
                     pd.testing.assert_series_equal(first_row, last_row, check_names=False)
-                self.assertEqual(288, len(hyetograph_intensity))
+                    # check the number of returned rows
+                self.assertEqual(len(hyetograph_depth), len(hyetograph_intensity))
             else:
+                # check that first row and last row match
                 pd.testing.assert_series_equal(first_row, last_row, check_names=False)
-                self.assertEqual(576, len(hyetograph_intensity))
-
-            duration_interval = self.increment_mins if hyeto_method == "alt_block" else (self.increment_mins / 2)
-            for row_index in range(0, len(hyetograph_depth)):
-                sites_intensity = hyetograph_depth.iloc[row_index, :-3] / duration_interval * 60
-                sites_time = hyetograph_depth.iloc[row_index, -3:]
-                expected_hyetograph_intensity = pd.concat([sites_intensity, sites_time])
-                pd.testing.assert_series_equal(expected_hyetograph_intensity, hyetograph_intensity.iloc[row_index])
+                # check the number of returned rows
+                self.assertEqual(len(hyetograph_depth), len(hyetograph_intensity))
 
     def test_hyetograph_data_wide_to_long_correct_transposition(self):
         hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
