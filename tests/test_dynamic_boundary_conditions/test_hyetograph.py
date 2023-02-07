@@ -283,6 +283,23 @@ class HyetographTest(unittest.TestCase):
                 # check the number of returned rows
                 self.assertEqual(len(mock_storm_length_data.return_value) * 2, len(hyetograph_depth))
 
+    def test_hyetograph_depth_to_intensity_correct_conversion(self):
+        """Test to ensure hyetograph data have been correctly converted from 'depths' to 'intensities'."""
+        combined_list = [(self.hyetograph_depth_alt_block, self.hyeto_method_alt_block),
+                         (self.hyetograph_depth_chicago, self.hyeto_method_chicago)]
+        for hyetograph_depth, hyeto_method in combined_list:
+            hyetograph_intensity = hyetograph.hyetograph_depth_to_intensity(
+                hyetograph_depth=hyetograph_depth,
+                increment_mins=self.increment_mins,
+                hyeto_method=hyeto_method)
+
+            duration_interval = self.increment_mins if hyeto_method == "alt_block" else (self.increment_mins / 2)
+            for row_index in range(len(hyetograph_depth)):
+                sites_intensity = hyetograph_depth.iloc[row_index, :-3] / duration_interval * 60
+                sites_time = hyetograph_depth.iloc[row_index, -3:]
+                expected_hyetograph_intensity = pd.concat([sites_intensity, sites_time])
+                pd.testing.assert_series_equal(expected_hyetograph_intensity, hyetograph_intensity.iloc[row_index])
+
     def test_hyetograph_depth_to_intensity_correct_layout_and_rows(self):
         """Test to ensure returned data have correct output layout and number of rows."""
         combined_list = [(self.hyetograph_depth_alt_block, self.hyeto_method_alt_block),
