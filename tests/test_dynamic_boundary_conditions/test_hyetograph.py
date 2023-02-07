@@ -204,14 +204,14 @@ class HyetographTest(unittest.TestCase):
         combined_list = [(self.site_data_alt_block, self.hyeto_method_alt_block),
                          (self.site_data_chicago, self.hyeto_method_chicago)]
         for site_data, hyeto_method in combined_list:
-            data_output = hyetograph.add_time_information(
+            site_data_output = hyetograph.add_time_information(
                 site_data=site_data,
                 storm_length_mins=self.storm_length_mins,
                 time_to_peak_mins=self.time_to_peak_mins,
                 increment_mins=self.increment_mins,
                 hyeto_method=hyeto_method)
-            data_output_mins = data_output["mins"].to_list()
-            mins_diff = np.unique(np.diff(data_output_mins))
+            mins = site_data_output["mins"].to_list()
+            mins_diff = np.unique(np.diff(mins))
             if hyeto_method == "alt_block":
                 self.assertEqual(self.increment_mins, mins_diff)
             else:
