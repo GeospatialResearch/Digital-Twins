@@ -13,6 +13,14 @@ class ModelInputTest(unittest.TestCase):
 
     @staticmethod
     def get_catchment_polygon(filepath: str) -> Polygon:
+        """
+        Get the catchment boundary geometry (polygon).
+
+        Parameters
+        ----------
+        filepath
+            The file path of the catchment polygon GeoJSON data file.
+        """
         catchment_file = pathlib.Path(filepath)
         catchment = gpd.read_file(catchment_file)
         catchment = catchment.to_crs(4326)
@@ -21,6 +29,7 @@ class ModelInputTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Get all relevant data used for testing."""
         cls.selected_polygon = cls.get_catchment_polygon(
             r"tests/test_dynamic_boundary_conditions/data/selected_polygon.geojson")
         cls.sites_in_catchment = gpd.read_file(
