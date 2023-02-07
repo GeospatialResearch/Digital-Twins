@@ -218,9 +218,9 @@ class HyetographTest(unittest.TestCase):
                 self.assertEqual(self.increment_mins / 2, mins_diff)
 
     def test_add_time_information_correct_time_calculation(self):
+        """Test to ensure returned data have correct time calculations."""
         combined_list = [(self.site_data_alt_block, self.hyeto_method_alt_block),
                          (self.site_data_chicago, self.hyeto_method_chicago)]
-
         for site_data, hyeto_method in combined_list:
             site_data_output = hyetograph.add_time_information(
                 site_data=site_data,
@@ -228,14 +228,15 @@ class HyetographTest(unittest.TestCase):
                 time_to_peak_mins=self.time_to_peak_mins,
                 increment_mins=self.increment_mins,
                 hyeto_method=hyeto_method)
-            if hyeto_method == "alt_block":
-                self.assertEqual(self.increment_mins, site_data_output["mins"][0])
-                self.assertEqual(self.increment_mins / 60, site_data_output["hours"][0])
-                self.assertEqual(self.increment_mins * 60, site_data_output["seconds"][0])
-            else:
-                self.assertEqual(self.increment_mins / 2, site_data_output["mins"][0])
-                self.assertEqual(self.increment_mins / 2 / 60, site_data_output["hours"][0])
-                self.assertEqual(self.increment_mins / 2 * 60, site_data_output["seconds"][0])
+            for row_index in range(len(site_data_output)):
+                row = site_data_output.iloc[row_index]
+                self.assertEqual(row["mins"] / 60, row["hours"])
+                self.assertEqual(row["mins"] * 60, row["seconds"])
+                if row_index == 0:
+                    if hyeto_method == "alt_block":
+                        self.assertEqual(self.increment_mins, row["mins"])
+                    else:
+                        self.assertEqual(self.increment_mins / 2, row["mins"])
 
     @patch("src.dynamic_boundary_conditions.hyetograph.get_storm_length_increment_data")
     def test_transform_data_for_selected_method_correct_output(self, mock_storm_length_data):
