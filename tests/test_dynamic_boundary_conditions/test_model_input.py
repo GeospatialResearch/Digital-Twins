@@ -43,7 +43,8 @@ class ModelInputTest(unittest.TestCase):
         cls.hyetograph_data_chicago = pd.read_csv(
             r"tests/test_dynamic_boundary_conditions/data/hyetograph_data_chicago.txt")
 
-    def test_sites_voronoi_intersect_catchment_in_catchment(self):
+    def test_sites_voronoi_intersect_catchment_within_catchment(self):
+        """Test to ensure returned intersections (overlapped areas) are each within the catchment area."""
         intersections = model_input.sites_voronoi_intersect_catchment(self.sites_in_catchment, self.selected_polygon)
         self.assertTrue(intersections.within(self.selected_polygon.buffer(1 / 1e13)).unique())
 
