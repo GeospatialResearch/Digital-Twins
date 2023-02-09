@@ -330,9 +330,12 @@ class HyetographTest(unittest.TestCase):
             hyetograph_data_long = hyetograph.hyetograph_data_wide_to_long(hyetograph_data)
             site_ids = hyetograph_data.drop(columns=["mins", "hours", "seconds"]).columns.to_list()
             self.assertEqual(site_ids, hyetograph_data_long["site_id"].unique().tolist())
-            self.assertEqual(hyetograph_data["mins"].tolist(), hyetograph_data_long["mins"].unique().tolist())
-            self.assertEqual(hyetograph_data["hours"].tolist(), hyetograph_data_long["hours"].unique().tolist())
-            self.assertEqual(hyetograph_data["seconds"].tolist(), hyetograph_data_long["seconds"].unique().tolist())
+            for site_id in site_ids:
+                site_data = hyetograph_data_long.query(f"site_id == '{site_id}'")
+                self.assertEqual(hyetograph_data["mins"].tolist(), site_data["mins"].tolist())
+                self.assertEqual(hyetograph_data["hours"].tolist(), site_data["hours"].tolist())
+                self.assertEqual(hyetograph_data["seconds"].tolist(), site_data["seconds"].tolist())
+                self.assertEqual(hyetograph_data[f"{site_id}"].tolist(), site_data["rain_intensity_mmhr"].tolist())
 
     def test_hyetograph_data_wide_to_long_correct_rows(self):
         """Test to ensure transposed data have correct number of rows."""
