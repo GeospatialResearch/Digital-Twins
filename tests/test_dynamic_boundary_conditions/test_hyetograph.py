@@ -324,15 +324,22 @@ class HyetographTest(unittest.TestCase):
                 self.assertEqual(len(hyetograph_depth), len(hyetograph_intensity))
 
     def test_hyetograph_data_wide_to_long_correct_transposition(self):
-        """Test to ensure transposed data have correct information as the original and accurate number of rows."""
+        """Test to ensure transposed data have correct information as the original."""
         hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
         for hyetograph_data in hyetograph_data_list:
             hyetograph_data_long = hyetograph.hyetograph_data_wide_to_long(hyetograph_data)
             site_ids = hyetograph_data.drop(columns=["mins", "hours", "seconds"]).columns.to_list()
             self.assertEqual(site_ids, hyetograph_data_long["site_id"].unique().tolist())
-            self.assertEqual(hyetograph_data["mins"].to_list(), hyetograph_data_long["mins"].unique().tolist())
-            self.assertEqual(hyetograph_data["hours"].to_list(), hyetograph_data_long["hours"].unique().tolist())
-            self.assertEqual(hyetograph_data["seconds"].to_list(), hyetograph_data_long["seconds"].unique().tolist())
+            self.assertEqual(hyetograph_data["mins"].tolist(), hyetograph_data_long["mins"].unique().tolist())
+            self.assertEqual(hyetograph_data["hours"].tolist(), hyetograph_data_long["hours"].unique().tolist())
+            self.assertEqual(hyetograph_data["seconds"].tolist(), hyetograph_data_long["seconds"].unique().tolist())
+
+    def test_hyetograph_data_wide_to_long_correct_rows(self):
+        """Test to ensure transposed data have correct number of rows."""
+        hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
+        for hyetograph_data in hyetograph_data_list:
+            hyetograph_data_long = hyetograph.hyetograph_data_wide_to_long(hyetograph_data)
+            site_ids = hyetograph_data.drop(columns=["mins", "hours", "seconds"]).columns.tolist()
             self.assertEqual(len(hyetograph_data) * len(site_ids), len(hyetograph_data_long))
 
 
