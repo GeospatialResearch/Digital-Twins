@@ -10,6 +10,7 @@ from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db, hirds_rainfall_data_from_db
+from src.dynamic_boundary_conditions.model_input import RainInputType
 
 
 def catchment_area_geometry_info(catchment_file) -> Polygon:
@@ -68,8 +69,10 @@ def main():
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     # Write out the requested rainfall model input for BG-Flood
-    model_input.generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type="uniform")
-    model_input.generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type="varying")
+    model_input.generate_rain_model_input(
+        hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.UNIFORM)
+    model_input.generate_rain_model_input(
+        hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.VARYING)
 
 
 if __name__ == "__main__":
