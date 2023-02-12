@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description:
+@Description: Main rainfall script used to fetch and store rainfall data to the database, and generate the
+              requested rainfall model input for BG-Flood etc.
 @Author: pkh35, sli229
 """
 
