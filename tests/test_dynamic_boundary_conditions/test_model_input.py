@@ -59,6 +59,8 @@ class ModelInputTest(unittest.TestCase):
 
     @patch("src.dynamic_boundary_conditions.model_input.sites_voronoi_intersect_catchment")
     def test_sites_coverage_in_catchment_correct_area_percent(self, mock_intersections):
+        """Test to ensure the percentage of area covered by each rainfall site inside the catchment area has
+        been calculated correctly and sums up to 1."""
         mock_intersections.return_value = self.intersections.copy()
         sites_coverage = model_input.sites_coverage_in_catchment(
             sites_in_catchment=gpd.GeoDataFrame(),
