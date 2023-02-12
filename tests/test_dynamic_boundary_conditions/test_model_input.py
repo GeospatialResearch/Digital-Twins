@@ -93,12 +93,12 @@ class ModelInputTest(unittest.TestCase):
             self.assertEqual(len(hyetograph_data), len(mean_catchment_rain))
 
     def test_create_rain_data_cube_correct_intensity_in_data_cube(self):
+        """Test to ensure the returned rain data cube has correct intensity for each time slice."""
         hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
-
         for hyetograph_data in hyetograph_data_list:
-            for row_index in [0, -1]:
+            rain_data_cube = model_input.create_rain_data_cube(hyetograph_data, self.sites_coverage)
+            for row_index in range(len(hyetograph_data)):
                 row_unique_intensity = np.sort(hyetograph_data.iloc[row_index, :-3].unique()).tolist()
-                rain_data_cube = model_input.create_rain_data_cube(hyetograph_data, self.sites_coverage)
                 time_slice = rain_data_cube.sel(time=hyetograph_data.iloc[row_index]["seconds"])
                 time_slice_intensity = time_slice.data_vars["rain_intensity_mmhr"]
                 time_slice_unique_intensity = np.unique(time_slice_intensity)[np.unique(time_slice_intensity) != 0]
