@@ -11,7 +11,7 @@ from shapely.geometry import Polygon
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db, hirds_rainfall_data_from_db
-from src.dynamic_boundary_conditions.model_input import RainInputType
+from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType
 
 
 def catchment_area_geometry_info(catchment_file) -> Polygon:

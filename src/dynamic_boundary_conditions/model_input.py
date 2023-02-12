@@ -9,12 +9,12 @@ import logging
 import pathlib
 import geopandas as gpd
 import pandas as pd
-from enum import StrEnum
 import xarray as xr
 from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db, hyetograph
+from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -24,19 +24,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-class RainInputType(StrEnum):
-    """
-    Attributes
-    ----------
-    UNIFORM : str
-        Spatially uniform rain input.
-    VARYING : str
-        Spatially varying rain input.
-    """
-    UNIFORM = "uniform"
-    VARYING = "varying"
 
 
 def sites_voronoi_intersect_catchment(

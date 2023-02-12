@@ -20,8 +20,8 @@ from sqlalchemy.orm import sessionmaker
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType
 from src.lidar import dem_metadata_in_db
-from src.dynamic_boundary_conditions.model_input import RainInputType
 
 Base = declarative_base()
 
