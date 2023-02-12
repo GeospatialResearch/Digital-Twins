@@ -4,12 +4,13 @@
 @Author: pkh35, sli229
 """
 
-import pandas as pd
-import geopandas as gpd
-import pathlib
 import logging
-import sys
+import pathlib
 from typing import Optional
+
+import geopandas as gpd
+import pandas as pd
+
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_to_db
 
@@ -73,10 +74,8 @@ def get_each_site_rainfall_data(
     """
     rain_table_name = hirds_rainfall_data_to_db.db_rain_table_name(idf)
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
-        log.error(
-            "Check the arguments of the 'rainfall_data_from_db' function. "
-            "If rcp is None, time period should be None, and vice-versa.")
-        sys.exit()
+        raise ValueError("Check the arguments of the 'rainfall_data_from_db' function. "
+                         "If rcp is None, time period should be None, and vice-versa.")
     elif rcp is not None and time_period is not None:
         query = f"""SELECT * FROM {rain_table_name}
         WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""

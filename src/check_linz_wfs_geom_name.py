@@ -8,10 +8,10 @@ Used to fetch geometry column name from LINZ which is needed to fill the
  order to get the geometry column name for the specified layer.
 """
 
-import os
-from dotenv import load_dotenv
 import requests
 from bs4 import BeautifulSoup
+
+import config
 
 
 def get_linz_wfs_geom_name(key, layer):
@@ -29,11 +29,9 @@ def get_linz_wfs_geom_name(key, layer):
 
 
 if __name__ == "__main__":
-    # Load environment variable and get the LINZ API Key
-    load_dotenv()
-    LINZ_API_KEY = os.getenv("LINZ_API_KEY")
+    linz_api_key = config.get_env_variable("LINZ_API_KEY")
     # Specify the required layer
     LINZ_layer = "layer-50327"
     # Get the geometry column name
-    geom_col_name = get_linz_wfs_geom_name(LINZ_API_KEY, LINZ_layer)
+    geom_col_name = get_linz_wfs_geom_name(linz_api_key, LINZ_layer)
     print(geom_col_name)
