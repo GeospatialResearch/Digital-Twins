@@ -71,22 +71,26 @@ class ModelInputTest(unittest.TestCase):
         pd.testing.assert_series_equal(sites_area_percent, sites_coverage["area_percent"], check_names=False)
         self.assertEqual(1, sites_coverage["area_percent"].sum())
 
-    def test_mean_catchment_rainfall_correct_length_and_calculation(self):
+    def test_mean_catchment_rainfall_correct_calculation(self):
+        """Test to ensure the returned data have been calculated correctly (ignore rounding)."""
+        site_area_percent = self.sites_coverage[["site_id", "area_percent"]]
         hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
+        for hyetograph_data in hyetograph_data_list:
+            mean_catchment_rain = model_input.mean_catchment_rainfall(hyetograph_data, self.sites_coverage)
+            for row_index in range(len(hyetograph_data)):
+                row_hyeto_data = hyetograph_data.iloc[row_index, :-3]
+                row_hyeto_data = row_hyeto_data.to_frame(name="rain_intensity_mmhr").reset_index(names="site_id")
+                row_hyeto_data = pd.merge(row_hyeto_data, site_area_percent, how="left", on="site_id")
+                row_mean_catchment_rain = (row_hyeto_data["rain_intensity_mmhr"] * row_hyeto_data["area_percent"]).sum()
+                self.assertAlmostEqual(
+                    row_mean_catchment_rain, mean_catchment_rain["rain_intensity_mmhr"].iloc[row_index])
 
+    def test_mean_catchment_rainfall_correct_rows(self):
+        """Test to ensure the returned data have correct number of rows."""
+        hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
         for hyetograph_data in hyetograph_data_list:
             mean_catchment_rain = model_input.mean_catchment_rainfall(hyetograph_data, self.sites_coverage)
             self.assertEqual(len(hyetograph_data), len(mean_catchment_rain))
-
-            for row_index in [0, -1]:
-                hyeto_data = hyetograph_data.iloc[row_index, :-3]
-                hyeto_data = hyeto_data.to_frame(name="rain_intensity_mmhr").reset_index(names="site_id")
-                site_area_percent = self.sites_coverage[["site_id", "area_percent"]]
-                hyeto_data = pd.merge(hyeto_data, site_area_percent, how="left", on="site_id")
-                row_mean_catchment_rain = (hyeto_data["rain_intensity_mmhr"] * hyeto_data["area_percent"]).sum()
-                self.assertEqual(
-                    round(row_mean_catchment_rain, 6),
-                    round(mean_catchment_rain["rain_intensity_mmhr"].iloc[row_index], 6))
 
     def test_create_rain_data_cube_correct_intensity_in_data_cube(self):
         hyetograph_data_list = [self.hyetograph_data_alt_block, self.hyetograph_data_chicago]
