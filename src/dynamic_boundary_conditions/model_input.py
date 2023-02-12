@@ -218,8 +218,6 @@ def main():
         increment_mins=10,
         interp_method="cubic",
         hyeto_method=hyetograph.HyetoMethod.ALT_BLOCK)
-    # Create interactive hyetograph plots for sites within the catchment area
-    hyetograph.hyetograph(hyetograph_data, ari)
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     # Write out the requested rainfall model input for BG-Flood
