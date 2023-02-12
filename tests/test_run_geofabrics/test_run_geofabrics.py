@@ -39,7 +39,7 @@ class GeoFabricsTest(unittest.TestCase):
     """
 
     # The expected datasets and files to be downloaded - used in test comparisons
-    DATASETS = ["Rangiora_2014", "51153", "50448"]
+    DATASETS = ["Rangiora_2014", "vector"]
     LIDAR_SIZES = {
         "ot_CL2_BW24_2014_1000_4025.laz": 3424271,
         "ot_CL2_BW24_2014_1000_4026.laz": 5314166,

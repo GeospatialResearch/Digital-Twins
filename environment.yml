@@ -22,7 +22,7 @@ dependencies:
   - plotly
   - geocube
   - pip:
-    - geofabrics>=0.10.4
+    - geofabrics>=0.10.7
     - geovoronoi>=0.4.0
     - geoapis>=0.3.1
 
