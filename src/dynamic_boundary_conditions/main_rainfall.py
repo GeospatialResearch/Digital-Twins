@@ -8,6 +8,8 @@
 import geopandas as gpd
 import pathlib
 from shapely.geometry import Polygon
+
+from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db, hirds_rainfall_data_from_db
@@ -31,7 +33,8 @@ def catchment_area_geometry_info(catchment_file) -> Polygon:
 
 def main():
     # BG-Flood path
-    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
+    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
+    bg_flood_path = pathlib.Path(flood_model_dir)
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     catchment_polygon = catchment_area_geometry_info(catchment_file)

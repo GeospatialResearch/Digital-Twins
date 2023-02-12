@@ -12,6 +12,8 @@ import pandas as pd
 import xarray as xr
 from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
+
+from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db, hyetograph
 from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType
@@ -191,7 +193,8 @@ def generate_rain_model_input(
 
 def main():
     # BG-Flood path
-    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
+    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
+    bg_flood_path = pathlib.Path(flood_model_dir)
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
