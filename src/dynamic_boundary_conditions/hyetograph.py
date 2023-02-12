@@ -172,7 +172,7 @@ def add_time_information(
             "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
             "at least half of 'storm_length_mins' (storm duration).")
 
-    if hyeto_method.value == "alt_block":
+    if hyeto_method == HyetoMethod.ALT_BLOCK:
         # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
         # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
         # the peak in turn.
@@ -234,7 +234,7 @@ def transform_data_for_selected_method(
     hyetograph_sites_data = []
     for column_num in range(1, len(storm_length_data.columns)):
         site_data = storm_length_data.iloc[:, [0, column_num]]
-        if hyeto_method.value == "alt_block":
+        if hyeto_method == HyetoMethod.ALT_BLOCK:
             # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
             # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
             # the peak in turn.
@@ -269,7 +269,7 @@ def hyetograph_depth_to_intensity(
     hyeto_method : HyetoMethod
         Hyetograph method to be used.
     """
-    duration_interval = increment_mins if hyeto_method.value == "alt_block" else (increment_mins / 2)
+    duration_interval = increment_mins if hyeto_method == HyetoMethod.ALT_BLOCK else (increment_mins / 2)
     sites_depth = hyetograph_depth.drop(columns=["mins", "hours", "seconds"])
     sites_intensity = sites_depth / duration_interval * 60
     sites_time = hyetograph_depth[["mins", "hours", "seconds"]]
