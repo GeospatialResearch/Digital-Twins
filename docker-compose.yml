@@ -25,8 +25,25 @@ services:
     network_mode: host
     env_file: .env
     depends_on:
-      db_postgres:
-        condition: service_healthy
+      - db_postgres
+
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.21.2
+    container_name: geoserver_digital_twin
+    volumes:
+    - ./geoserver/geoserver_data:/opt/geoserver_data
+    depends_on:
+      - db_postgres
+    environment:
+      - SKIP_DEMO_DATA=true
+    ports:
+      - "8088:8080"
+    restart: always
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/ || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
 
   www:
     build:
