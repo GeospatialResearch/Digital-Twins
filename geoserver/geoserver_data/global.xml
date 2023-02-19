@@ -1,5 +1,6 @@
 <global>
   <settings>
+    <id>SettingsInfoImpl--51ead0c9:186519a0d3c:-8000</id>
     <contact>
       <id>contact</id>
     </contact>
@@ -59,7 +60,7 @@
     <queueType>UNBOUNDED</queueType>
     <imageIOCacheThreshold>10240</imageIOCacheThreshold>
   </coverageAccess>
-  <updateSequence>8</updateSequence>
+  <updateSequence>17</updateSequence>
   <featureTypeCacheSize>0</featureTypeCacheSize>
   <globalServices>true</globalServices>
   <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>
