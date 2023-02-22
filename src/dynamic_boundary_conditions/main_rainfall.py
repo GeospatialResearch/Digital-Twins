@@ -51,7 +51,6 @@ def main():
     # Store rainfall data of all the sites within the catchment area in the database
     # Set idf to False for rain depth data and to True for rain intensity data
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=False)
-    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=True)
     # Requested scenario
     rcp = 2.6
     time_period = "2031-2050"
