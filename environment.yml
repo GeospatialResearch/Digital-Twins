@@ -5,6 +5,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - python>=3.11
   - pip
   - python-dotenv
   - lxml
@@ -19,8 +20,9 @@ dependencies:
   - sqlalchemy
   - geoalchemy2
   - plotly
+  - geocube
   - pip:
-    - geofabrics>=0.10.4
+    - geofabrics>=0.10.7
     - geovoronoi>=0.4.0
     - geoapis>=0.3.1
 

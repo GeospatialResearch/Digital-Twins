@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: hyetograph.py
-@Description: Create interactive hyetograph plots for sites within the catchment area.
-@Author: pkh35
-@Last modified by: sli229
-@Last modified date: 12/12/2022
+@Description: Get hyetograph data and create interactive hyetograph plots for sites within the catchment area.
+@Author: sli229
 """
 
 import logging
 import pathlib
 import pandas as pd
 import numpy as np
-from typing import Literal
+from typing import Union
+from enum import StrEnum
 from math import floor, ceil
 from scipy.interpolate import interp1d
 import plotly.express as px
@@ -26,6 +24,19 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
+
+
+class HyetoMethod(StrEnum):
+    """
+    Attributes
+    ----------
+    ALT_BLOCK : str
+        Alternating Block Method.
+    CHICAGO : str
+        Chicago Method.
+    """
+    ALT_BLOCK = "alt_block"
+    CHICAGO = "chicago"
 
 
 def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:
@@ -76,11 +87,22 @@ def get_interpolated_data(
         One of 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
     """
     duration = transposed_catchment_data['duration_mins']
-    duration_new = np.arange(increment_mins, duration.values[-1] + increment_mins, increment_mins)
+    if increment_mins < duration.iloc[0] or increment_mins > duration.iloc[-1]:
+        raise ValueError(f"Increment minute {increment_mins} is out of range, "
+                         f"needs to be between {duration.iloc[0]} and {duration.iloc[-1]}.")
+    # new array of duration minutes to interpolate the data for
+    duration_new = np.arange(increment_mins, duration.iloc[-1] + increment_mins, increment_mins)
+    # drop the last element of 'duration_new' if it is bigger than the last element of the original 'duration'
+    # because it would throw a ValueError as it is above the interpolation range's maximum value
+    duration_new = duration_new[:-1] if duration_new[-1] > duration.iloc[-1] else duration_new
     interp_catchment_data = pd.DataFrame(duration_new, columns=["duration_mins"])
     for column_num in range(1, len(transposed_catchment_data.columns)):
         depth = transposed_catchment_data.iloc[:, column_num]
-        f_func = interp1d(duration, depth, kind=interp_method)
+        try:
+            f_func = interp1d(duration, depth, kind=interp_method)
+        except NotImplementedError as error:
+            raise ValueError(f"Invalid interpolation method: '{interp_method}'. "
+                             f"Refer to 'scipy.interpolate.interp1d()' for available methods.") from error
         site_id = depth.name
         depth_new = pd.Series(f_func(duration_new), name=site_id)
         interp_catchment_data = pd.concat([interp_catchment_data, depth_new], axis=1)
@@ -105,7 +127,7 @@ def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataF
     return interp_increment_data
 
 
-def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, storm_length_hrs: int) -> pd.DataFrame:
+def get_storm_length_increment_data(interp_increment_data: pd.DataFrame, storm_length_mins: int) -> pd.DataFrame:
     """
     Get the incremental rainfall depths for sites within the catchment area for a specific storm duration.
 
@@ -113,10 +135,12 @@ def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, sto
     ----------
     interp_increment_data : pd.DataFrame
         Incremental rainfall depths for sites within the catchment area.
-    storm_length_hrs : int
-        Storm duration in hours.
+    storm_length_mins : int
+        Storm duration in minutes.
     """
-    storm_length_mins = storm_length_hrs * 60
+    min_storm_length_mins = interp_increment_data["duration_mins"].iloc[0]
+    if storm_length_mins < min_storm_length_mins:
+        raise ValueError(f"Storm duration (storm_length_mins) needs to be at least '{int(min_storm_length_mins)}'.")
     storm_length_filter = (interp_increment_data["duration_mins"] <= storm_length_mins)
     storm_length_data = interp_increment_data[storm_length_filter]
     return storm_length_data
@@ -124,9 +148,10 @@ def get_increment_data_for_storm_length(interp_increment_data: pd.DataFrame, sto
 
 def add_time_information(
         site_data: pd.DataFrame,
-        time_to_peak_hrs: int,
+        storm_length_mins: int,
+        time_to_peak_mins: Union[int, float],
         increment_mins: int,
-        hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
+        hyeto_method: HyetoMethod) -> pd.DataFrame:
     """
     Add time information (seconds, minutes, and hours column) to the hyetograph data based on the
     selected hyetograph method.
@@ -135,16 +160,22 @@ def add_time_information(
     ----------
     site_data : pd.DataFrame
         Hyetograph data for a rainfall site or gauge.
-    time_to_peak_hrs : int
-        The time in hours when rainfall is at its greatest (reaches maximum).
+    storm_length_mins : int
+        Storm duration in minutes.
+    time_to_peak_mins : Union[int, float]
+        The time in minutes when rainfall is at its greatest (reaches maximum).
     increment_mins : int
         Time interval in minutes.
-    hyeto_method : Literal["alt_block", "chicago"]
-        Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
-        Chicago Method.
+    hyeto_method : HyetoMethod
+        Hyetograph method to be used.
     """
-    time_to_peak_mins = time_to_peak_hrs * 60
-    if hyeto_method == "alt_block":
+    min_time_to_peak_mins = storm_length_mins / 2
+    if time_to_peak_mins < min_time_to_peak_mins:
+        raise ValueError(
+            "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
+            "at least half of 'storm_length_mins' (storm duration).")
+
+    if hyeto_method == HyetoMethod.ALT_BLOCK:
         # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
         # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
         # the peak in turn.
@@ -165,8 +196,8 @@ def add_time_information(
         # (left and right), the next incremental rainfall depths are further split in half and arranged before and after
         # (left and right) of the previous split incremental rainfall depths.
         # Add time (minutes) information in order to allocate the split incremental rainfall depths
-        mins_start = time_to_peak_mins - site_data["duration_mins"][0]
-        mins_end = time_to_peak_mins + site_data["duration_mins"][0]
+        mins_start = time_to_peak_mins - site_data["duration_mins"][0] + increment_mins / 2
+        mins_end = time_to_peak_mins + site_data["duration_mins"][0] + increment_mins / 2
         mins = np.arange(mins_start, mins_end, increment_mins / 2)
         site_data = site_data.assign(mins=mins)
     # Add extra time information, i.e. hours and seconds columns
@@ -178,30 +209,35 @@ def add_time_information(
 
 
 def transform_data_for_selected_method(
-        storm_length_data: pd.DataFrame,
-        time_to_peak_hrs: int,
+        interp_increment_data: pd.DataFrame,
+        storm_length_mins: int,
+        time_to_peak_mins: Union[int, float],
         increment_mins: int,
-        hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
+        hyeto_method: HyetoMethod) -> pd.DataFrame:
     """
     Transform the storm length incremental rainfall depths for sites within the catchment area based on
-    the selected hyetograph method and returns in Pandas DataFrame format.
+    the selected hyetograph method and returns hyetograph depths data for all sites within the catchment area
+    in Pandas DataFrame format.
 
     Parameters
     ----------
-    storm_length_data : pd.DataFrame
-        Incremental rainfall depths for sites within the catchment area for a specific storm duration.
-    time_to_peak_hrs : int
-        The time in hours when rainfall is at its greatest (reaches maximum).
+    interp_increment_data : pd.DataFrame
+        Incremental rainfall depths for sites within the catchment area.
+    storm_length_mins : int
+        Storm duration in minutes.
+    time_to_peak_mins : Union[int, float]
+        The time in minutes when rainfall is at its greatest (reaches maximum).
     increment_mins : int
         Time interval in minutes.
-    hyeto_method : Literal["alt_block", "chicago"]
-        Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
-        Chicago Method.
+    hyeto_method : HyetoMethod
+        Hyetograph method to be used.
     """
+    storm_length_data = get_storm_length_increment_data(interp_increment_data, storm_length_mins)
+
     hyetograph_sites_data = []
     for column_num in range(1, len(storm_length_data.columns)):
         site_data = storm_length_data.iloc[:, [0, column_num]]
-        if hyeto_method == "alt_block":
+        if hyeto_method == HyetoMethod.ALT_BLOCK:
             # Alternating Block Method: the maximum incremental rainfall depths is placed at the peak position (center),
             # the remaining incremental rainfall depths are arranged alternatively in descending order after and before
             # the peak in turn.
@@ -213,52 +249,87 @@ def transform_data_for_selected_method(
             site_data_right = site_data.div(2)
             site_data_left = site_data_right[::-1]
             site_data = pd.concat([site_data_left, site_data_right]).reset_index(drop=True)
-        site_data = add_time_information(site_data, time_to_peak_hrs, increment_mins, hyeto_method)
+        site_data = add_time_information(site_data, storm_length_mins, time_to_peak_mins, increment_mins, hyeto_method)
         hyetograph_sites_data.append(site_data)
-    hyetograph_data = pd.concat(hyetograph_sites_data, axis=1, ignore_index=False)
-    hyetograph_data = hyetograph_data.loc[:, ~hyetograph_data.columns.duplicated(keep="last")]
-    return hyetograph_data
+    hyetograph_depth = pd.concat(hyetograph_sites_data, axis=1, ignore_index=False)
+    hyetograph_depth = hyetograph_depth.loc[:, ~hyetograph_depth.columns.duplicated(keep="last")]
+    return hyetograph_depth
+
+
+def hyetograph_depth_to_intensity(
+        hyetograph_depth: pd.DataFrame,
+        increment_mins: int,
+        hyeto_method: HyetoMethod) -> pd.DataFrame:
+    """
+    Convert hyetograph depths data to hyetograph intensities data for all sites within the catchment area.
+
+    Parameters
+    ----------
+    hyetograph_depth: pd.DataFrame
+        Hyetograph depths data for sites within the catchment area.
+    increment_mins : int
+        Time interval in minutes.
+    hyeto_method : HyetoMethod
+        Hyetograph method to be used.
+    """
+    duration_interval = increment_mins if hyeto_method == HyetoMethod.ALT_BLOCK else (increment_mins / 2)
+    sites_depth = hyetograph_depth.drop(columns=["mins", "hours", "seconds"])
+    sites_intensity = sites_depth / duration_interval * 60
+    sites_time = hyetograph_depth[["mins", "hours", "seconds"]]
+    hyetograph_intensity = pd.concat([sites_intensity, sites_time], axis=1)
+    return hyetograph_intensity
 
 
 def get_hyetograph_data(
         rain_depth_in_catchment: pd.DataFrame,
-        storm_length_hrs: int,
-        time_to_peak_hrs: int,
+        storm_length_mins: int,
+        time_to_peak_mins: Union[int, float],
         increment_mins: int,
         interp_method: str,
-        hyeto_method: Literal["alt_block", "chicago"]) -> pd.DataFrame:
+        hyeto_method: HyetoMethod) -> pd.DataFrame:
     """
-    Get hyetograph data for all sites within the catchment area and returns in Pandas DataFrame format.
+    Get hyetograph intensities data for all sites within the catchment area and returns in Pandas DataFrame format.
 
     Parameters
     ----------
     rain_depth_in_catchment : pd.DataFrame
         Rainfall depths for sites within the catchment area for a specified scenario retrieved from the database.
-    storm_length_hrs : int
-        Storm duration in hours.
-    time_to_peak_hrs : int
-        The time in hours when rainfall is at its greatest (reaches maximum).
+    storm_length_mins : int
+        Storm duration in minutes.
+    time_to_peak_mins : Union[int, float]
+        The time in minutes when rainfall is at its greatest (reaches maximum).
     increment_mins : int
         Time interval in minutes.
     interp_method : str
-        Temporal interpolation method to be used. One of 'linear', 'nearest', 'nearest-up', 'zero',
-        'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
-    hyeto_method : Literal["alt_block", "chicago"]
-        Hyetograph method to be used. One of 'alt_block' or 'chicago', i.e., Alternating Block Method or
-        Chicago Method.
+        Temporal interpolation method to be used. Refer to 'scipy.interpolate.interp1d()' for available methods.
+        One of 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
+    hyeto_method : HyetoMethod
+        Hyetograph method to be used.
     """
-    hyeto_methods = ["alt_block", "chicago"]
-    if hyeto_method not in hyeto_methods:
-        raise ValueError(f"Invalid hyetograph method. '{hyeto_method}' not in {hyeto_methods}")
-    if increment_mins < 10:
-        raise ValueError(f"Increment minute {increment_mins} is out of range, needs to be at least 10.")
     transposed_catchment_data = get_transposed_data(rain_depth_in_catchment)
     interp_catchment_data = get_interpolated_data(transposed_catchment_data, increment_mins, interp_method)
     interp_increment_data = get_interp_incremental_data(interp_catchment_data)
-    storm_length_data = get_increment_data_for_storm_length(interp_increment_data, storm_length_hrs)
-    hyetograph_data = transform_data_for_selected_method(
-        storm_length_data, time_to_peak_hrs, increment_mins, hyeto_method)
+    hyetograph_depth = transform_data_for_selected_method(
+        interp_increment_data, storm_length_mins, time_to_peak_mins, increment_mins, hyeto_method)
+    hyetograph_data = hyetograph_depth_to_intensity(hyetograph_depth, increment_mins, hyeto_method)
     return hyetograph_data
+
+
+def hyetograph_data_wide_to_long(hyetograph_data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transform hyetograph intensities data for all sites within the catchment area from wide format to long format.
+
+    Parameters
+    ----------
+    hyetograph_data : pd.DataFrame
+        Hyetograph intensities data for sites within the catchment area.
+    """
+    hyetograph_data_long = pd.DataFrame()
+    for index, row in hyetograph_data.iterrows():
+        hyeto_time_slice = row[:-3].to_frame("rain_intensity_mmhr").rename_axis("site_id").reset_index()
+        hyeto_time_slice = hyeto_time_slice.assign(mins=row["mins"], hours=row["hours"], seconds=row["seconds"])
+        hyetograph_data_long = pd.concat([hyetograph_data_long, hyeto_time_slice])
+    return hyetograph_data_long
 
 
 def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
@@ -268,20 +339,20 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
     Parameters
     ----------
     hyetograph_data : pd.DataFrame
-        Hyetograph data for sites within the catchment area.
+        Hyetograph intensities data for sites within the catchment area.
     ari : float
         Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     """
     for site_id in hyetograph_data.columns.values[:-3]:
         hyeto_site_data = hyetograph_data[[f"{site_id}", "mins", "hours", "seconds"]]
-        hyeto_site_data.columns.values[0] = "rain_depth_mm"
+        hyeto_site_data.columns.values[0] = "rain_intensity_mmhr"
         hyeto_fig = px.bar(
             hyeto_site_data,
             title=f"{ari}-year storm: site {site_id}",
             x="mins",
-            y="rain_depth_mm",
+            y="rain_intensity_mmhr",
             labels={"mins": "Time (Minutes)",
-                    "rain_depth_mm": "Rainfall Depth (mm)"}
+                    "rain_intensity_mmhr": "Rainfall Intensity (mm/hr)"}
         )
         hyeto_fig.update_layout(
             title_font_size=20,
@@ -330,11 +401,12 @@ def main():
     # Get hyetograph data for all sites within the catchment area
     hyetograph_data = get_hyetograph_data(
         rain_depth_in_catchment,
-        storm_length_hrs=48,
-        time_to_peak_hrs=24,
+        storm_length_mins=2880,
+        time_to_peak_mins=1440,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method="chicago")
+        hyeto_method=HyetoMethod.ALT_BLOCK)
+    print(hyetograph_data)
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph(hyetograph_data, ari)
 

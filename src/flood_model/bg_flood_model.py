@@ -2,7 +2,7 @@
 """
 Created on Fri Jan 14 14:05:35 2022
 
-@author: pkh35
+@author: pkh35, sli229
 """
 
 import json
@@ -20,6 +20,7 @@ from sqlalchemy.orm import sessionmaker
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType
 from src.lidar import dem_metadata_in_db
 
 Base = declarative_base()
@@ -30,11 +31,12 @@ def bg_model_inputs(
         dem_path,
         catchment_boundary,
         resolution,
-        endtime,
-        outputtimestep,
+        end_time,
+        output_timestep,
+        rain_input_type: RainInputType,
         mask=15,
-        gpudevice=0,
-        smallnc=0,
+        gpu_device=0,
+        small_nc=0
 ):
     """Set parameters to run the flood model.
     mask is used for visualising all the values larger than 15.
@@ -48,8 +50,8 @@ def bg_model_inputs(
         max_temp_xr = file_nc
     keys = max_temp_xr.data_vars.keys()
     elev_var = list(keys)[1]
+    rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
     river = "RiverDis.txt"
-    rainfall = "rain_forcing.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     data_dir = config.get_env_variable("DATA_DIR")
     # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
@@ -60,12 +62,12 @@ def bg_model_inputs(
     valid_bg_path = bg_model_path(bg_path)
     with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
-                         f"gpudevice = {gpudevice};\n"
+                         f"gpudevice = {gpu_device};\n"
                          f"mask = {mask};\n"
                          f"dx = {resolution};\n"
-                         f"smallnc = {smallnc};\n"
-                         f"outputtimestep = {outputtimestep};\n"
-                         f"endtime = {endtime};\n"
+                         f"smallnc = {small_nc};\n"
+                         f"outputtimestep = {output_timestep};\n"
+                         f"endtime = {end_time};\n"
                          f"rain = {rainfall};\n"
                          f"river = {river},{extents};\n"
                          f"outvars = h, hmax, zb, zs, u, v;\n"
@@ -118,14 +120,15 @@ def run_model(
         instructions,
         catchment_boundary,
         resolution,
-        endtime,
-        outputtimestep,
-        engine,
+        end_time,
+        output_timestep,
+        rain_input_type: RainInputType,
+        engine
 ):
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
     bg_model_inputs(
-        bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
+        bg_path, dem_path, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
     )
     os.chdir(bg_path)
     subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
@@ -153,18 +156,19 @@ def main():
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
-    outputtimestep = 100.0
+    output_timestep = 100.0
     # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
     # is the last one)
-    endtime = 900.0
+    end_time = 900.0
     run_model(
         bg_path=bg_path,
         instructions=instructions,
         catchment_boundary=catchment_boundary,
         resolution=resolution,
-        endtime=endtime,
-        outputtimestep=outputtimestep,
-        engine=engine,
+        end_time=end_time,
+        output_timestep=output_timestep,
+        rain_input_type=RainInputType.UNIFORM,
+        engine=engine
     )
 
 
