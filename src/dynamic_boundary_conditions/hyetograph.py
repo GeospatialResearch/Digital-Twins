@@ -9,12 +9,12 @@ import pathlib
 import pandas as pd
 import numpy as np
 from typing import Union
-from enum import StrEnum
 from math import floor, ceil
 from scipy.interpolate import interp1d
 import plotly.express as px
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db
+from src.dynamic_boundary_conditions.enum_rain_input_type import HyetoMethod
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -24,19 +24,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-class HyetoMethod(StrEnum):
-    """
-    Attributes
-    ----------
-    ALT_BLOCK : str
-        Alternating Block Method.
-    CHICAGO : str
-        Chicago Method.
-    """
-    ALT_BLOCK = "alt_block"
-    CHICAGO = "chicago"
 
 
 def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:

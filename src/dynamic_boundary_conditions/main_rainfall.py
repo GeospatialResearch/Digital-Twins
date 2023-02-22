@@ -13,7 +13,7 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db, hirds_rainfall_data_from_db
-from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType
+from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType, HyetoMethod
 
 
 def catchment_area_geometry_info(catchment_file) -> Polygon:
@@ -67,7 +67,7 @@ def main():
         time_to_peak_mins=1440,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method=hyetograph.HyetoMethod.ALT_BLOCK)
+        hyeto_method=HyetoMethod.ALT_BLOCK)
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area

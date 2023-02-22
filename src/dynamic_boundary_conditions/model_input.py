@@ -16,7 +16,7 @@ from geocube.api.core import make_geocube
 from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db, hyetograph
-from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType
+from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType, HyetoMethod
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -217,7 +217,7 @@ def main():
         time_to_peak_mins=1440,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method=hyetograph.HyetoMethod.ALT_BLOCK)
+        hyeto_method=HyetoMethod.ALT_BLOCK)
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     # Write out the requested rainfall model input for BG-Flood

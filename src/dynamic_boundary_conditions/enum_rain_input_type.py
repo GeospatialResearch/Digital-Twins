@@ -1,6 +1,19 @@
 from enum import StrEnum
 
 
+class HyetoMethod(StrEnum):
+    """
+    Attributes
+    ----------
+    ALT_BLOCK : str
+        Alternating Block Method.
+    CHICAGO : str
+        Chicago Method.
+    """
+    ALT_BLOCK = "alt_block"
+    CHICAGO = "chicago"
+
+
 class RainInputType(StrEnum):
     """
     Attributes
