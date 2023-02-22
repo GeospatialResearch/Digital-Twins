@@ -13,7 +13,7 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db, hirds_rainfall_data_from_db
-from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType, HyetoMethod
+from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
 
 
 def catchment_area_geometry_info(catchment_file) -> Polygon:

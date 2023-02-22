@@ -14,7 +14,7 @@ from scipy.interpolate import interp1d
 import plotly.express as px
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db
-from src.dynamic_boundary_conditions.enum_rain_input_type import HyetoMethod
+from src.dynamic_boundary_conditions.rainfall_enum import HyetoMethod
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
