@@ -90,7 +90,10 @@ def get_interpolated_data(
     if increment_mins < duration.iloc[0] or increment_mins > duration.iloc[-1]:
         raise ValueError(f"Increment minute {increment_mins} is out of range, "
                          f"needs to be between {duration.iloc[0]} and {duration.iloc[-1]}.")
+    # new array of duration minutes to interpolate the data for
     duration_new = np.arange(increment_mins, duration.iloc[-1] + increment_mins, increment_mins)
+    # drop the last element of 'duration_new' if it is bigger than the last element of the original 'duration'
+    # because it would throw a ValueError as it is above the interpolation range's maximum value
     duration_new = duration_new[:-1] if duration_new[-1] > duration.iloc[-1] else duration_new
     interp_catchment_data = pd.DataFrame(duration_new, columns=["duration_mins"])
     for column_num in range(1, len(transposed_catchment_data.columns)):
