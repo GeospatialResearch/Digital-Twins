@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+@Description: Enum(s) used in the dynamic_boundary_conditions rainfall module.
+@Author: sli229
+"""
+
 from enum import StrEnum
 
 
