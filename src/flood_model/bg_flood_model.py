@@ -20,7 +20,7 @@ from sqlalchemy.orm import sessionmaker
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.enum_rain_input_type import RainInputType
+from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
 from src.lidar import dem_metadata_in_db
 
 Base = declarative_base()
@@ -131,7 +131,7 @@ def run_model(
         bg_path, dem_path, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
     )
     os.chdir(bg_path)
-    subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
+    subprocess.call([bg_path / "BG_flood.exe"])
 
 
 def read_and_fill_instructions():
