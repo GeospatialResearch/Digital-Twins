@@ -133,12 +133,10 @@ def find_latest_model_output(output_dir: pathlib.Path):
     output_dir : pathlib.Path
         BG-Flood model output directory.
     """
-    list_of_files = output_dir.glob("*.nc")
-    try:
-        latest_file = max(list_of_files, key=os.path.getctime)
-    except ValueError:
-        latest_file = None
-        log.error(f"Missing BG-Flood Model output in: {output_dir}")
+    list_of_files = list(output_dir.glob("*.nc"))
+    if not len(list_of_files):
+        raise ValueError(f"Missing BG-Flood Model output in: {output_dir}")
+    latest_file = max(list_of_files, key=os.path.getctime)
     return latest_file
 
 
@@ -152,12 +150,11 @@ def add_crs_to_latest_model_output(output_dir: pathlib.Path):
         BG-Flood model output directory.
     """
     latest_file = find_latest_model_output(output_dir)
-    if latest_file is not None:
-        with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
-            latest_output.load()
-            if latest_output.rio.crs is None:
-                latest_output.rio.write_crs("epsg:2193", inplace=True)
-        latest_output.to_netcdf(latest_file)
+    with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
+        latest_output.load()
+        if latest_output.rio.crs is None:
+            latest_output.rio.write_crs("epsg:2193", inplace=True)
+    latest_output.to_netcdf(latest_file)
 
 
 def run_model(
