@@ -220,7 +220,7 @@ def main():
         resolution=resolution,
         end_time=end_time,
         output_timestep=output_timestep,
-        rain_input_type=RainInputType.VARYING,
+        rain_input_type=RainInputType.UNIFORM,
         engine=engine
     )
 
