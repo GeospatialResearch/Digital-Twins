@@ -31,13 +31,13 @@ def get_data_from_db(engine, geometry: gpd.GeoDataFrame, source_list: tuple):
 def main():
     engine = setup_environment.get_database()
     # load in the instructions, get the source list and polygon from the user
-    FILE_PATH = pathlib.Path().cwd() / pathlib.Path(
+    instructions_file_path = pathlib.Path().cwd() / pathlib.Path(
         "src/instructions_get_data_from_db.json"
     )
-    with open(FILE_PATH, "r") as file_pointer:
+    with open(instructions_file_path, "r") as file_pointer:
         instructions = json.load(file_pointer)
     source_list = tuple(instructions["source_name"])
-    geometry = gpd.GeoDataFrame.from_features(instructions["features"], crs=2193)
+    geometry = gpd.GeoDataFrame.from_file(instructions["selected_area"], crs=2193)
     get_data_from_db(engine, geometry, source_list)
 
 

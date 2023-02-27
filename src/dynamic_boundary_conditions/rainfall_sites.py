@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: rainfall_sites.py
-@Description: Store rainfall sites data from the HIRDS website in the database.
-@Author: pkh35
-@Date: 23/12/2021
-@Last modified by: sli229
-@Last modified date: 21/10/2022
+@Description: Fetch rainfall sites data from the HIRDS website and store it to the database.
+@Author: pkh35, sli229
 """
 
 import requests
@@ -13,7 +9,6 @@ from requests.structures import CaseInsensitiveDict
 import pandas as pd
 import geopandas as gpd
 import logging
-from shapely.geometry import Polygon
 from geoalchemy2 import Geometry
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
@@ -59,7 +54,7 @@ def get_rainfall_sites_in_df() -> gpd.GeoDataFrame:
     return sites_with_geometry
 
 
-def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
+def rainfall_sites_to_db(engine):
     """
     Storing rainfall sites data from the HIRDS website in the database.
 
@@ -73,60 +68,17 @@ def rainfall_sites_to_db(engine, sites: gpd.GeoDataFrame):
     if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites"):
         log.info("Rainfall sites data already exists in the database.")
     else:
+        sites = get_rainfall_sites_in_df()
         sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,
                          dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
         log.info("Stored rainfall sites data in the database.")
 
 
-def get_new_zealand_boundary(engine) -> Polygon:
-    """
-    Get the boundary geometry of New Zealand from the 'region_geometry' table in the database.
-
-    Parameters
-    ----------
-    engine
-        Engine used to connect to the database.
-    """
-    query = "SELECT geometry AS geom FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
-    nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, crs=2193)
-    nz_boundary = nz_boundary.to_crs(4326)
-    nz_boundary_polygon = nz_boundary["geom"][0]
-    return nz_boundary_polygon
-
-
-def get_sites_locations(engine, catchment: Polygon) -> gpd.GeoDataFrame:
-    """
-    Get the rainfall sites' locations within the catchment area from the database and return the required data in
-    GeoDataFrame format.
-
-    Parameters
-    ----------
-    engine
-        Engine used to connect to the database.
-    catchment : Polygon
-        New Zealand boundary catchment polygon.
-    """
-    # Get all rainfall sites within the New Zealand catchment area.
-    query = f"""SELECT * FROM rainfall_sites AS rs
-        WHERE ST_Intersects(rs.geometry, ST_GeomFromText('{catchment}', 4326))"""
-    sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
-    # Get site locations geometry (geometry column)
-    sites_geom = sites_in_catchment["geometry"]
-    # Add new column 'exists' which identifies whether each site is within the catchment area
-    sites_in_catchment["exists"] = sites_geom.within(catchment)
-    # Filter for all sites that are within the catchment area (i.e., all Trues in 'exists' column)
-    sites_in_catchment.query("exists == True", inplace=True)
-    # Reset the index (i.e., the original index is added as a column, and a new sequential index is used)
-    sites_in_catchment.reset_index(inplace=True)
-    # Rename column
-    sites_in_catchment.rename(columns={"index": "order"}, inplace=True)
-    return sites_in_catchment
-
-
 def main():
+    # Connect to the database
     engine = setup_environment.get_database()
-    sites = get_rainfall_sites_in_df()
-    rainfall_sites_to_db(engine, sites)
+    # Fetch rainfall sites data from the HIRDS website and store it to the database
+    rainfall_sites_to_db(engine)
 
 
 if __name__ == "__main__":
