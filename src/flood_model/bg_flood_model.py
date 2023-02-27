@@ -144,6 +144,30 @@ def run_model(
     subprocess.run([bg_path / "BG_flood.exe"], check=True)
 
 
+def find_latest_model_output():
+    """Find the latest BG-Flood model output."""
+    data_dir = config.get_env_variable("DATA_DIR")
+    data_path = pathlib.Path(data_dir) / "model_output"
+    list_of_files = data_path.glob("*.nc")
+    try:
+        latest_file = max(list_of_files, key=os.path.getctime)
+    except ValueError:
+        latest_file = None
+        log.error(f"Missing BG-Flood Model output in: {data_path}")
+    return latest_file
+
+
+def add_crs_to_latest_model_output():
+    """Add CRS to the latest BG-Flood Model Output."""
+    latest_file = find_latest_model_output()
+    if latest_file is not None:
+        with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
+            latest_output.load()
+            if latest_output.rio.crs is None:
+                latest_output.rio.write_crs("epsg:2193", inplace=True)
+        latest_output.to_netcdf(latest_file)
+
+
 def read_and_fill_instructions():
     """Reads instruction file and adds keys and uses selected_polygon.geojson as catchment_boundary"""
     linz_api_key = config.get_env_variable("LINZ_API_KEY")
@@ -180,6 +204,7 @@ def main():
         rain_input_type=RainInputType.UNIFORM,
         engine=engine
     )
+    add_crs_to_latest_model_output()
 
 
 if __name__ == "__main__":
