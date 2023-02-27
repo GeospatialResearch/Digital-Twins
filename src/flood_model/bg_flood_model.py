@@ -39,6 +39,7 @@ Base = declarative_base()
 def bg_model_inputs(
         bg_path,
         dem_path,
+        output_dir: pathlib.Path,
         catchment_boundary,
         resolution,
         end_time,
@@ -63,9 +64,7 @@ def bg_model_inputs(
     rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
     river = "RiverDis.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
-    data_dir = config.get_env_variable("DATA_DIR")
     # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
-    output_dir = rf"{data_dir}/model_output"
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
     outfile = rf"{output_dir}/output_{dt_string}.nc"
@@ -127,6 +126,7 @@ class BGDEM(Base):
 
 def run_model(
         bg_path,
+        output_dir: pathlib.Path,
         instructions,
         catchment_boundary,
         resolution,
@@ -138,28 +138,40 @@ def run_model(
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
     bg_model_inputs(
-        bg_path, dem_path, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
+        bg_path, dem_path, output_dir, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
     )
     os.chdir(bg_path)
     subprocess.run([bg_path / "BG_flood.exe"], check=True)
 
 
-def find_latest_model_output():
-    """Find the latest BG-Flood model output."""
-    data_dir = config.get_env_variable("DATA_DIR")
-    data_path = pathlib.Path(data_dir) / "model_output"
-    list_of_files = data_path.glob("*.nc")
+def find_latest_model_output(output_dir: pathlib.Path):
+    """
+    Find the latest BG-Flood model output.
+
+    Parameters
+    ----------
+    output_dir : pathlib.Path
+        BG-Flood model output directory.
+    """
+    list_of_files = output_dir.glob("*.nc")
     try:
         latest_file = max(list_of_files, key=os.path.getctime)
     except ValueError:
         latest_file = None
-        log.error(f"Missing BG-Flood Model output in: {data_path}")
+        log.error(f"Missing BG-Flood Model output in: {output_dir}")
     return latest_file
 
 
-def add_crs_to_latest_model_output():
-    """Add CRS to the latest BG-Flood Model Output."""
-    latest_file = find_latest_model_output()
+def add_crs_to_latest_model_output(output_dir: pathlib.Path):
+    """
+    Add CRS to the latest BG-Flood Model Output.
+
+    Parameters
+    ----------
+    output_dir : pathlib.Path
+        BG-Flood model output directory.
+    """
+    latest_file = find_latest_model_output(output_dir)
     if latest_file is not None:
         with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
             latest_output.load()
@@ -184,8 +196,13 @@ def read_and_fill_instructions():
 
 def main():
     engine = setup_environment.get_database()
+    # BG-Flood Model directory
     flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
     bg_path = pathlib.Path(flood_model_dir)
+    # BG-Flood Model output directory
+    data_dir = config.get_env_variable("DATA_DIR")
+    output_dir = pathlib.Path(data_dir) / "model_output"
+
     instructions = read_and_fill_instructions()
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
@@ -196,15 +213,16 @@ def main():
     end_time = 900.0
     run_model(
         bg_path=bg_path,
+        output_dir=output_dir,
         instructions=instructions,
         catchment_boundary=catchment_boundary,
         resolution=resolution,
         end_time=end_time,
         output_timestep=output_timestep,
-        rain_input_type=RainInputType.UNIFORM,
+        rain_input_type=RainInputType.VARYING,
         engine=engine
     )
-    add_crs_to_latest_model_output()
+    add_crs_to_latest_model_output(output_dir)
 
 
 if __name__ == "__main__":
