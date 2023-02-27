@@ -124,26 +124,6 @@ class BGDEM(Base):
     geometry = Column(Geometry("POLYGON"))
 
 
-def run_model(
-        bg_path,
-        output_dir: pathlib.Path,
-        instructions,
-        catchment_boundary,
-        resolution,
-        end_time,
-        output_timestep,
-        rain_input_type: RainInputType,
-        engine
-):
-    """Call the functions."""
-    dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
-    bg_model_inputs(
-        bg_path, dem_path, output_dir, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
-    )
-    os.chdir(bg_path)
-    subprocess.run([bg_path / "BG_flood.exe"], check=True)
-
-
 def find_latest_model_output(output_dir: pathlib.Path):
     """
     Find the latest BG-Flood model output.
@@ -178,6 +158,27 @@ def add_crs_to_latest_model_output(output_dir: pathlib.Path):
             if latest_output.rio.crs is None:
                 latest_output.rio.write_crs("epsg:2193", inplace=True)
         latest_output.to_netcdf(latest_file)
+
+
+def run_model(
+        bg_path,
+        output_dir: pathlib.Path,
+        instructions,
+        catchment_boundary,
+        resolution,
+        end_time,
+        output_timestep,
+        rain_input_type: RainInputType,
+        engine
+):
+    """Call the functions."""
+    dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
+    bg_model_inputs(
+        bg_path, dem_path, output_dir, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
+    )
+    os.chdir(bg_path)
+    subprocess.run([bg_path / "BG_flood.exe"], check=True)
+    add_crs_to_latest_model_output(output_dir)
 
 
 def read_and_fill_instructions():
@@ -222,7 +223,6 @@ def main():
         rain_input_type=RainInputType.VARYING,
         engine=engine
     )
-    add_crs_to_latest_model_output(output_dir)
 
 
 if __name__ == "__main__":
