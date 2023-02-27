@@ -4,7 +4,7 @@ Created on Fri Jan 14 14:05:35 2022
 
 @author: pkh35, sli229
 """
-
+import logging
 import json
 import os
 import pathlib
@@ -22,6 +22,16 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
 from src.lidar import dem_metadata_in_db
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
+
 
 Base = declarative_base()
 
