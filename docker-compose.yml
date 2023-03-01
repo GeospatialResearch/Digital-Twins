@@ -5,6 +5,7 @@ volumes:
 
 services:
   db_postgres:
+    # Database to store all vector data, states, and links to raster data.
     image: postgis/postgis
     container_name: db_postgres_digital_twin
     restart: always
@@ -20,14 +21,29 @@ services:
       test: pg_isready -h 127.0.0.1 -U $POSTGRES_USER -d $POSTGRES_DB
 
   backend:
+    # Performs analysis, computation, handles web requests, facilitates database interactions
     build: .
     container_name: backend_digital_twin
-    network_mode: host
+    env_file: .env
+    ports:
+      - "5000:5000"
+    depends_on:
+#      - db_postgres
+      - message_broker
+      - celery_worker
+
+  celery_worker:
+    # Performs tasks such as complex computation asynchronously on behalf of backend
+    build: .
+    container_name: celery_worker_digital_twin
+    entrypoint: conda run --no-capture-output -n digitaltwin celery -A src.tasks worker --loglevel=INFO --pool=solo
     env_file: .env
     depends_on:
-      - db_postgres
+#      - db_postgres
+      - message_broker
 
   geoserver:
+    # Serves geospatial web data through interactions with files and database
     image: docker.osgeo.org/geoserver:2.21.2
     container_name: geoserver_digital_twin
     volumes:
@@ -48,7 +64,14 @@ services:
       retries: 3
 
   www:
+    # Webserver for the website interface
     build:
       context: ./visualisation
+    container_name: www_digital_twin
     ports:
       - "8080:80"
+
+  message_broker:
+    # Communicates between backend and workers to assign tasks and store state
+    image: redis
+    container_name: message_broker_digital_twin

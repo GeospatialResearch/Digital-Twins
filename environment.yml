@@ -19,9 +19,14 @@ dependencies:
   - sqlalchemy
   - geoalchemy2
   - plotly
+  - flask
+  - flask-cors
+  - redis-py
   - pip:
     - geofabrics>=0.10.4
     - geovoronoi>=0.4.0
     - geoapis>=0.3.1
+    - celery
+    - gunicorn
 
 prefix: 
