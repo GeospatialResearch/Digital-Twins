@@ -4,6 +4,7 @@ from http.client import OK, ACCEPTED
 from celery.result import AsyncResult
 from flask import Flask, Response, jsonify, make_response, request
 from flask_cors import CORS
+
 from src import tasks
 
 # Initialise flask server object
@@ -38,6 +39,15 @@ def get_status(task_id) -> Response:
         "task_result": task_result.result
     },
         OK
+    )
+
+
+@app.route('/generate-model', methods=["POST"])
+def generate_model() -> Response:
+    task = tasks.create_model_for_area.delay()
+    return make_response(
+        jsonify({"task_id": task.id}),
+        ACCEPTED
     )
 
 

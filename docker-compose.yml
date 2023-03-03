@@ -25,10 +25,13 @@ services:
     build: .
     container_name: backend_digital_twin
     env_file: .env
+    environment:
+      POSTGRES_PORT: "5432"
+      POSTGRES_HOST: "db_postgres"
     ports:
       - "5000:5000"
     depends_on:
-#      - db_postgres
+      - db_postgres
       - message_broker
       - celery_worker
 
@@ -38,8 +41,11 @@ services:
     container_name: celery_worker_digital_twin
     entrypoint: conda run --no-capture-output -n digitaltwin celery -A src.tasks worker --loglevel=INFO --pool=solo
     env_file: .env
+    environment:
+      POSTGRES_PORT: "5432"
+      POSTGRES_HOST: "db_postgres"
     depends_on:
-#      - db_postgres
+      - db_postgres
       - message_broker
 
   geoserver:

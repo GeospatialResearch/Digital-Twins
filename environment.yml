@@ -16,7 +16,7 @@ dependencies:
   - psycopg2 # Try remove in future
   - bs4 # Try remove in future
   - validators  # Try remove in future
-  - sqlalchemy
+  - sqlalchemy<2 # To migrate some db connection code needs to change
   - geoalchemy2
   - plotly
   - flask
