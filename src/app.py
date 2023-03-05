@@ -1,8 +1,9 @@
 import logging
 from http.client import OK, ACCEPTED
+from typing import List
 
 from celery.result import AsyncResult
-from flask import Flask, Response, jsonify, make_response, request
+from flask import Flask, Response, jsonify, make_response
 from flask_cors import CORS
 
 from src import tasks
@@ -18,37 +19,34 @@ def health_check() -> Response:
     return Response("Healthy", OK)
 
 
-@app.route('/tasks', methods=["POST"])
-def run_task() -> Response:
-    print('heh')
-    content = request.json
-    numbers = content["numbers"]
-    task = tasks.add.delay(numbers)
-    return make_response(
-        jsonify({"task_id": task.id}),
-        ACCEPTED
-    )
-
-
 @app.route('/tasks/<task_id>', methods=["GET"])
 def get_status(task_id) -> Response:
+    def status_as_dict(result: AsyncResult) -> dict:
+        return {
+            "task_id": result.id,
+            "task_status": result.status,
+            "task_result": result.result
+        }
+
     task_result = AsyncResult(task_id, app=tasks.app)
-    return make_response({
-        "task_id": task_id,
-        "task_status": task_result.status,
-        "task_result": task_result.result
-    },
-        OK
-    )
+    status_dict = status_as_dict(task_result)
+    status_dict["children"] = [status_as_dict(child) for child in task_result.children[0].children]
+    return make_response(status_dict, OK)
 
 
 @app.route('/generate-model', methods=["POST"])
 def generate_model() -> Response:
     task = tasks.create_model_for_area.delay()
     return make_response(
-        jsonify({"task_id": task.id}),
+        jsonify({"task_id": task.id,
+                 "children": get_child_ids(task)}),
         ACCEPTED
     )
+
+
+def get_child_ids(group_task) -> List[str]:
+    _result, children = group_task.get()
+    return [child_id for (child_id, _state), _further_children in children]
 
 
 # Development server

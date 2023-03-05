@@ -128,7 +128,7 @@ def run_model(
         bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
     )
     os.chdir(bg_path)
-    subprocess.call([bg_path / "BG_Flood_Cleanup.exe"])
+    subprocess.run([bg_path / "BG_Flood_Cleanup.exe"], check=True)
 
 
 def read_and_fill_instructions():

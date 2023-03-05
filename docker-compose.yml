@@ -39,7 +39,7 @@ services:
     build: .
     container_name: celery_worker_digital_twin
     restart: always
-    entrypoint: conda run --no-capture-output -n digitaltwin celery -A src.tasks worker --loglevel=INFO --pool=solo
+    entrypoint: conda run --no-capture-output -n digitaltwin celery -A src.tasks worker --loglevel=INFO
     env_file:
       - .env
       - .env.docker-override
