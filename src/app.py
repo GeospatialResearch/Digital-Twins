@@ -1,6 +1,5 @@
 import logging
 from http.client import OK, ACCEPTED
-from typing import List
 
 from celery.result import AsyncResult
 from flask import Flask, Response, jsonify, make_response
@@ -28,9 +27,19 @@ def get_status(task_id) -> Response:
             "task_result": result.result
         }
 
+    def get_recursive_children_status(children):
+        if children is None:
+            return []
+        statuses = []
+        for child in children:
+            child_status = status_as_dict(child)
+            child_status["children"] = get_recursive_children_status(child.children)
+            statuses.append(child_status)
+        return statuses
+
     task_result = AsyncResult(task_id, app=tasks.app)
     status_dict = status_as_dict(task_result)
-    status_dict["children"] = [status_as_dict(child) for child in task_result.children[0].children]
+    status_dict["children"] = get_recursive_children_status(task_result.children)
     return make_response(status_dict, OK)
 
 
@@ -38,15 +47,9 @@ def get_status(task_id) -> Response:
 def generate_model() -> Response:
     task = tasks.create_model_for_area.delay()
     return make_response(
-        jsonify({"task_id": task.id,
-                 "children": get_child_ids(task)}),
+        jsonify({"task_id": task.id}),
         ACCEPTED
     )
-
-
-def get_child_ids(group_task) -> List[str]:
-    _result, children = group_task.get()
-    return [child_id for (child_id, _state), _further_children in children]
 
 
 # Development server

@@ -1,4 +1,6 @@
-from celery import Celery, states, group
+import time
+
+from celery import Celery, states, group, result
 
 from .config import get_env_variable
 from .digitaltwin import run
@@ -20,33 +22,34 @@ class OnFailureStateTask(app.Task):
 
 # noinspection PyUnnecessaryBackslash
 @app.task(base=OnFailureStateTask)
-def create_model_for_area():
+def create_model_for_area() -> result.GroupResult:
     """Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks"""
-    return (
+    return group(
             initialise_db_with_region_geometries.si() | \
             group(
                 download_lidar_data.si() | \
                 generate_rainfall_inputs.si()
             ) | \
             run_flood_model.si()
-    )()
+    )().children
 
 
 @app.task(base=OnFailureStateTask, ignore_result=True)
 def initialise_db_with_region_geometries():
-    run.main()
-
+    # run.main()
+    time.sleep(3)
 
 @app.task(base=OnFailureStateTask, ignore_result=True)
 def download_lidar_data():
-    lidar_metadata_in_db.main()
-
+    # lidar_metadata_in_db.main()
+    time.sleep(200)
 
 @app.task(base=OnFailureStateTask, ignore_result=True)
 def generate_rainfall_inputs():
-    main_rainfall.main()
-
+    # main_rainfall.main()
+    time.sleep(15)
 
 @app.task(base=OnFailureStateTask, ignore_result=True)
 def run_flood_model():
-    bg_flood_model.main()
+    # bg_flood_model.main()
+    time.sleep(30)
