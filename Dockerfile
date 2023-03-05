@@ -11,6 +11,7 @@ SHELL ["conda", "run", "-n", "digitaltwin", "/bin/bash", "-c"]
 RUN echo "Check GeoFabrics is installed to test environment"
 RUN python -c "import geofabrics"
 
+COPY selected_polygon.geojson .
 COPY src/ src/
 
 EXPOSE 5000

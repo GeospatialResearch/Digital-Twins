@@ -1,8 +1,9 @@
 from celery import Celery, states
 
+from .config import get_env_variable
 from .digitaltwin import run
 
-message_broker_url = "redis://message_broker:6379/0"
+message_broker_url = f"redis://{get_env_variable('MESSAGE_BROKER_HOST')}:6379/0"
 
 app = Celery("tasks", backend=message_broker_url, broker=message_broker_url)
 

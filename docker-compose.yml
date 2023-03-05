@@ -24,11 +24,9 @@ services:
     # Performs analysis, computation, handles web requests, facilitates database interactions
     build: .
     container_name: backend_digital_twin
-    env_file: .env
-    environment:
-      # Override .env to connect using default compose network
-      POSTGRES_PORT: "5432"
-      POSTGRES_HOST: "db_postgres"
+    env_file:
+      - .env
+      - .env.docker-override
     ports:
       - "5000:5000"
     depends_on:
@@ -42,11 +40,9 @@ services:
     container_name: celery_worker_digital_twin
     restart: always
     entrypoint: conda run --no-capture-output -n digitaltwin celery -A src.tasks worker --loglevel=INFO --pool=solo
-    env_file: .env
-    environment:
-      # Override .env to connect using default compose network
-      POSTGRES_PORT: "5432"
-      POSTGRES_HOST: "db_postgres"
+    env_file:
+      - .env
+      - .env.docker-override
     depends_on:
       - db_postgres
       - message_broker
@@ -56,7 +52,7 @@ services:
     image: docker.osgeo.org/geoserver:2.21.2
     container_name: geoserver_digital_twin
     volumes:
-    - ./geoserver/geoserver_data:/opt/geoserver_data
+      - ./geoserver/geoserver_data:/opt/geoserver_data
     depends_on:
       - db_postgres
     environment:
@@ -84,4 +80,6 @@ services:
     # Communicates between backend and workers to assign tasks and store state
     image: redis
     container_name: message_broker_digital_twin
+    ports:
+      - "6379:6379"
     restart: always
