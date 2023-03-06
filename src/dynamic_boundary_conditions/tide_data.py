@@ -73,11 +73,11 @@ def get_date_ranges(
     try:
         date.fromisoformat(start_date)
     except ValueError as error:
-        raise ValueError(f"'start_date' format must be yyyy-mm-dd.") from error
+        raise ValueError(f"start_date is {start_date}, format must be yyyy-mm-dd.") from error
     if total_days < 1:
-        raise ValueError(f"'total_days' must be at least 1.")
+        raise ValueError(f"total_days is {total_days}, must be at least 1.")
     if not 1 <= days_per_call <= 31:
-        raise ValueError("'days_per_call' must be between 1 and 31 inclusive.")
+        raise ValueError(f"days_per_call is {days_per_call}, must be between 1 and 31 inclusive.")
     # start and end dates for data retrieval
     start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = start_date + timedelta(days=total_days - 1)
