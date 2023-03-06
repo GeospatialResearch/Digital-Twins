@@ -3,7 +3,7 @@ import pathlib
 import time
 from datetime import date, datetime, timedelta
 from enum import StrEnum
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Optional
 
 import geopandas as gpd
 import pandas as pd
@@ -101,7 +101,8 @@ def gen_api_query_param_list(
         lat: Union[int, float],
         long: Union[int, float],
         datum: DatumType,
-        date_ranges: Dict[str, int]) -> List[Dict[str, Union[str, int]]]:
+        date_ranges: Dict[str, int],
+        interval: Optional[int] = None) -> List[Dict[str, Union[str, int]]]:
     """
     Generate a list of api query parameters used to retrieve high and low tide data for the entire requested period.
 
@@ -118,12 +119,17 @@ def gen_api_query_param_list(
     date_ranges : Dict[str, int]
         Dictionary of start date and number of days for each API call that need to be made to retrieve
         high and low tide data for the entire requested period.
+    interval: Optional[int] = None
+        Output time interval in minutes, range from 10 to 1440 minutes (1 day).
+        Omit to get only high and low tide times.
     """
     # Check for invalid arguments
     if not (-53 <= lat <= -29):
         raise ValueError(f"latitude is {lat}, must range from -29 to -53.")
     if not ((160 <= long <= 180) or (-180 <= long <= -175)):
-        raise ValueError(f"longitude is {long}, must range from 160 to 180 and from -175 to -180")
+        raise ValueError(f"longitude is {long}, must range from 160 to 180 and from -175 to -180.")
+    if interval is not None and not (10 <= interval <= 1440):
+        raise ValueError(f"interval is {interval}, must range from 10 to 1440.")
     # Create a list of api query parameters for all 'date_ranges'
     query_param_list = []
     for start_date, number_of_days in date_ranges.items():
@@ -135,6 +141,8 @@ def gen_api_query_param_list(
             "startDate": start_date,
             "datum": datum.value
         }
+        if interval is not None:
+            query_param["interval"] = interval
         query_param_list.append(query_param)
     return query_param_list
 
@@ -182,7 +190,8 @@ def get_tide_data_from_niwa(
         api_key: str,
         datum: DatumType,
         start_date: str,
-        total_days: int = 365) -> pd.DataFrame:
+        total_days: int = 365,
+        interval: Optional[int] = None) -> pd.DataFrame:
     """
     Retrieve tide data from NIWA for the requested time period using the centroid coordinates of the catchment area.
 
@@ -199,13 +208,16 @@ def get_tide_data_from_niwa(
         should be provided in the following format 'yyyy-mm-dd'.
     total_days: int = 365
         The number of days of tide data to collect. The default value is 365 for one year.
+    interval: Optional[int] = None
+        Output time interval in minutes, range from 10 to 1440 minutes (1 day).
+        Omit to get only high and low tide times.
     """
     # Get the catchment polygon centroid coordinates.
     lat, long = get_catchment_area_coords(catchment_file)
     # Get the date_ranges (i.e. start date and the duration used for each API call)
     date_ranges = get_date_ranges(start_date, total_days)
     # Get the list of api query parameters used to retrieve high and low tide data
-    query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges)
+    query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges, interval)
     # Iterate over the list of API query parameters to fetch high and low tide data for the requested period
     tide_data_utc = get_tide_data_for_requested_period(query_param_list)
     # Convert time column from UTC to NZ timezone.
@@ -322,7 +334,8 @@ def get_missing_tide_data_from_niwa(
         catchment_file: pathlib.Path,
         api_key: str,
         datum: DatumType,
-        missing_dates: List[datetime.date]):
+        missing_dates: List[datetime.date],
+        interval: Optional[int] = None) -> pd.DataFrame:
     """
     Retrieve tide data from NIWA for the dates that were not included in the originally obtained tide data.
 
@@ -336,6 +349,9 @@ def get_missing_tide_data_from_niwa(
         Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
     missing_dates : List[datetime.date]
         A collection of dates that are absent from the originally retrieved tide data.
+    interval: Optional[int] = None
+        Output time interval in minutes, range from 10 to 1440 minutes (1 day).
+        Omit to get only high and low tide times.
     """
     missing_tide_data = pd.DataFrame()
     if missing_dates:
@@ -347,7 +363,8 @@ def get_missing_tide_data_from_niwa(
                 api_key=api_key,
                 datum=datum,
                 start_date=missing_dt_str,
-                total_days=days)
+                total_days=days,
+                interval=interval)
             missing_tide_data = pd.concat([missing_tide_data, missing_dt_data])
     return missing_tide_data
 
@@ -409,15 +426,16 @@ def main():
         api_key=niwa_api_key,
         datum=datum,
         start_date="2023-01-23",
-        total_days=5)
+        total_days=5,
+        interval=None)
     print(tide_data)
     data_surrounding_highest_tide = get_highest_tide_side_data(
         catchment_file=catchment_file,
         api_key=niwa_api_key,
         datum=datum,
         tide_data=tide_data,
-        days_before_peak=1,
-        days_after_peak=1)
+        days_before_peak=2,
+        days_after_peak=2)
     print(data_surrounding_highest_tide)
     toc = time.perf_counter()
     print(f"Ran in {toc - tic:0.4f} seconds")
