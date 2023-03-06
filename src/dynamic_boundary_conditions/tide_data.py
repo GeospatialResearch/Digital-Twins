@@ -1,148 +1,426 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 18 16:30:21 2022.
-
-@author: alo78,
-         xander.cai@pg.canterbury.ac.nz
-
-Used to get the tide model predictions for site closest to the chosen latitude & longitude (Anywhere on the NZ
-Coastline) point from the API created by NIWA (https://developer.niwa.co.nz/docs/tide-api/1/overview). User can
-specify how many days of data is required and how much data (in days) either side of the highest tide value they
-want. They are then outputted a dataframe selection
-that includes the highest tide and either side data.
-"""
-
-# Imported packages
-import os
-from dotenv import load_dotenv
+import logging
+import pathlib
+import time
 from datetime import date, datetime, timedelta
+from enum import StrEnum
+from typing import Dict, List, Tuple, Union
+
+import geopandas as gpd
 import pandas as pd
-from shapely.geometry import Polygon
-import aiohttp
-import asyncio
-from src.digitaltwin import setup_environment
+import requests
+
+from src import config
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
 
 
-def get_all_date(start_date: str, total_days: int, max_range: int = 30) -> dict:
-    """ get each start date and number of days for total days. """
-    start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-    start_date_dict = {start_date: 0}
-    while total_days > 0:
-        if total_days > max_range:
-            start_date_dict[(sorted(start_date_dict.keys()))[-1]] = 30
-            start_date_dict[(sorted(start_date_dict.keys())[-1] + timedelta(days=max_range))] = total_days - 31
-        else:
-            start_date_dict[(sorted(start_date_dict.keys()))[-1]] = total_days
-        total_days -= 30
-    return start_date_dict
+class DatumType(StrEnum):
+    """
+    Attributes
+    ----------
+    LAT : str
+        Lowest astronomical tide.
+    MSL : str
+        Mean sea level.
+    """
+    LAT = "LAT"
+    MSL = "MSL"
 
 
-def gen_param_list(start_date_dict: dict, request_parameters: dict) -> list:
-    """ generate a parameters list for all request. """
-    params_list = []
-    for start_date, number_of_days in start_date_dict.items():
-        params = request_parameters.copy()
-        params['startDate'] = start_date.isoformat()
-        params['numberOfDays'] = number_of_days
-        params_list.append(params)
-    return params_list
+def get_catchment_area_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
+    """
+    Extract the catchment polygon centroid coordinates.
+
+    Parameters
+    ----------
+    catchment_file : pathlib.Path
+        The file path for the catchment polygon.
+    """
+    catchment = gpd.read_file(catchment_file)
+    catchment = catchment.to_crs(4326)
+    catchment_polygon = catchment["geometry"][0]
+    long, lat = catchment_polygon.centroid.coords[0]
+    return lat, long
 
 
-async def get(session: aiohttp.ClientSession, url: str, params: dict) -> dict:
-    """ request get data from url """
-    resp = await session.request('GET', url=url, params=params)
-    return await resp.json()
+def get_date_ranges(
+        start_date: str,
+        total_days: int = 365,
+        days_per_call: int = 31) -> Dict[str, int]:
+    """
+    Obtain the start date and the duration, measured in days, for each API call made to retrieve tide data
+    for the entire requested period.
+
+    Parameters
+    ----------
+    start_date : str
+        The start date for data collection, which can be in the past or present,
+        should be provided in the following format 'yyyy-mm-dd'.
+    total_days: int = 365
+        The number of days of tide data to collect. The default value is 365 for one year.
+    days_per_call : int = 31
+        The number of days that can be retrieved in a single API call (between 1 and 31 inclusive).
+        The default value is configured to 31, which is the maximum number of days that can be retrieved per API call.
+    """
+    # Check for invalid arguments
+    try:
+        date.fromisoformat(start_date)
+    except ValueError as error:
+        raise ValueError(f"'start_date' format must be yyyy-mm-dd.") from error
+    if total_days < 1:
+        raise ValueError(f"'total_days' must be at least 1.")
+    if not 1 <= days_per_call <= 31:
+        raise ValueError("'days_per_call' must be between 1 and 31 inclusive.")
+    # start and end dates for data retrieval
+    start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+    end_date = start_date + timedelta(days=total_days - 1)
+    # Initialize an empty dictionary to store the date ranges
+    date_ranges = {}
+    # Loop through the date range, adding each chunk of data to the dictionary
+    while start_date <= end_date:
+        # Determine the start date and number of days for the current chunk
+        request_end_date = min(end_date, start_date + timedelta(days=days_per_call - 1))
+        number_of_days = (request_end_date - start_date).days + 1
+        # Add the current chunk to the date_ranges dictionary
+        start_date_str = start_date.isoformat()
+        date_ranges[start_date_str] = number_of_days
+        # Move the start date forward for the next chunk
+        start_date += timedelta(days=number_of_days)
+    return date_ranges
 
 
-async def get_tide_dataframe(params_list: list, url: str = 'https://api.niwa.co.nz/tides/data') -> pd.DataFrame:
-    """ Asynchronous context manager. """
-    async with aiohttp.ClientSession() as session:
-        tasks = []
-        for params in params_list:
-            tasks.append(get(session=session, url=url, params=params))
-        # asyncio.gather() will wait on the entire task set to be completed.
-        data_dict = await asyncio.gather(*tasks, return_exceptions=True)
-        data_list = [_dict['values'] for _dict in data_dict]
-        df = pd.DataFrame([_item for _list in data_list for _item in _list])
-        return df
+def gen_api_query_param_list(
+        api_key: str,
+        lat: Union[int, float],
+        long: Union[int, float],
+        datum: DatumType,
+        date_ranges: Dict[str, int]) -> List[Dict[str, Union[str, int]]]:
+    """
+    Generate a list of api query parameters used to retrieve high and low tide data for the entire requested period.
+
+    Parameters
+    ----------
+    api_key : str
+        NIWA api key (https://developer.niwa.co.nz/).
+    lat : Union[int, float]
+        Latitude range -29 to -53 (- eg: -30.876).
+    long : Union[int, float]
+        Longitude range 160 to 180 and -175 to -180 (- eg: -175.543).
+    datum : DatumType
+        Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
+    date_ranges : Dict[str, int]
+        Dictionary of start date and number of days for each API call that need to be made to retrieve
+        high and low tide data for the entire requested period.
+    """
+    # Check for invalid arguments
+    if not (-53 <= lat <= -29):
+        raise ValueError(f"latitude is {lat}, must range from -29 to -53.")
+    if not ((160 <= long <= 180) or (-180 <= long <= -175)):
+        raise ValueError(f"longitude is {long}, must range from 160 to 180 and from -175 to -180")
+    # Create a list of api query parameters for all 'date_ranges'
+    query_param_list = []
+    for start_date, number_of_days in date_ranges.items():
+        query_param = {
+            "apikey": api_key,
+            "lat": str(lat),
+            "long": str(long),
+            "numberOfDays": number_of_days,
+            "startDate": start_date,
+            "datum": datum.value
+        }
+        query_param_list.append(query_param)
+    return query_param_list
 
 
-def get_highest_tide_dataframe(df: pd.DataFrame, before_n_days: int, after_n_days: int) -> pd.DataFrame:
-    """ takes dataframe and finds data either side of peak is required (in days) """
-    # sort dataframe by tide value.
-    df['time'] = pd.to_datetime(df['time'])
-    df['time'] = df['time'].dt.tz_convert(tz='Pacific/Auckland')
-    df = df.sort_values(by=['value'], ascending=False).reset_index(drop=True)
-    df.set_index('time', inplace=True)
-    print("Highest tide date is: {}".format(df.index[0]))
-    # setting upper and lower index, index 0 is the highest tide date
-    lower_boundary = (df.index[0] - timedelta(days=max(before_n_days, 0)))
-    upper_boundary = (df.index[0] + timedelta(days=max(after_n_days, 0)))
-    # protect index boundary.
-    assert lower_boundary.strftime('%Y-%m-%d') in df.index, \
-        f"Index overflow: lower boundary {lower_boundary} is not in dataframe index."
-    assert upper_boundary.strftime('%Y-%m-%d') in df.index, \
-        f"Index overflow: upper boundary {upper_boundary} is not in dataframe index."
-    # get dataframe between lower and upper boundary date.
-    df = (df.sort_values(by=['time'])
-            .loc[lower_boundary.strftime('%Y-%m-%d'):upper_boundary.strftime('%Y-%m-%d')])
-    # convert dataframe schema for sql
-    df.reset_index(inplace=True)
-    df['time'] = df['time'].astype(str)
-    df.columns = ['Datetime_(NZST)', 'Tide_value_(m)']
-    return df
+def get_tide_data_for_requested_period(
+        query_param_list: List[Dict[str, Union[str, int]]],
+        url: str = 'https://api.niwa.co.nz/tides/data'):
+    """
+    Iterate over the list of API query parameters to fetch high and low tide data for the requested period.
+
+    Parameters
+    ----------
+    query_param_list : List[Dict[str, Union[str, int]]]
+        A list of api query parameters used to retrieve high and low tide data for the entire requested period.
+    url: str = 'https://api.niwa.co.nz/tides/data'
+        Tide API HTTP request url.
+    """
+    tide_data = pd.DataFrame()
+    for query_param in query_param_list:
+        response = requests.get(url, params=query_param)
+        tide_df = pd.DataFrame(response.json()['values'])
+        tide_df.insert(loc=0, column='datum', value=query_param['datum'])
+        tide_df.insert(loc=1, column='latitude', value=query_param['lat'])
+        tide_df.insert(loc=2, column='longitude', value=query_param['long'])
+        tide_data = pd.concat([tide_data, tide_df])
+    return tide_data
 
 
-def save_to_database(connect, df: pd.DataFrame, table_name: str, if_exists: str = 'replace'):
-    """ save dataframe to database """
-    df.to_sql(table_name, connect, index=False, if_exists=if_exists)
+def convert_to_nz_timezone(tide_data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convert the time column in the initially retrieved tide data for the requested period from UTC to NZ timezone.
+
+    Parameters
+    ----------
+    tide_data : pd.DataFrame
+        The original tide data obtained for the requested period with the time column expressed in UTC.
+    """
+    tide_data['time'] = pd.to_datetime(tide_data['time'])
+    tide_data['time'] = tide_data['time'].dt.tz_convert(tz='Pacific/Auckland')
+    return tide_data
+
+
+def get_tide_data_from_niwa(
+        catchment_file: pathlib.Path,
+        api_key: str,
+        datum: DatumType,
+        start_date: str,
+        total_days: int = 365) -> pd.DataFrame:
+    """
+    Retrieve tide data from NIWA for the requested time period using the centroid coordinates of the catchment area.
+
+    Parameters
+    ----------
+    catchment_file : pathlib.Path
+        The file path for the catchment polygon.
+    api_key : str
+        NIWA api key (https://developer.niwa.co.nz/).
+    datum : DatumType
+        Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
+    start_date : str
+        The start date for data collection, which can be in the past or present,
+        should be provided in the following format 'yyyy-mm-dd'.
+    total_days: int = 365
+        The number of days of tide data to collect. The default value is 365 for one year.
+    """
+    # Get the catchment polygon centroid coordinates.
+    lat, long = get_catchment_area_coords(catchment_file)
+    # Get the date_ranges (i.e. start date and the duration used for each API call)
+    date_ranges = get_date_ranges(start_date, total_days)
+    # Get the list of api query parameters used to retrieve high and low tide data
+    query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges)
+    # Iterate over the list of API query parameters to fetch high and low tide data for the requested period
+    tide_data_utc = get_tide_data_for_requested_period(query_param_list)
+    # Convert time column from UTC to NZ timezone.
+    tide_data = convert_to_nz_timezone(tide_data_utc)
+    # Rename columns
+    new_col_names = {'time': 'datetime_nz', 'value': 'tide_metres'}
+    tide_data.rename(columns=new_col_names, inplace=True)
+    return tide_data
+
+
+def get_highest_tide_datetime(tide_data: pd.DataFrame) -> pd.Timestamp:
+    """
+    Get the datetime of the most recent highest tide that occurred within the requested time period.
+
+    Parameters
+    ----------
+    tide_data : pd.DataFrame
+        The original tide data obtained for the requested period with the time column expressed in NZ timezone
+        (converted from UTC).
+    """
+    # Find the highest tide value
+    max_tide_value = tide_data['tide_metres'].max()
+    highest_tide = tide_data[tide_data['tide_metres'] == max_tide_value]
+    # Get the datetime of the most recent highest tide
+    highest_tide = highest_tide.sort_values(by=['datetime_nz'], ascending=False).reset_index(drop=True)
+    highest_tide_datetime = highest_tide.iloc[0]['datetime_nz']
+    log.info(f"The highest tide datetime is: {highest_tide_datetime}")
+    return highest_tide_datetime
+
+
+def get_highest_tide_side_dates(
+        tide_data: pd.DataFrame,
+        days_before_peak: int,
+        days_after_peak: int) -> List[datetime.date]:
+    """
+    Get a list of dates for the requested time period surrounding the highest tide. This includes all dates from
+    the start date (the first day before the highest tide) to the end date (the last day after the highest tide).
+
+    Parameters
+    ----------
+    tide_data : pd.DataFrame
+        The original tide data obtained for the requested period with the time column expressed in NZ timezone
+        (converted from UTC).
+    days_before_peak : int
+        An integer representing the number of days before the highest tide to extract data for.
+        Must be a positive integer.
+    days_after_peak : int
+        An integer representing the number of days after the highest tide to extract data for.
+        Must be a positive integer.
+    """
+    # Check for invalid arguments
+    if days_before_peak < 0:
+        raise ValueError("'days_before_peak' must be at least 0.")
+    if days_after_peak < 0:
+        raise ValueError("'days_after_peak' must be at least 0.")
+    #  Get the datetime of the most recent highest tide that occurred within the requested time period.
+    highest_tide_datetime = get_highest_tide_datetime(tide_data)
+    # Get the start_date (first day before peak) and the end_date (last day after peak)
+    start_date = highest_tide_datetime.date() - timedelta(days=days_before_peak)
+    end_date = highest_tide_datetime.date() + timedelta(days=days_after_peak)
+    # Get a list of dates from start_date (first day before peak) to end_date (last day after peak)
+    dates_list = pd.date_range(start_date, end_date, freq='D').date.tolist()
+    return dates_list
+
+
+def find_existing_and_missing_dates(
+        tide_data: pd.DataFrame,
+        dates_list: List[datetime.date]) -> Tuple[List[datetime.date], List[datetime.date]]:
+    """
+    Check whether each date in the given list of dates is present or missing in the 'datetime_nz' column of the
+    given tide_data DataFrame. Returns two lists - existing_dates and missing_dates.
+    'existing_dates' contains dates from 'dates_list' that are present in the 'tide_data' DataFrame and
+    'missing_dates' contains dates from 'dates_list' that are not present in the 'tide_data' DataFrame.
+    The tide data for the missing dates needs to be fetched from NIWA to obtain a complete set of required
+    tide data surrounding the highest tide.
+
+    Parameters
+    ----------
+    tide_data : pd.DataFrame
+        The original tide data obtained for the requested period with the time column expressed in NZ timezone
+        (converted from UTC).
+    dates_list: List[datetime.date]
+        A list of dates for the requested time period surrounding the highest tide. This includes all dates from
+        the start date (the first day before the highest tide) to the end date (the last day after the highest tide).
+    """
+    tide_data_dates = set(tide_data['datetime_nz'].dt.date)
+    dates_set = set(dates_list)
+    existing_dates = sorted(list(tide_data_dates.intersection(dates_set)))
+    missing_dates = sorted(list(dates_set - tide_data_dates))
+    return existing_dates, missing_dates
+
+
+def get_missing_dates_query_param(missing_dates: List[datetime.date]) -> List[Tuple[datetime.date, int]]:
+    """
+    Take a list of missing dates as input and return a list of tuples, where each tuple contains query parameters
+    that can be used to fetch tide data from NIWA for those missing dates.
+
+    Parameters
+    ----------
+    missing_dates : List[datetime.date]
+        A list of missing dates to group.
+    """
+    missing_dates_query_param = []
+    start_date = missing_dates[0]
+    for i in range(1, len(missing_dates)):
+        if (missing_dates[i] - missing_dates[i - 1]).days > 1:
+            missing_dates_query_param.append((start_date, (missing_dates[i - 1] - start_date).days + 1))
+            start_date = missing_dates[i]
+    missing_dates_query_param.append((start_date, (missing_dates[-1] - start_date).days + 1))
+    return missing_dates_query_param
+
+
+def get_missing_tide_data_from_niwa(
+        catchment_file: pathlib.Path,
+        api_key: str,
+        datum: DatumType,
+        missing_dates: List[datetime.date]):
+    """
+    Retrieve tide data from NIWA for the dates that were not included in the originally obtained tide data.
+
+    Parameters
+    ----------
+    catchment_file : pathlib.Path
+        The file path for the catchment polygon.
+    api_key : str
+        NIWA api key (https://developer.niwa.co.nz/).
+    datum : DatumType
+        Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
+    missing_dates : List[datetime.date]
+        A collection of dates that are absent from the originally retrieved tide data.
+    """
+    missing_tide_data = pd.DataFrame()
+    if missing_dates:
+        missing_dates_query_param = get_missing_dates_query_param(missing_dates)
+        for missing_dt, days in missing_dates_query_param:
+            missing_dt_str = missing_dt.strftime('%Y-%m-%d')
+            missing_dt_data = get_tide_data_from_niwa(
+                catchment_file=catchment_file,
+                api_key=api_key,
+                datum=datum,
+                start_date=missing_dt_str,
+                total_days=days)
+            missing_tide_data = pd.concat([missing_tide_data, missing_dt_data])
+    return missing_tide_data
+
+
+def get_highest_tide_side_data(
+        catchment_file: pathlib.Path,
+        api_key: str,
+        datum: DatumType,
+        tide_data: pd.DataFrame,
+        days_before_peak: int,
+        days_after_peak: int):
+    """
+    Get the requested tide data for both sides of the highest tide, including the data for the highest tide itself.
+
+    Parameters
+    ----------
+    catchment_file : pathlib.Path
+        The file path for the catchment polygon.
+    api_key : str
+        NIWA api key (https://developer.niwa.co.nz/).
+    datum : DatumType
+        Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
+    tide_data : pd.DataFrame
+        The original tide data obtained for the requested period with the time column expressed in NZ timezone
+        (converted from UTC).
+    days_before_peak : int
+        An integer representing the number of days before the highest tide to extract data for.
+        Must be a positive integer.
+    days_after_peak : int
+        An integer representing the number of days after the highest tide to extract data for.
+        Must be a positive integer.
+    """
+    # Get a list of dates from start_date (first day before peak) to end_date (last day after peak)
+    dates_list = get_highest_tide_side_dates(tide_data, days_before_peak, days_after_peak)
+    # Get the missing dates that are not present in the original tide data
+    existing_dates, missing_dates = find_existing_and_missing_dates(tide_data, dates_list)
+    # Get the tide data for the existing dates from the original tide data
+    existing_tide_data = tide_data[tide_data['datetime_nz'].dt.date.isin(existing_dates)]
+    # Retrieve tide data from NIWA for the missing dates
+    missing_tide_data = get_missing_tide_data_from_niwa(catchment_file, api_key, datum, missing_dates)
+    # Concatenate the tide data for both existing and missing dates
+    data_surrounding_highest_tide = pd.concat([existing_tide_data, missing_tide_data])
+    # Sort the data by the 'datetime_nz' column in ascending order and reset the index to start from 0
+    data_surrounding_highest_tide = data_surrounding_highest_tide.sort_values(by=['datetime_nz']).reset_index(drop=True)
+    return data_surrounding_highest_tide
 
 
 def main():
-
-    load_dotenv()
-
-    engine = setup_environment.get_database()
-
-    api_key = os.getenv("NIWA_API_KEY")
-
-    # Fetching centroid co-ordinate from user selected shapely polygon
-    example_polygon_centroid = Polygon([[-43.298137, 172.568351], [-43.279144, 172.833569],
-                                        [-43.418953, 172.826698], [-43.407542, 172.536636]]).centroid
-    lat, long = example_polygon_centroid.coords[0]
-
-    # How many days of tide data to collect (e.g. 365 for 1 years worth):
-    total_days = 365
-
-    # Start date (can be in the past or present) for collection of data
-    # String for start date of data in format of ('yyyy-mm-dd')
-    start_date = date.today().isoformat()
-
-    # String for datum type.  LAT: Lowest astronomical tide; MSL: Mean sea level
-    datum = "LAT"
-
-    # How many days either side of the highest tide do you want data for:
-    before_n_days = 2
-    after_n_days = 4
-
-    request_parameters = {
-        'apikey': api_key,
-        'lat': lat,  # string, latitude range -29 to -53 (- eg: -30.876)
-        'long': long,  # string, longitude range 160 to 180 and -175 to -180 (- eg: -175.543)
-        'numberOfDays': total_days,  # number, number of days, range(1 - 31), default: 7
-        'startDate': start_date,  # string, start date, format ('yyyy-mm-dd'), default: today (-eg: 2018-05-30)
-        'datum': datum  # string, LAT: Lowest astronomical tide; MSL: Mean sea level, default: LAT
-    }
-
-    # start process
-    start_date_dict = get_all_date(request_parameters['startDate'], request_parameters['numberOfDays'])
-    request_parameters_list = gen_param_list(start_date_dict, request_parameters)
-    tide_dataframe = asyncio.run(get_tide_dataframe(request_parameters_list))
-    highest_tide_df = get_highest_tide_dataframe(tide_dataframe, before_n_days, after_n_days)
-    save_to_database(engine, highest_tide_df, 'highest_tide')
-    # end process
-
-    print(highest_tide_df)
+    tic = time.perf_counter()
+    # Catchment polygon
+    catchment_file = pathlib.Path(r"selected_polygon.geojson")
+    # Get NIWA api key
+    niwa_api_key = config.get_env_variable("NIWA_API_KEY")
+    # Specify the datum query parameter
+    datum = DatumType.LAT
+    # Get tide data
+    tide_data = get_tide_data_from_niwa(
+        catchment_file=catchment_file,
+        api_key=niwa_api_key,
+        datum=datum,
+        start_date="2023-01-23",
+        total_days=5)
+    print(tide_data)
+    data_surrounding_highest_tide = get_highest_tide_side_data(
+        catchment_file=catchment_file,
+        api_key=niwa_api_key,
+        datum=datum,
+        tide_data=tide_data,
+        days_before_peak=1,
+        days_after_peak=1)
+    print(data_surrounding_highest_tide)
+    toc = time.perf_counter()
+    print(f"Ran in {toc - tic:0.4f} seconds")
 
 
 if __name__ == "__main__":
