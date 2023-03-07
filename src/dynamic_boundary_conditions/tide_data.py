@@ -2,7 +2,6 @@ import logging
 import pathlib
 import time
 from datetime import date, datetime, timedelta
-from enum import StrEnum
 from typing import Dict, List, Tuple, Union, Optional
 
 import pandas as pd
@@ -11,6 +10,7 @@ import asyncio
 import aiohttp
 
 from src import config
+from src.dynamic_boundary_conditions.tide_enum import DatumType
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -20,19 +20,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-class DatumType(StrEnum):
-    """
-    Attributes
-    ----------
-    LAT : str
-        Lowest astronomical tide.
-    MSL : str
-        Mean sea level.
-    """
-    LAT = "LAT"
-    MSL = "MSL"
 
 
 def get_catchment_area_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
