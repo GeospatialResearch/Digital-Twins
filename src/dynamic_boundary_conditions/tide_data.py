@@ -5,9 +5,10 @@ from datetime import date, datetime, timedelta
 from enum import StrEnum
 from typing import Dict, List, Tuple, Union, Optional
 
-import geopandas as gpd
 import pandas as pd
-import requests
+import geopandas as gpd
+import asyncio
+import aiohttp
 
 from src import config
 
@@ -147,7 +148,32 @@ def gen_api_query_param_list(
     return query_param_list
 
 
-def get_tide_data_for_requested_period(
+async def fetch_tide_data(
+        session: aiohttp.ClientSession,
+        query_param: Dict[str, Union[str, int]],
+        url: str = 'https://api.niwa.co.nz/tides/data'):
+    """
+    Fetch high and low tide data for a single query parameter.
+
+    Parameters
+    ----------
+    session : aiohttp.ClientSession
+        An aiohttp ClientSession object.
+    query_param : Dict[str, Union[str, int]]
+        The query parameters used to retrieve high and low tide data for a specific location and time period.
+    url: str = 'https://api.niwa.co.nz/tides/data'
+        Tide API HTTP request url.
+    """
+    async with session.get(url, params=query_param) as resp:
+        resp_dict = await resp.json()
+        tide_df = pd.DataFrame(resp_dict['values'])
+        tide_df.insert(loc=0, column='datum', value=query_param['datum'])
+        tide_df.insert(loc=1, column='latitude', value=query_param['lat'])
+        tide_df.insert(loc=2, column='longitude', value=query_param['long'])
+        return tide_df
+
+
+async def get_tide_data_for_requested_period(
         query_param_list: List[Dict[str, Union[str, int]]],
         url: str = 'https://api.niwa.co.nz/tides/data'):
     """
@@ -160,14 +186,14 @@ def get_tide_data_for_requested_period(
     url: str = 'https://api.niwa.co.nz/tides/data'
         Tide API HTTP request url.
     """
-    tide_data = pd.DataFrame()
-    for query_param in query_param_list:
-        response = requests.get(url, params=query_param)
-        tide_df = pd.DataFrame(response.json()['values'])
-        tide_df.insert(loc=0, column='datum', value=query_param['datum'])
-        tide_df.insert(loc=1, column='latitude', value=query_param['lat'])
-        tide_df.insert(loc=2, column='longitude', value=query_param['long'])
-        tide_data = pd.concat([tide_data, tide_df])
+    tasks = []
+    async with aiohttp.ClientSession() as session:
+        # Create a list of tasks that fetch tide data for each query parameter
+        for query_param in query_param_list:
+            tasks.append(fetch_tide_data(session, query_param=query_param, url=url))
+        # Wait for all tasks to complete and concatenate the results into a single DataFrame
+        query_results = await asyncio.gather(*tasks, return_exceptions=True)
+        tide_data = pd.concat(query_results)
     return tide_data
 
 
@@ -219,7 +245,7 @@ def get_tide_data_from_niwa(
     # Get the list of api query parameters used to retrieve high and low tide data
     query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges, interval)
     # Iterate over the list of API query parameters to fetch high and low tide data for the requested period
-    tide_data_utc = get_tide_data_for_requested_period(query_param_list)
+    tide_data_utc = asyncio.run(get_tide_data_for_requested_period(query_param_list))
     # Convert time column from UTC to NZ timezone.
     tide_data = convert_to_nz_timezone(tide_data_utc)
     # Rename columns
@@ -425,8 +451,8 @@ def main():
         catchment_file=catchment_file,
         api_key=niwa_api_key,
         datum=datum,
-        start_date="2023-01-23",
-        total_days=5,
+        start_date="2023-01-01",
+        total_days=365,
         interval=None)
     print(tide_data)
     data_surrounding_highest_tide = get_highest_tide_side_data(
@@ -434,8 +460,8 @@ def main():
         api_key=niwa_api_key,
         datum=datum,
         tide_data=tide_data,
-        days_before_peak=2,
-        days_after_peak=2)
+        days_before_peak=1,
+        days_after_peak=1)
     print(data_surrounding_highest_tide)
     toc = time.perf_counter()
     print(f"Ran in {toc - tic:0.4f} seconds")
