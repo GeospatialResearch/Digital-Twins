@@ -1,6 +1,5 @@
 import logging
 import pathlib
-import time
 from datetime import date, datetime, timedelta
 from typing import Dict, List, Tuple, Union, Optional
 
@@ -426,7 +425,6 @@ def get_highest_tide_side_data(
 
 
 def main():
-    tic = time.perf_counter()
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     # Get NIWA api key
@@ -450,8 +448,6 @@ def main():
         days_before_peak=1,
         days_after_peak=1)
     print(data_surrounding_highest_tide)
-    toc = time.perf_counter()
-    print(f"Ran in {toc - tic:0.4f} seconds")
 
 
 if __name__ == "__main__":
