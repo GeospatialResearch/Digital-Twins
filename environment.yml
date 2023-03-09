@@ -22,6 +22,7 @@ dependencies:
   - plotly
   - geocube
   - haversine
+  - pyarrow
   - pip:
     - geofabrics>=0.10.7
     - geovoronoi>=0.4.0
