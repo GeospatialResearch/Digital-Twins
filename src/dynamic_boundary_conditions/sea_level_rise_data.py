@@ -1,4 +1,3 @@
-import time
 import logging
 import pathlib
 from typing import Tuple, Union
@@ -159,23 +158,16 @@ def get_closest_slr_data(
 
 
 def main():
-    tic = time.perf_counter()
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     # Get the catchment polygon centroid coordinates.
     lat, long = get_catchment_area_coords(catchment_file)
     # Get the sea level rise data for the entire country
     slr_nz = get_all_slr_data()
-
-    # saving to database should be done here if needed
-    # The target tide position below need to be adjusted to use the response lat and long from tide.
-
     # Find the closest sea level rise site to the target tide position.
     closest_site_lat, closest_site_long = get_closest_slr_site_to_tide(slr_nz, lat, long)  # -43.3803 172.7114
     closest_slr_data = get_closest_slr_data(slr_nz, closest_site_lat, closest_site_long)
     print(closest_slr_data)
-    toc = time.perf_counter()
-    print(f"Ran in {toc - tic:0.4f} seconds")
 
 
 if __name__ == "__main__":
