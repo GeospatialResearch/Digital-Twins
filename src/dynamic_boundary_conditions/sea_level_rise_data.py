@@ -165,7 +165,7 @@ def main():
     # Get the sea level rise data for the entire country
     slr_nz = get_all_slr_data()
     # Find the closest sea level rise site to the target tide position.
-    closest_site_lat, closest_site_long = get_closest_slr_site_to_tide(slr_nz, lat, long)  # -43.3803 172.7114
+    closest_site_lat, closest_site_long = get_closest_slr_site_to_tide(slr_nz, lat, long)
     closest_slr_data = get_closest_slr_data(slr_nz, closest_site_lat, closest_site_long)
     print(closest_slr_data)
 
