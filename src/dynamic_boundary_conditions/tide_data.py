@@ -387,7 +387,8 @@ def get_highest_tide_side_data(
         datum: DatumType,
         tide_data: pd.DataFrame,
         days_before_peak: int,
-        days_after_peak: int):
+        days_after_peak: int,
+        interval: Optional[int] = None):
     """
     Get the requested tide data for both sides of the highest tide, including the data for the highest tide itself.
 
@@ -408,6 +409,9 @@ def get_highest_tide_side_data(
     days_after_peak : int
         An integer representing the number of days after the highest tide to extract data for.
         Must be a positive integer.
+    interval: Optional[int] = None
+        Output time interval in minutes, range from 10 to 1440 minutes (1 day).
+        Omit to get only high and low tide times.
     """
     # Get a list of dates from start_date (first day before peak) to end_date (last day after peak)
     dates_list = get_highest_tide_side_dates(tide_data, days_before_peak, days_after_peak)
@@ -416,7 +420,7 @@ def get_highest_tide_side_data(
     # Get the tide data for the existing dates from the original tide data
     existing_tide_data = tide_data[tide_data['datetime_nz'].dt.date.isin(existing_dates)]
     # Retrieve tide data from NIWA for the missing dates
-    missing_tide_data = get_missing_tide_data_from_niwa(catchment_file, api_key, datum, missing_dates)
+    missing_tide_data = get_missing_tide_data_from_niwa(catchment_file, api_key, datum, missing_dates, interval)
     # Concatenate the tide data for both existing and missing dates
     data_surrounding_highest_tide = pd.concat([existing_tide_data, missing_tide_data])
     # Sort the data by the 'datetime_nz' column in ascending order and reset the index to start from 0
@@ -436,8 +440,8 @@ def main():
         catchment_file=catchment_file,
         api_key=niwa_api_key,
         datum=datum,
-        start_date="2023-01-01",
-        total_days=365,
+        start_date="2023-01-24",
+        total_days=3,
         interval=None)
     print(tide_data)
     data_surrounding_highest_tide = get_highest_tide_side_data(
@@ -446,7 +450,8 @@ def main():
         datum=datum,
         tide_data=tide_data,
         days_before_peak=1,
-        days_after_peak=1)
+        days_after_peak=1,
+        interval=None)
     print(data_surrounding_highest_tide)
 
 
