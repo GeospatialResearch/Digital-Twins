@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Dict, List, Tuple, Union, Optional
 
 import pandas as pd
