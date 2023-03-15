@@ -314,24 +314,27 @@ def find_existing_and_missing_dates(
     return existing_dates, missing_dates
 
 
-def get_missing_dates_query_param(missing_dates: List[date]) -> List[Tuple[date, int]]:
+def get_missing_dates_date_ranges(missing_dates: List[date]) -> List[Tuple[date, int]]:
     """
     Take a list of missing dates as input and return a list of tuples, where each tuple contains query parameters
     that can be used to fetch tide data from NIWA for those missing dates.
+
+    Obtain the start date and the duration, measured in days, for each API call made to retrieve tide data
+    for the entire requested period.
 
     Parameters
     ----------
     missing_dates : List[date]
         A list of missing dates to group.
     """
-    missing_dates_query_param = []
+    missing_dates_date_ranges = []
     start_date = missing_dates[0]
     for i in range(1, len(missing_dates)):
         if (missing_dates[i] - missing_dates[i - 1]).days > 1:
-            missing_dates_query_param.append((start_date, (missing_dates[i - 1] - start_date).days + 1))
+            missing_dates_date_ranges.append((start_date, (missing_dates[i - 1] - start_date).days + 1))
             start_date = missing_dates[i]
-    missing_dates_query_param.append((start_date, (missing_dates[-1] - start_date).days + 1))
-    return missing_dates_query_param
+    missing_dates_date_ranges.append((start_date, (missing_dates[-1] - start_date).days + 1))
+    return missing_dates_date_ranges
 
 
 def get_missing_tide_data_from_niwa(
@@ -359,8 +362,8 @@ def get_missing_tide_data_from_niwa(
     """
     missing_tide_data = pd.DataFrame()
     if missing_dates:
-        missing_dates_query_param = get_missing_dates_query_param(missing_dates)
-        for missing_dt, days in missing_dates_query_param:
+        missing_dates_date_ranges = get_missing_dates_date_ranges(missing_dates)
+        for missing_dt, days in missing_dates_date_ranges:
             missing_dt_data = get_tide_data_from_niwa(
                 catchment_file=catchment_file,
                 api_key=api_key,
