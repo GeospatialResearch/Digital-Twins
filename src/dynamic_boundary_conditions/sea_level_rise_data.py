@@ -20,7 +20,7 @@ class InvalidDirectoryError(Exception):
     pass
 
 
-def get_catchment_area_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
+def get_catchment_centroid_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
     """
     Extract the catchment polygon centroid coordinates.
 
@@ -161,7 +161,7 @@ def main():
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     # Get the catchment polygon centroid coordinates.
-    lat, long = get_catchment_area_coords(catchment_file)
+    lat, long = get_catchment_centroid_coords(catchment_file)
     # Get the sea level rise data for the entire country
     slr_nz = get_all_slr_data()
     # Find the closest sea level rise site to the target tide position.
