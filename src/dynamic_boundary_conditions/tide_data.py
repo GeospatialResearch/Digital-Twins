@@ -21,7 +21,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_catchment_area_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
+def get_catchment_centroid_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
     """
     Extract the catchment polygon centroid coordinates.
 
@@ -225,7 +225,7 @@ def get_tide_data_from_niwa(
         Omit to get only high and low tide times.
     """
     # Get the catchment polygon centroid coordinates.
-    lat, long = get_catchment_area_coords(catchment_file)
+    lat, long = get_catchment_centroid_coords(catchment_file)
     # Get the date_ranges (i.e. start date and the duration used for each API call)
     date_ranges = get_date_ranges(start_date, total_days)
     # Get the list of api query parameters used to retrieve high and low tide data
