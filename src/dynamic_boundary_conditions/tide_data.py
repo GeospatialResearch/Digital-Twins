@@ -38,18 +38,17 @@ def get_catchment_centroid_coords(catchment_file: pathlib.Path) -> Tuple[float, 
 
 
 def get_date_ranges(
-        start_date: str,
+        start_date: date,
         total_days: int = 365,
-        days_per_call: int = 31) -> Dict[str, int]:
+        days_per_call: int = 31) -> Dict[date, int]:
     """
     Obtain the start date and the duration, measured in days, for each API call made to retrieve tide data
     for the entire requested period.
 
     Parameters
     ----------
-    start_date : str
-        The start date for data collection, which can be in the past or present,
-        should be provided in the following format 'yyyy-mm-dd'.
+    start_date : date
+        The start date for data collection, which can be in the past or present.
     total_days: int = 365
         The number of days of tide data to collect. The default value is 365 for one year.
     days_per_call : int = 31
@@ -57,16 +56,11 @@ def get_date_ranges(
         The default value is configured to 31, which is the maximum number of days that can be retrieved per API call.
     """
     # Check for invalid arguments
-    try:
-        date.fromisoformat(start_date)
-    except ValueError as error:
-        raise ValueError(f"start_date is {start_date}, format must be yyyy-mm-dd.") from error
     if total_days < 1:
         raise ValueError(f"total_days is {total_days}, must be at least 1.")
     if not 1 <= days_per_call <= 31:
         raise ValueError(f"days_per_call is {days_per_call}, must be between 1 and 31 inclusive.")
-    # start and end dates for data retrieval
-    start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+    # end date for data retrieval
     end_date = start_date + timedelta(days=total_days - 1)
     # Initialize an empty dictionary to store the date ranges
     date_ranges = {}
@@ -76,8 +70,7 @@ def get_date_ranges(
         request_end_date = min(end_date, start_date + timedelta(days=days_per_call - 1))
         number_of_days = (request_end_date - start_date).days + 1
         # Add the current chunk to the date_ranges dictionary
-        start_date_str = start_date.isoformat()
-        date_ranges[start_date_str] = number_of_days
+        date_ranges[start_date] = number_of_days
         # Move the start date forward for the next chunk
         start_date += timedelta(days=number_of_days)
     return date_ranges
@@ -88,7 +81,7 @@ def gen_api_query_param_list(
         lat: Union[int, float],
         long: Union[int, float],
         datum: DatumType,
-        date_ranges: Dict[str, int],
+        date_ranges: Dict[date, int],
         interval: Optional[int] = None) -> List[Dict[str, Union[str, int]]]:
     """
     Generate a list of api query parameters used to retrieve high and low tide data for the entire requested period.
@@ -103,7 +96,7 @@ def gen_api_query_param_list(
         Longitude range 160 to 180 and -175 to -180 (- eg: -175.543).
     datum : DatumType
         Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
-    date_ranges : Dict[str, int]
+    date_ranges : Dict[date, int]
         Dictionary of start date and number of days for each API call that need to be made to retrieve
         high and low tide data for the entire requested period.
     interval: Optional[int] = None
@@ -125,7 +118,7 @@ def gen_api_query_param_list(
             "lat": str(lat),
             "long": str(long),
             "numberOfDays": number_of_days,
-            "startDate": start_date,
+            "startDate": start_date.isoformat(),
             "datum": datum.value
         }
         if interval is not None:
@@ -201,7 +194,7 @@ def get_tide_data_from_niwa(
         catchment_file: pathlib.Path,
         api_key: str,
         datum: DatumType,
-        start_date: str,
+        start_date: date,
         total_days: int = 365,
         interval: Optional[int] = None) -> pd.DataFrame:
     """
@@ -215,9 +208,8 @@ def get_tide_data_from_niwa(
         NIWA api key (https://developer.niwa.co.nz/).
     datum : DatumType
         Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
-    start_date : str
-        The start date for data collection, which can be in the past or present,
-        should be provided in the following format 'yyyy-mm-dd'.
+    start_date : date
+        The start date for data collection, which can be in the past or present.
     total_days: int = 365
         The number of days of tide data to collect. The default value is 365 for one year.
     interval: Optional[int] = None
@@ -263,7 +255,7 @@ def get_highest_tide_datetime(tide_data: pd.DataFrame) -> pd.Timestamp:
 def get_highest_tide_side_dates(
         tide_data: pd.DataFrame,
         days_before_peak: int,
-        days_after_peak: int) -> List[datetime.date]:
+        days_after_peak: int) -> List[date]:
     """
     Get a list of dates for the requested time period surrounding the highest tide. This includes all dates from
     the start date (the first day before the highest tide) to the end date (the last day after the highest tide).
@@ -297,7 +289,7 @@ def get_highest_tide_side_dates(
 
 def find_existing_and_missing_dates(
         tide_data: pd.DataFrame,
-        dates_list: List[datetime.date]) -> Tuple[List[datetime.date], List[datetime.date]]:
+        dates_list: List[date]) -> Tuple[List[date], List[date]]:
     """
     Check whether each date in the given list of dates is present or missing in the 'datetime_nz' column of the
     given tide_data DataFrame. Returns two lists - existing_dates and missing_dates.
@@ -311,7 +303,7 @@ def find_existing_and_missing_dates(
     tide_data : pd.DataFrame
         The original tide data obtained for the requested period with the time column expressed in NZ timezone
         (converted from UTC).
-    dates_list: List[datetime.date]
+    dates_list: List[date]
         A list of dates for the requested time period surrounding the highest tide. This includes all dates from
         the start date (the first day before the highest tide) to the end date (the last day after the highest tide).
     """
@@ -322,14 +314,14 @@ def find_existing_and_missing_dates(
     return existing_dates, missing_dates
 
 
-def get_missing_dates_query_param(missing_dates: List[datetime.date]) -> List[Tuple[datetime.date, int]]:
+def get_missing_dates_query_param(missing_dates: List[date]) -> List[Tuple[date, int]]:
     """
     Take a list of missing dates as input and return a list of tuples, where each tuple contains query parameters
     that can be used to fetch tide data from NIWA for those missing dates.
 
     Parameters
     ----------
-    missing_dates : List[datetime.date]
+    missing_dates : List[date]
         A list of missing dates to group.
     """
     missing_dates_query_param = []
@@ -346,7 +338,7 @@ def get_missing_tide_data_from_niwa(
         catchment_file: pathlib.Path,
         api_key: str,
         datum: DatumType,
-        missing_dates: List[datetime.date],
+        missing_dates: List[date],
         interval: Optional[int] = None) -> pd.DataFrame:
     """
     Retrieve tide data from NIWA for the dates that were not included in the originally obtained tide data.
@@ -359,7 +351,7 @@ def get_missing_tide_data_from_niwa(
         NIWA api key (https://developer.niwa.co.nz/).
     datum : DatumType
         Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
-    missing_dates : List[datetime.date]
+    missing_dates : List[date]
         A collection of dates that are absent from the originally retrieved tide data.
     interval: Optional[int] = None
         Output time interval in minutes, range from 10 to 1440 minutes (1 day).
@@ -369,12 +361,11 @@ def get_missing_tide_data_from_niwa(
     if missing_dates:
         missing_dates_query_param = get_missing_dates_query_param(missing_dates)
         for missing_dt, days in missing_dates_query_param:
-            missing_dt_str = missing_dt.strftime('%Y-%m-%d')
             missing_dt_data = get_tide_data_from_niwa(
                 catchment_file=catchment_file,
                 api_key=api_key,
                 datum=datum,
-                start_date=missing_dt_str,
+                start_date=missing_dt,
                 total_days=days,
                 interval=interval)
             missing_tide_data = pd.concat([missing_tide_data, missing_dt_data])
@@ -440,7 +431,7 @@ def main():
         catchment_file=catchment_file,
         api_key=niwa_api_key,
         datum=datum,
-        start_date="2023-01-24",
+        start_date=date(2023, 1, 24),
         total_days=3,
         interval=None)
     print(tide_data)
