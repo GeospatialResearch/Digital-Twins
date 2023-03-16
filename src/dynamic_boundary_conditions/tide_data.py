@@ -310,8 +310,8 @@ def find_existing_and_missing_dates(
     """
     tide_data_dates = set(tide_data['datetime_nz'].dt.date)
     dates_set = set(dates_list)
-    existing_dates = sorted(list(tide_data_dates.intersection(dates_set)))
-    missing_dates = sorted(list(dates_set - tide_data_dates))
+    existing_dates = sorted(tide_data_dates.intersection(dates_set))
+    missing_dates = sorted(dates_set - tide_data_dates)
     return existing_dates, missing_dates
 
 
