@@ -58,6 +58,7 @@ def get_date_ranges(
     # Check for invalid arguments
     if total_days < 1:
         raise ValueError(f"total_days is {total_days}, must be at least 1.")
+    # Verify that the provided argument meet the query parameter requirements of the Tide API
     if not 1 <= days_per_call <= 31:
         raise ValueError(f"days_per_call is {days_per_call}, must be between 1 and 31 inclusive.")
     # end date for data retrieval
@@ -103,11 +104,11 @@ def gen_api_query_param_list(
         Output time interval in minutes, range from 10 to 1440 minutes (1 day).
         Omit to get only high and low tide times.
     """
-    # Check for invalid arguments
+    # Verify that the provided arguments meet the query parameter requirements of the Tide API
     if not (-53 <= lat <= -29):
         raise ValueError(f"latitude is {lat}, must range from -29 to -53.")
     if not ((160 <= long <= 180) or (-180 <= long <= -175)):
-        raise ValueError(f"longitude is {long}, must range from 160 to 180 and from -175 to -180.")
+        raise ValueError(f"longitude is {long}, must range from 160 to 180 or from -175 to -180.")
     if interval is not None and not (10 <= interval <= 1440):
         raise ValueError(f"interval is {interval}, must range from 10 to 1440.")
     # Create a list of api query parameters for all 'date_ranges'
