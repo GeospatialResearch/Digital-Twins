@@ -95,6 +95,13 @@ def regional_council_clipped_to_db(engine, key: str, layer_id: int):
         log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
 
 
+def get_regions_intersect_catchment(engine, catchment_polygon: Polygon):
+    query = f"SELECT * FROM region_geometry_clipped AS rgc " \
+            f"WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
+    intersect_regions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+    return intersect_regions
+
+
 def main():
     # Get StatsNZ api key
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
@@ -105,6 +112,8 @@ def main():
     catchment_polygon = catchment_area_geometry_info(catchment_file)
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
+    intersect_regions = get_regions_intersect_catchment(engine, catchment_polygon)
+    print(intersect_regions)
 
 
 if __name__ == "__main__":
