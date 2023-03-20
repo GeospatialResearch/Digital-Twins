@@ -95,7 +95,7 @@ def regional_council_clipped_to_db(engine, key: str, layer_id: int):
         log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
 
 
-def get_regions_intersect_catchment(engine, catchment_polygon: Polygon):
+def get_regions_intersect_catchment(engine, catchment_polygon: Polygon) -> gpd.GeoDataFrame:
     query = f"SELECT * FROM region_geometry_clipped AS rgc " \
             f"WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
     intersect_regions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
