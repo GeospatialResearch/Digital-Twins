@@ -76,8 +76,8 @@ def get_regions_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoData
     catchment_polygon = catchment_area["geometry"][0]
     query = f"SELECT * FROM region_geometry_clipped AS rgc " \
             f"WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
-    intersect_regions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-    return intersect_regions
+    req_regions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+    return req_regions
 
 
 def get_catchment_difference_regions(
