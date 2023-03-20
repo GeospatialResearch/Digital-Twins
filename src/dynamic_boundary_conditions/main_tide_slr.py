@@ -32,11 +32,11 @@ def catchment_area_geometry_info(catchment_file: pathlib.Path) -> Polygon:
 
     Parameters
     ----------
-    catchment_file
+    catchment_file : pathlib.Path
         The file path of the catchment polygon shapefile.
     """
     catchment = gpd.read_file(catchment_file)
-    catchment = catchment.to_crs(4326)
+    catchment = catchment.to_crs(2193)
     catchment_polygon = catchment["geometry"][0]
     return catchment_polygon
 
