@@ -72,7 +72,7 @@ def regional_council_clipped_to_db(engine, key: str, layer_id: int):
         log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
 
 
-def get_regions_intersect_catchment(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_regions_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area["geometry"][0]
     query = f"SELECT * FROM region_geometry_clipped AS rgc " \
             f"WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
@@ -80,7 +80,7 @@ def get_regions_intersect_catchment(engine, catchment_area: gpd.GeoDataFrame) ->
     return intersect_regions
 
 
-def get_regions_difference_catchment(
+def get_catchment_difference_regions(
         intersect_regions: gpd.GeoDataFrame,
         catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     res_difference = catchment_area.overlay(intersect_regions, how='difference')
@@ -97,9 +97,8 @@ def main():
     catchment_area = get_catchment_area(catchment_file)
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
-    intersect_regions = get_regions_intersect_catchment(engine, catchment_area)
-    res_difference = get_regions_difference_catchment(intersect_regions, catchment_area)
-    print(res_difference)
+    intersect_regions = get_regions_from_db(engine, catchment_area)
+    res_difference = get_catchment_difference_regions(intersect_regions, catchment_area)
 
 
 if __name__ == "__main__":
