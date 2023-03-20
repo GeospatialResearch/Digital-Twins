@@ -6,6 +6,8 @@ import geopandas as gpd
 import pandas as pd
 import pyarrow.csv as csv
 
+from src.dynamic_boundary_conditions.main_tide_slr import get_catchment_centroid_coords
+
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
@@ -18,22 +20,6 @@ log.addHandler(stream_handler)
 
 class InvalidDirectoryError(Exception):
     pass
-
-
-def get_catchment_centroid_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
-    """
-    Extract the catchment polygon centroid coordinates.
-
-    Parameters
-    ----------
-    catchment_file : pathlib.Path
-        The file path for the catchment polygon.
-    """
-    catchment = gpd.read_file(catchment_file)
-    catchment = catchment.to_crs(4326)
-    catchment_polygon = catchment["geometry"][0]
-    long, lat = catchment_polygon.centroid.coords[0]
-    return lat, long
 
 
 def get_slr_data_directory(folder_name: str = "data") -> pathlib.Path:

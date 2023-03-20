@@ -10,6 +10,7 @@ import aiohttp
 
 from src import config
 from src.dynamic_boundary_conditions.tide_enum import DatumType
+from src.dynamic_boundary_conditions.main_tide_slr import get_catchment_centroid_coords
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -19,22 +20,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-def get_catchment_centroid_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
-    """
-    Extract the catchment polygon centroid coordinates.
-
-    Parameters
-    ----------
-    catchment_file : pathlib.Path
-        The file path for the catchment polygon.
-    """
-    catchment = gpd.read_file(catchment_file)
-    catchment = catchment.to_crs(4326)
-    catchment_polygon = catchment["geometry"][0]
-    long, lat = catchment_polygon.centroid.coords[0]
-    return lat, long
 
 
 def get_date_ranges(
