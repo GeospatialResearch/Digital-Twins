@@ -102,6 +102,14 @@ def get_regions_intersect_catchment(engine, catchment_polygon: Polygon) -> gpd.G
     return intersect_regions
 
 
+def get_regions_difference_catchment(
+        intersect_regions: gpd.GeoDataFrame,
+        catchment_polygon: Polygon) -> gpd.GeoDataFrame:
+    catchment_area = gpd.GeoDataFrame({'geometry': [catchment_polygon]}, crs=2193)
+    res_difference = catchment_area.overlay(intersect_regions, how='difference')
+    return res_difference
+
+
 def main():
     # Get StatsNZ api key
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
@@ -113,7 +121,8 @@ def main():
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
     intersect_regions = get_regions_intersect_catchment(engine, catchment_polygon)
-    print(intersect_regions)
+    res_difference = get_regions_difference_catchment(intersect_regions, catchment_polygon)
+    print(res_difference)
 
 
 if __name__ == "__main__":
