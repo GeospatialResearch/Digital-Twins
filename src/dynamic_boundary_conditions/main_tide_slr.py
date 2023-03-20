@@ -32,20 +32,6 @@ def get_catchment_area(catchment_file: pathlib.Path) -> gpd.GeoDataFrame:
     return catchment_area
 
 
-def get_catchment_centroid_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
-    """
-    Extract the catchment polygon centroid coordinates.
-
-    Parameters
-    ----------
-    catchment_file : pathlib.Path
-        The file path for the catchment polygon.
-    """
-    catchment_area = get_catchment_area(catchment_file)
-    long, lat = catchment_area.centroid.coords[0]
-    return lat, long
-
-
 def get_stats_nz_dataset(key: str, layer_id: int) -> gpd.GeoDataFrame:
     vector_fetcher = geoapis.vector.StatsNz(key, verbose=True, crs=2193)
     response_data = vector_fetcher.run(layer_id)
