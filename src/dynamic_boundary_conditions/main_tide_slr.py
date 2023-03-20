@@ -81,8 +81,8 @@ def get_regions_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoData
 
 
 def get_catchment_difference_regions(
-        intersect_regions: gpd.GeoDataFrame,
-        catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        catchment_area: gpd.GeoDataFrame,
+        intersect_regions: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     res_difference = catchment_area.overlay(intersect_regions, how='difference')
     return res_difference
 
@@ -98,7 +98,7 @@ def main():
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
     intersect_regions = get_regions_from_db(engine, catchment_area)
-    res_difference = get_catchment_difference_regions(intersect_regions, catchment_area)
+    res_difference = get_catchment_difference_regions(catchment_area, intersect_regions)
 
 
 if __name__ == "__main__":
