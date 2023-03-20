@@ -26,19 +26,10 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def catchment_area_geometry_info(catchment_file: pathlib.Path) -> Polygon:
-    """
-    Extract shapely geometry polygon from the catchment file.
-
-    Parameters
-    ----------
-    catchment_file : pathlib.Path
-        The file path of the catchment polygon shapefile.
-    """
-    catchment = gpd.read_file(catchment_file)
-    catchment = catchment.to_crs(2193)
-    catchment_polygon = catchment["geometry"][0]
-    return catchment_polygon
+def get_catchment_area(catchment_file: pathlib.Path) -> gpd.GeoDataFrame:
+    catchment_area = gpd.read_file(catchment_file)
+    catchment_area = catchment_area.to_crs(2193)
+    return catchment_area
 
 
 def get_catchment_centroid_coords(catchment_file: pathlib.Path) -> Tuple[float, float]:
@@ -50,8 +41,8 @@ def get_catchment_centroid_coords(catchment_file: pathlib.Path) -> Tuple[float, 
     catchment_file : pathlib.Path
         The file path for the catchment polygon.
     """
-    catchment_polygon = catchment_area_geometry_info(catchment_file)
-    long, lat = catchment_polygon.centroid.coords[0]
+    catchment_area = get_catchment_area(catchment_file)
+    long, lat = catchment_area.centroid.coords[0]
     return lat, long
 
 
@@ -95,7 +86,8 @@ def regional_council_clipped_to_db(engine, key: str, layer_id: int):
         log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
 
 
-def get_regions_intersect_catchment(engine, catchment_polygon: Polygon) -> gpd.GeoDataFrame:
+def get_regions_intersect_catchment(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    catchment_polygon = catchment_area["geometry"][0]
     query = f"SELECT * FROM region_geometry_clipped AS rgc " \
             f"WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
     intersect_regions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
@@ -104,8 +96,7 @@ def get_regions_intersect_catchment(engine, catchment_polygon: Polygon) -> gpd.G
 
 def get_regions_difference_catchment(
         intersect_regions: gpd.GeoDataFrame,
-        catchment_polygon: Polygon) -> gpd.GeoDataFrame:
-    catchment_area = gpd.GeoDataFrame({'geometry': [catchment_polygon]}, crs=2193)
+        catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     res_difference = catchment_area.overlay(intersect_regions, how='difference')
     return res_difference
 
@@ -117,11 +108,11 @@ def main():
     engine = setup_environment.get_database()
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
-    catchment_polygon = catchment_area_geometry_info(catchment_file)
+    catchment_area = get_catchment_area(catchment_file)
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
-    intersect_regions = get_regions_intersect_catchment(engine, catchment_polygon)
-    res_difference = get_regions_difference_catchment(intersect_regions, catchment_polygon)
+    intersect_regions = get_regions_intersect_catchment(engine, catchment_area)
+    res_difference = get_regions_difference_catchment(intersect_regions, catchment_area)
     print(res_difference)
 
 
