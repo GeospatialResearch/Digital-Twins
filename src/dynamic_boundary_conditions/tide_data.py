@@ -10,7 +10,7 @@ import aiohttp
 
 from src import config
 from src.dynamic_boundary_conditions.tide_enum import DatumType
-from src.dynamic_boundary_conditions.main_tide_slr import get_catchment_centroid_coords
+from src.dynamic_boundary_conditions.tide_query_location import get_catchment_centroid_coords
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
