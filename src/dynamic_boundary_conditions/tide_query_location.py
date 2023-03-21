@@ -95,6 +95,16 @@ def get_catchment_boundary_lines(
     return left_line, bottom_line, right_line, top_line
 
 
+def get_catchment_boundary_centres(
+        catchment_area: gpd.GeoDataFrame) -> Tuple[Point, Point, Point, Point]:
+    left_line, bottom_line, right_line, top_line = get_catchment_boundary_lines(catchment_area)
+    left_centre = left_line.centroid
+    bottom_centre = bottom_line.centroid
+    right_centre = right_line.centroid
+    top_centre = top_line.centroid
+    return left_centre, bottom_centre, right_centre, top_centre
+
+
 def get_non_intersection_centroid_position(
         catchment_area: gpd.GeoDataFrame,
         non_intersection: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -121,6 +131,8 @@ def get_tide_query_locations(
     non_intersection = catchment_area.overlay(regions_clipped, how='difference')
     if not non_intersection.empty:
         non_intersection = get_non_intersection_centroid_position(catchment_area, non_intersection)
+    else:
+        left_centre, bottom_centre, right_centre, top_centre = get_catchment_boundary_centres(catchment_area)
     return non_intersection
 
 
