@@ -104,10 +104,10 @@ def get_non_intersection_centroid_position(
         centroid = row['centroid']
         # Calculate the distance from the centroid to each line
         distances = {
-            'top_line': centroid.distance(top_line),
-            'bottom_line': centroid.distance(bottom_line),
-            'left_line': centroid.distance(left_line),
-            'right_line': centroid.distance(right_line)
+            'top': centroid.distance(top_line),
+            'bottom': centroid.distance(bottom_line),
+            'left': centroid.distance(left_line),
+            'right': centroid.distance(right_line)
         }
         # Find the name of the closest line based on the minimum distance
         closest_line = min(distances, key=distances.get)
