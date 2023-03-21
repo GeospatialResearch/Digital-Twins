@@ -7,8 +7,10 @@
 import logging
 import pathlib
 from typing import Tuple
+
+import pandas as pd
 import sqlalchemy
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, Point, LineString
 
 import geopandas as gpd
 import geoapis.vector
@@ -72,19 +74,46 @@ def regional_council_clipped_to_db(engine, key: str, layer_id: int):
         log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
 
 
-def get_regions_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_regions_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area["geometry"][0]
     query = f"SELECT * FROM region_geometry_clipped AS rgc " \
             f"WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
-    req_regions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-    return req_regions
+    regions_clipped = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+    return regions_clipped
 
 
-def get_catchment_difference_regions(
+def get_catchment_boundary_lines(
+        catchment_area: gpd.GeoDataFrame) -> Tuple[LineString, LineString, LineString, LineString]:
+    catchment_polygon = catchment_area.geometry.iloc[0]
+    # Extract the coordinates of the square polygon's exterior boundary
+    boundary_coords = list(catchment_polygon.exterior.coords)
+    # Create LineString objects for each boundary line
+    left_line = LineString(boundary_coords[:2])
+    bottom_line = LineString(boundary_coords[1:3])
+    right_line = LineString(boundary_coords[2:4])
+    top_line = LineString(boundary_coords[3:5])
+    return left_line, bottom_line, right_line, top_line
+
+
+def get_non_intersection_centroid_position(
         catchment_area: gpd.GeoDataFrame,
-        intersect_regions: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    res_difference = catchment_area.overlay(intersect_regions, how='difference')
-    return res_difference
+        regions_clipped: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    non_intersection = catchment_area.overlay(regions_clipped, how='difference')
+    non_intersection['centroid'] = non_intersection.centroid
+    left_line, bottom_line, right_line, top_line = get_catchment_boundary_lines(catchment_area)
+    for index, row in non_intersection.iterrows():
+        centroid = row['centroid']
+        # Calculate the distance from the centroid to each line
+        distances = {
+            'top_line': centroid.distance(top_line),
+            'bottom_line': centroid.distance(bottom_line),
+            'left_line': centroid.distance(left_line),
+            'right_line': centroid.distance(right_line)
+        }
+        # Find the name of the closest line based on the minimum distance
+        closest_line = min(distances, key=distances.get)
+        non_intersection.at[index, 'closest_line'] = closest_line
+    return non_intersection
 
 
 def main():
@@ -97,8 +126,9 @@ def main():
     catchment_area = get_catchment_area(catchment_file)
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
-    intersect_regions = get_regions_from_db(engine, catchment_area)
-    res_difference = get_catchment_difference_regions(catchment_area, intersect_regions)
+    regions_clipped = get_regions_clipped_from_db(engine, catchment_area)
+    non_intersection = get_non_intersection_centroid_position(catchment_area, regions_clipped)
+    print(non_intersection)
 
 
 if __name__ == "__main__":
