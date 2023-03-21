@@ -99,20 +99,21 @@ def get_non_intersection_centroid_position(
         catchment_area: gpd.GeoDataFrame,
         regions_clipped: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     non_intersection = catchment_area.overlay(regions_clipped, how='difference')
-    non_intersection['centroid'] = non_intersection.centroid
-    left_line, bottom_line, right_line, top_line = get_catchment_boundary_lines(catchment_area)
-    for index, row in non_intersection.iterrows():
-        centroid = row['centroid']
-        # Calculate the distance from the centroid to each line
-        distances = {
-            'top_line': centroid.distance(top_line),
-            'bottom_line': centroid.distance(bottom_line),
-            'left_line': centroid.distance(left_line),
-            'right_line': centroid.distance(right_line)
-        }
-        # Find the name of the closest line based on the minimum distance
-        closest_line = min(distances, key=distances.get)
-        non_intersection.at[index, 'closest_line'] = closest_line
+    if not non_intersection.empty:
+        non_intersection['centroid'] = non_intersection.centroid
+        left_line, bottom_line, right_line, top_line = get_catchment_boundary_lines(catchment_area)
+        for index, row in non_intersection.iterrows():
+            centroid = row['centroid']
+            # Calculate the distance from the centroid to each line
+            distances = {
+                'top_line': centroid.distance(top_line),
+                'bottom_line': centroid.distance(bottom_line),
+                'left_line': centroid.distance(left_line),
+                'right_line': centroid.distance(right_line)
+            }
+            # Find the name of the closest line based on the minimum distance
+            closest_line = min(distances, key=distances.get)
+            non_intersection.at[index, 'closest_line'] = closest_line
     return non_intersection
 
 
