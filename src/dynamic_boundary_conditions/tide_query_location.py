@@ -97,23 +97,30 @@ def get_catchment_boundary_lines(
 
 def get_non_intersection_centroid_position(
         catchment_area: gpd.GeoDataFrame,
-        regions_clipped: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        non_intersection: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    left_line, bottom_line, right_line, top_line = get_catchment_boundary_lines(catchment_area)
+    non_intersection['centroid'] = non_intersection.centroid
+    for index, row in non_intersection.iterrows():
+        centroid = row['centroid']
+        # Calculate the distance from the centroid to each line
+        distances = {
+            'top_line': centroid.distance(top_line),
+            'bottom_line': centroid.distance(bottom_line),
+            'left_line': centroid.distance(left_line),
+            'right_line': centroid.distance(right_line)
+        }
+        # Find the name of the closest line based on the minimum distance
+        closest_line = min(distances, key=distances.get)
+        non_intersection.at[index, 'closest_line'] = closest_line
+    return non_intersection
+
+
+def get_tide_query_locations(
+        catchment_area: gpd.GeoDataFrame,
+        regions_clipped: gpd.GeoDataFrame):
     non_intersection = catchment_area.overlay(regions_clipped, how='difference')
     if not non_intersection.empty:
-        non_intersection['centroid'] = non_intersection.centroid
-        left_line, bottom_line, right_line, top_line = get_catchment_boundary_lines(catchment_area)
-        for index, row in non_intersection.iterrows():
-            centroid = row['centroid']
-            # Calculate the distance from the centroid to each line
-            distances = {
-                'top_line': centroid.distance(top_line),
-                'bottom_line': centroid.distance(bottom_line),
-                'left_line': centroid.distance(left_line),
-                'right_line': centroid.distance(right_line)
-            }
-            # Find the name of the closest line based on the minimum distance
-            closest_line = min(distances, key=distances.get)
-            non_intersection.at[index, 'closest_line'] = closest_line
+        non_intersection = get_non_intersection_centroid_position(catchment_area, non_intersection)
     return non_intersection
 
 
@@ -128,7 +135,7 @@ def main():
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
     regions_clipped = get_regions_clipped_from_db(engine, catchment_area)
-    non_intersection = get_non_intersection_centroid_position(catchment_area, regions_clipped)
+    non_intersection = get_tide_query_locations(catchment_area, regions_clipped)
     print(non_intersection)
 
 
