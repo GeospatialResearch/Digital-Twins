@@ -91,7 +91,7 @@ def get_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDa
 
 
 def get_catchment_boundary_lines(
-        catchment_area: gpd.GeoDataFrame) -> Tuple[LineString, LineString, LineString, LineString]:
+        catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area.geometry.iloc[0]
     # Extract the coordinates of the square polygon's exterior boundary
     boundary_coords = list(catchment_polygon.exterior.coords)
@@ -100,33 +100,33 @@ def get_catchment_boundary_lines(
     bottom_line = LineString(boundary_coords[1:3])
     right_line = LineString(boundary_coords[2:4])
     top_line = LineString(boundary_coords[3:5])
-    return left_line, bottom_line, right_line, top_line
+    # Create a GeoDataFrame with the lines and their positions
+    data = {
+        'line_position': ['left', 'bottom', 'right', 'top'],
+        'geometry': [left_line, bottom_line, right_line, top_line]
+    }
+    boundary_lines = gpd.GeoDataFrame(data, crs=2193)
+    return boundary_lines
 
 
 def get_catchment_boundary_centres(
-        catchment_area: gpd.GeoDataFrame) -> Tuple[Point, Point, Point, Point]:
-    left_line, bottom_line, right_line, top_line = get_catchment_boundary_lines(catchment_area)
-    left_centre = left_line.centroid
-    bottom_centre = bottom_line.centroid
-    right_centre = right_line.centroid
-    top_centre = top_line.centroid
-    return left_centre, bottom_centre, right_centre, top_centre
+        catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    boundary_lines = get_catchment_boundary_lines(catchment_area)
+    boundary_lines['centroid'] = boundary_lines.centroid
+    return boundary_lines
 
 
 def get_non_intersection_centroid_position(
         catchment_area: gpd.GeoDataFrame,
         non_intersection: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    left_line, bottom_line, right_line, top_line = get_catchment_boundary_lines(catchment_area)
+    boundary_lines = get_catchment_boundary_lines(catchment_area)
     non_intersection['centroid'] = non_intersection.centroid
     for index, row in non_intersection.iterrows():
         centroid = row['centroid']
         # Calculate the distance from the centroid to each line
-        distances = {
-            'top': centroid.distance(top_line),
-            'bottom': centroid.distance(bottom_line),
-            'left': centroid.distance(left_line),
-            'right': centroid.distance(right_line)
-        }
+        distances = {}
+        for boundary_index, boundary_row in boundary_lines.iterrows():
+            distances[boundary_row['line_position']] = centroid.distance(boundary_row['geometry'])
         # Find the name of the closest line based on the minimum distance
         closest_line = min(distances, key=distances.get)
         non_intersection.at[index, 'closest_line'] = closest_line
@@ -140,7 +140,7 @@ def get_tide_query_locations(
     if not non_intersection.empty:
         non_intersection = get_non_intersection_centroid_position(catchment_area, non_intersection)
     else:
-        left_centre, bottom_centre, right_centre, top_centre = get_catchment_boundary_centres(catchment_area)
+        boundary_centres = get_catchment_boundary_centres(catchment_area)
     return non_intersection
 
 
