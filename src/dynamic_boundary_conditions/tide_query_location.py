@@ -90,8 +90,7 @@ def get_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDa
     return coastline
 
 
-def get_catchment_boundary_lines(
-        catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area.geometry.iloc[0]
     # Extract the coordinates of the square polygon's exterior boundary
     boundary_coords = list(catchment_polygon.exterior.coords)
@@ -109,8 +108,7 @@ def get_catchment_boundary_lines(
     return boundary_lines
 
 
-def get_catchment_boundary_centroids(
-        catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_catchment_boundary_centroids(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     boundary_lines = get_catchment_boundary_lines(catchment_area)
     boundary_lines['centroid'] = boundary_lines.centroid
     return boundary_lines
