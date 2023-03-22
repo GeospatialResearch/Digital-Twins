@@ -82,6 +82,14 @@ def get_regions_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd
     return regions_clipped
 
 
+def get_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    catchment_polygon = catchment_area["geometry"][0]
+    query = f"SELECT * FROM \"_50258-nz-coastlines\" AS coast " \
+            f"WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
+    coastline = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+    return coastline
+
+
 def get_catchment_boundary_lines(
         catchment_area: gpd.GeoDataFrame) -> Tuple[LineString, LineString, LineString, LineString]:
     catchment_polygon = catchment_area.geometry.iloc[0]
