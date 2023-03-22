@@ -113,8 +113,10 @@ def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDat
 
 def get_catchment_boundary_centroids(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     boundary_lines = get_catchment_boundary_lines(catchment_area)
-    boundary_lines['centroid'] = boundary_lines.centroid
-    return boundary_lines
+    boundary_centroids = gpd.GeoDataFrame({
+        'line_position': boundary_lines['line_position'],
+        'geometry': boundary_lines.centroid})
+    return boundary_centroids
 
 
 def get_non_intersection_centroid_position(
