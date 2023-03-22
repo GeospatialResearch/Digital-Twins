@@ -109,7 +109,7 @@ def get_catchment_boundary_lines(
     return boundary_lines
 
 
-def get_catchment_boundary_centres(
+def get_catchment_boundary_centroids(
         catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     boundary_lines = get_catchment_boundary_lines(catchment_area)
     boundary_lines['centroid'] = boundary_lines.centroid
@@ -140,7 +140,7 @@ def get_tide_query_locations(
     if not non_intersection.empty:
         non_intersection = get_non_intersection_centroid_position(catchment_area, non_intersection)
     else:
-        boundary_centres = get_catchment_boundary_centres(catchment_area)
+        boundary_centroids = get_catchment_boundary_centroids(catchment_area)
     return non_intersection
 
 
