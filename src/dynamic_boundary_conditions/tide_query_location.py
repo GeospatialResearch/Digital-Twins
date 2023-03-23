@@ -137,14 +137,24 @@ def get_non_intersection_centroid_position(
 
 
 def get_tide_query_locations(
+        engine,
         catchment_area: gpd.GeoDataFrame,
-        regions_clipped: gpd.GeoDataFrame):
+        regions_clipped: gpd.GeoDataFrame,
+        distance_km: int = 1):
     non_intersection = catchment_area.overlay(regions_clipped, how='difference')
     if not non_intersection.empty:
-        non_intersection = get_non_intersection_centroid_position(catchment_area, non_intersection)
+        tide_query_location = get_non_intersection_centroid_position(catchment_area, non_intersection)
     else:
-        boundary_centroids = get_catchment_boundary_centroids(catchment_area)
-    return non_intersection
+        coastline = get_coastline_from_db(engine, catchment_area, distance_km)
+        if not coastline.empty:
+            coastline_geom = coastline['geometry'].iloc[0]
+            boundary_centroids = get_catchment_boundary_centroids(catchment_area)
+            boundary_centroids['dist_to_coast'] = boundary_centroids.distance(coastline_geom)
+            tide_query_location = boundary_centroids.sort_values('dist_to_coast').head(1)
+        else:
+            tide_query_location = gpd.GeoDataFrame()
+            log.info("There are no relevant tide data for the catchment area.")
+    return tide_query_location
 
 
 def main():
@@ -158,8 +168,8 @@ def main():
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
     regions_clipped = get_regions_clipped_from_db(engine, catchment_area)
-    non_intersection = get_tide_query_locations(catchment_area, regions_clipped)
-    print(non_intersection)
+    tide_query_location = get_tide_query_locations(engine, catchment_area, regions_clipped, distance_km=1)
+    print(tide_query_location)
 
 
 if __name__ == "__main__":
