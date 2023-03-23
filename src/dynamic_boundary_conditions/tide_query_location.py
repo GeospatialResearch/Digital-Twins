@@ -165,8 +165,8 @@ def main():
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
     regions_clipped = get_regions_clipped_from_db(engine, catchment_area)
-    tide_query_location = get_tide_query_locations(engine, catchment_area, regions_clipped, distance_km=1)
-    print(tide_query_location)
+    tide_query_loc = get_tide_query_locations(engine, catchment_area, regions_clipped, distance_km=1)
+    print(tide_query_loc)
 
 
 if __name__ == "__main__":
