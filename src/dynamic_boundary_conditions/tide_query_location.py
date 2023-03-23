@@ -6,15 +6,12 @@
 
 import logging
 import pathlib
-from typing import Tuple
 
-import pandas as pd
 import sqlalchemy
-from shapely.geometry import Polygon, Point, LineString
-
+from shapely.geometry import LineString
 import geopandas as gpd
-import geoapis.vector
 
+import geoapis.vector
 from src import config
 from src.digitaltwin import setup_environment
 
