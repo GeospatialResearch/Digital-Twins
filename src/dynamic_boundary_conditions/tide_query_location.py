@@ -129,7 +129,9 @@ def get_non_intersection_centroid_position(
             distances[boundary_row['line_position']] = centroid.distance(boundary_row['geometry'])
         # Find the name of the closest line based on the minimum distance
         closest_line = min(distances, key=distances.get)
-        non_intersection.at[index, 'closest_line'] = closest_line
+        non_intersection.at[index, 'position'] = closest_line
+    non_intersection = non_intersection[['position', 'centroid']].rename(columns={'centroid': 'geometry'})
+    non_intersection = non_intersection.set_geometry('geometry')
     return non_intersection
 
 
@@ -148,6 +150,8 @@ def get_tide_query_locations(
             boundary_centroids = get_catchment_boundary_centroids(catchment_area)
             boundary_centroids['dist_to_coast'] = boundary_centroids.distance(coastline_geom)
             tide_query_location = boundary_centroids.sort_values('dist_to_coast').head(1)
+            tide_query_location = tide_query_location[['line_position', 'geometry']].rename(
+                columns={'line_position': 'position'})
         else:
             tide_query_location = gpd.GeoDataFrame()
             log.info("There are no relevant tide data for the catchment area.")
