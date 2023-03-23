@@ -98,14 +98,14 @@ def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDat
     # Extract the coordinates of the square polygon's exterior boundary
     boundary_coords = list(catchment_polygon.exterior.coords)
     # Create LineString objects for each boundary line
-    left_line = LineString(boundary_coords[:2])
-    bottom_line = LineString(boundary_coords[1:3])
-    right_line = LineString(boundary_coords[2:4])
-    top_line = LineString(boundary_coords[3:5])
+    top_line = LineString(boundary_coords[:2])
+    right_line = LineString(boundary_coords[1:3])
+    bottom_line = LineString(boundary_coords[2:4])
+    left_line = LineString(boundary_coords[3:5])
     # Create a GeoDataFrame with the lines and their positions
     data = {
-        'line_position': ['left', 'bottom', 'right', 'top'],
-        'geometry': [left_line, bottom_line, right_line, top_line]
+        'line_position': ['top', 'right', 'bottom', 'left'],
+        'geometry': [top_line, right_line, bottom_line, left_line]
     }
     boundary_lines = gpd.GeoDataFrame(data, crs=2193)
     return boundary_lines
