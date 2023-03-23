@@ -9,8 +9,9 @@ import asyncio
 import aiohttp
 
 from src import config
+from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.tide_enum import DatumType
-from src.dynamic_boundary_conditions.tide_query_location import get_catchment_centroid_coords
+from src.dynamic_boundary_conditions import tide_query_location
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -406,30 +407,39 @@ def get_highest_tide_side_data(
 
 
 def main():
+    # Connect to the database
+    engine = setup_environment.get_database()
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
+    catchment_area = tide_query_location.get_catchment_area(catchment_file)
     # Get NIWA api key
     niwa_api_key = config.get_env_variable("NIWA_API_KEY")
-    # Specify the datum query parameter
-    datum = DatumType.LAT
-    # Get tide data
-    tide_data = get_tide_data_from_niwa(
-        catchment_file=catchment_file,
-        api_key=niwa_api_key,
-        datum=datum,
-        start_date=date(2023, 1, 24),
-        total_days=3,
-        interval=None)
-    print(tide_data)
-    data_surrounding_highest_tide = get_highest_tide_side_data(
-        catchment_file=catchment_file,
-        api_key=niwa_api_key,
-        datum=datum,
-        tide_data=tide_data,
-        days_before_peak=5,
-        days_after_peak=5,
-        interval=None)
-    print(data_surrounding_highest_tide)
+    # Get regions (clipped) that intersect with the catchment area from the database
+    regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
+    tide_query_loc = tide_query_location.get_tide_query_locations(
+        engine, catchment_area, regions_clipped, distance_km=1)
+
+
+    # # Specify the datum query parameter
+    # datum = DatumType.LAT
+    # # Get tide data
+    # tide_data = get_tide_data_from_niwa(
+    #     catchment_file=catchment_file,
+    #     api_key=niwa_api_key,
+    #     datum=datum,
+    #     start_date=date(2023, 1, 24),
+    #     total_days=3,
+    #     interval=None)
+    # print(tide_data)
+    # data_surrounding_highest_tide = get_highest_tide_side_data(
+    #     catchment_file=catchment_file,
+    #     api_key=niwa_api_key,
+    #     datum=datum,
+    #     tide_data=tide_data,
+    #     days_before_peak=5,
+    #     days_after_peak=5,
+    #     interval=None)
+    # print(data_surrounding_highest_tide)
 
 
 if __name__ == "__main__":
