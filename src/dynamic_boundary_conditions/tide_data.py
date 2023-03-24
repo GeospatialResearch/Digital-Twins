@@ -24,6 +24,7 @@ log.addHandler(stream_handler)
 
 
 def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[float, float, str]:
+    query_loc_row = query_loc_row.reset_index(drop=True)
     position = query_loc_row['position'][0]
     query_loc_row = query_loc_row.to_crs(4326)
     query_loc_point = query_loc_row['geometry'][0]
