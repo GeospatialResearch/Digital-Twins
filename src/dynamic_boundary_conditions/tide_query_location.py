@@ -155,6 +155,7 @@ def get_tide_query_locations(
         else:
             tide_query_location = gpd.GeoDataFrame()
             log.info("There are no relevant tide data for the catchment area.")
+    tide_query_location = tide_query_location.reset_index(drop=True)
     return tide_query_location
 
 
