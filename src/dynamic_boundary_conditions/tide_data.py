@@ -23,6 +23,14 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
+def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[float, float, str]:
+    position = query_loc_row['position'][0]
+    query_loc_row = query_loc_row.to_crs(4326)
+    query_loc_point = query_loc_row['geometry'][0]
+    long, lat = query_loc_point.x, query_loc_point.y
+    return lat, long, position
+
+
 def get_date_ranges(
         start_date: date,
         total_days: int = 365,
@@ -133,9 +141,9 @@ async def fetch_tide_data(
     async with session.get(url, params=query_param) as resp:
         resp_dict = await resp.json()
         tide_df = pd.DataFrame(resp_dict['values'])
-        tide_df.insert(loc=0, column='datum', value=query_param['datum'])
-        tide_df.insert(loc=1, column='latitude', value=query_param['lat'])
-        tide_df.insert(loc=2, column='longitude', value=query_param['long'])
+        tide_df.insert(loc=0, column='datum', value=resp_dict['metadata']['datum'])
+        tide_df.insert(loc=1, column='latitude', value=resp_dict['metadata']['latitude'])
+        tide_df.insert(loc=2, column='longitude', value=resp_dict['metadata']['longitude'])
         return tide_df
 
 
@@ -163,22 +171,23 @@ async def get_tide_data_for_requested_period(
     return tide_data
 
 
-def convert_to_nz_timezone(tide_data: pd.DataFrame) -> pd.DataFrame:
+def convert_to_nz_timezone(tide_data_utc: pd.DataFrame) -> pd.DataFrame:
     """
     Convert the time column in the initially retrieved tide data for the requested period from UTC to NZ timezone.
 
     Parameters
     ----------
-    tide_data : pd.DataFrame
+    tide_data_utc : pd.DataFrame
         The original tide data obtained for the requested period with the time column expressed in UTC.
     """
+    tide_data = tide_data_utc.copy()
     tide_data['time'] = pd.to_datetime(tide_data['time'])
     tide_data['time'] = tide_data['time'].dt.tz_convert(tz='Pacific/Auckland')
     return tide_data
 
 
 def get_tide_data_from_niwa(
-        catchment_file: pathlib.Path,
+        tide_query_loc: gpd.GeoDataFrame,
         api_key: str,
         datum: DatumType,
         start_date: date,
@@ -189,8 +198,8 @@ def get_tide_data_from_niwa(
 
     Parameters
     ----------
-    catchment_file : pathlib.Path
-        The file path for the catchment polygon.
+    tide_query_loc : gpd.GeoDataFrame
+        GeoPandas dataframe containing the query coordinate and its position.
     api_key : str
         NIWA api key (https://developer.niwa.co.nz/).
     datum : DatumType
@@ -203,14 +212,20 @@ def get_tide_data_from_niwa(
         Output time interval in minutes, range from 10 to 1440 minutes (1 day).
         Omit to get only high and low tide times.
     """
-    # Get the catchment polygon centroid coordinates.
-    lat, long = get_catchment_centroid_coords(catchment_file)
     # Get the date_ranges (i.e. start date and the duration used for each API call)
     date_ranges = get_date_ranges(start_date, total_days)
-    # Get the list of api query parameters used to retrieve high and low tide data
-    query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges, interval)
-    # Iterate over the list of API query parameters to fetch high and low tide data for the requested period
-    tide_data_utc = asyncio.run(get_tide_data_for_requested_period(query_param_list))
+    # Get the tide data for each of the tide query location
+    tide_data_utc = pd.DataFrame()
+    for index, row in tide_query_loc.iterrows():
+        query_loc_row = gpd.GeoDataFrame([row], crs=tide_query_loc.crs)
+        lat, long, position = get_query_loc_coords_position(query_loc_row)
+        # Get the list of api query parameters used to retrieve high and low tide data
+        query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges, interval)
+        # Iterate over the list of API query parameters to fetch high and low tide data for the requested period
+        query_loc_tide = asyncio.run(get_tide_data_for_requested_period(query_param_list))
+        query_loc_tide['position'] = position
+        tide_data_utc = pd.concat([tide_data_utc, query_loc_tide])
+    tide_data_utc = tide_data_utc.reset_index(drop=True)
     # Convert time column from UTC to NZ timezone.
     tide_data = convert_to_nz_timezone(tide_data_utc)
     # Rename columns
@@ -418,19 +433,17 @@ def main():
     regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
     tide_query_loc = tide_query_location.get_tide_query_locations(
         engine, catchment_area, regions_clipped, distance_km=1)
-
-
-    # # Specify the datum query parameter
-    # datum = DatumType.LAT
-    # # Get tide data
-    # tide_data = get_tide_data_from_niwa(
-    #     catchment_file=catchment_file,
-    #     api_key=niwa_api_key,
-    #     datum=datum,
-    #     start_date=date(2023, 1, 24),
-    #     total_days=3,
-    #     interval=None)
-    # print(tide_data)
+    # Specify the datum query parameter
+    datum = DatumType.LAT
+    # Get tide data
+    tide_data = get_tide_data_from_niwa(
+        tide_query_loc=tide_query_loc,
+        api_key=niwa_api_key,
+        datum=datum,
+        start_date=date(2023, 1, 23),
+        total_days=3,
+        interval=None)
+    print(tide_data)
     # data_surrounding_highest_tide = get_highest_tide_side_data(
     #     catchment_file=catchment_file,
     #     api_key=niwa_api_key,
