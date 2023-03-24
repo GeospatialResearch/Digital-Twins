@@ -256,171 +256,40 @@ def get_highest_tide_datetime(tide_data: pd.DataFrame) -> pd.Timestamp:
     return highest_tide_datetime
 
 
-def get_highest_tide_side_dates(
-        tide_data: pd.DataFrame,
-        days_before_peak: int,
-        days_after_peak: int) -> List[date]:
-    """
-    Get a list of dates for the requested time period surrounding the highest tide. This includes all dates from
-    the start date (the first day before the highest tide) to the end date (the last day after the highest tide).
-
-    Parameters
-    ----------
-    tide_data : pd.DataFrame
-        The original tide data obtained for the requested period with the time column expressed in NZ timezone
-        (converted from UTC).
-    days_before_peak : int
-        An integer representing the number of days before the highest tide to extract data for.
-        Must be a positive integer.
-    days_after_peak : int
-        An integer representing the number of days after the highest tide to extract data for.
-        Must be a positive integer.
-    """
-    # Check for invalid arguments
-    if days_before_peak < 0:
-        raise ValueError("'days_before_peak' must be at least 0.")
-    if days_after_peak < 0:
-        raise ValueError("'days_after_peak' must be at least 0.")
-    #  Get the datetime of the most recent highest tide that occurred within the requested time period.
-    highest_tide_datetime = get_highest_tide_datetime(tide_data)
-    # Get the start_date (first day before peak) and the end_date (last day after peak)
-    start_date = highest_tide_datetime.date() - timedelta(days=days_before_peak)
-    end_date = highest_tide_datetime.date() + timedelta(days=days_after_peak)
-    # Get a list of dates from start_date (first day before peak) to end_date (last day after peak)
-    dates_list = pd.date_range(start_date, end_date, freq='D').date.tolist()
-    return dates_list
+def get_highest_tide_datetime_span(
+        highest_tide_datetime: pd.Timestamp,
+        tide_length_mins: int) -> Tuple[pd.Timestamp, pd.Timestamp]:
+    half_tide_length_mins = tide_length_mins / 2
+    half_tide_length_timedelta = timedelta(minutes=half_tide_length_mins)
+    start_datetime = highest_tide_datetime - half_tide_length_timedelta
+    end_datetime = highest_tide_datetime + half_tide_length_timedelta
+    return start_datetime, end_datetime
 
 
-def find_existing_and_missing_dates(
-        tide_data: pd.DataFrame,
-        dates_list: List[date]) -> Tuple[List[date], List[date]]:
-    """
-    Check whether each date in the given list of dates is present or missing in the 'datetime_nz' column of the
-    given tide_data DataFrame. Returns two lists - existing_dates and missing_dates.
-    'existing_dates' contains dates from 'dates_list' that are present in the 'tide_data' DataFrame and
-    'missing_dates' contains dates from 'dates_list' that are not present in the 'tide_data' DataFrame.
-    The tide data for the missing dates needs to be fetched from NIWA to obtain a complete set of required
-    tide data surrounding the highest tide.
-
-    Parameters
-    ----------
-    tide_data : pd.DataFrame
-        The original tide data obtained for the requested period with the time column expressed in NZ timezone
-        (converted from UTC).
-    dates_list: List[date]
-        A list of dates for the requested time period surrounding the highest tide. This includes all dates from
-        the start date (the first day before the highest tide) to the end date (the last day after the highest tide).
-    """
-    tide_data_dates = set(tide_data['datetime_nz'].dt.date)
-    dates_set = set(dates_list)
-    existing_dates = sorted(tide_data_dates.intersection(dates_set))
-    missing_dates = sorted(dates_set - tide_data_dates)
-    return existing_dates, missing_dates
-
-
-def get_missing_dates_date_ranges(missing_dates: List[date]) -> Dict[date, int]:
-    """
-    Returns a dictionary containing the start date and the duration, measured in days, required to retrieve
-    tide data from NIWA for a given list of missing dates.
-
-    Parameters
-    ----------
-    missing_dates : List[date]
-        A list of missing dates to group.
-    """
-    missing_dates_date_ranges = {}
-    start_date = missing_dates[0]
-    for i in range(1, len(missing_dates)):
-        if (missing_dates[i] - missing_dates[i - 1]).days > 1:
-            missing_dates_date_ranges[start_date] = (missing_dates[i - 1] - start_date).days + 1
-            start_date = missing_dates[i]
-    missing_dates_date_ranges[start_date] = (missing_dates[-1] - start_date).days + 1
-    return missing_dates_date_ranges
-
-
-def get_missing_tide_data_from_niwa(
-        catchment_file: pathlib.Path,
-        api_key: str,
-        datum: DatumType,
-        missing_dates: List[date],
-        interval: Optional[int] = None) -> pd.DataFrame:
-    """
-    Retrieve tide data from NIWA for the dates that were not included in the originally obtained tide data.
-
-    Parameters
-    ----------
-    catchment_file : pathlib.Path
-        The file path for the catchment polygon.
-    api_key : str
-        NIWA api key (https://developer.niwa.co.nz/).
-    datum : DatumType
-        Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
-    missing_dates : List[date]
-        A collection of dates that are absent from the originally retrieved tide data.
-    interval: Optional[int] = None
-        Output time interval in minutes, range from 10 to 1440 minutes (1 day).
-        Omit to get only high and low tide times.
-    """
-    missing_tide_data = pd.DataFrame()
-    if missing_dates:
-        missing_dates_date_ranges = get_missing_dates_date_ranges(missing_dates)
-        for start_date, number_of_days in missing_dates_date_ranges.items():
-            missing_dt_data = get_tide_data_from_niwa(
-                catchment_file=catchment_file,
-                api_key=api_key,
-                datum=datum,
-                start_date=start_date,
-                total_days=number_of_days,
-                interval=interval)
-            missing_tide_data = pd.concat([missing_tide_data, missing_dt_data])
-    return missing_tide_data
+def get_highest_tide_date_span(start_datetime: pd.Timestamp, end_datetime: pd.Timestamp) -> Tuple[date, int]:
+    start_date = start_datetime.date()
+    end_date = end_datetime.date()
+    total_days = (end_date - start_date).days + 1
+    return start_date, total_days
 
 
 def get_highest_tide_side_data(
-        catchment_file: pathlib.Path,
+        tide_data: pd.DataFrame,
+        tide_length_mins: int,
         api_key: str,
         datum: DatumType,
-        tide_data: pd.DataFrame,
-        days_before_peak: int,
-        days_after_peak: int,
         interval: Optional[int] = None):
-    """
-    Get the requested tide data for both sides of the highest tide, including the data for the highest tide itself.
-
-    Parameters
-    ----------
-    catchment_file : pathlib.Path
-        The file path for the catchment polygon.
-    api_key : str
-        NIWA api key (https://developer.niwa.co.nz/).
-    datum : DatumType
-        Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
-    tide_data : pd.DataFrame
-        The original tide data obtained for the requested period with the time column expressed in NZ timezone
-        (converted from UTC).
-    days_before_peak : int
-        An integer representing the number of days before the highest tide to extract data for.
-        Must be a positive integer.
-    days_after_peak : int
-        An integer representing the number of days after the highest tide to extract data for.
-        Must be a positive integer.
-    interval: Optional[int] = None
-        Output time interval in minutes, range from 10 to 1440 minutes (1 day).
-        Omit to get only high and low tide times.
-    """
-    # Get a list of dates from start_date (first day before peak) to end_date (last day after peak)
-    dates_list = get_highest_tide_side_dates(tide_data, days_before_peak, days_after_peak)
-    # Get the missing dates that are not present in the original tide data
-    existing_dates, missing_dates = find_existing_and_missing_dates(tide_data, dates_list)
-    # Get the tide data for the existing dates from the original tide data
-    existing_tide_data = tide_data[tide_data['datetime_nz'].dt.date.isin(existing_dates)]
-    # Retrieve tide data from NIWA for the missing dates
-    missing_tide_data = get_missing_tide_data_from_niwa(catchment_file, api_key, datum, missing_dates, interval)
-    # Concatenate the tide data for both existing and missing dates
-    data_surrounding_highest_tide = pd.concat([existing_tide_data, missing_tide_data])
-    # Sort the data by the 'datetime_nz' column in ascending order and reset the index to start from 0
-    data_surrounding_highest_tide = data_surrounding_highest_tide.sort_values(by=['datetime_nz']).reset_index(drop=True)
-    return data_surrounding_highest_tide
+    highest_tide_datetime = get_highest_tide_datetime(tide_data)
+    start_datetime, end_datetime = get_highest_tide_datetime_span(highest_tide_datetime, tide_length_mins)
+    start_date, total_days = get_highest_tide_date_span(start_datetime, end_datetime)
+    # get unique pairs of coordinates
+    highest_tide_query_loc = tide_data[['position', 'geometry']].drop_duplicates().reset_index(drop=True)
+    highest_tide_data = get_tide_data_from_niwa(
+        highest_tide_query_loc, api_key, datum, start_date, total_days, interval)
+    data_around_highest_tide = highest_tide_data.loc[
+        highest_tide_data['datetime_nz'].between(start_datetime, end_datetime)]
+    data_around_highest_tide = data_around_highest_tide.reset_index(drop=True)
+    return data_around_highest_tide
 
 
 def main():
@@ -446,15 +315,13 @@ def main():
         total_days=3,
         interval=None)
     print(tide_data)
-    # data_surrounding_highest_tide = get_highest_tide_side_data(
-    #     catchment_file=catchment_file,
-    #     api_key=niwa_api_key,
-    #     datum=datum,
-    #     tide_data=tide_data,
-    #     days_before_peak=5,
-    #     days_after_peak=5,
-    #     interval=None)
-    # print(data_surrounding_highest_tide)
+    data_around_highest_tide = get_highest_tide_side_data(
+        tide_data,
+        tide_length_mins=2880,
+        api_key=niwa_api_key,
+        datum=datum,
+        interval=10)
+    print(data_around_highest_tide)
 
 
 if __name__ == "__main__":
