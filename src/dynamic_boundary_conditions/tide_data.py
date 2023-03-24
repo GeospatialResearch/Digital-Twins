@@ -144,6 +144,8 @@ async def fetch_tide_data(
         tide_df.insert(loc=0, column='datum', value=resp_dict['metadata']['datum'])
         tide_df.insert(loc=1, column='latitude', value=resp_dict['metadata']['latitude'])
         tide_df.insert(loc=2, column='longitude', value=resp_dict['metadata']['longitude'])
+        geometry = gpd.points_from_xy(tide_df['longitude'], tide_df['latitude'])
+        tide_df = gpd.GeoDataFrame(tide_df, geometry=geometry, crs=4326)
         return tide_df
 
 
