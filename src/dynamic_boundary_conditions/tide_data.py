@@ -150,7 +150,7 @@ async def fetch_tide_data(
         return tide_df
 
 
-async def get_tide_data_for_requested_period(
+async def fetch_tide_data_for_requested_period(
         query_param_list: List[Dict[str, Union[str, int]]],
         url: str = 'https://api.niwa.co.nz/tides/data'):
     """
@@ -189,7 +189,7 @@ def convert_to_nz_timezone(tide_data_utc: pd.DataFrame) -> pd.DataFrame:
     return tide_data
 
 
-def get_tide_data_from_niwa(
+def fetch_tide_data_from_niwa(
         tide_query_loc: gpd.GeoDataFrame,
         api_key: str,
         datum: DatumType,
@@ -225,7 +225,7 @@ def get_tide_data_from_niwa(
         # Get the list of api query parameters used to retrieve high and low tide data
         query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges, interval)
         # Iterate over the list of API query parameters to fetch high and low tide data for the requested period
-        query_loc_tide = asyncio.run(get_tide_data_for_requested_period(query_param_list))
+        query_loc_tide = asyncio.run(fetch_tide_data_for_requested_period(query_param_list))
         query_loc_tide['position'] = position
         tide_data_utc = pd.concat([tide_data_utc, query_loc_tide])
     tide_data_utc = tide_data_utc.reset_index(drop=True)
@@ -274,7 +274,7 @@ def get_highest_tide_date_span(start_datetime: pd.Timestamp, end_datetime: pd.Ti
     return start_date, total_days
 
 
-def get_highest_tide_side_data(
+def fetch_highest_tide_side_data(
         tide_data: pd.DataFrame,
         tide_length_mins: int,
         api_key: str,
@@ -285,7 +285,7 @@ def get_highest_tide_side_data(
     start_date, total_days = get_highest_tide_date_span(start_datetime, end_datetime)
     # get unique pairs of coordinates
     highest_tide_query_loc = tide_data[['position', 'geometry']].drop_duplicates().reset_index(drop=True)
-    highest_tide_data = get_tide_data_from_niwa(
+    highest_tide_data = fetch_tide_data_from_niwa(
         highest_tide_query_loc, api_key, datum, start_date, total_days, interval)
     data_around_highest_tide = highest_tide_data.loc[
         highest_tide_data['datetime_nz'].between(start_datetime, end_datetime)]
@@ -308,7 +308,7 @@ def main():
     # Specify the datum query parameter
     datum = DatumType.LAT
     # Get tide data
-    tide_data = get_tide_data_from_niwa(
+    tide_data = fetch_tide_data_from_niwa(
         tide_query_loc=tide_query_loc,
         api_key=niwa_api_key,
         datum=datum,
@@ -316,7 +316,7 @@ def main():
         total_days=3,
         interval=None)
     print(tide_data)
-    data_around_highest_tide = get_highest_tide_side_data(
+    data_around_highest_tide = fetch_highest_tide_side_data(
         tide_data,
         tide_length_mins=2880,
         api_key=niwa_api_key,
