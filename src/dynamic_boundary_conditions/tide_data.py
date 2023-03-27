@@ -303,9 +303,12 @@ def get_tide_data(
         total_days: int = 365,
         interval: Optional[int] = None):
     if approach == ApproachType.KING_TIDE:
-        tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days)
+        tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days=365, interval=None)
         data_around_highest_tide = fetch_highest_tide_side_data(tide_data, tide_length_mins, api_key, datum, interval)
         return data_around_highest_tide
+    else:
+        tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days, interval)
+        return tide_data
 
 
 def main():
