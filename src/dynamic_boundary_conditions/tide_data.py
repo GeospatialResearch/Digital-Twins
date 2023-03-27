@@ -10,7 +10,7 @@ import aiohttp
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.tide_enum import DatumType
+from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 from src.dynamic_boundary_conditions import tide_query_location
 
 log = logging.getLogger(__name__)
@@ -293,6 +293,21 @@ def fetch_highest_tide_side_data(
     return data_around_highest_tide
 
 
+def get_tide_data(
+        approach: ApproachType,
+        tide_length_mins: int,
+        tide_query_loc: gpd.GeoDataFrame,
+        api_key: str,
+        datum: DatumType,
+        start_date: date,
+        total_days: int = 365,
+        interval: Optional[int] = None):
+    if approach == ApproachType.KING_TIDE:
+        tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days)
+        data_around_highest_tide = fetch_highest_tide_side_data(tide_data, tide_length_mins, api_key, datum, interval)
+        return data_around_highest_tide
+
+
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
@@ -308,21 +323,16 @@ def main():
     # Specify the datum query parameter
     datum = DatumType.LAT
     # Get tide data
-    tide_data = fetch_tide_data_from_niwa(
+    tide_data = get_tide_data(
+        approach=ApproachType.KING_TIDE,
+        api_key=niwa_api_key,
+        datum=datum,
         tide_query_loc=tide_query_loc,
-        api_key=niwa_api_key,
-        datum=datum,
         start_date=date(2023, 1, 23),
-        total_days=3,
-        interval=None)
-    print(tide_data)
-    data_around_highest_tide = fetch_highest_tide_side_data(
-        tide_data,
+        total_days=365,
         tide_length_mins=2880,
-        api_key=niwa_api_key,
-        datum=datum,
         interval=10)
-    print(data_around_highest_tide)
+    print(tide_data)
 
 
 if __name__ == "__main__":

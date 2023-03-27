@@ -18,3 +18,8 @@ class DatumType(StrEnum):
     """
     LAT = "LAT"
     MSL = "MSL"
+
+
+class ApproachType(StrEnum):
+    KING_TIDE = "KING_TIDE"
+    PERIOD_TIDE = "PERIOD_TIDE"
