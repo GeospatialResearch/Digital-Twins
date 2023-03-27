@@ -8,7 +8,7 @@ import logging
 import pathlib
 
 import sqlalchemy
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point
 import geopandas as gpd
 
 import geoapis.vector
@@ -90,29 +90,49 @@ def get_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame, distance_km:
     return coastline
 
 
-def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    catchment_polygon = catchment_area.geometry.iloc[0]
-    # Extract the coordinates of the square polygon's exterior boundary
-    boundary_coords = list(catchment_polygon.exterior.coords)
-    # Create LineString objects for each boundary line
-    top_line = LineString(boundary_coords[:2])
-    right_line = LineString(boundary_coords[1:3])
-    bottom_line = LineString(boundary_coords[2:4])
-    left_line = LineString(boundary_coords[3:5])
-    # Create a GeoDataFrame with the lines and their positions
-    data = {
-        'line_position': ['top', 'right', 'bottom', 'left'],
-        'geometry': [top_line, right_line, bottom_line, left_line]
-    }
-    boundary_lines = gpd.GeoDataFrame(data, crs=2193)
+def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    # Get the exterior boundary of the catchment polygon
+    boundary_lines = catchment_area["geometry"][0].exterior.coords
+    # Create an empty dictionary to store boundary segment properties
+    boundary_segments = {}
+    # Loop through each boundary line segment
+    for i in range(len(boundary_lines) - 1):
+        # Get the start and end points of the current boundary segment
+        start_point = boundary_lines[i]
+        end_point = boundary_lines[i + 1]
+        # Find the centroid of the current boundary segment
+        centroid = Point((start_point[0] + end_point[0]) / 2, (start_point[1] + end_point[1]) / 2)
+        # Determine the position of the centroid relative to the catchment polygon
+        if centroid.x == min(boundary_lines)[0]:
+            position = 'left'
+        elif centroid.x == max(boundary_lines)[0]:
+            position = 'right'
+        elif centroid.y == min(boundary_lines)[1]:
+            position = 'bottom'
+        elif centroid.y == max(boundary_lines)[1]:
+            position = 'top'
+        else:
+            position = 'none'
+        # Create a LineString object for the current boundary segment
+        segment = LineString([start_point, end_point])
+        # Add the boundary segment and its properties to the dictionary
+        boundary_segments[i] = {'line_position': position, 'centroid': centroid, 'boundary': segment}
+    # Convert the dictionary to a GeoDataFrame
+    boundary_info = gpd.GeoDataFrame(boundary_segments).T
+    return boundary_info
+
+
+def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame):
+    boundary_info = get_catchment_boundary_info(catchment_area)
+    boundary_lines = boundary_info[['line_position', 'boundary']].rename(columns={'boundary': 'geometry'})
+    boundary_lines = boundary_lines.set_geometry('geometry', crs=2193)
     return boundary_lines
 
 
 def get_catchment_boundary_centroids(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    boundary_lines = get_catchment_boundary_lines(catchment_area)
-    boundary_centroids = gpd.GeoDataFrame({
-        'line_position': boundary_lines['line_position'],
-        'geometry': boundary_lines.centroid})
+    boundary_info = get_catchment_boundary_info(catchment_area)
+    boundary_centroids = boundary_info[['line_position', 'centroid']].rename(columns={'centroid': 'geometry'})
+    boundary_centroids = boundary_centroids.set_geometry('geometry', crs=2193)
     return boundary_centroids
 
 
@@ -153,9 +173,9 @@ def get_tide_query_locations(
             tide_query_location = tide_query_location[['line_position', 'geometry']].rename(
                 columns={'line_position': 'position'})
         else:
-            tide_query_location = gpd.GeoDataFrame()
-            log.info(f"There is a lack of relevant tide data available within {distance_km}km "
-                     f"of the catchment area.")
+            log.info(f"No relevant tide data could be found within {distance_km}km of the catchment area. "
+                     f"As a result, tide data will not be used in the BG-Flood model.")
+            exit()
     tide_query_location = tide_query_location.reset_index(drop=True)
     return tide_query_location
 
