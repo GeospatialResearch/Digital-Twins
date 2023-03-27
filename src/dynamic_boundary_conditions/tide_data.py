@@ -295,18 +295,22 @@ def fetch_highest_tide_side_data(
 
 def get_tide_data(
         approach: ApproachType,
-        tide_length_mins: int,
-        tide_query_loc: gpd.GeoDataFrame,
         api_key: str,
         datum: DatumType,
+        tide_query_loc: gpd.GeoDataFrame,
         start_date: date,
-        total_days: int = 365,
+        total_days: Optional[int] = None,
+        tide_length_mins: Optional[int] = None,
         interval: Optional[int] = None):
     if approach == ApproachType.KING_TIDE:
+        if tide_length_mins is None:
+            raise ValueError("tide_length_mins parameter must be provided for ApproachType.KING_TIDE")
         tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days=365, interval=None)
         data_around_highest_tide = fetch_highest_tide_side_data(tide_data, tide_length_mins, api_key, datum, interval)
         return data_around_highest_tide
     else:
+        if total_days is None:
+            raise ValueError("total_days parameter must be provided for ApproachType.PERIOD_TIDE")
         tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days, interval)
         return tide_data
 
@@ -332,7 +336,7 @@ def main():
         datum=datum,
         tide_query_loc=tide_query_loc,
         start_date=date(2023, 1, 23),
-        total_days=365,
+        total_days=3,
         tide_length_mins=2880,
         interval=10)
     print(tide_data)
