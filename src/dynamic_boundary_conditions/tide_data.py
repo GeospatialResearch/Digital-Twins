@@ -334,11 +334,11 @@ def main():
     datum = DatumType.LAT
     # Get tide data
     tide_data = get_tide_data(
-        approach=ApproachType.PERIOD_TIDE,
+        approach=ApproachType.KING_TIDE,
         api_key=niwa_api_key,
         datum=datum,
         tide_query_loc=tide_query_loc,
-        start_date=date(2023, 12, 29),
+        start_date=date(2023, 1, 23),
         total_days=3,  # used for PERIOD_TIDE
         tide_length_mins=2880,  # used for KING_TIDE
         interval=10)
