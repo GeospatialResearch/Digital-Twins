@@ -8,7 +8,7 @@ import logging
 import pathlib
 
 import sqlalchemy
-from shapely.geometry import LineString, Point
+from shapely.geometry import LineString, Point, box
 import geopandas as gpd
 
 import geoapis.vector
@@ -23,6 +23,18 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
+
+
+def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
+    file_path = pathlib.Path.cwd() / file_name
+    if not file_path.is_file():
+        query = f"SELECT * FROM region_geometry"
+        region_geom = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+        nz_geom = region_geom.tail(1).reset_index(drop=True)
+        min_x, min_y, max_x, max_y = nz_geom.total_bounds
+        bbox = box(min_x, min_y, max_x, max_y)
+        nz_bbox = gpd.GeoDataFrame(geometry=[bbox], crs=2193)
+        nz_bbox.to_file(file_name, driver="GeoJSON")
 
 
 def get_catchment_area(catchment_file: pathlib.Path) -> gpd.GeoDataFrame:
@@ -185,6 +197,7 @@ def main():
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
     # Connect to the database
     engine = setup_environment.get_database()
+    write_nz_bbox_to_file(engine)
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     catchment_area = get_catchment_area(catchment_file)
