@@ -231,6 +231,9 @@ def fetch_tide_data_from_niwa(
     tide_data_utc = tide_data_utc.reset_index(drop=True)
     # Convert time column from UTC to NZ timezone.
     tide_data = convert_to_nz_timezone(tide_data_utc)
+    # Filter out data
+    end_date = start_date + timedelta(days=total_days - 1)
+    tide_data = tide_data.loc[tide_data['time'].dt.date <= end_date]
     # Rename columns
     new_col_names = {'time': 'datetime_nz', 'value': 'tide_metres'}
     tide_data.rename(columns=new_col_names, inplace=True)
@@ -331,13 +334,13 @@ def main():
     datum = DatumType.LAT
     # Get tide data
     tide_data = get_tide_data(
-        approach=ApproachType.KING_TIDE,
+        approach=ApproachType.PERIOD_TIDE,
         api_key=niwa_api_key,
         datum=datum,
         tide_query_loc=tide_query_loc,
-        start_date=date(2023, 1, 23),
-        total_days=3,
-        tide_length_mins=2880,
+        start_date=date(2023, 12, 29),
+        total_days=3,  # used for PERIOD_TIDE
+        tide_length_mins=2880,  # used for KING_TIDE
         interval=10)
     print(tide_data)
 
