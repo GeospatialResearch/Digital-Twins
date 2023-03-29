@@ -116,73 +116,6 @@ def get_slr_data_from_db(engine, tide_data: gpd.GeoDataFrame):
     return slr_data
 
 
-def get_closest_slr_site_to_tide(
-        slr_nz: pd.DataFrame,
-        tide_lat: Union[int, float],
-        tide_long: Union[int, float]) -> Tuple[float, float]:
-    """
-    Find the closest sea level rise site to the target tide position.
-    Returns the latitude and longitude coordinates of the closest sea level rise site.
-
-    Parameters
-    ----------
-    slr_nz : pd.DataFrame
-        Sea level rise data for the entire country.
-    tide_lat : int or float
-        Latitude coordinate of the target tide position.
-    tide_long : int or float
-        Longitude coordinate of the target tide position.
-    """
-    # Convert the target tide position into a GeoDataFrame
-    target_coord = gpd.GeoDataFrame(
-        geometry=gpd.points_from_xy([tide_long], [tide_lat]), crs='EPSG:4326')
-    # Get unique latitude and longitude coordinates from the sea level rise data
-    slr_nz_coords = slr_nz[['lat', 'lon']].drop_duplicates()
-    # Create a GeoDataFrame with the latitude and longitude coordinates
-    geometry = gpd.points_from_xy(slr_nz_coords['lon'], slr_nz_coords['lat'], crs="EPSG:4326")
-    slr_nz_coords = gpd.GeoDataFrame(slr_nz_coords, geometry=geometry)
-    # Reproject the GeoDataFrames to a projected coordinate system
-    target_coord = target_coord.to_crs('EPSG:2193')
-    slr_nz_coords = slr_nz_coords.to_crs('EPSG:2193')
-    # Calculate the distance between each sea level rise site and the target tide position
-    slr_nz_coords['distance_metres'] = slr_nz_coords.distance(target_coord.iloc[0]['geometry'])
-    slr_nz_coords = slr_nz_coords.to_crs('EPSG:4326')
-    # Find the closest sea level rise site to the target tide position
-    closest_site = slr_nz_coords.nsmallest(1, 'distance_metres').iloc[0]
-    closest_site_lat, closest_site_long = closest_site['lat'], closest_site['lon']
-    closest_site_dist = closest_site['distance_metres']
-    # Log the result
-    log.info(f"The closest sea level rise site is located at latitude {closest_site_lat:.4f} and "
-             f"longitude {closest_site_long:.4f}, with a distance of {closest_site_dist:.2f} meters")
-    return closest_site_lat, closest_site_long
-
-
-def get_closest_slr_data(
-        slr_nz: pd.DataFrame,
-        closest_site_lat: Union[int, float],
-        closest_site_long: Union[int, float]) -> gpd.GeoDataFrame:
-    """
-    Returns the closest sea level rise data as a GeoDataFrame.
-
-    Parameters
-    ----------
-    slr_nz : pd.DataFrame
-        A DataFrame containing sea level rise data for New Zealand.
-    closest_site_lat : float
-        The latitude of the closest sea level rise site.
-    closest_site_long : float
-        The longitude of the closest sea level rise site.
-    """
-    # Filter the data to find the closest site based on latitude and longitude
-    lat_filter = (slr_nz['lat'] == closest_site_lat)
-    long_filter = (slr_nz['lon'] == closest_site_long)
-    closest_slr_data = slr_nz[lat_filter & long_filter]
-    # Convert the coordinates to a geometry object and create a new GeoDataFrame
-    geometry = gpd.points_from_xy(closest_slr_data['lon'], closest_slr_data['lat'], crs='EPSG:4326')
-    closest_slr_data = gpd.GeoDataFrame(closest_slr_data, geometry=geometry).reset_index(drop=True)
-    return closest_slr_data
-
-
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
@@ -207,16 +140,10 @@ def main():
         total_days=3,  # used for PERIOD_TIDE
         tide_length_mins=2880,  # used for KING_TIDE
         interval=10)
-    # Store sea level rise data to database and fetch from database
+    # Store sea level rise data to database and get closest sea level rise site data from database
     store_slr_data_to_db(engine)
     slr_data = get_slr_data_from_db(engine, tide_data)
-
-    # Get the sea level rise data for the entire country
-    # slr_nz = get_all_slr_data()
-    # # Find the closest sea level rise site to the target tide position.
-    # closest_site_lat, closest_site_long = get_closest_slr_site_to_tide(slr_nz, lat, long)
-    # closest_slr_data = get_closest_slr_data(slr_nz, closest_site_lat, closest_site_long)
-    # print(closest_slr_data)
+    print(slr_data)
 
 
 if __name__ == "__main__":
