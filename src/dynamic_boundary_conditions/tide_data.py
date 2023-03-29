@@ -277,7 +277,7 @@ def get_highest_tide_date_span(start_datetime: pd.Timestamp, end_datetime: pd.Ti
     return start_date, total_days
 
 
-def fetch_highest_tide_side_data(
+def fetch_highest_tide_side_data_from_niwa(
         tide_data: pd.DataFrame,
         tide_length_mins: int,
         api_key: str,
@@ -309,7 +309,8 @@ def get_tide_data(
         if tide_length_mins is None:
             raise ValueError("tide_length_mins parameter must be provided for ApproachType.KING_TIDE")
         tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days=365, interval=None)
-        data_around_highest_tide = fetch_highest_tide_side_data(tide_data, tide_length_mins, api_key, datum, interval)
+        data_around_highest_tide = fetch_highest_tide_side_data_from_niwa(
+            tide_data, tide_length_mins, api_key, datum, interval)
         return data_around_highest_tide
     else:
         if total_days is None:
