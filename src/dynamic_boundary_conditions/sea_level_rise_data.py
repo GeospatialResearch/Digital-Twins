@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+@Description:
+@Author: sli229
+"""
+
 import logging
 import pathlib
-from typing import Tuple, Union
-from datetime import date, timedelta
+from datetime import date
 
 import geopandas as gpd
 import pandas as pd
