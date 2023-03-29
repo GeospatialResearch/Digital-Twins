@@ -44,7 +44,7 @@ def get_slr_data_directory(folder_name: str = "data") -> pathlib.Path:
     return slr_data_dir
 
 
-def get_all_slr_data(folder_name: str = "data") -> pd.DataFrame:
+def get_slr_data_from_nz_searise(folder_name: str = "data") -> pd.DataFrame:
     """
     Returns a Pandas DataFrame that is a concatenation of all the sea level rise data located in the
     sea level rise data directory.
@@ -74,21 +74,21 @@ def get_all_slr_data(folder_name: str = "data") -> pd.DataFrame:
         slr_nz_list.append(slr_region)
         # Log that the file has been successfully loaded
         log.info(f"{file_path.name} data file has been successfully loaded.")
-    # Concatenate all the dataframes in the list
-    slr_nz = pd.concat(slr_nz_list, axis=0)
+    # Concatenate all the dataframes in the list and add geometry column
+    slr_nz = pd.concat(slr_nz_list, axis=0).reset_index(drop=True)
+    geometry = gpd.points_from_xy(slr_nz['lon'], slr_nz['lat'], crs=4326)
+    slr_nz_with_geom = gpd.GeoDataFrame(slr_nz, geometry=geometry)
     # Convert all column names to lowercase
-    slr_nz.columns = slr_nz.columns.str.lower()
-    return slr_nz
+    slr_nz_with_geom.columns = slr_nz_with_geom.columns.str.lower()
+    return slr_nz_with_geom
 
 
 def store_slr_data_to_db(engine, folder_name: str = "data"):
     if check_table_exists(engine, "sea_level_rise"):
         log.info("Table 'sea_level_rise_data' already exists in the database.")
     else:
-        slr_nz = get_all_slr_data(folder_name)
-        geometry = gpd.points_from_xy(slr_nz['lon'], slr_nz['lat'], crs=4326)
-        slr_nz_with_geom = gpd.GeoDataFrame(slr_nz, geometry=geometry)
-        slr_nz_with_geom.to_postgis("sea_level_rise", engine, index=False, if_exists="replace")
+        slr_nz = get_slr_data_from_nz_searise(folder_name)
+        slr_nz.to_postgis("sea_level_rise", engine, index=False, if_exists="replace")
         log.info(f"Added Sea Level Rise data to database.")
 
 
