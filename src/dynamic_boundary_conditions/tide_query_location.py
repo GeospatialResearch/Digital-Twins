@@ -203,6 +203,7 @@ def main():
     catchment_area = get_catchment_area(catchment_file)
     # Store regional council clipped data in the database
     regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
+    # Get regions (clipped) that intersect with the catchment area from the database
     regions_clipped = get_regions_clipped_from_db(engine, catchment_area)
     tide_query_loc = get_tide_query_locations(engine, catchment_area, regions_clipped, distance_km=1)
     print(tide_query_loc)
