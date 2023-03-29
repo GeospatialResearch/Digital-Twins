@@ -228,12 +228,12 @@ def fetch_tide_data_from_niwa(
         query_loc_tide = asyncio.run(fetch_tide_data_for_requested_period(query_param_list))
         query_loc_tide['position'] = position
         tide_data_utc = pd.concat([tide_data_utc, query_loc_tide])
-    tide_data_utc = tide_data_utc.reset_index(drop=True)
     # Convert time column from UTC to NZ timezone.
     tide_data = convert_to_nz_timezone(tide_data_utc)
-    # Filter out data
+    # Filter out data and reset index
     end_date = start_date + timedelta(days=total_days - 1)
     tide_data = tide_data.loc[tide_data['time'].dt.date <= end_date]
+    tide_data = tide_data.reset_index(drop=True)
     # Rename columns
     new_col_names = {'time': 'datetime_nz', 'value': 'tide_metres'}
     tide_data.rename(columns=new_col_names, inplace=True)
