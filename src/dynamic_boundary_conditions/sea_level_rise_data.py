@@ -97,7 +97,7 @@ def store_slr_data_to_db(engine, folder_name: str = "data"):
         log.info(f"Added Sea Level Rise data to database.")
 
 
-def get_slr_data_from_db(engine, single_query_loc: pd.Series):
+def get_slr_data_from_db(engine, single_query_loc: pd.Series) -> gpd.GeoDataFrame:
     query_loc_geom = gpd.GeoDataFrame(geometry=[single_query_loc["geometry"]], crs=4326)
     query_loc_geom = query_loc_geom.to_crs(2193).reset_index(drop=True)
     query = f"""
