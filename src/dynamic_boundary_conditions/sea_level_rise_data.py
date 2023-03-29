@@ -1,12 +1,17 @@
 import logging
 import pathlib
 from typing import Tuple, Union
+from datetime import date, timedelta
 
 import geopandas as gpd
 import pandas as pd
 import pyarrow.csv as csv
 
-from src.dynamic_boundary_conditions.tide_query_location import get_catchment_centroid_coords
+from src import config
+from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
+from src.dynamic_boundary_conditions import tide_query_location, tide_data_from_niwa
+from src.dynamic_boundary_conditions.tide_query_location import check_table_exists
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -74,6 +79,17 @@ def get_all_slr_data(folder_name: str = "data") -> pd.DataFrame:
     # Convert all column names to lowercase
     slr_nz.columns = slr_nz.columns.str.lower()
     return slr_nz
+
+
+def store_slr_data_to_db(engine, folder_name: str = "data"):
+    if check_table_exists(engine, "sea_level_rise"):
+        log.info("Table 'sea_level_rise_data' already exists in the database.")
+    else:
+        slr_nz = get_all_slr_data(folder_name)
+        geometry = gpd.points_from_xy(slr_nz['lon'], slr_nz['lat'], crs=4326)
+        slr_nz_with_geom = gpd.GeoDataFrame(slr_nz, geometry=geometry)
+        slr_nz_with_geom.to_postgis("sea_level_rise", engine, index=False, if_exists="replace")
+        log.info(f"Added Sea Level Rise data to database.")
 
 
 def get_closest_slr_site_to_tide(
@@ -144,16 +160,40 @@ def get_closest_slr_data(
 
 
 def main():
+    # Connect to the database
+    engine = setup_environment.get_database()
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
-    # Get the catchment polygon centroid coordinates.
-    lat, long = get_catchment_centroid_coords(catchment_file)
+    catchment_area = tide_query_location.get_catchment_area(catchment_file)
+    # Get NIWA api key
+    niwa_api_key = config.get_env_variable("NIWA_API_KEY")
+    # Get regions (clipped) that intersect with the catchment area from the database
+    regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
+    tide_query_loc = tide_query_location.get_tide_query_locations(
+        engine, catchment_area, regions_clipped, distance_km=1)
+    # Specify the datum query parameter
+    datum = DatumType.LAT
+    # Get tide data
+    tide_data = tide_data_from_niwa.get_tide_data(
+        approach=ApproachType.KING_TIDE,
+        api_key=niwa_api_key,
+        datum=datum,
+        tide_query_loc=tide_query_loc,
+        start_date=date(2023, 1, 23),
+        total_days=3,  # used for PERIOD_TIDE
+        tide_length_mins=2880,  # used for KING_TIDE
+        interval=10)
+    # Store sea level rise data to database and fetch from database
+    store_slr_data_to_db(engine)
+
+
+
     # Get the sea level rise data for the entire country
-    slr_nz = get_all_slr_data()
-    # Find the closest sea level rise site to the target tide position.
-    closest_site_lat, closest_site_long = get_closest_slr_site_to_tide(slr_nz, lat, long)
-    closest_slr_data = get_closest_slr_data(slr_nz, closest_site_lat, closest_site_long)
-    print(closest_slr_data)
+    # slr_nz = get_all_slr_data()
+    # # Find the closest sea level rise site to the target tide position.
+    # closest_site_lat, closest_site_long = get_closest_slr_site_to_tide(slr_nz, lat, long)
+    # closest_slr_data = get_closest_slr_data(slr_nz, closest_site_lat, closest_site_long)
+    # print(closest_slr_data)
 
 
 if __name__ == "__main__":
