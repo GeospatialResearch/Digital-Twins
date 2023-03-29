@@ -92,6 +92,30 @@ def store_slr_data_to_db(engine, folder_name: str = "data"):
         log.info(f"Added Sea Level Rise data to database.")
 
 
+def get_slr_data_from_db(engine, tide_data: gpd.GeoDataFrame):
+    slr_query_loc = tide_data[['position', 'geometry']].drop_duplicates()
+    slr_data = gpd.GeoDataFrame()
+    for index, row in slr_query_loc.iterrows():
+        query_loc_geom = gpd.GeoDataFrame(geometry=[row["geometry"]], crs=4326)
+        query_loc_geom = query_loc_geom.to_crs(2193).reset_index(drop=True)
+        query = f"""
+        SELECT slr.*, distances.distance 
+        FROM sea_level_rise AS slr
+        JOIN (
+            SELECT siteid, ST_Distance(ST_Transform(geometry, 2193), 
+            ST_GeomFromText('{query_loc_geom["geometry"][0]}', 2193)) AS distance 
+            FROM sea_level_rise 
+            ORDER BY distance
+            LIMIT 1
+        ) AS distances ON slr.siteid = distances.siteid
+        """
+        query_data = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+        query_data["position"] = row["position"]
+        slr_data = pd.concat([slr_data, query_data])
+    slr_data = slr_data.reset_index(drop=True)
+    return slr_data
+
+
 def get_closest_slr_site_to_tide(
         slr_nz: pd.DataFrame,
         tide_lat: Union[int, float],
@@ -185,8 +209,7 @@ def main():
         interval=10)
     # Store sea level rise data to database and fetch from database
     store_slr_data_to_db(engine)
-
-
+    slr_data = get_slr_data_from_db(engine, tide_data)
 
     # Get the sea level rise data for the entire country
     # slr_nz = get_all_slr_data()
