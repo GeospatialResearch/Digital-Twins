@@ -131,7 +131,8 @@ def main():
     # Combine tide and sea level rise data
     slr_scenario_data = get_slr_scenario_data(
         slr_data, confidence_level='low', ssp_scenario='SSP1-2.6', add_vlm=False, percentile=50)
-    slr_interp_scenario = get_interpolated_slr_scenario_data(slr_scenario_data, increment_year=1, interp_method='linear')
+    slr_interp_scenario = get_interpolated_slr_scenario_data(
+        slr_scenario_data, increment_year=1, interp_method='linear')
     print(slr_interp_scenario)
     print(type(slr_interp_scenario))
 
