@@ -41,28 +41,32 @@ def get_slr_scenario_data(
         ssp_scenario: str,
         add_vlm: bool,
         percentile: int) -> gpd.GeoDataFrame:
-    # Get the valid percentiles
-    percentile_cols = [col for col in slr_data.columns if re.match(r'^p\d+', col)]
-    valid_percentile = [int(col[1:]) for col in percentile_cols]
-    if percentile not in valid_percentile:
-        raise ValueError(f"Invalid value '{percentile}' for percentile. Must be one of {valid_percentile}.")
     # Split measurementname column out
     slr_data = split_slr_measurementname_column(slr_data)
-    # Get the valid confidence levels
+    # Get the requested confidence level data
     valid_conf_level = slr_data['confidence_level'].unique().tolist()
     if confidence_level not in valid_conf_level:
         raise ValueError(f"Invalid value '{confidence_level}' for confidence_level. Must be one of {valid_conf_level}.")
     slr_scenario = slr_data[slr_data["confidence_level"] == confidence_level]
-    # Get the valid ssp scenarios
+    # Get the requested ssp scenario data
     valid_ssp_scenario = slr_scenario['ssp_scenario'].unique().tolist()
     if ssp_scenario not in valid_ssp_scenario:
         raise ValueError(f"Invalid value '{ssp_scenario}' for ssp_scenario. Must be one of {valid_ssp_scenario}.")
     slr_scenario = slr_scenario[slr_scenario['ssp_scenario'] == ssp_scenario]
-    # Get the VLM and percentile data
+    # Get the requested add_vlm data
+    valid_add_vlm = slr_scenario['add_vlm'].unique().tolist()
+    if add_vlm not in valid_add_vlm:
+        raise ValueError(f"Invalid value '{add_vlm}' for add_vlm. Must be one of {valid_add_vlm}.")
     slr_scenario = slr_scenario[slr_scenario['add_vlm'] == add_vlm]
-    percentile_col = f"p{percentile}"
-    slr_scenario = slr_scenario[['siteid', 'year', percentile_col, 'geometry', 'position']]
-    return slr_scenario
+    # Get the requested percentile data
+    percentile_cols = [col for col in slr_data.columns if re.match(r'^p\d+', col)]
+    valid_percentile = [int(col[1:]) for col in percentile_cols]
+    if percentile not in valid_percentile:
+        raise ValueError(f"Invalid value '{percentile}' for percentile. Must be one of {valid_percentile}.")
+    # Get the final requested sea level rise scenario data
+    slr_scenario_data = slr_scenario[['siteid', 'year', f"p{percentile}", 'geometry', 'position']]
+    slr_scenario_data = slr_scenario_data.reset_index(drop=True)
+    return slr_scenario_data
 
 
 def main():
