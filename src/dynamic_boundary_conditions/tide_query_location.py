@@ -7,6 +7,7 @@
 import logging
 import pathlib
 
+import pandas as pd
 import sqlalchemy
 from shapely.geometry import LineString, Point, box
 import geopandas as gpd
@@ -102,7 +103,7 @@ def get_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame, distance_km:
     return coastline
 
 
-def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> pd.DataFrame:
     # Get the exterior boundary of the catchment polygon
     boundary_lines = catchment_area["geometry"][0].exterior.coords
     # Create an empty dictionary to store boundary segment properties
@@ -130,7 +131,7 @@ def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> gpd.GeoData
         # Add the boundary segment and its properties to the dictionary
         boundary_segments[i] = {'line_position': position, 'centroid': centroid, 'boundary': segment}
     # Convert the dictionary to a GeoDataFrame
-    boundary_info = gpd.GeoDataFrame(boundary_segments).T
+    boundary_info = pd.DataFrame(boundary_segments).T
     return boundary_info
 
 
