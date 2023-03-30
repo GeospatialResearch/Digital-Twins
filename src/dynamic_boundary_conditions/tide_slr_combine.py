@@ -82,6 +82,7 @@ def get_interpolated_slr_scenario_data(
     slr_interp_scenario = gpd.GeoDataFrame()
     grouped = slr_scenario_data.groupby(['siteid', 'geometry', 'position'])
     for group_name, group_data in grouped:
+        site_id, geometry, position = group_name
         # Interpolate the data
         group_years = group_data['year']
         group_years_new = np.arange(group_years.iloc[0], group_years.iloc[-1] + increment_year, increment_year)
@@ -89,9 +90,7 @@ def get_interpolated_slr_scenario_data(
         f_func = interp1d(group_years, group_data[percentile_col], kind=interp_method)
         group_data_new = pd.Series(f_func(group_years_new), name=percentile_col)
         group_data_interp = pd.concat([group_years_new, group_data_new], axis=1)
-        group_data_interp['siteid'] = group_data['siteid'].unique()[0]
-        group_data_interp['geometry'] = group_data['geometry'].unique()[0]
-        group_data_interp['position'] = group_data['position'].unique()[0]
+        group_data_interp[['siteid', 'geometry', 'position']] = site_id, geometry, position
         group_data_interp = gpd.GeoDataFrame(group_data_interp, crs=group_data.crs)
         slr_interp_scenario = pd.concat([slr_interp_scenario, group_data_interp])
     return slr_interp_scenario
