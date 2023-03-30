@@ -29,10 +29,11 @@ log.addHandler(stream_handler)
 
 
 def split_slr_measurementname_column(slr_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    slr_data['confidence_level'] = slr_data['measurementname'].str.extract(r'(low|medium) confidence')
-    slr_data['ssp_scenario'] = slr_data['measurementname'].str.extract(r'(\w+-\d\.\d)')
-    slr_data['add_vlm'] = slr_data['measurementname'].str.contains('\+ VLM')
-    return slr_data
+    slr_data_split = slr_data.copy()
+    slr_data_split['confidence_level'] = slr_data_split['measurementname'].str.extract(r'(low|medium) confidence')
+    slr_data_split['ssp_scenario'] = slr_data_split['measurementname'].str.extract(r'(\w+-\d\.\d)')
+    slr_data_split['add_vlm'] = slr_data_split['measurementname'].str.contains('\+ VLM')
+    return slr_data_split
 
 
 def get_slr_scenario_data(
@@ -42,12 +43,12 @@ def get_slr_scenario_data(
         add_vlm: bool,
         percentile: int) -> gpd.GeoDataFrame:
     # Split measurementname column out
-    slr_data = split_slr_measurementname_column(slr_data)
+    slr_data_split = split_slr_measurementname_column(slr_data)
     # Get the requested confidence level data
-    valid_conf_level = slr_data['confidence_level'].unique().tolist()
+    valid_conf_level = slr_data_split['confidence_level'].unique().tolist()
     if confidence_level not in valid_conf_level:
         raise ValueError(f"Invalid value '{confidence_level}' for confidence_level. Must be one of {valid_conf_level}.")
-    slr_scenario = slr_data[slr_data["confidence_level"] == confidence_level]
+    slr_scenario = slr_data_split[slr_data_split["confidence_level"] == confidence_level]
     # Get the requested ssp scenario data
     valid_ssp_scenario = slr_scenario['ssp_scenario'].unique().tolist()
     if ssp_scenario not in valid_ssp_scenario:
