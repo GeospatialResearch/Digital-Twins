@@ -134,7 +134,7 @@ def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> gpd.GeoData
     return boundary_info
 
 
-def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame):
+def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     boundary_info = get_catchment_boundary_info(catchment_area)
     boundary_lines = boundary_info[['line_position', 'boundary']].rename(columns={'boundary': 'geometry'})
     boundary_lines = boundary_lines.set_geometry('geometry', crs=2193)
@@ -171,7 +171,7 @@ def get_tide_query_locations(
         engine,
         catchment_area: gpd.GeoDataFrame,
         regions_clipped: gpd.GeoDataFrame,
-        distance_km: int = 1):
+        distance_km: int = 1) -> gpd.GeoDataFrame:
     non_intersection = catchment_area.overlay(regions_clipped, how='difference')
     if not non_intersection.empty:
         tide_query_location = get_non_intersection_centroid_position(catchment_area, non_intersection)
