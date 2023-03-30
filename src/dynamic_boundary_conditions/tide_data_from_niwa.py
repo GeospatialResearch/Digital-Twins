@@ -132,7 +132,7 @@ def gen_api_query_param_list(
 async def fetch_tide_data(
         session: aiohttp.ClientSession,
         query_param: Dict[str, Union[str, int]],
-        url: str = 'https://api.niwa.co.nz/tides/data'):
+        url: str = 'https://api.niwa.co.nz/tides/data') -> gpd.GeoDataFrame:
     """
     Fetch high and low tide data for a single query parameter.
 
@@ -158,7 +158,7 @@ async def fetch_tide_data(
 
 async def fetch_tide_data_for_requested_period(
         query_param_list: List[Dict[str, Union[str, int]]],
-        url: str = 'https://api.niwa.co.nz/tides/data'):
+        url: str = 'https://api.niwa.co.nz/tides/data') -> gpd.GeoDataFrame:
     """
     Iterate over the list of API query parameters to fetch high and low tide data for the requested period.
 
@@ -180,7 +180,7 @@ async def fetch_tide_data_for_requested_period(
     return tide_data
 
 
-def convert_to_nz_timezone(tide_data_utc: pd.DataFrame) -> pd.DataFrame:
+def convert_to_nz_timezone(tide_data_utc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Convert the time column in the initially retrieved tide data for the requested period from UTC to NZ timezone.
 
@@ -201,7 +201,7 @@ def fetch_tide_data_from_niwa(
         datum: DatumType,
         start_date: date,
         total_days: int = 365,
-        interval: Optional[int] = None) -> pd.DataFrame:
+        interval: Optional[int] = None) -> gpd.GeoDataFrame:
     """
     Retrieve tide data from NIWA for the requested time period using the centroid coordinates of the catchment area.
 
@@ -246,7 +246,7 @@ def fetch_tide_data_from_niwa(
     return tide_data
 
 
-def get_highest_tide_datetime(tide_data: pd.DataFrame) -> pd.Timestamp:
+def get_highest_tide_datetime(tide_data: gpd.GeoDataFrame) -> pd.Timestamp:
     """
     Get the datetime of the most recent highest tide that occurred within the requested time period.
 
@@ -284,11 +284,11 @@ def get_highest_tide_date_span(start_datetime: pd.Timestamp, end_datetime: pd.Ti
 
 
 def fetch_highest_tide_side_data_from_niwa(
-        tide_data: pd.DataFrame,
+        tide_data: gpd.GeoDataFrame,
         tide_length_mins: int,
         api_key: str,
         datum: DatumType,
-        interval: Optional[int] = None):
+        interval: Optional[int] = None) -> gpd.GeoDataFrame:
     highest_tide_datetime = get_highest_tide_datetime(tide_data)
     start_datetime, end_datetime = get_highest_tide_datetime_span(highest_tide_datetime, tide_length_mins)
     start_date, total_days = get_highest_tide_date_span(start_datetime, end_datetime)
@@ -310,7 +310,7 @@ def get_tide_data(
         start_date: date,
         total_days: Optional[int] = None,
         tide_length_mins: Optional[int] = None,
-        interval: Optional[int] = None):
+        interval: Optional[int] = None) -> gpd.GeoDataFrame:
     if approach == ApproachType.KING_TIDE:
         if tide_length_mins is None:
             raise ValueError("tide_length_mins parameter must be provided for ApproachType.KING_TIDE")
