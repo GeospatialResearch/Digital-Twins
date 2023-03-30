@@ -12,6 +12,8 @@ from datetime import date, timedelta
 import re
 import geopandas as gpd
 import pandas as pd
+import numpy as np
+from scipy.interpolate import interp1d
 
 from src import config
 from src.digitaltwin import setup_environment
@@ -70,6 +72,31 @@ def get_slr_scenario_data(
     return slr_scenario_data
 
 
+def get_interpolated_slr_scenario_data(
+        slr_scenario_data: gpd.GeoDataFrame,
+        increment_year: int,
+        interp_method: str):
+    # Get the name of the percentile column
+    percentile_col = [col for col in slr_scenario_data.columns if re.match(r'^p\d+', col)][0]
+    # Group the data
+    slr_interp_scenario = gpd.GeoDataFrame()
+    grouped = slr_scenario_data.groupby(['siteid', 'geometry', 'position'])
+    for group_name, group_data in grouped:
+        # Interpolate the data
+        group_years = group_data['year']
+        group_years_new = np.arange(group_years.iloc[0], group_years.iloc[-1] + increment_year, increment_year)
+        group_years_new = pd.Series(group_years_new, name='year')
+        f_func = interp1d(group_years, group_data[percentile_col], kind=interp_method)
+        group_data_new = pd.Series(f_func(group_years_new), name=percentile_col)
+        group_data_interp = pd.concat([group_years_new, group_data_new], axis=1)
+        group_data_interp['siteid'] = group_data['siteid'].unique()[0]
+        group_data_interp['geometry'] = group_data['geometry'].unique()[0]
+        group_data_interp['position'] = group_data['position'].unique()[0]
+        group_data_interp = gpd.GeoDataFrame(group_data_interp, crs=group_data.crs)
+        slr_interp_scenario = pd.concat([slr_interp_scenario, group_data_interp])
+    return slr_interp_scenario
+
+
 def main():
     # Get StatsNZ and NIWA api key
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
@@ -103,9 +130,10 @@ def main():
     slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data)
     # Combine tide and sea level rise data
     slr_scenario_data = get_slr_scenario_data(
-        slr_data, confidence_level='medium', ssp_scenario='SSP3-7.0', add_vlm=False, percentile=50)
-    print(slr_scenario_data)
-    print(type(slr_scenario_data))
+        slr_data, confidence_level='low', ssp_scenario='SSP1-2.6', add_vlm=False, percentile=50)
+    slr_interp_scenario = get_interpolated_slr_scenario_data(slr_scenario_data, increment_year=1, interp_method='linear')
+    print(slr_interp_scenario)
+    print(type(slr_interp_scenario))
 
 
 if __name__ == "__main__":
