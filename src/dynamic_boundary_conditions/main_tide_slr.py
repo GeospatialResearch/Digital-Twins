@@ -12,6 +12,7 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 from src.dynamic_boundary_conditions import tide_query_location, tide_data_from_niwa, sea_level_rise_data
+from src.dynamic_boundary_conditions import tide_slr_combine
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -54,7 +55,10 @@ def main():
     # Store sea level rise data to database and get closest sea level rise site data from database
     sea_level_rise_data.store_slr_data_to_db(engine)
     slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data)
-    print(slr_data)
+    # Combine tide and sea level rise data
+    slr_scenario = tide_slr_combine.get_slr_scenario_data(
+        slr_data, confidence_level='medium', ssp_scenario='SSP3-7.0', add_vlm=False, percentile=50)
+    print(slr_scenario)
 
 
 if __name__ == "__main__":
