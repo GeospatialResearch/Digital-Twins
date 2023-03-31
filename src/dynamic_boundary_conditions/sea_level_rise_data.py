@@ -94,23 +94,23 @@ def store_slr_data_to_db(engine, folder_name: str = "data"):
     else:
         slr_nz = get_slr_data_from_nz_searise(folder_name)
         slr_nz.to_postgis("sea_level_rise", engine, index=False, if_exists="replace")
-        log.info(f"Added Sea Level Rise data to database.")
+        log.info("Added Sea Level Rise data to database.")
 
 
 def get_slr_data_from_db(engine, single_query_loc: pd.Series) -> gpd.GeoDataFrame:
     query_loc_geom = gpd.GeoDataFrame(geometry=[single_query_loc["geometry"]], crs=4326)
     query_loc_geom = query_loc_geom.to_crs(2193).reset_index(drop=True)
     query = f"""
-    SELECT slr.*, distances.distance 
-    FROM sea_level_rise AS slr
-    JOIN (
-        SELECT siteid, ST_Distance(ST_Transform(geometry, 2193), 
-        ST_GeomFromText('{query_loc_geom["geometry"][0]}', 2193)) AS distance 
-        FROM sea_level_rise 
-        ORDER BY distance
-        LIMIT 1
-    ) AS distances ON slr.siteid = distances.siteid
-    """
+        SELECT slr.*, distances.distance 
+        FROM sea_level_rise AS slr
+        JOIN (
+            SELECT siteid, ST_Distance(ST_Transform(geometry, 2193), 
+            ST_GeomFromText('{query_loc_geom["geometry"][0]}', 2193)) AS distance 
+            FROM sea_level_rise 
+            ORDER BY distance
+            LIMIT 1
+        ) AS distances ON slr.siteid = distances.siteid
+        """
     query_data = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     query_data["position"] = single_query_loc["position"]
     return query_data

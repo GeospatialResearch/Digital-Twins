@@ -29,7 +29,7 @@ log.addHandler(stream_handler)
 def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
     file_path = pathlib.Path.cwd() / file_name
     if not file_path.is_file():
-        query = f"SELECT * FROM region_geometry"
+        query = "SELECT * FROM region_geometry"
         region_geom = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
         nz_geom = region_geom.tail(1).reset_index(drop=True)
         min_x, min_y, max_x, max_y = nz_geom.total_bounds

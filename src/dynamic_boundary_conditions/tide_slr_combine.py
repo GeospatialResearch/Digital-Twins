@@ -33,7 +33,7 @@ def split_slr_measurementname_column(slr_data: gpd.GeoDataFrame) -> gpd.GeoDataF
     slr_data_split = slr_data.copy()
     slr_data_split['confidence_level'] = slr_data_split['measurementname'].str.extract(r'(low|medium) confidence')
     slr_data_split['ssp_scenario'] = slr_data_split['measurementname'].str.extract(r'(\w+-\d\.\d)')
-    slr_data_split['add_vlm'] = slr_data_split['measurementname'].str.contains('\+ VLM')
+    slr_data_split['add_vlm'] = slr_data_split['measurementname'].str.contains(r'\+ VLM')
     return slr_data_split
 
 
