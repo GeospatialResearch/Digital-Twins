@@ -56,9 +56,15 @@ def main():
     sea_level_rise_data.store_slr_data_to_db(engine)
     slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data)
     # Combine tide and sea level rise data
-    slr_scenario = tide_slr_combine.get_slr_scenario_data(
-        slr_data, confidence_level='medium', ssp_scenario='SSP3-7.0', add_vlm=False, percentile=50)
-    print(slr_scenario)
+    tide_slr_data = tide_slr_combine.get_combined_tide_slr_data(
+        tide_data=tide_data,
+        slr_data=slr_data,
+        proj_year=2030,
+        confidence_level='low',
+        ssp_scenario='SSP1-2.6',
+        add_vlm=False,
+        percentile=50)
+    print(tide_slr_data)
 
 
 if __name__ == "__main__":
