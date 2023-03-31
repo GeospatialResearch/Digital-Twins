@@ -39,7 +39,7 @@ def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[floa
 
 
 def get_date_ranges(
-        start_date: date,
+        start_date: date = date.today(),
         total_days: int = 365,
         days_per_call: int = 31) -> Dict[date, int]:
     """
@@ -49,7 +49,7 @@ def get_date_ranges(
     Parameters
     ----------
     start_date : date
-        The start date for data collection, which can be in the past or present.
+        The start date for data collection, which can be in the past or present. Default date is today's date.
     total_days: int = 365
         The number of days of tide data to collect. The default value is 365 for one year.
     days_per_call : int = 31
@@ -199,7 +199,7 @@ def fetch_tide_data_from_niwa(
         tide_query_loc: gpd.GeoDataFrame,
         api_key: str,
         datum: DatumType,
-        start_date: date,
+        start_date: date = date.today(),
         total_days: int = 365,
         interval: Optional[int] = None) -> gpd.GeoDataFrame:
     """
@@ -214,7 +214,7 @@ def fetch_tide_data_from_niwa(
     datum : DatumType
         Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
     start_date : date
-        The start date for data collection, which can be in the past or present.
+        The start date for data collection, which can be in the past or present. Default date is today's date.
     total_days: int = 365
         The number of days of tide data to collect. The default value is 365 for one year.
     interval: Optional[int] = None
@@ -307,7 +307,7 @@ def get_tide_data(
         api_key: str,
         datum: DatumType,
         tide_query_loc: gpd.GeoDataFrame,
-        start_date: date,
+        start_date: date = date.today(),
         total_days: Optional[int] = None,
         tide_length_mins: Optional[int] = None,
         interval: Optional[int] = None) -> gpd.GeoDataFrame:
@@ -345,7 +345,7 @@ def main():
         api_key=niwa_api_key,
         datum=datum,
         tide_query_loc=tide_query_loc,
-        start_date=date(2023, 1, 23),
+        start_date=date.today(),
         total_days=3,  # used for PERIOD_TIDE
         tide_length_mins=2880,  # used for KING_TIDE
         interval=10)
