@@ -68,16 +68,14 @@ def get_slr_scenario_data(
         raise ValueError(f"Invalid value '{percentile}' for percentile. Must be one of {valid_percentile}.")
     # Get the final requested sea level rise scenario data
     slr_scenario_data = slr_scenario[['siteid', 'year', f"p{percentile}", 'geometry', 'position']]
-    slr_scenario_data = slr_scenario_data.reset_index(drop=True)
+    slr_scenario_data = slr_scenario_data.rename(columns={f"p{percentile}": "slr_metres"}).reset_index(drop=True)
     return slr_scenario_data
 
 
 def get_interpolated_slr_scenario_data(
         slr_scenario_data: gpd.GeoDataFrame,
-        increment_year: int,
-        interp_method: str) -> gpd.GeoDataFrame:
-    # Get the name of the percentile column
-    percentile_col = [col for col in slr_scenario_data.columns if re.match(r'^p\d+', col)][0]
+        increment_year: int = 1,
+        interp_method: str = 'linear') -> gpd.GeoDataFrame:
     # Group the data
     slr_interp_scenario = gpd.GeoDataFrame()
     grouped = slr_scenario_data.groupby(['siteid', 'geometry', 'position'])
@@ -87,8 +85,8 @@ def get_interpolated_slr_scenario_data(
         group_years = group_data['year']
         group_years_new = np.arange(group_years.iloc[0], group_years.iloc[-1] + increment_year, increment_year)
         group_years_new = pd.Series(group_years_new, name='year')
-        f_func = interp1d(group_years, group_data[percentile_col], kind=interp_method)
-        group_data_new = pd.Series(f_func(group_years_new), name=percentile_col)
+        f_func = interp1d(group_years, group_data['slr_metres'], kind=interp_method)
+        group_data_new = pd.Series(f_func(group_years_new), name='slr_metres')
         group_data_interp = pd.concat([group_years_new, group_data_new], axis=1)
         group_data_interp[['siteid', 'geometry', 'position']] = site_id, geometry, position
         group_data_interp = gpd.GeoDataFrame(group_data_interp, crs=group_data.crs)
