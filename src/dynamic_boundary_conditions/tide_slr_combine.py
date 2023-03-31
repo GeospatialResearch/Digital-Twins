@@ -116,6 +116,22 @@ def combine_tide_slr_data(
     return tide_slr_data
 
 
+def get_combined_tide_slr_data(
+        tide_data: gpd.GeoDataFrame,
+        slr_data: gpd.GeoDataFrame,
+        proj_year: int,
+        confidence_level: str,
+        ssp_scenario: str,
+        add_vlm: bool,
+        percentile: int,
+        increment_year: int = 1,
+        interp_method: str = 'linear') -> pd.DataFrame:
+    slr_scenario_data = get_slr_scenario_data(slr_data, confidence_level, ssp_scenario, add_vlm, percentile)
+    slr_interp_scenario = get_interpolated_slr_scenario_data(slr_scenario_data, increment_year, interp_method)
+    tide_slr_data = combine_tide_slr_data(tide_data, slr_interp_scenario, proj_year)
+    return tide_slr_data
+
+
 def main():
     # Get StatsNZ and NIWA api key
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
@@ -148,13 +164,15 @@ def main():
     sea_level_rise_data.store_slr_data_to_db(engine)
     slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data)
     # Combine tide and sea level rise data
-    slr_scenario_data = get_slr_scenario_data(
-        slr_data, confidence_level='low', ssp_scenario='SSP1-2.6', add_vlm=False, percentile=50)
-    slr_interp_scenario = get_interpolated_slr_scenario_data(
-        slr_scenario_data, increment_year=1, interp_method='linear')
-    tide_slr_data = combine_tide_slr_data(tide_data, slr_interp_scenario, proj_year=2030)
+    tide_slr_data = get_combined_tide_slr_data(
+        tide_data=tide_data,
+        slr_data=slr_data,
+        proj_year=2030,
+        confidence_level='low',
+        ssp_scenario='SSP1-2.6',
+        add_vlm=False,
+        percentile=50)
     print(tide_slr_data)
-    print(type(tide_slr_data))
 
 
 if __name__ == "__main__":
