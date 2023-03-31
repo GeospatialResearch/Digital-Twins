@@ -75,7 +75,7 @@ def get_slr_scenario_data(
 def get_interpolated_slr_scenario_data(
         slr_scenario_data: gpd.GeoDataFrame,
         increment_year: int,
-        interp_method: str):
+        interp_method: str) -> gpd.GeoDataFrame:
     # Get the name of the percentile column
     percentile_col = [col for col in slr_scenario_data.columns if re.match(r'^p\d+', col)][0]
     # Group the data
