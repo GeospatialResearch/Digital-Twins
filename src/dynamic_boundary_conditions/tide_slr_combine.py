@@ -94,6 +94,28 @@ def get_interpolated_slr_scenario_data(
     return slr_interp_scenario
 
 
+def combine_tide_slr_data(
+        tide_data: gpd.GeoDataFrame,
+        slr_interp_scenario: gpd.GeoDataFrame,
+        proj_year: int) -> pd.DataFrame:
+    tide_df = tide_data.copy()
+    tide_df['year'] = tide_df['datetime_nz'].dt.year
+    tide_df = tide_df[['datetime_nz', 'year', 'tide_metres', 'position']]
+    grouped = tide_df.groupby(['year', 'position'])
+    tide_slr_data = gpd.GeoDataFrame()
+    for group_name, group_data in grouped:
+        current_year, position = group_name
+        current_filt = (slr_interp_scenario['year'] == current_year) & (slr_interp_scenario['position'] == position)
+        proj_filt = (slr_interp_scenario['year'] == proj_year) & (slr_interp_scenario['position'] == position)
+        current_slr_metres = slr_interp_scenario[current_filt]['slr_metres'].iloc[0]
+        proj_slr_metres = slr_interp_scenario[proj_filt]['slr_metres'].iloc[0]
+        group_data['addon_slr_metres'] = proj_slr_metres - current_slr_metres
+        tide_slr_data = pd.concat([tide_slr_data, group_data])
+    tide_slr_data['tide_slr_metres'] = tide_slr_data['tide_metres'] + tide_slr_data['addon_slr_metres']
+    tide_slr_data = tide_slr_data[['datetime_nz', 'tide_slr_metres', 'position']]
+    return tide_slr_data
+
+
 def main():
     # Get StatsNZ and NIWA api key
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
@@ -130,8 +152,9 @@ def main():
         slr_data, confidence_level='low', ssp_scenario='SSP1-2.6', add_vlm=False, percentile=50)
     slr_interp_scenario = get_interpolated_slr_scenario_data(
         slr_scenario_data, increment_year=1, interp_method='linear')
-    print(slr_interp_scenario)
-    print(type(slr_interp_scenario))
+    tide_slr_data = combine_tide_slr_data(tide_data, slr_interp_scenario, proj_year=2030)
+    print(tide_slr_data)
+    print(type(tide_slr_data))
 
 
 if __name__ == "__main__":
