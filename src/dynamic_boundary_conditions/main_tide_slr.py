@@ -11,8 +11,8 @@ from datetime import date
 from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
-from src.dynamic_boundary_conditions import tide_query_location, tide_data_from_niwa, sea_level_rise_data
-from src.dynamic_boundary_conditions import tide_slr_combine
+from src.dynamic_boundary_conditions import tide_query_location, tide_data_from_niwa
+from src.dynamic_boundary_conditions import sea_level_rise_data, tide_slr_combine
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

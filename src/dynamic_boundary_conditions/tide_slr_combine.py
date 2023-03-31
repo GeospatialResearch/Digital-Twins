@@ -6,10 +6,9 @@
 
 import logging
 import pathlib
-from typing import Tuple, Union, Optional, List
-from datetime import date, timedelta
-
+from datetime import date
 import re
+
 import geopandas as gpd
 import pandas as pd
 import numpy as np
