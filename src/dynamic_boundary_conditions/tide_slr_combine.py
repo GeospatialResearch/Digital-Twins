@@ -155,7 +155,7 @@ def main():
         api_key=niwa_api_key,
         datum=datum,
         tide_query_loc=tide_query_loc,
-        start_date=date(2023, 1, 23),
+        start_date=date.today(),
         total_days=3,  # used for PERIOD_TIDE
         tide_length_mins=2880,  # used for KING_TIDE
         interval=10)
