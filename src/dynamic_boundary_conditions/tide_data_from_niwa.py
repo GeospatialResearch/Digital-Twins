@@ -84,7 +84,7 @@ def gen_api_query_param_list(
         long: Union[int, float],
         datum: DatumType,
         date_ranges: Dict[date, int],
-        interval: Optional[int] = None) -> List[Dict[str, Union[str, int]]]:
+        interval_mins: Optional[int] = None) -> List[Dict[str, Union[str, int]]]:
     """
     Generate a list of api query parameters used to retrieve high and low tide data for the entire requested period.
 
@@ -101,7 +101,7 @@ def gen_api_query_param_list(
     date_ranges : Dict[date, int]
         Dictionary of start date and number of days for each API call that need to be made to retrieve
         high and low tide data for the entire requested period.
-    interval: Optional[int] = None
+    interval_mins: Optional[int] = None
         Output time interval in minutes, range from 10 to 1440 minutes (1 day).
         Omit to get only high and low tide times.
     """
@@ -110,8 +110,8 @@ def gen_api_query_param_list(
         raise ValueError(f"latitude is {lat}, must range from -29 to -53.")
     if not ((160 <= long <= 180) or (-180 <= long <= -175)):
         raise ValueError(f"longitude is {long}, must range from 160 to 180 or from -175 to -180.")
-    if interval is not None and not (10 <= interval <= 1440):
-        raise ValueError(f"interval is {interval}, must range from 10 to 1440.")
+    if interval_mins is not None and not (10 <= interval_mins <= 1440):
+        raise ValueError(f"interval is {interval_mins}, must range from 10 to 1440.")
     # Create a list of api query parameters for all 'date_ranges'
     query_param_list = []
     for start_date, number_of_days in date_ranges.items():
@@ -123,8 +123,8 @@ def gen_api_query_param_list(
             "startDate": start_date.isoformat(),
             "datum": datum.value
         }
-        if interval is not None:
-            query_param["interval"] = interval
+        if interval_mins is not None:
+            query_param["interval"] = interval_mins
         query_param_list.append(query_param)
     return query_param_list
 
@@ -201,7 +201,7 @@ def fetch_tide_data_from_niwa(
         datum: DatumType,
         start_date: date = date.today(),
         total_days: int = 365,
-        interval: Optional[int] = None) -> gpd.GeoDataFrame:
+        interval_mins: Optional[int] = None) -> gpd.GeoDataFrame:
     """
     Retrieve tide data from NIWA for the requested time period using the centroid coordinates of the catchment area.
 
@@ -217,7 +217,7 @@ def fetch_tide_data_from_niwa(
         The start date for data collection, which can be in the past or present. Default date is today's date.
     total_days: int = 365
         The number of days of tide data to collect. The default value is 365 for one year.
-    interval: Optional[int] = None
+    interval_mins: Optional[int] = None
         Output time interval in minutes, range from 10 to 1440 minutes (1 day).
         Omit to get only high and low tide times.
     """
@@ -229,7 +229,7 @@ def fetch_tide_data_from_niwa(
         query_loc_row = gpd.GeoDataFrame([row], crs=tide_query_loc.crs)
         lat, long, position = get_query_loc_coords_position(query_loc_row)
         # Get the list of api query parameters used to retrieve high and low tide data
-        query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges, interval)
+        query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges, interval_mins)
         # Iterate over the list of API query parameters to fetch high and low tide data for the requested period
         query_loc_tide = asyncio.run(fetch_tide_data_for_requested_period(query_param_list))
         query_loc_tide['position'] = position
@@ -288,14 +288,14 @@ def fetch_highest_tide_side_data_from_niwa(
         tide_length_mins: int,
         api_key: str,
         datum: DatumType,
-        interval: Optional[int] = None) -> gpd.GeoDataFrame:
+        interval_mins: Optional[int] = None) -> gpd.GeoDataFrame:
     highest_tide_datetime = get_highest_tide_datetime(tide_data)
     start_datetime, end_datetime = get_highest_tide_datetime_span(highest_tide_datetime, tide_length_mins)
     start_date, total_days = get_highest_tide_date_span(start_datetime, end_datetime)
     # get unique pairs of coordinates
     highest_tide_query_loc = tide_data[['position', 'geometry']].drop_duplicates().reset_index(drop=True)
     highest_tide_data = fetch_tide_data_from_niwa(
-        highest_tide_query_loc, api_key, datum, start_date, total_days, interval)
+        highest_tide_query_loc, api_key, datum, start_date, total_days, interval_mins)
     data_around_highest_tide = highest_tide_data.loc[
         highest_tide_data['datetime_nz'].between(start_datetime, end_datetime)]
     data_around_highest_tide = data_around_highest_tide.reset_index(drop=True)
@@ -310,18 +310,19 @@ def get_tide_data(
         start_date: date = date.today(),
         total_days: Optional[int] = None,
         tide_length_mins: Optional[int] = None,
-        interval: Optional[int] = None) -> gpd.GeoDataFrame:
+        interval_mins: Optional[int] = None) -> gpd.GeoDataFrame:
     if approach == ApproachType.KING_TIDE:
         if tide_length_mins is None:
             raise ValueError("tide_length_mins parameter must be provided for ApproachType.KING_TIDE")
-        tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days=365, interval=None)
+        tide_data = fetch_tide_data_from_niwa(
+            tide_query_loc, api_key, datum, start_date, total_days=365, interval_mins=None)
         data_around_highest_tide = fetch_highest_tide_side_data_from_niwa(
-            tide_data, tide_length_mins, api_key, datum, interval)
+            tide_data, tide_length_mins, api_key, datum, interval_mins)
         return data_around_highest_tide
     else:
         if total_days is None:
             raise ValueError("total_days parameter must be provided for ApproachType.PERIOD_TIDE")
-        tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days, interval)
+        tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days, interval_mins)
         return tide_data
 
 
@@ -347,7 +348,7 @@ def main():
         tide_query_loc=tide_query_loc,
         start_date=date(2023, 1, 1),  # total_days is 365
         tide_length_mins=2880,
-        interval=10)
+        interval_mins=10)
     print(tide_data_king)
     tide_data_period = get_tide_data(
         approach=ApproachType.PERIOD_TIDE,
@@ -356,7 +357,7 @@ def main():
         tide_query_loc=tide_query_loc,
         start_date=date(2023, 1, 1),
         total_days=3,
-        interval=10)
+        interval_mins=10)
     print(tide_data_period)
 
 
