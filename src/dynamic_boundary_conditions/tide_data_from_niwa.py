@@ -340,16 +340,24 @@ def main():
     # Specify the datum query parameter
     datum = DatumType.LAT
     # Get tide data
-    tide_data = get_tide_data(
+    tide_data_king = get_tide_data(
         approach=ApproachType.KING_TIDE,
         api_key=niwa_api_key,
         datum=datum,
         tide_query_loc=tide_query_loc,
-        start_date=date.today(),
-        total_days=3,  # used for PERIOD_TIDE
-        tide_length_mins=2880,  # used for KING_TIDE
+        start_date=date(2023, 1, 1),  # total_days is 365
+        tide_length_mins=2880,
         interval=10)
-    print(tide_data)
+    print(tide_data_king)
+    tide_data_period = get_tide_data(
+        approach=ApproachType.PERIOD_TIDE,
+        api_key=niwa_api_key,
+        datum=datum,
+        tide_query_loc=tide_query_loc,
+        start_date=date(2023, 1, 1),
+        total_days=3,
+        interval=10)
+    print(tide_data_period)
 
 
 if __name__ == "__main__":
