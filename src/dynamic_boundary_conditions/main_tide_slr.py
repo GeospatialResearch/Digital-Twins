@@ -43,21 +43,20 @@ def main():
     # Specify the datum query parameter
     datum = DatumType.LAT
     # Get tide data
-    tide_data = tide_data_from_niwa.get_tide_data(
+    tide_data_king = tide_data_from_niwa.get_tide_data(
         approach=ApproachType.KING_TIDE,
         api_key=niwa_api_key,
         datum=datum,
         tide_query_loc=tide_query_loc,
-        start_date=date.today(),
-        total_days=3,  # used for PERIOD_TIDE
-        tide_length_mins=2880,  # used for KING_TIDE
-        interval=10)
+        start_date=date(2023, 1, 1),  # total_days is 365
+        tide_length_mins=2880,
+        interval_mins=10)
     # Store sea level rise data to database and get closest sea level rise site data from database
     sea_level_rise_data.store_slr_data_to_db(engine)
-    slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data)
+    slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data_king)
     # Combine tide and sea level rise data
     tide_slr_data = tide_slr_combine.get_combined_tide_slr_data(
-        tide_data=tide_data,
+        tide_data=tide_data_king,
         slr_data=slr_data,
         proj_year=2030,
         confidence_level='low',
