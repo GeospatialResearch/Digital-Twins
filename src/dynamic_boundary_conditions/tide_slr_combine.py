@@ -99,7 +99,7 @@ def add_slr_to_tide(
         proj_year: int) -> pd.DataFrame:
     tide_df = tide_data.copy()
     tide_df['year'] = tide_df['datetime_nz'].dt.year
-    tide_df = tide_df[['datetime_nz', 'year', 'tide_metres', 'position']]
+    tide_df = tide_df[['seconds', 'year', 'tide_metres', 'position']]
     grouped = tide_df.groupby(['year', 'position'])
     tide_slr_data = gpd.GeoDataFrame()
     for group_name, group_data in grouped:
@@ -108,10 +108,11 @@ def add_slr_to_tide(
         proj_filt = (slr_interp_scenario['year'] == proj_year) & (slr_interp_scenario['position'] == position)
         current_slr_metres = slr_interp_scenario[current_filt]['slr_metres'].iloc[0]
         proj_slr_metres = slr_interp_scenario[proj_filt]['slr_metres'].iloc[0]
-        group_data['addon_slr_metres'] = proj_slr_metres - current_slr_metres
+        group_data['slr_metres'] = proj_slr_metres - current_slr_metres
         tide_slr_data = pd.concat([tide_slr_data, group_data])
-    tide_slr_data['tide_slr_metres'] = tide_slr_data['tide_metres'] + tide_slr_data['addon_slr_metres']
-    tide_slr_data = tide_slr_data[['datetime_nz', 'tide_slr_metres', 'position']]
+    tide_slr_data['tide_slr_metres'] = tide_slr_data['tide_metres'] + tide_slr_data['slr_metres']
+    tide_slr_data = tide_slr_data[['seconds', 'tide_slr_metres', 'position']]
+    tide_slr_data = tide_slr_data.reset_index(drop=True)
     return tide_slr_data
 
 
