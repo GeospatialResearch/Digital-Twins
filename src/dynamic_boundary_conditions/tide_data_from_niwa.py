@@ -253,7 +253,7 @@ def get_highest_tide_datetime(tide_data: gpd.GeoDataFrame) -> pd.Timestamp:
 
     Parameters
     ----------
-    tide_data : pd.DataFrame
+    tide_data : gpd.GeoDataFrame
         The original tide data obtained for the requested period with the time column expressed in NZ timezone
         (converted from UTC).
     """
@@ -284,37 +284,45 @@ def get_highest_tide_date_span(start_datetime: pd.Timestamp, end_datetime: pd.Ti
     return start_date, total_days
 
 
+def add_time_information(
+        highest_tide_data: gpd.GeoDataFrame,
+        tide_length_mins: int,
+        interval_mins: int):
+    # add time (minutes) information
+    time_mins = np.arange(interval_mins, tide_length_mins + interval_mins, interval_mins)
+    highest_tide_data['mins'] = time_mins.tolist()
+    # add extra time information, i.e. hours and seconds columns
+    highest_tide_data = highest_tide_data.assign(
+        hours=highest_tide_data['mins'] / 60,
+        seconds=highest_tide_data['mins'] * 60)
+    highest_tide_data = highest_tide_data.sort_values(by="seconds").reset_index(drop=True)
+    return highest_tide_data
+
+
 def fetch_highest_tide_side_data_from_niwa(
         tide_data: gpd.GeoDataFrame,
         tide_length_mins: int,
         api_key: str,
         datum: DatumType,
         interval_mins: Optional[int] = None) -> gpd.GeoDataFrame:
-    highest_tide_datetime = get_highest_tide_datetime(tide_data)
-    start_datetime, end_datetime = get_highest_tide_datetime_span(highest_tide_datetime, tide_length_mins)
-    start_date, total_days = get_highest_tide_date_span(start_datetime, end_datetime)
-    # get unique pairs of coordinates
-    highest_tide_query_loc = tide_data[['position', 'geometry']].drop_duplicates().reset_index(drop=True)
-    highest_tide_data = fetch_tide_data_from_niwa(
-        highest_tide_query_loc, api_key, datum, start_date, total_days, interval_mins)
-    data_around_highest_tide = highest_tide_data.loc[
-        highest_tide_data['datetime_nz'].between(start_datetime, end_datetime)]
-    data_around_highest_tide = data_around_highest_tide.sort_values(by='datetime_nz').reset_index(drop=True)
-    return data_around_highest_tide
-
-
-def add_time_information(
-        data_around_highest_tide: gpd.GeoDataFrame,
-        tide_length_mins: int,
-        interval_mins: int):
-    # add time (minutes) information
-    time_mins = np.arange(interval_mins, tide_length_mins + interval_mins, interval_mins)
-    data_around_highest_tide['mins'] = time_mins.tolist()
-    # add extra time information, i.e. hours and seconds columns
-    data_around_highest_tide = data_around_highest_tide.assign(
-        hours=data_around_highest_tide['mins'] / 60,
-        seconds=data_around_highest_tide['mins'] * 60)
-    data_around_highest_tide = data_around_highest_tide.sort_values(by="seconds").reset_index(drop=True)
+    grouped = tide_data.groupby(['position', 'geometry'])
+    data_around_highest_tide = gpd.GeoDataFrame()
+    for group_name, group_data in grouped:
+        highest_tide_query_loc = group_data[['position', 'geometry']].drop_duplicates().reset_index(drop=True)
+        # noinspection PyTypeChecker
+        highest_tide_datetime = get_highest_tide_datetime(group_data)
+        start_datetime, end_datetime = get_highest_tide_datetime_span(highest_tide_datetime, tide_length_mins)
+        start_date, total_days = get_highest_tide_date_span(start_datetime, end_datetime)
+        # get unique pairs of coordinates
+        highest_tide_data = fetch_tide_data_from_niwa(
+            highest_tide_query_loc, api_key, datum, start_date, total_days, interval_mins)
+        highest_tide_data = highest_tide_data.loc[
+            highest_tide_data['datetime_nz'].between(start_datetime, end_datetime)]
+        highest_tide_data = highest_tide_data.sort_values(by='datetime_nz')
+        # add time information, i.e. mins, hours, seconds
+        highest_tide_data = add_time_information(highest_tide_data, tide_length_mins, interval_mins)
+        data_around_highest_tide = pd.concat([data_around_highest_tide, highest_tide_data])
+    data_around_highest_tide = data_around_highest_tide.reset_index(drop=True)
     return data_around_highest_tide
 
 
@@ -334,7 +342,6 @@ def get_tide_data(
             tide_query_loc, api_key, datum, start_date, total_days=365, interval_mins=None)
         data_around_highest_tide = fetch_highest_tide_side_data_from_niwa(
             tide_data, tide_length_mins, api_key, datum, interval_mins)
-        data_around_highest_tide = add_time_information(data_around_highest_tide, tide_length_mins, interval_mins)
         return data_around_highest_tide
     else:
         if total_days is None:
