@@ -93,7 +93,7 @@ def get_interpolated_slr_scenario_data(
     return slr_interp_scenario
 
 
-def combine_tide_slr_data(
+def add_slr_to_tide(
         tide_data: gpd.GeoDataFrame,
         slr_interp_scenario: gpd.GeoDataFrame,
         proj_year: int) -> pd.DataFrame:
@@ -127,7 +127,7 @@ def get_combined_tide_slr_data(
         interp_method: str = 'linear') -> pd.DataFrame:
     slr_scenario_data = get_slr_scenario_data(slr_data, confidence_level, ssp_scenario, add_vlm, percentile)
     slr_interp_scenario = get_interpolated_slr_scenario_data(slr_scenario_data, increment_year, interp_method)
-    tide_slr_data = combine_tide_slr_data(tide_data, slr_interp_scenario, proj_year)
+    tide_slr_data = add_slr_to_tide(tide_data, slr_interp_scenario, proj_year)
     return tide_slr_data
 
 
