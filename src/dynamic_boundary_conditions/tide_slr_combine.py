@@ -76,8 +76,8 @@ def get_interpolated_slr_scenario_data(
         increment_year: int = 1,
         interp_method: str = 'linear') -> gpd.GeoDataFrame:
     # Group the data
-    slr_interp_scenario = gpd.GeoDataFrame()
     grouped = slr_scenario_data.groupby(['siteid', 'geometry', 'position'])
+    slr_interp_scenario = gpd.GeoDataFrame()
     for group_name, group_data in grouped:
         site_id, geometry, position = group_name
         # Interpolate the data
