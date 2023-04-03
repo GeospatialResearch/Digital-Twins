@@ -125,7 +125,7 @@ def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> pd.DataFram
         elif centroid.y == max(boundary_lines)[1]:
             position = 'top'
         else:
-            position = 'none'
+            raise ValueError("Failed to identify catchment boundary line position.")
         # Create a LineString object for the current boundary segment
         segment = LineString([start_point, end_point])
         # Add the boundary segment and its properties to the dictionary
