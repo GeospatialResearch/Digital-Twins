@@ -90,6 +90,7 @@ def get_interpolated_slr_scenario_data(
         group_data_interp[['siteid', 'geometry', 'position']] = site_id, geometry, position
         group_data_interp = gpd.GeoDataFrame(group_data_interp, crs=group_data.crs)
         slr_interp_scenario = pd.concat([slr_interp_scenario, group_data_interp])
+    slr_interp_scenario = slr_interp_scenario.reset_index(drop=True)
     return slr_interp_scenario
 
 
