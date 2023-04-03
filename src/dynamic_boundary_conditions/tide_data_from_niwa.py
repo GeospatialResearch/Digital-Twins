@@ -288,13 +288,12 @@ def add_time_information(
         highest_tide_data: gpd.GeoDataFrame,
         tide_length_mins: int,
         interval_mins: int):
-    # add time (minutes) information
+    highest_tide_data = highest_tide_data.sort_values(by='datetime_nz')
+    # add extra time information, i.e. hours and seconds columns
     time_mins = np.arange(interval_mins, tide_length_mins + interval_mins, interval_mins)
     highest_tide_data['mins'] = time_mins.tolist()
-    # add extra time information, i.e. hours and seconds columns
-    highest_tide_data = highest_tide_data.assign(
-        hours=highest_tide_data['mins'] / 60,
-        seconds=highest_tide_data['mins'] * 60)
+    highest_tide_data['hours'] = highest_tide_data['mins'] / 60
+    highest_tide_data['seconds'] = highest_tide_data['mins'] * 60
     highest_tide_data = highest_tide_data.sort_values(by="seconds").reset_index(drop=True)
     return highest_tide_data
 
@@ -308,17 +307,16 @@ def fetch_highest_tide_side_data_from_niwa(
     grouped = tide_data.groupby(['position', 'geometry'])
     data_around_highest_tide = gpd.GeoDataFrame()
     for group_name, group_data in grouped:
-        highest_tide_query_loc = group_data[['position', 'geometry']].drop_duplicates().reset_index(drop=True)
         # noinspection PyTypeChecker
         highest_tide_datetime = get_highest_tide_datetime(group_data)
         start_datetime, end_datetime = get_highest_tide_datetime_span(highest_tide_datetime, tide_length_mins)
         start_date, total_days = get_highest_tide_date_span(start_datetime, end_datetime)
         # get unique pairs of coordinates
+        highest_tide_query_loc = group_data[['position', 'geometry']].drop_duplicates().reset_index(drop=True)
         highest_tide_data = fetch_tide_data_from_niwa(
             highest_tide_query_loc, api_key, datum, start_date, total_days, interval_mins)
         highest_tide_data = highest_tide_data.loc[
             highest_tide_data['datetime_nz'].between(start_datetime, end_datetime)]
-        highest_tide_data = highest_tide_data.sort_values(by='datetime_nz')
         # add time information, i.e. mins, hours, seconds
         highest_tide_data = add_time_information(highest_tide_data, tide_length_mins, interval_mins)
         data_around_highest_tide = pd.concat([data_around_highest_tide, highest_tide_data])
