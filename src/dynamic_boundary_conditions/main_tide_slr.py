@@ -37,15 +37,14 @@ def main():
     tide_query_location.regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
     # Get regions (clipped) that intersect with the catchment area from the database
     regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
+    # Get the location (coordinates) to fetch tide data for
     tide_query_loc = tide_query_location.get_tide_query_locations(
         engine, catchment_area, regions_clipped, distance_km=1)
-    # Specify the datum query parameter
-    datum = DatumType.LAT
     # Get tide data
     tide_data_king = tide_data_from_niwa.get_tide_data(
         approach=ApproachType.KING_TIDE,
         api_key=niwa_api_key,
-        datum=datum,
+        datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
         tide_length_mins=2880,
         interval_mins=10)

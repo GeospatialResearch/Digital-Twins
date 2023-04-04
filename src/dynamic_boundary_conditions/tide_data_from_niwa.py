@@ -358,15 +358,14 @@ def main():
     niwa_api_key = config.get_env_variable("NIWA_API_KEY")
     # Get regions (clipped) that intersect with the catchment area from the database
     regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
+    # Get the location (coordinates) to fetch tide data for
     tide_query_loc = tide_query_location.get_tide_query_locations(
         engine, catchment_area, regions_clipped, distance_km=1)
-    # Specify the datum query parameter
-    datum = DatumType.LAT
     # Get tide data
     tide_data_king = get_tide_data(
         approach=ApproachType.KING_TIDE,
         api_key=niwa_api_key,
-        datum=datum,
+        datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
         tide_length_mins=2880,
         interval_mins=10)
@@ -374,7 +373,7 @@ def main():
     tide_data_period = get_tide_data(
         approach=ApproachType.PERIOD_TIDE,
         api_key=niwa_api_key,
-        datum=datum,
+        datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
         start_date=date(2023, 1, 1),
         total_days=3,
