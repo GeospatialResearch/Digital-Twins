@@ -6,7 +6,6 @@
 
 import logging
 import pathlib
-from datetime import date
 
 from src import config
 from src.digitaltwin import setup_environment

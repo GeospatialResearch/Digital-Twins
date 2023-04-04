@@ -6,7 +6,6 @@
 
 import logging
 import pathlib
-from datetime import date
 import re
 
 import geopandas as gpd
