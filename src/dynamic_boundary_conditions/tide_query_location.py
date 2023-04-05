@@ -121,7 +121,7 @@ def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> pd.DataFram
         elif centroid.x == max(boundary_lines)[0]:
             position = 'right'
         elif centroid.y == min(boundary_lines)[1]:
-            position = 'bottom'
+            position = 'bot'
         elif centroid.y == max(boundary_lines)[1]:
             position = 'top'
         else:
