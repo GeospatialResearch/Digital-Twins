@@ -87,8 +87,7 @@ def bg_model_inputs(
             bndfile_path = rf"{valid_bg_path}/{bndfile}"
             if os.path.exists(bndfile_path):
                 position = bndfile.split('_')[0]
-                param_file.write(f"{position} = 2;\n"
-                                 f"{position}bndfile = {bndfile};\n")
+                param_file.write(f"{position} = {bndfile},2;\n")
     model_output_to_db(outfile, catchment_boundary)
     river_discharge_info(bg_path)
 
