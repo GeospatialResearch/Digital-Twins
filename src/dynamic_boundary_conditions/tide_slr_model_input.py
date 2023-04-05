@@ -30,9 +30,12 @@ def gen_uniform_boundary_input(bg_flood_path: pathlib.Path, tide_slr_data: pd.Da
     for position, group_data in grouped:
         input_data = group_data[['seconds', 'tide_slr_metres']]
         file_path = bg_flood_path / f"{position}_bndfile.txt"
-        with open(file_path, 'w') as file:
-            file.write("# Water level boundary\n")
-        input_data.to_csv(file_path, sep='\t', index=False, header=False, mode='a')
+        input_data.to_csv(file_path, sep='\t', index=False, header=False)
+        # Add "# Water level boundary" line at the beginning of the file
+        with open(file_path, 'r+') as file:
+            content = file.read()
+            file.seek(0, 0)
+            file.write('# Water level boundary\n' + content)
 
 
 def main():
