@@ -80,7 +80,15 @@ def bg_model_inputs(
                          f"rain = {rainfall};\n"
                          f"river = {river},{extents};\n"
                          f"outvars = h, hmax, zb, zs, u, v;\n"
-                         f"outfile = {outfile};")
+                         f"outfile = {outfile};\n")
+        # Check if any bndfile.txt files exist, and add lines accordingly
+        bndfiles = ['left_bndfile.txt', 'right_bndfile.txt', 'top_bndfile.txt', 'bot_bndfile.txt']
+        for bndfile in bndfiles:
+            bndfile_path = rf"{valid_bg_path}/{bndfile}"
+            if os.path.exists(bndfile_path):
+                position = bndfile.split('_')[0]
+                param_file.write(f"{position} = 2;\n"
+                                 f"{position}bndfile = {bndfile};\n")
     model_output_to_db(outfile, catchment_boundary)
     river_discharge_info(bg_path)
 
