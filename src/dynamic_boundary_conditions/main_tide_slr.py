@@ -11,7 +11,7 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 from src.dynamic_boundary_conditions import tide_query_location, tide_data_from_niwa
-from src.dynamic_boundary_conditions import sea_level_rise_data, tide_slr_combine
+from src.dynamic_boundary_conditions import sea_level_rise_data, tide_slr_combine, tide_slr_model_input
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -24,6 +24,9 @@ log.addHandler(stream_handler)
 
 
 def main():
+    # BG-Flood path
+    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
+    bg_flood_path = pathlib.Path(flood_model_dir)
     # Get StatsNZ and NIWA api key
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
     niwa_api_key = config.get_env_variable("NIWA_API_KEY")
@@ -60,7 +63,8 @@ def main():
         ssp_scenario='SSP1-2.6',
         add_vlm=False,
         percentile=50)
-    print(tide_slr_data)
+    # Generate the model input for BG-Flood
+    tide_slr_model_input.gen_uniform_boundary_input(bg_flood_path, tide_slr_data)
 
 
 if __name__ == "__main__":
