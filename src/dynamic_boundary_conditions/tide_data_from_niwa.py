@@ -263,7 +263,6 @@ def get_highest_tide_datetime(tide_data: gpd.GeoDataFrame) -> pd.Timestamp:
     # Get the datetime of the most recent highest tide
     highest_tide = highest_tide.sort_values(by=['datetime_nz'], ascending=False).reset_index(drop=True)
     highest_tide_datetime = highest_tide.iloc[0]['datetime_nz']
-    log.info(f"The highest tide datetime is: {highest_tide_datetime}")
     return highest_tide_datetime
 
 
