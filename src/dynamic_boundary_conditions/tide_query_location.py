@@ -153,6 +153,7 @@ def get_non_intersection_centroid_position(
         catchment_area: gpd.GeoDataFrame,
         non_intersection: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     boundary_lines = get_catchment_boundary_lines(catchment_area)
+    non_intersection = non_intersection.explode(index_parts=False, ignore_index=True)
     non_intersection['centroid'] = non_intersection.centroid
     for index, row in non_intersection.iterrows():
         centroid = row['centroid']
@@ -189,7 +190,7 @@ def get_tide_query_locations(
             log.info(f"No relevant tide data could be found within {distance_km}km of the catchment area. "
                      f"As a result, tide data will not be used in the BG-Flood model.")
             exit()
-    tide_query_location = tide_query_location.reset_index(drop=True)
+    tide_query_location = tide_query_location.to_crs(4326).reset_index(drop=True)
     return tide_query_location
 
 

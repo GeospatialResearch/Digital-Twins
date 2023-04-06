@@ -304,7 +304,7 @@ def fetch_highest_tide_side_data_from_niwa(
         api_key: str,
         datum: DatumType,
         interval_mins: Optional[int] = None) -> gpd.GeoDataFrame:
-    grouped = tide_data.groupby(['position', 'geometry'])
+    grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
     data_around_highest_tide = gpd.GeoDataFrame()
     for group_name, group_data in grouped:
         # noinspection PyTypeChecker

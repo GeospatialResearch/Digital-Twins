@@ -8,6 +8,7 @@ import logging
 import pathlib
 import re
 
+import shapely.wkt
 import geopandas as gpd
 import pandas as pd
 import numpy as np
@@ -75,7 +76,7 @@ def get_interpolated_slr_scenario_data(
         increment_year: int = 1,
         interp_method: str = 'linear') -> gpd.GeoDataFrame:
     # Group the data
-    grouped = slr_scenario_data.groupby(['siteid', 'geometry', 'position'])
+    grouped = slr_scenario_data.groupby(['siteid', slr_scenario_data['geometry'].to_wkt(), 'position'])
     slr_interp_scenario = gpd.GeoDataFrame()
     for group_name, group_data in grouped:
         site_id, geometry, position = group_name
@@ -87,6 +88,7 @@ def get_interpolated_slr_scenario_data(
         group_data_new = pd.Series(f_func(group_years_new), name='slr_metres')
         group_data_interp = pd.concat([group_years_new, group_data_new], axis=1)
         group_data_interp[['siteid', 'geometry', 'position']] = site_id, geometry, position
+        group_data_interp['geometry'] = shapely.wkt.loads(geometry)
         group_data_interp = gpd.GeoDataFrame(group_data_interp, crs=group_data.crs)
         slr_interp_scenario = pd.concat([slr_interp_scenario, group_data_interp])
     slr_interp_scenario = slr_interp_scenario.reset_index(drop=True)
