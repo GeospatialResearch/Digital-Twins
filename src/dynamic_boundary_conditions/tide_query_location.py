@@ -31,7 +31,7 @@ def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
     if not file_path.is_file():
         query = "SELECT * FROM region_geometry"
         region_geom = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-        nz_geom = region_geom.tail(1).reset_index(drop=True)
+        nz_geom = region_geom.query('shape_area == shape_area.max()').reset_index(drop=True)
         min_x, min_y, max_x, max_y = nz_geom.total_bounds
         bbox = box(min_x, min_y, max_x, max_y)
         nz_bbox = gpd.GeoDataFrame(geometry=[bbox], crs=2193)
