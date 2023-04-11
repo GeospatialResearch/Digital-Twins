@@ -82,7 +82,7 @@ def bg_model_inputs(
                          f"outvars = h, hmax, zb, zs, u, v;\n"
                          f"outfile = {outfile};\n")
         # Check if any bndfile.txt files exist, and add lines accordingly
-        bndfiles = ['left_bndfile.txt', 'right_bndfile.txt', 'top_bndfile.txt', 'bot_bndfile.txt']
+        bndfiles = ['left_bnd.txt', 'right_bnd.txt', 'top_bnd.txt', 'bot_bnd.txt']
         for bndfile in bndfiles:
             bndfile_path = rf"{valid_bg_path}/{bndfile}"
             if os.path.exists(bndfile_path):
