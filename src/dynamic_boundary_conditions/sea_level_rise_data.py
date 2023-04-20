@@ -31,7 +31,7 @@ class InvalidDirectoryError(Exception):
     pass
 
 
-def get_slr_data_directory(folder_name: str = "data") -> pathlib.Path:
+def get_slr_data_directory(folder_name: str = "slr_data") -> pathlib.Path:
     """
     Returns a Path object pointing to the directory containing the sea level rise data files.
 
@@ -48,7 +48,7 @@ def get_slr_data_directory(folder_name: str = "data") -> pathlib.Path:
     return slr_data_dir
 
 
-def get_slr_data_from_nz_searise(folder_name: str = "data") -> pd.DataFrame:
+def get_slr_data_from_nz_searise(folder_name: str = "slr_data") -> pd.DataFrame:
     """
     Returns a Pandas DataFrame that is a concatenation of all the sea level rise data located in the
     sea level rise data directory.
@@ -87,7 +87,7 @@ def get_slr_data_from_nz_searise(folder_name: str = "data") -> pd.DataFrame:
     return slr_nz_with_geom
 
 
-def store_slr_data_to_db(engine, folder_name: str = "data"):
+def store_slr_data_to_db(engine, folder_name: str = "slr_data"):
     if check_table_exists(engine, "sea_level_rise"):
         log.info("Table 'sea_level_rise_data' already exists in the database.")
     else:
