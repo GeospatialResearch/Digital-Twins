@@ -2,11 +2,13 @@ import logging
 from http.client import OK, ACCEPTED, BAD_REQUEST
 
 import xarray
+import numpy as np
+
 from celery.result import AsyncResult
 from flask import Flask, Response, jsonify, make_response, request
 from flask_cors import CORS
 from pyproj import Transformer
-from shapely import box
+from shapely import box, Polygon
 
 from src import tasks
 
@@ -72,6 +74,33 @@ def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -
     ymax = max([lat1, lat2])
     return box(xmin, ymin, xmax, ymax).wkt
 
+@app.route('/model/depth', methods=["GET"])
+def get_depth_at_point() -> Response:
+    try:
+        lat = request.args.get("lat", type=float)
+        lng = request.args.get("lng", type=float)
+    except ValueError:
+        return make_response("Query parameters lat & lng must be valid floats", BAD_REQUEST)
+    if lat is None or lng is None:
+        return make_response("Query parameters mandatory: lat & lng", BAD_REQUEST)
+    if not valid_coordinates(lat, lng):
+        return make_response("Query parameters lat & lng must fall in the range -90 < lat <= 90, -180 < lng <= 180",
+                             BAD_REQUEST)
+
+    ds = xarray.open_dataset("saved_to_disk_2193.nc")
+
+
+    transformer = Transformer.from_crs(4326, 2193)
+    y, x = transformer.transform(lat, lng)
+    da = ds["h"].sel(x=x, y=y, method="nearest")
+
+    times = da.coords['time'].values.tolist()
+    depths = da.values.tolist()
+
+    return make_response(jsonify({
+        "time": times,
+        "depth": depths
+    }), OK)
 
 def valid_coordinates(latitude: float, longitude: float) -> bool:
     return (-90 < latitude <= 90) and (-180 < longitude <= 180)

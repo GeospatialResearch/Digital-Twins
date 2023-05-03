@@ -11,8 +11,8 @@ class HyetographTest(unittest.TestCase):
 
     def test_catchment_area_geometry_info_correct_type(self):
         """Test to ensure that a shapely geometry polygon is extracted from the catchment file."""
-        catchment_file_path = pathlib.Path(r"tests/test_dynamic_boundary_conditions/data/catchment_polygon.shp")
-        catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file_path)
+        catchment_gdf = gpd.GeoDataFrame.from_file("tests/test_dynamic_boundary_conditions/data/catchment_polygon.shp")
+        catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
         self.assertIsInstance(catchment_polygon, Polygon)
 
 

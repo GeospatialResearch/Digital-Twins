@@ -10,6 +10,8 @@ import pathlib
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Polygon
+
+from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db, hyetograph
 
@@ -97,8 +99,8 @@ def spatial_uniform_model_input(mean_catchment_rain: pd.DataFrame, bg_flood_path
 
 def main():
     # Catchment polygon
-    catchment_file = pathlib.Path(r"selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
+    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
     # Connect to the database
     engine = setup_environment.get_database()
     # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
@@ -124,7 +126,7 @@ def main():
     hyetograph.hyetograph(hyetograph_data, ari)
 
     # BG-Flood path
-    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
+    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)

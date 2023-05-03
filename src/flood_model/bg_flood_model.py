@@ -12,6 +12,7 @@ import subprocess
 from datetime import datetime
 
 import xarray as xr
+import geopandas as gpd
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import DateTime
@@ -123,7 +124,7 @@ def run_model(
         engine,
 ):
     """Call the functions."""
-    dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
+    dem_path = dem_metadata_in_db.get_dem_path(instructions, catchment_boundary, engine)
     bg_model_inputs(
         bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
     )
@@ -131,26 +132,34 @@ def run_model(
     subprocess.run([bg_path / "BG_Flood_Cleanup.exe"], check=True)
 
 
-def read_and_fill_instructions():
+def read_and_fill_instructions(catchment_file_path: pathlib.Path):
     """Reads instruction file and adds keys and uses selected_polygon.geojson as catchment_boundary"""
     linz_api_key = config.get_env_variable("LINZ_API_KEY")
     instruction_file = pathlib.Path("src/flood_model/instructions_geofabrics.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
     instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
-    instructions["instructions"]["data_paths"]["catchment_boundary"] = (
-                pathlib.Path(os.getcwd()) / pathlib.Path("selected_polygon.geojson")).as_posix()
+
+    instructions["instructions"]["data_paths"]["catchment_boundary"] = catchment_file_path.as_posix()
     instructions["instructions"]["data_paths"]["local_cache"] = instructions["instructions"]["data_paths"][
         "local_cache"].format(data_dir=config.get_env_variable("DATA_DIR"))
     return instructions
 
 
-def main():
+def create_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pathlib.Path:
+    temp_dir = pathlib.Path("tmp/geofabrics")
+    # Create temporary storage folder if it does not already exists
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    filepath = temp_dir / "selected_polygon.geojson"
+    selected_polygon_gdf.to_file(filepath)
+    return pathlib.Path(os.getcwd()) / filepath
+
+
+def main(selected_polygon_gdf: gpd.GeoDataFrame):
     engine = setup_environment.get_database()
-    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
-    bg_path = pathlib.Path(flood_model_dir)
-    instructions = read_and_fill_instructions()
-    catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
+    bg_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    catchment_file_path = create_catchment_boundary_file(selected_polygon_gdf)
+    instructions = read_and_fill_instructions(catchment_file_path)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
     outputtimestep = 100.0
@@ -160,7 +169,7 @@ def main():
     run_model(
         bg_path=bg_path,
         instructions=instructions,
-        catchment_boundary=catchment_boundary,
+        catchment_boundary=selected_polygon_gdf,
         resolution=resolution,
         endtime=endtime,
         outputtimestep=outputtimestep,
@@ -169,4 +178,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(sample_polygon)

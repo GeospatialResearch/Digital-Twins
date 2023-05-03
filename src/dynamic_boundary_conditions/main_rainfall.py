@@ -8,33 +8,32 @@
 @Last modified date: 8/12/2022
 """
 
-import geopandas as gpd
 import pathlib
+
+import geopandas as gpd
 from shapely.geometry import Polygon
+
+from src import config
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db, hirds_rainfall_data_from_db
+from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
 
 
-def catchment_area_geometry_info(catchment_file) -> Polygon:
+def catchment_area_geometry_info(catchment_boundary: gpd.GeoDataFrame, to_crs=4326) -> Polygon:
     """
-    Extract shapely geometry polygon from the catchment file.
+        Extract shapely geometry polygon from the catchment boundary in the given crs
 
-    Parameters
-    ----------
-    catchment_file
-        The file path of the catchment polygon shapefile.
-    """
-    catchment = gpd.read_file(catchment_file)
-    catchment = catchment.to_crs(4326)
-    catchment_polygon = catchment["geometry"][0]
-    return catchment_polygon
+        Parameters
+        ----------
+        catchment_boundary
+            The data frame of the catchment boundary polygon
+        """
+    return catchment_boundary.to_crs(to_crs)["geometry"][0]
 
 
-def main():
+def main(selected_polygon_gdf: gpd.GeoDataFrame):
     # Catchment polygon
-    catchment_file = pathlib.Path(r"./selected_polygon.geojson")
-    catchment_polygon = catchment_area_geometry_info(catchment_file)
+    catchment_polygon = catchment_area_geometry_info(selected_polygon_gdf)
     # Connect to the database
     engine = setup_environment.get_database()
     # Fetch rainfall sites data from the HIRDS website and store it to the database
@@ -69,7 +68,7 @@ def main():
     hyetograph.hyetograph(hyetograph_data, ari)
 
     # BG-Flood path
-    bg_flood_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
+    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
     sites_coverage = model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     mean_catchment_rain = model_input.mean_catchment_rainfall(hyetograph_data, sites_coverage)
@@ -77,4 +76,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(sample_polygon)
