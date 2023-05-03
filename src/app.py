@@ -1,9 +1,12 @@
 import logging
-from http.client import OK, ACCEPTED
+from http.client import OK, ACCEPTED, BAD_REQUEST
 
+import xarray
 from celery.result import AsyncResult
-from flask import Flask, Response, jsonify, make_response
+from flask import Flask, Response, jsonify, make_response, request
 from flask_cors import CORS
+from pyproj import Transformer
+from shapely import box
 
 from src import tasks
 
@@ -20,36 +23,58 @@ def health_check() -> Response:
 
 @app.route('/tasks/<task_id>', methods=["GET"])
 def get_status(task_id) -> Response:
-    def status_as_dict(result: AsyncResult) -> dict:
-        return {
-            "task_id": result.id,
-            "task_status": result.status,
-            "task_result": result.result
-        }
-
-    def get_recursive_children_status(children):
-        if children is None:
-            return []
-        statuses = []
-        for child in children:
-            child_status = status_as_dict(child)
-            child_status["children"] = get_recursive_children_status(child.children)
-            statuses.append(child_status)
-        return statuses
-
     task_result = AsyncResult(task_id, app=tasks.app)
-    status_dict = status_as_dict(task_result)
-    status_dict["children"] = get_recursive_children_status(task_result.children)
-    return make_response(status_dict, OK)
+    return make_response(jsonify({
+        "taskId": task_result.id,
+        "taskStatus": task_result.status,
+    }), OK)
 
 
-@app.route('/generate-model', methods=["POST"])
+@app.route('/tasks/<task_id>', methods=["DELETE"])
+def remove_task(task_id) -> Response:
+    task_result = AsyncResult(task_id, app=tasks.app)
+    task_result.revoke()
+    return make_response("Task removed", ACCEPTED)
+
+
+@app.route('/model/generate', methods=["POST"])
 def generate_model() -> Response:
-    task = tasks.create_model_for_area.delay()
+    try:
+        bbox = request.get_json()["bbox"]
+        lat1 = float(bbox.get("lat1"))
+        lng1 = float(bbox.get("lng1"))
+        lat2 = float(bbox.get("lat2"))
+        lng2 = float(bbox.get("lng2"))
+    except ValueError:
+        return make_response(
+            "JSON values for bbox: lat1, lng1, lat2, lng2 must be valid floats", BAD_REQUEST
+        )
+    if any(coord is None for coord in [lat1, lng1, lat2, lng2]):
+        return make_response("JSON body parameters bbox: {lat1, lng1, lat2, lng2} mandatory", BAD_REQUEST)
+    if not valid_coordinates(lat1, lng1) or not valid_coordinates(lat2, lng2):
+        return make_response("lat & lng must fall in the range -90 < lat <= 90, -180 < lng <= 180", BAD_REQUEST)
+    if (lat1, lng1) == (lat2, lng2):
+        return make_response("lat1, lng1 must not equal lat2, lng2", BAD_REQUEST)
+
+    bbox_wkt = create_wkt_from_coords(lat1, lng1, lat2, lng2)
+    task = tasks.create_model_for_area(bbox_wkt)
+
     return make_response(
-        jsonify({"task_id": task.id}),
+        jsonify({"taskId": task.id}),
         ACCEPTED
     )
+
+
+def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:
+    xmin = min([lng1, lng2])
+    ymin = min([lat1, lat2])
+    xmax = max([lng1, lng2])
+    ymax = max([lat1, lat2])
+    return box(xmin, ymin, xmax, ymax).wkt
+
+
+def valid_coordinates(latitude: float, longitude: float) -> bool:
+    return (-90 < latitude <= 90) and (-180 < longitude <= 180)
 
 
 # Development server

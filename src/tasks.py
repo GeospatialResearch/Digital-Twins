@@ -1,12 +1,8 @@
 import time
 
-from celery import Celery, states, group, result
+from celery import Celery, states, result
 
 from .config import get_env_variable
-from .digitaltwin import run
-from .dynamic_boundary_conditions import main_rainfall
-from .flood_model import bg_flood_model
-from .lidar import lidar_metadata_in_db
 
 message_broker_url = f"redis://{get_env_variable('MESSAGE_BROKER_HOST')}:6379/0"
 
@@ -21,35 +17,34 @@ class OnFailureStateTask(app.Task):
 
 
 # noinspection PyUnnecessaryBackslash
-@app.task(base=OnFailureStateTask)
-def create_model_for_area() -> result.GroupResult:
+def create_model_for_area(bbox_wkt: str) -> result.GroupResult:
     """Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks"""
-    return group(
-            initialise_db_with_region_geometries.si() | \
-            group(
-                download_lidar_data.si() | \
-                generate_rainfall_inputs.si()
-            ) | \
-            run_flood_model.si()
-    )().children
+    return (initialise_db_with_region_geometries.si(bbox_wkt) |
+            download_lidar_data.si(bbox_wkt) |
+            generate_rainfall_inputs.si(bbox_wkt) |
+            run_flood_model.si(bbox_wkt)
+            )()
 
 
-@app.task(base=OnFailureStateTask, ignore_result=True)
-def initialise_db_with_region_geometries():
+@app.task(base=OnFailureStateTask)
+def initialise_db_with_region_geometries(bbox_wkt: str):
     # run.main()
-    time.sleep(3)
+    time.sleep(5)
 
-@app.task(base=OnFailureStateTask, ignore_result=True)
-def download_lidar_data():
+
+@app.task(base=OnFailureStateTask)
+def download_lidar_data(bbox_wkt: str):
     # lidar_metadata_in_db.main()
-    time.sleep(200)
+    time.sleep(5)
 
-@app.task(base=OnFailureStateTask, ignore_result=True)
-def generate_rainfall_inputs():
+
+@app.task(base=OnFailureStateTask)
+def generate_rainfall_inputs(bbox_wkt: str):
     # main_rainfall.main()
-    time.sleep(15)
+    time.sleep(5)
 
-@app.task(base=OnFailureStateTask, ignore_result=True)
-def run_flood_model():
+
+@app.task(base=OnFailureStateTask)
+def run_flood_model(bbox_wkt: str):
     # bg_flood_model.main()
-    time.sleep(30)
+    time.sleep(5)
