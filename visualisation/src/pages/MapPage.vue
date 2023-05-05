@@ -1,13 +1,15 @@
 <template>
   <!-- The page that shows the map for the Digital Twin -->
-  <div>
+  <div class="full-height">
     <MapViewer
       :init-lat="kaiapoi.latitude"
       :init-long="kaiapoi.longitude"
+      :init-height="8000"
       :cesium-access-token="cesiumApiToken"
       :data-sources="dataSources"
       :scenarios="scenarios"
     />
+    <b-button variant="primary" @click="refreshModel">Click here after generating</b-button>
     <img id="legend" src="legend.png"/>
   </div>
 </template>
@@ -18,6 +20,7 @@ import * as Cesium from "cesium";
 import {MapViewer} from 'geo-visualisation-components/src/components';
 import titleMixin from "@/mixins/title";
 import {MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/dist/types/src/types";
+import axios from "axios";
 
 export default Vue.extend({
   name: "MapPage",
@@ -40,7 +43,42 @@ export default Vue.extend({
   created() {
     this.loadDataSources();
   },
+  mounted() {
+    // Limit scrolling on this page
+    document.body.style.overflow = "hidden"
+  },
+  beforeDestroy() {
+    // Reset scrolling for other pages
+    document.body.style.overflow = ""
+  },
   methods: {
+    async refreshModel() {
+      const wms_details = await axios.get("http://localhost:5000/model/PLACEHOLDER_MODEL_ID")
+
+      this.scenarios = [
+        // {
+        //   name: "Without climate change",
+        //   // waterElevationAssetId: 1347528,
+        //   ionAssetIds: [floodRasterBaseline]
+        // },
+        {
+          name: "With climate change",
+          // waterElevationAssetId: 1347532,
+          // ionAssetIds: [floodRasterClimate]
+          imageryProviders: [
+            new Cesium.WebMapServiceImageryProvider({
+              url: wms_details.data.url,
+              layers: wms_details.data.layers,
+              parameters: {
+                transparent: true,
+                format: "image/png",
+              },
+            })
+          ]
+        }
+      ]
+
+    },
     async loadDataSources() {
       const geoJsonDataSources = await this.loadGeoJson();
       this.dataSources = {
@@ -50,19 +88,7 @@ export default Vue.extend({
 
       const floodRasterBaseline = 1345828;
       const floodRasterClimate = 1345829;
-
-      this.scenarios = [
-        {
-          name: "Without climate change",
-          // waterElevationAssetId: 1347528,
-          ionAssetIds: [floodRasterBaseline]
-        },
-        {
-          name: "With climate change",
-          // waterElevationAssetId: 1347532,
-          ionAssetIds: [floodRasterClimate]
-        }
-      ]
+      this.refreshModel()
     },
     async loadGeoJson(): Promise<Cesium.GeoJsonDataSource[]> {
       const floodBuildingDS = await Cesium.GeoJsonDataSource.load(
@@ -101,7 +127,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    scenarioNames() {
+    scenarioNames(): Array<string> {
       return this.scenarios.map(scenario => scenario.name);
     }
   }

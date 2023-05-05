@@ -2,9 +2,7 @@
   <!-- The Vue app main context -->
   <div id="app">
     <TheNavBar />
-    <div>
-      <router-view ref="routerView" />
-    </div>
+    <router-view ref="routerView" />
   </div>
 </template>
 
