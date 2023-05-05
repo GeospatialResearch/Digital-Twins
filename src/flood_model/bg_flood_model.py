@@ -91,10 +91,10 @@ def model_output_to_db(outfile, catchment_boundary):
     session.commit()
 
 
-def latest_model_output_from_db() -> str:
+def latest_model_output_from_db() -> pathlib.Path:
     engine = setup_environment.get_database()
-    row = engine.execute("SELECT * FROM model_output ORDER BY access_date LIMIT 1 ").fetchone()
-    return row["Filename"]
+    row = engine.execute("SELECT * FROM model_output ORDER BY access_date DESC LIMIT 1 ").fetchone()
+    return pathlib.Path(row["filepath"])
 
 
 def river_discharge_info(bg_path):

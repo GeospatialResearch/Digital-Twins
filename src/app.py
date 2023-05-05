@@ -72,7 +72,7 @@ def generate_model() -> Response:
 @app.route('/model/<model_id>', methods=["GET"])
 def get_wfs_layer_latest_model(model_id):
     # model_id not currently used, just showing for example
-    layer_name = latest_model_output_from_db()
+    layer_name = latest_model_output_from_db().stem
     gs_host = get_env_variable("GEOSERVER_HOST")
     gs_port = get_env_variable("GEOSERVER_PORT")
     return make_response(jsonify({
@@ -102,12 +102,12 @@ def get_depth_at_point() -> Response:
         return make_response("Query parameters lat & lng must fall in the range -90 < lat <= 90, -180 < lng <= 180",
                              BAD_REQUEST)
 
-    ds = xarray.open_dataset("saved_to_disk_2193.nc")
+    ds = xarray.open_dataset(latest_model_output_from_db().as_posix())
 
 
     transformer = Transformer.from_crs(4326, 2193)
     y, x = transformer.transform(lat, lng)
-    da = ds["h"].sel(x=x, y=y, method="nearest")
+    da = ds["hmax_P0"].sel(xx_P0=x, yy_P0=y, method="nearest")
 
     times = da.coords['time'].values.tolist()
     depths = da.values.tolist()
