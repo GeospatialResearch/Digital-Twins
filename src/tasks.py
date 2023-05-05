@@ -1,7 +1,11 @@
-import time
-
+import geopandas as gpd
+import shapely
 from celery import Celery, states, result
 
+from src.digitaltwin import run
+from src.dynamic_boundary_conditions import main_rainfall
+from src.flood_model import bg_flood_model
+from src.lidar import lidar_metadata_in_db
 from .config import get_env_variable
 
 message_broker_url = f"redis://{get_env_variable('MESSAGE_BROKER_HOST')}:6379/0"
@@ -17,34 +21,38 @@ class OnFailureStateTask(app.Task):
 
 
 # noinspection PyUnnecessaryBackslash
-def create_model_for_area(bbox_wkt: str) -> result.GroupResult:
+def create_model_for_area(selected_polygon_wkt: str) -> result.GroupResult:
     """Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks"""
-    return (initialise_db_with_region_geometries.si(bbox_wkt) |
-            download_lidar_data.si(bbox_wkt) |
-            generate_rainfall_inputs.si(bbox_wkt) |
-            run_flood_model.si(bbox_wkt)
+    return (initialise_db_with_region_geometries.si() |
+            download_lidar_data.si(selected_polygon_wkt) |
+            generate_rainfall_inputs.si(selected_polygon_wkt) |
+            run_flood_model.si(selected_polygon_wkt)
             )()
 
 
 @app.task(base=OnFailureStateTask)
-def initialise_db_with_region_geometries(bbox_wkt: str):
-    # run.main()
-    time.sleep(5)
+def initialise_db_with_region_geometries():
+    run.main()
 
 
 @app.task(base=OnFailureStateTask)
-def download_lidar_data(bbox_wkt: str):
-    # lidar_metadata_in_db.main()
-    time.sleep(5)
+def download_lidar_data(selected_polygon_wkt: str):
+    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
+    lidar_metadata_in_db.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
-def generate_rainfall_inputs(bbox_wkt: str):
-    # main_rainfall.main()
-    time.sleep(5)
+def generate_rainfall_inputs(selected_polygon_wkt: str):
+    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
+    main_rainfall.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
-def run_flood_model(bbox_wkt: str):
-    # bg_flood_model.main()
-    time.sleep(5)
+def run_flood_model(selected_polygon_wkt: str):
+    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
+    bg_flood_model.main(selected_polygon)
+
+
+def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
+    selected_polygon = gpd.GeoDataFrame(index=[0], crs="epsg:4326", geometry=[shapely.from_wkt(wkt)])
+    return selected_polygon.to_crs(2193)

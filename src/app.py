@@ -1,16 +1,18 @@
 import logging
+import pathlib
 from http.client import OK, ACCEPTED, BAD_REQUEST
 
+import shapely
 import xarray
-import numpy as np
-
 from celery.result import AsyncResult
-from flask import Flask, Response, jsonify, make_response, request
+from flask import Flask, Response, jsonify, make_response, request, send_file
 from flask_cors import CORS
 from pyproj import Transformer
-from shapely import box, Polygon
+from shapely import box
 
 from src import tasks
+from src.config import get_env_variable
+from src.flood_model.bg_flood_model import latest_model_output_from_db
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -65,6 +67,19 @@ def generate_model() -> Response:
         jsonify({"taskId": task.id}),
         ACCEPTED
     )
+
+
+@app.route('/model/<model_id>', methods=["GET"])
+def get_wfs_layer_latest_model(model_id):
+    # model_id not currently used, just showing for example
+    layer_name = latest_model_output_from_db()
+    gs_host = get_env_variable("GEOSERVER_HOST")
+    gs_port = get_env_variable("GEOSERVER_PORT")
+    return make_response(jsonify({
+        "url": f"{gs_host}:{gs_port}/geoserver/dt-model-outputs/wms",
+        "layers": f"dt-model-outputs:{layer_name}"
+    }), OK)
+
 
 
 def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:

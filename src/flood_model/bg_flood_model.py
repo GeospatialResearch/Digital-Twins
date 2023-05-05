@@ -11,8 +11,8 @@ import pathlib
 import subprocess
 from datetime import datetime
 
-import xarray as xr
 import geopandas as gpd
+import xarray as xr
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import DateTime
@@ -21,12 +21,14 @@ from sqlalchemy.orm import sessionmaker
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.flood_model.serve_model import add_model_output_to_geoserver
 from src.lidar import dem_metadata_in_db
 
 Base = declarative_base()
 
 
 def bg_model_inputs(
+        outfile,
         bg_path,
         dem_path,
         catchment_boundary,
@@ -43,8 +45,6 @@ def bg_model_inputs(
     smallnc = 0 means Level of refinement to apply to resolution based on the
     adaptive resolution trigger
     """
-    now = datetime.now()
-    dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
     with xr.open_dataset(dem_path) as file_nc:
         max_temp_xr = file_nc
     keys = max_temp_xr.data_vars.keys()
@@ -52,12 +52,6 @@ def bg_model_inputs(
     river = "RiverDis.txt"
     rainfall = "rain_forcing.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
-    data_dir = config.get_env_variable("DATA_DIR")
-    # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
-    output_dir = rf"{data_dir}/model_output"
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
-    outfile = rf"{output_dir}/output_{dt_string}.nc"
     valid_bg_path = bg_model_path(bg_path)
     with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
@@ -97,6 +91,12 @@ def model_output_to_db(outfile, catchment_boundary):
     session.commit()
 
 
+def latest_model_output_from_db() -> str:
+    engine = setup_environment.get_database()
+    row = engine.execute("SELECT * FROM model_output ORDER BY access_date LIMIT 1 ").fetchone()
+    return row["Filename"]
+
+
 def river_discharge_info(bg_path):
     """Get the river discharge info. from design hydrographs."""
     with open(bg_path / "RiverDis.txt") as file:
@@ -125,11 +125,25 @@ def run_model(
 ):
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, catchment_boundary, engine)
+
+    # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
+    data_dir = config.get_env_variable("DATA_DIR")
+    output_dir = rf"{data_dir}/model_output"
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
+
+    now = datetime.now()
+    dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
+    outfile = pathlib.Path(rf"{output_dir}/output_{dt_string}.nc")
+
     bg_model_inputs(
-        bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
+        outfile.as_posix(), bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
     )
+    cwd = os.getcwd()
     os.chdir(bg_path)
     subprocess.run([bg_path / "BG_Flood_Cleanup.exe"], check=True)
+    os.chdir(cwd)
+    add_model_output_to_geoserver(outfile)
 
 
 def read_and_fill_instructions(catchment_file_path: pathlib.Path):
@@ -146,8 +160,8 @@ def read_and_fill_instructions(catchment_file_path: pathlib.Path):
     return instructions
 
 
-def create_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pathlib.Path:
-    temp_dir = pathlib.Path("tmp/geofabrics")
+def create_temp_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pathlib.Path:
+    temp_dir = pathlib.Path("tmp/geofabrics_polygons")
     # Create temporary storage folder if it does not already exists
     temp_dir.mkdir(parents=True, exist_ok=True)
     filepath = temp_dir / "selected_polygon.geojson"
@@ -155,10 +169,14 @@ def create_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pa
     return pathlib.Path(os.getcwd()) / filepath
 
 
+def remove_temp_catchment_boundary_file(file_path: pathlib.Path):
+    file_path.unlink()
+
+
 def main(selected_polygon_gdf: gpd.GeoDataFrame):
     engine = setup_environment.get_database()
     bg_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-    catchment_file_path = create_catchment_boundary_file(selected_polygon_gdf)
+    catchment_file_path = create_temp_catchment_boundary_file(selected_polygon_gdf)
     instructions = read_and_fill_instructions(catchment_file_path)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
@@ -175,6 +193,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
         outputtimestep=outputtimestep,
         engine=engine,
     )
+    remove_temp_catchment_boundary_file(catchment_file_path)
 
 
 if __name__ == "__main__":
