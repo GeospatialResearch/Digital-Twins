@@ -18,6 +18,7 @@ The following list defines the basic steps required to setup and run the digital
 
 ## Requirements
 * [Docker](https://www.docker.com/)
+* Anaconda(https://www.anaconda.com/download)
 
 ## Required Credentials:
 
@@ -26,10 +27,14 @@ The following list defines the basic steps required to setup and run the digital
 
 ## Starting the Digital Twin application
 1. Set up Docker
-2. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields.
-3. From project root, run the command `docker-compose up -d --build`.
-4. Inspect the logs with `docker logs -f backend_digital_twin`.
-5. Inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin. 
+1. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields.
+1  Set any file paths if needed, for example `FLOOD_MODEL_DIR` references a Geospatial Research Institute network drive, so you may need to provide your own implementation of `BG_flood` here.
+1. From project root, run the command `docker-compose up -d`.
+1. Currently, the `visualisation` and `celery_worker` services are not set up to work with Docker, so these will be set up manually.
+   1. In one terminal open the `visualisation` directory and run `npm ci && npm run serve` to start the development visualisation server.
+   1. In another terminal, go to the project root directory and run `celery -A src.tasks worker --loglevel=INFO --pool=solo` to run the backend celery service.
+1. Inspect the logs with `docker logs -f backend_digital_twin`.
+1. Inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin. 
 <br>
 
 ## Setup for developers
@@ -59,6 +64,9 @@ With the conda environment activated run:
 #!/usr/bin/env bash
 celery -A src.tasks worker --loglevel=INFO --pool=solo
 ```
+
+### Running the backend without web interface.
+For local testing, it may be useful to use the `src.run_all.py` script to run the processing.
 
 <br>
 
@@ -151,259 +159,7 @@ The [instruction file](https://github.com/GeospatialResearch/Digital-Twins/blob/
 
 ## LiDAR Database
 
-The data source for the LiDAR data is [opentopography]( https://portal.opentopography.org/dataCatalog). The data for the requested catchment area is downloaded using [geoapis](https://github.com/niwa/geoapis ) in the local directory set by the user. To store the LiDAR metadata in the database, **lidar_metadata_in_db.py** script is used. The [instruction file](/lidar_to_db/src/lidar/file.json ) and path to the local directory where user wants to store the LiDAR data is passed as an argument to **store_lidar_path(file_path_to_store, instruction_file) function as shown below:**
-
-   ```python
-   #!/usr/bin/env python
-   if __name__ == "__main__":
-       from src.digitaltwin import setup_environment
-       instruction_file = "src/lidar_test.json"
-       file_path_to_store = "your_path/lidar_data"
-       with open(instruction_file, 'r') as file_pointer:
-           instructions = json.load(file_pointer)
-       engine = setup_environment.get_database()
-       Lidar.__table__.create(bind=engine, checkfirst=True)
-       geometry_df = gpd.GeoDataFrame.from_features(instructions["features"])
-       store_lidar_path(engine, file_path_to_store, geometry_df)
-       store_tileindex(engine, file_path_to_store)
-       lidar_file = get_lidar_path(engine, geometry_df)
-   ```
-
- To get the path of the lidar file within the given catchment area:
-`store_lidar_path()` function is used first in case data is not available in the database, user needs to provide database information to connect to the database, the path where Lidar data will be stored and geopandas dataframe to get the geometry information.   
-Then `store_tileindex()` function is used to store the corresponding tiles information, user needs to provide database information to connect to the database and the path where Lidar data will be stored and finally
-`get_lidar_path function()` is used which requires two arguments i.e. engine to connect to the database and geopandas dataframe to get the geometry information to get the path of the files within the catchment area. 
-
-<br>
-
-## Dynamic Boundary Conditions
-
-### Rainfall sites' locations
-
-The rainfall sites' locations are accessed from [NIWA HIRDS](https://hirds.niwa.co.nz/) which is a tool that provides a map-based interface to enable rainfall estimates to be provided at any location in New Zealand. The sites' information can be stored in the database using the `rainfall_sites.py` script as shown below:
-
-```python
-#!/usr/bin/env python
-if __name__ == "__main__":
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import rainfall_sites
-
-    engine = setup_environment.get_database()
-    sites = rainfall_sites.get_rainfall_sites_in_df()
-    rainfall_sites.rainfall_sites_to_db(engine, sites)
-```
-
-<br>
-
-### Store rainfall data to database
-
-To store the rainfall data of sites within the desired catchment area in the database, the `hirds_rainfall_data_to_db.py` script is used. As shown below:
-
-```python
-#!/usr/bin/env python
-if __name__ == "__main__":
-    import pathlib
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hyetograph
-    from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
-    
-    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
-    engine = setup_environment.get_database()
-    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    # Set idf to False for rain depth data and to True for rain intensity data
-    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=False)
-    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=True)
-```
-
-The `rainfall_data_to_db(engine, catchment_polygon, idf)` function requires three arguments:
-1. *engine:* Engine used to connect to the database.
-2. *catchment_polygon:* Desired catchment area (polygon type).
-3. *idf:* Set to False for rainfall depth data, and True for rainfall intensity data.
-
-<br>
-
-### Get required rainfall data from the database 
-
-To get the rainfall data of sites within the desired catchment from the database, the `hirds_rainfall_data_from_db.py` script is used. As shown below:
-
-```python
-#!/usr/bin/env python
-if __name__ == "__main__":
-    import pathlib
-    from src.digitaltwin import setup_environment
-    from src.dynamic_boundary_conditions import hyetograph
-    from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
-
-    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
-    rcp = 2.6
-    time_period = "2031-2050"
-    ari = 100
-    # To get rainfall data for all durations set duration to "all"
-    duration = "all"
-    engine = setup_environment.get_database()
-    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
-    rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
-        engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
-    print(rain_depth_in_catchment)
-    rain_intensity_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
-        engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
-    print(rain_intensity_in_catchment)
-```
-
-The `rainfall_data_from_db(engine, catchment_polygon, rcp, time_period, ari, duration, idf)` function requires seven arguments:
-1. *engine:* Engine used to connect to the database.
-2. *catchment_polygon:* Desired catchment area (polygon type).
-3. *rcp:* There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5, RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
-4. *time_period:* Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for historical data.
-5. *ari:* Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
-6. *duration:* Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
-7. *idf:* Set to False for rainfall depth data, and True for rainfall intensity data.
-
-For more information, please visit the [NIWA HIRDS](https://hirds.niwa.co.nz/) and [HIRDSv4 Usage](https://niwa.co.nz/information-services/hirds/help) websites.
-
-<br>
-
-### Thiessen Polygon
-
-Each rainfall site is associated with a particular area. To store the total size of the area (km squared) associated with each site in the database, the `thiessen_polygon_calculator.py` script is used. As shown below:
-
-```python
-#!/usr/bin/env python
-if __name__ == "__main__":
-   from src.digitaltwin import setup_environment
-   from src.dynamic_boundary_conditions import rainfall_sites
-   from src.dynamic_boundary_conditions import thiessen_polygon_calculator
-
-   engine = setup_environment.get_database()
-   nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
-   sites_in_catchment = rainfall_sites.get_sites_within_aoi(engine, nz_boundary_polygon)
-   thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
-```
-
-The `get_sites_within_aoi(engine, catchment)` function is used to get the sites with the catchment area from the database. The function requires two arguments:
-1. *engine:* Engine used to connect to the database.
-2. *catchment:* New Zealand boundary catchment polygon (polygon type).
-
-The `thiessen_polygons(engine, catchment, sites_in_catchment)` function is used to calculate the area covered by each site and stores the data in the database. The function requires three arguments:
-1. *engine:* Engine used to connect to the database.
-2. *catchment:* New Zealand boundary catchment polygon (polygon type).
-3. *sites_in_catchment:* Rainfall sites within the catchment area.
-
-<br>
-
-### Hyetograph
-
-A hyetograph is a graphical representation of the distribution of rainfall intensity over time. For instance, in the 24-hour rainfall distributions, rainfall intensity progressively increases until it reaches a maximum and then gradually decreases. Where this maximum occurs and how fast the maximum is reached is what differentiates one distribution from another. One important aspect to understand is that the distributions are for design storms, not necessarily actual storms. In other words, a real storm may not behave in this same fashion.
-
-> Incomplete yet. To be updated.
->```python
->#!/usr/bin/env python
->if __name__ == "__main__":
->    import pathlib
->    from src.digitaltwin import setup_environment
->    from src.dynamic_boundary_conditions import rainfall_sites
->    from src.dynamic_boundary_conditions import thiessen_polygon_calculator
->    from src.dynamic_boundary_conditions import hyetograph
->    from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
->    from src.dynamic_boundary_conditions import hirds_rainfall_data_from_db
->
->    catchment_file = pathlib.Path(r"src\dynamic_boundary_conditions\catchment_polygon.shp")
->    rcp = 2.6
->    time_period = "2031-2050"
->    ari = 100
->    # To get rainfall data for all durations set duration to "all"
->    duration = "all"
->
->    engine = setup_environment.get_database()
->    sites = rainfall_sites.get_rainfall_sites_in_df()
->    rainfall_sites.rainfall_sites_to_db(engine, sites)
->    nz_boundary_polygon = rainfall_sites.get_new_zealand_boundary(engine)
->    sites_in_catchment = rainfall_sites.get_sites_within_aoi(engine, nz_boundary_polygon)
->    thiessen_polygon_calculator.thiessen_polygons(engine, nz_boundary_polygon, sites_in_catchment)
->    catchment_polygon = hyetograph.catchment_area_geometry_info(catchment_file)
->
->    # Set idf to False for rain depth data and to True for rain intensity data
->    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=False)
->    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, catchment_polygon, idf=True)
->    rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
->        engine, catchment_polygon, rcp, time_period, ari, duration, idf=False)
->    print(rain_depth_in_catchment)
->    rain_intensity_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
->        engine, catchment_polygon, rcp, time_period, ari, duration, idf=True)
->    print(rain_intensity_in_catchment)
->```
-
-<br>
-
-## Run BG Flood model
-
-To run the model, `bg_flood_model.py` script is used which takes DEM information from the database, runs the model and stores the output back to the database.
-run_model(bg_path, instructions, catchment_boundary, resolution, endtime, outputtimestep) function is used to run the model as shown below:
-
-```python
-#!/usr/bin/env python
-if __name__ == '__main__':
-    engine = setup_environment.get_database()
-    bg_path = pathlib.Path(r"U:/Research/FloodRiskResearch/DigitalTwin/BG-Flood/BG-Flood_Win10_v0.6-a")
-    linz_api_key = get_api_key("LINZ_API_KEY")
-    instruction_file = pathlib.Path("src/lidar/instructions_geofabrics.json")
-    with open(instruction_file, "r") as file_pointer:
-        instructions = json.load(file_pointer)
-        instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
-    catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
-    resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
-    # Saving the outputs after each `outputtimestep` seconds
-    outputtimestep = 100.0
-    # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
-    # is the last one)
-    endtime = 900.0
-    run_model(
-        bg_path=bg_path,
-        instructions=instructions,
-        catchment_boundary=catchment_boundary,
-        resolution=resolution,
-        endtime=endtime,
-        outputtimestep=outputtimestep,
-        engine=engine,
-    )
-```
-
-The `bg_model_inputs` function requires 9 arguments, of which 3 are set as default values and can be changed later:
-
-```python
-#!/usr/bin/env python
-def bg_model_inputs(
-        bg_path,
-        dem_path,
-        catchment_boundary,
-        resolution,
-        endtime,
-        outputtimestep,
-        mask=15,
-        gpudevice=0,
-        smallnc=0,
-):
-    """Set parameters to run the flood model.
-    mask is used for visualising all the values larger than 15.
-    If we are using the gpu then set to 0 (if no gpu type -1).
-    smallnc = 0 means Level of refinement to apply to resolution based on the
-    adaptive resolution trigger
-    """
-```
-
-The arguments are explained below:
-1. bg_path: path where BG Flood exe file is saved.
-2. instructions: json file used to generate DEM.
-The script uses geofabrics to generate a hydrologically conditioned DEM if it doesn't exist in the database therefore instruction file is required as an argument.
-3. catchment_boundary: geopandas type
-4. resolution: resolution value of the DEM. In the example above, resolution value is taken from the instruction file itself.
-5. endtime: Saving the outputs till given time (in seconds)
-6. outputtimestep: Saving the outputs after every given time (in seconds)
-7. mask: take values above the given number from DEM.
-8. gpudevice: if using GPU to run the model, set value as 0 else -1.
-9. smallnc: Level of refinement to apply to resolution based on the adaptive resolution trigger
-
-<br>
+The data source for the LiDAR data is [opentopography]( https://portal.opentopography.org/dataCatalog). The data for the requested catchment area is downloaded using [geoapis](https://github.com/niwa/geoapis ) in the local directory set by the user. To store the LiDAR metadata in the database, **lidar_metadata_in_db.py** script is used. The [instruction file](/lidar_to_db/src/lidar/file.json ) and path to the local directory where user wants to store the LiDAR data is passed as an argument to **store_lidar_path(file_path_to_store, instruction_file) function 
 
 ## Create extensions in PostgreSQL:
 

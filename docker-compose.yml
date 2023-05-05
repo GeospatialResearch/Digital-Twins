@@ -32,20 +32,9 @@ services:
     depends_on:
       - db_postgres
       - message_broker
-      - celery_worker
+      - geoserver
 
-  celery_worker:
-    # Performs tasks such as complex computation asynchronously on behalf of backend
-    build: .
-    container_name: celery_worker_digital_twin
-    restart: always
-    entrypoint: conda run --no-capture-output -n digitaltwin celery -A src.tasks worker --loglevel=INFO
-    env_file:
-      - .env
-      - .env.docker-override
-    depends_on:
-      - db_postgres
-      - message_broker
+# Celery worker removed temporarily because BG_flood has not yet been configured for docker.
 
   geoserver:
     # Serves geospatial web data through interactions with files and database
@@ -67,13 +56,7 @@ services:
       timeout: 10s
       retries: 3
 
-  www:
-    # Webserver for the website interface
-    build:
-      context: ./visualisation
-    container_name: www_digital_twin
-    ports:
-      - "8080:80"
+# WWW removed temporarily because build is failing and more work is needed.
 
   message_broker:
     # Communicates between backend and workers to assign tasks and store state
