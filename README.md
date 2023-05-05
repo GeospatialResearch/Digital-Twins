@@ -53,6 +53,13 @@ conda env create -f environment.yml
 conda activate digitaltwin
 ```
 
+### Run Celery locally (reccomended, since BG Flood does not yet work on Docker)
+With the conda environment activated run:
+```bash
+#!/usr/bin/env bash
+celery -A src.tasks worker --loglevel=INFO --pool=solo
+```
+
 <br>
 
 ## Tests
