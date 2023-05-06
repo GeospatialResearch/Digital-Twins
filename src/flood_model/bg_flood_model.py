@@ -41,7 +41,7 @@ Base = declarative_base()
 def bg_model_inputs(
         bg_path,
         dem_path,
-        output_dir: pathlib.Path,
+        output_file: pathlib.Path,
         catchment_boundary,
         resolution,
         end_time,
@@ -76,8 +76,8 @@ def bg_model_inputs(
                          f"rain = {rainfall};\n"
                          f"river = {river},{extents};\n"
                          f"outvars = h, hmax, zb, zs, u, v;\n"
-                         f"outfile = {outfile};")
-    model_output_to_db(outfile, catchment_boundary)
+                         f"outfile = {output_file};")
+    model_output_to_db(output_file, catchment_boundary)
     river_discharge_info(bg_path)
 
 
@@ -104,9 +104,22 @@ def model_output_to_db(outfile, catchment_boundary):
 
 
 def latest_model_output_from_db() -> pathlib.Path:
+    """Retrieve the latest model output file path, by querying the database"""
     engine = setup_environment.get_database()
     row = engine.execute("SELECT * FROM model_output ORDER BY access_date DESC LIMIT 1 ").fetchone()
     return pathlib.Path(row["filepath"])
+
+
+def add_crs_to_latest_model_output():
+    """
+    Add CRS to the latest BG-Flood Model Output.
+    """
+    latest_file = latest_model_output_from_db()
+    with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
+        latest_output.load()
+        if latest_output.rio.crs is None:
+            latest_output.rio.write_crs("epsg:2193", inplace=True)
+    latest_output.to_netcdf(latest_file)
 
 
 def river_discharge_info(bg_path):
@@ -128,6 +141,7 @@ class BGDEM(Base):
 
 def run_model(
         bg_path,
+        output_dir,
         instructions,
         catchment_boundary,
         resolution,
@@ -138,12 +152,6 @@ def run_model(
 ):
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, catchment_boundary, engine)
-
-    # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
-    data_dir = config.get_env_variable("DATA_DIR")
-    output_dir = rf"{data_dir}/model_output"
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
 
     now = datetime.now()
     dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
@@ -156,8 +164,8 @@ def run_model(
     os.chdir(bg_path)
     subprocess.run([bg_path / "BG_flood.exe"], check=True)
     os.chdir(cwd)
-    add_crs_to_latest_model_output(output_dir)
-    add_model_output_to_geoserver(outfile)
+    add_crs_to_latest_model_output()
+    add_model_output_to_geoserver(output_file)
 
 
 def read_and_fill_instructions(catchment_file_path: pathlib.Path):
@@ -185,6 +193,7 @@ def create_temp_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) 
 
 
 def remove_temp_catchment_boundary_file(file_path: pathlib.Path):
+    """Removes the temporary file from the file system once it is used"""
     file_path.unlink()
 
 
@@ -199,6 +208,13 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
     # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
     # is the last one)
     end_time = 900.0
+
+    # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
+    data_dir = config.get_env_variable("DATA_DIR")
+    output_dir = rf"{data_dir}/model_output"
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
+
     run_model(
         bg_path=bg_path,
         output_dir=output_dir,
