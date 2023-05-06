@@ -18,23 +18,49 @@ The following list defines the basic steps required to setup and run the digital
 
 ## Requirements
 * [Docker](https://www.docker.com/)
-* Anaconda(https://www.anaconda.com/download)
+* [Anaconda](https://www.anaconda.com/download)
+* [Node.js / NPM](https://nodejs.org/)
 
 ## Required Credentials:
-
 * [Stats NZ API Key](https://datafinder.stats.govt.nz/my/api/)
 * [LINZ API Key](linz.govt.nz/guidance/data-service/linz-data-service-guide/web-services/creating-api-key)
+* [Cesium access token](https://cesium.com/ion/tokens)
 
-## Starting the Digital Twin application
-1. Set up Docker
+## Starting the Digital Twin application (localhost)
+1. Set up Docker, Anaconda, and NPM to work on your system.
+
+1. In the project root, in an Anaconda prompt, run the following commands to initialise the environment:
+   ```bash
+   #!/usr/bin/env bash
+   conda env create -f environment.yml
+   conda activate digitaltwin
+   ```
+   Many IDEs will allow you to use the conda environment to assist in code analysis,
+   and the environment is required to run the code.
+   
 1. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields.
-1  Set any file paths if needed, for example `FLOOD_MODEL_DIR` references a Geospatial Research Institute network drive, so you may need to provide your own implementation of `BG_flood` here.
-1. From project root, run the command `docker-compose up -d`.
+   
+1. Set any file paths in `.env` if needed, for example `FLOOD_MODEL_DIR` references a Geospatial Research Institute
+   network drive, so you may need to provide your own implementation of `BG_flood` here.
+    
+1. Create a file `visualisation/.env.local`. In this, fill in 
+   `VUE_APP_CESIUM_ACCESS_TOKEN=[your_token_here]`, replace `[your_token_here]` with the Cesium Access Token
+    
+1. From project root, run the command `docker-compose up -d` to run the database, backend web servers, and helper services
+   .
 1. Currently, the `visualisation` and `celery_worker` services are not set up to work with Docker, so these will be set up manually.
-   1. In one terminal open the `visualisation` directory and run `npm ci && npm run serve` to start the development visualisation server.
-   1. In another terminal, go to the project root directory and run `celery -A src.tasks worker --loglevel=INFO --pool=solo` to run the backend celery service.
-1. Inspect the logs with `docker logs -f backend_digital_twin`.
-1. Inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin. 
+   1. In one terminal, with the conda environment activated, go to the project root directory and run `celery -A src.tasks worker --loglevel=INFO --pool=solo` to run the backend celery service.
+   1. In another terminal open the `visualisation` directory and run `npm ci && npm run serve` to start the development visualisation server.
+
+1. You may inspect the logs of the backend in the celery window.
+   
+1. You may inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin.
+
+## Using the Digital Twin application
+1. Visit the address shown in the visualisation server window, default [http://localhost:8080](http://localhost:8080)
+1. To run a flood model, hold SHIFT and hold the left mouse button to drag a box around the area you wish to run the model for.
+1. Once the model has completed running, you may need to click the button at the bottom of the screen requesting you to reload the flood model.
+1. To see a graph for flood depths over time at a location, hold CTRL and click the left mouse button on the area you wish to query.
 <br>
 
 ## Setup for developers
@@ -52,11 +78,7 @@ docker-compose up --build -d db_postgres
 ### Create Conda environment
 Setup a conda environment to allow intelligent code analysis and local development by using the following command run from the repository folder:
 
-```bash
-#!/usr/bin/env bash
-conda env create -f environment.yml
-conda activate digitaltwin
-```
+
 
 ### Run Celery locally (reccomended, since BG Flood does not yet work on Docker)
 With the conda environment activated run:

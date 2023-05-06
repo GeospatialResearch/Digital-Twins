@@ -13,7 +13,7 @@
 ### Running the visualisation server in development mode:
 1. Install dependencies:
    ```bash
-   npm run serve
+   npm ci
    ```
 2. Serve application:
    ```bash
