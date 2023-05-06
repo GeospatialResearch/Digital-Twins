@@ -73,7 +73,8 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str
         data=data,
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
     )
-    response.raise_for_status()
+    if not response.ok:
+        raise requests.HTTPError(response.text, response=response)
 
 
 def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str):
