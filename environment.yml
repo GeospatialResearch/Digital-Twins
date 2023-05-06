@@ -19,12 +19,12 @@ dependencies:
   - bs4 # Try remove in future
   - validators  # Try remove in future
   - sqlalchemy<2 # To migrate some db connection code needs to change
-  - geoalchemy2==0.13.1
+  - geoalchemy2
   - plotly
   - geocube
-  - flask==2.2.3
-  - flask-cors==3.0.10
-  - redis-py==4.5.1
+  - flask
+  - flask-cors
+  - redis-py
   - pip:
     - geofabrics==0.10.11
     - geovoronoi==0.4.0
