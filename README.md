@@ -35,8 +35,7 @@ The following list defines the basic steps required to setup and run the digital
    conda env create -f environment.yml
    conda activate digitaltwin
    ```
-   Many IDEs will allow you to use the conda environment to assist in code analysis,
-   and the environment is required to run the code.
+   _While this is running, you can continue with the other steps until using the environment._
    
 1. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields.
    
@@ -46,7 +45,7 @@ The following list defines the basic steps required to setup and run the digital
 1. Create a file `visualisation/.env.local`. In this, fill in 
    `VUE_APP_CESIUM_ACCESS_TOKEN=[your_token_here]`, replace `[your_token_here]` with the Cesium Access Token
     
-1. From project root, run the command `docker-compose up -d` to run the database, backend web servers, and helper services
+1. From project root, run the command `docker-compose up --build -d` to run the database, backend web servers, and helper services
    .
 1. Currently, the `visualisation` and `celery_worker` services are not set up to work with Docker, so these will be set up manually.
    1. In one terminal, with the conda environment activated, go to the project root directory and run `celery -A src.tasks worker --loglevel=INFO --pool=solo` to run the backend celery service.
