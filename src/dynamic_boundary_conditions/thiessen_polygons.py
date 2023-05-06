@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: thiessen_polygons.py
 @Description: Calculate the area covered by each rainfall site across New Zealand and store it in the database,
-              then get all rainfall sites (thiessen polygons) coverage areas are within the catchment area.
-@Author: pkh35
-@Date: 20/01/2022
-@Last modified by: sli229
-@Last modified date: 8/12/2022
+              then get all rainfall sites voronoi (thiessen polygons) areas that are within the catchment area.
+@Author: pkh35, sli229
 """
 
 import logging
@@ -91,10 +87,10 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
         site_index = site_index[0]
         site = sites_in_aoi.filter(items=[site_index], axis=0)
         sites_in_voronoi_order = pd.concat([sites_in_voronoi_order, site])
-    rainfall_sites_coverage = gpd.GeoDataFrame(sites_in_voronoi_order, geometry=voronoi_regions, crs="epsg:4326")
-    rainfall_sites_coverage["area_in_km2"] = rainfall_sites_coverage.to_crs(3857).area / 1e6
-    rainfall_sites_coverage = rainfall_sites_coverage[["site_id", "site_name", "area_in_km2", "geometry"]]
-    return rainfall_sites_coverage
+    rainfall_sites_voronoi = gpd.GeoDataFrame(sites_in_voronoi_order, geometry=voronoi_regions, crs="epsg:4326")
+    rainfall_sites_voronoi["area_in_km2"] = rainfall_sites_voronoi.to_crs(3857).area / 1e6
+    rainfall_sites_voronoi = rainfall_sites_voronoi[["site_id", "site_name", "area_in_km2", "geometry"]]
+    return rainfall_sites_voronoi
 
 
 def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame):
@@ -110,12 +106,12 @@ def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd
     sites_in_aoi : gpd.GeoDataFrame
         Rainfall sites within the area of interest.
     """
-    if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites_coverage"):
+    if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites_voronoi"):
         log.info("Rainfall sites coverage data already exists in the database.")
     else:
-        rainfall_sites_coverage = thiessen_polygons_calculator(area_of_interest, sites_in_aoi)
-        rainfall_sites_coverage.to_postgis("rainfall_sites_coverage", engine, if_exists="replace")
-        log.info("Stored rainfall sites coverage data in the database.")
+        rainfall_sites_voronoi = thiessen_polygons_calculator(area_of_interest, sites_in_aoi)
+        rainfall_sites_voronoi.to_postgis("rainfall_sites_voronoi", engine, if_exists="replace")
+        log.info("Stored rainfall sites voronoi (thiessen polygons) data in the database.")
 
 
 def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
@@ -129,8 +125,8 @@ def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
     catchment_polygon : Polygon
         Desired catchment area.
     """
-    query = f"SELECT * FROM rainfall_sites_coverage AS rsc " \
-            f"WHERE ST_Intersects(rsc.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"
+    query = f"SELECT * FROM rainfall_sites_voronoi AS rsv " \
+            f"WHERE ST_Intersects(rsv.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"
     sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
     sites_in_catchment.reset_index(drop=True, inplace=True)

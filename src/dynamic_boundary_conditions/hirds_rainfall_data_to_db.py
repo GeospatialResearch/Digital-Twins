@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: hirds_rainfall_data_to_db.py
 @Description: Store rainfall data of all the sites within the catchment area in the database.
-@Author: pkh35
-@Date: 20/01/2022
-@Last modified by: sli229
-@Last modified date: 5/12/2022
+@Author: pkh35, sli229
 """
 
 import pandas as pd
@@ -174,7 +170,6 @@ def main():
     # Store rainfall data of all the sites within the catchment area in the database
     # Set idf to False for rain depth data and to True for rain intensity data
     rainfall_data_to_db(engine, sites_in_catchment, idf=False)
-    rainfall_data_to_db(engine, sites_in_catchment, idf=True)
 
 
 if __name__ == "__main__":

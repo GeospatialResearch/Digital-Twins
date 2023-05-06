@@ -2,9 +2,9 @@
 """
 Created on Fri Jan 14 14:05:35 2022
 
-@author: pkh35
+@author: pkh35, sli229
 """
-
+import logging
 import json
 import os
 import pathlib
@@ -22,22 +22,34 @@ from sqlalchemy.orm import sessionmaker
 from src import config
 from src.digitaltwin import setup_environment
 from src.flood_model.serve_model import add_model_output_to_geoserver
+from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
 from src.lidar import dem_metadata_in_db
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+log.addHandler(stream_handler)
+
 
 Base = declarative_base()
 
 
 def bg_model_inputs(
-        outfile,
         bg_path,
         dem_path,
+        output_dir: pathlib.Path,
         catchment_boundary,
         resolution,
-        endtime,
-        outputtimestep,
+        end_time,
+        output_timestep,
+        rain_input_type: RainInputType,
         mask=15,
-        gpudevice=0,
-        smallnc=0,
+        gpu_device=0,
+        small_nc=0
 ):
     """Set parameters to run the flood model.
     mask is used for visualising all the values larger than 15.
@@ -49,18 +61,18 @@ def bg_model_inputs(
         max_temp_xr = file_nc
     keys = max_temp_xr.data_vars.keys()
     elev_var = list(keys)[1]
+    rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
     river = "RiverDis.txt"
-    rainfall = "rain_forcing.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     valid_bg_path = bg_model_path(bg_path)
     with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
-                         f"gpudevice = {gpudevice};\n"
+                         f"gpudevice = {gpu_device};\n"
                          f"mask = {mask};\n"
                          f"dx = {resolution};\n"
-                         f"smallnc = {smallnc};\n"
-                         f"outputtimestep = {outputtimestep};\n"
-                         f"endtime = {endtime};\n"
+                         f"smallnc = {small_nc};\n"
+                         f"outputtimestep = {output_timestep};\n"
+                         f"endtime = {end_time};\n"
                          f"rain = {rainfall};\n"
                          f"river = {river},{extents};\n"
                          f"outvars = h, hmax, zb, zs, u, v;\n"
@@ -119,9 +131,10 @@ def run_model(
         instructions,
         catchment_boundary,
         resolution,
-        endtime,
-        outputtimestep,
-        engine,
+        end_time,
+        output_timestep,
+        rain_input_type: RainInputType,
+        engine
 ):
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, catchment_boundary, engine)
@@ -134,15 +147,16 @@ def run_model(
 
     now = datetime.now()
     dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
-    outfile = pathlib.Path(rf"{output_dir}/output_{dt_string}.nc")
+    output_file = pathlib.Path(rf"{output_dir}/output_{dt_string}.nc")
 
     bg_model_inputs(
-        outfile.as_posix(), bg_path, dem_path, catchment_boundary, resolution, endtime, outputtimestep
+        bg_path, dem_path, output_file.as_posix(), catchment_boundary, resolution, end_time, output_timestep, rain_input_type
     )
     cwd = os.getcwd()
     os.chdir(bg_path)
-    subprocess.run([bg_path / "BG_Flood_Cleanup.exe"], check=True)
+    subprocess.run([bg_path / "BG_flood.exe"], check=True)
     os.chdir(cwd)
+    add_crs_to_latest_model_output(output_dir)
     add_model_output_to_geoserver(outfile)
 
 
@@ -161,6 +175,7 @@ def read_and_fill_instructions(catchment_file_path: pathlib.Path):
 
 
 def create_temp_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pathlib.Path:
+    """Temportary catchment file to be ingested by GeoFabrics"""
     temp_dir = pathlib.Path("tmp/geofabrics_polygons")
     # Create temporary storage folder if it does not already exists
     temp_dir.mkdir(parents=True, exist_ok=True)
@@ -180,18 +195,20 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
     instructions = read_and_fill_instructions(catchment_file_path)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
-    outputtimestep = 100.0
+    output_timestep = 100.0
     # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
     # is the last one)
-    endtime = 900.0
+    end_time = 900.0
     run_model(
         bg_path=bg_path,
+        output_dir=output_dir,
         instructions=instructions,
         catchment_boundary=selected_polygon_gdf,
         resolution=resolution,
-        endtime=endtime,
-        outputtimestep=outputtimestep,
-        engine=engine,
+        end_time=end_time,
+        output_timestep=output_timestep,
+        rain_input_type=RainInputType.UNIFORM,
+        engine=engine
     )
     remove_temp_catchment_boundary_file(catchment_file_path)
 

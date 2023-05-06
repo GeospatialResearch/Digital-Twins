@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Script name: main.py
-@Description:
-@Author: pkh35
-@Date: 17/01/2022
-@Last modified by: sli229
-@Last modified date: 8/12/2022
+@Description: Main rainfall script used to fetch and store rainfall data to the database, and generate the
+              requested rainfall model input for BG-Flood etc.
+@Author: pkh35, sli229
 """
 
 import pathlib
@@ -17,6 +14,7 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db, hirds_rainfall_data_from_db
 from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, hyetograph, model_input
+from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
 
 
 def catchment_area_geometry_info(catchment_boundary: gpd.GeoDataFrame, to_crs=4326) -> Polygon:
@@ -47,11 +45,10 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
     # Store rainfall data of all the sites within the catchment area in the database
     # Set idf to False for rain depth data and to True for rain intensity data
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=False)
-    hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=True)
     # Requested scenario
-    rcp = None  # 2.6
-    time_period = None  # "2031-2050"
-    ari = 50  # 100
+    rcp = 2.6
+    time_period = "2031-2050"
+    ari = 100
     # For a requested scenario, get all rainfall data for sites within the catchment area from the database
     # Set idf to False for rain depth data and to True for rain intensity data
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
@@ -59,20 +56,23 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
     # Get hyetograph data for all sites within the catchment area
     hyetograph_data = hyetograph.get_hyetograph_data(
         rain_depth_in_catchment,
-        storm_length_hrs=48,
-        time_to_peak_hrs=24,
+        storm_length_mins=2880,
+        time_to_peak_mins=1440,
         increment_mins=10,
         interp_method="cubic",
-        hyeto_method="alt_block")
+        hyeto_method=HyetoMethod.ALT_BLOCK)
     # Create interactive hyetograph plots for sites within the catchment area
     hyetograph.hyetograph(hyetograph_data, ari)
+    # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
 
-    # BG-Flood path
-    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
     sites_coverage = model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
-    mean_catchment_rain = model_input.mean_catchment_rainfall(hyetograph_data, sites_coverage)
-    model_input.spatial_uniform_model_input(mean_catchment_rain, bg_flood_path)
+    # Write out the requested rainfall model input for BG-Flood
+    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    model_input.generate_rain_model_input(
+        hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.UNIFORM)
+    model_input.generate_rain_model_input(
+        hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.VARYING)
 
 
 if __name__ == "__main__":

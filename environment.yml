@@ -6,6 +6,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - python>=3.11
   - pip
   - python-dotenv
   - lxml==4.9.2
@@ -20,6 +21,7 @@ dependencies:
   - sqlalchemy<2 # To migrate some db connection code needs to change
   - geoalchemy2==0.13.1
   - plotly
+  - geocube
   - flask==2.2.3
   - flask-cors==3.0.10
   - redis-py==4.5.1
