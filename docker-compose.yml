@@ -5,6 +5,7 @@ volumes:
 
 services:
   db_postgres:
+    # Database to store all vector data, states, and links to raster data.
     image: postgis/postgis
     container_name: db_postgres_digital_twin
     restart: always
@@ -20,10 +21,47 @@ services:
       test: pg_isready -h 127.0.0.1 -U $POSTGRES_USER -d $POSTGRES_DB
 
   backend:
+    # Performs analysis, computation, handles web requests, facilitates database interactions
     build: .
     container_name: backend_digital_twin
-    network_mode: host
-    env_file: .env
+    env_file:
+      - .env
+      - .env.docker-override
+    ports:
+      - "5000:5000"
     depends_on:
-      db_postgres:
-        condition: service_healthy
+      - db_postgres
+      - message_broker
+      - geoserver
+
+# Celery worker removed temporarily because BG_flood has not yet been configured for docker.
+
+  geoserver:
+    # Serves geospatial web data through interactions with files and database
+    image: docker.osgeo.org/geoserver:2.21.2
+    container_name: geoserver_digital_twin
+    volumes:
+      - ./geoserver/geoserver_data:/opt/geoserver_data
+    depends_on:
+      - db_postgres
+    environment:
+      - SKIP_DEMO_DATA=true
+      - CORS_ENABLED=true
+    ports:
+      - "${GEOSERVER_PORT}:8080"
+    restart: always
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/ || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+
+# WWW removed temporarily because build is failing and more work is needed.
+
+  message_broker:
+    # Communicates between backend and workers to assign tasks and store state
+    image: redis
+    container_name: message_broker_digital_twin
+    ports:
+      - "6379:6379"
+    restart: always
