@@ -68,7 +68,8 @@ def get_selected_maf_ari_flow_data(
             columns={'flow_maf': 'maf', f'flow_{ari}': 'middle', f'flow_se_{ari}': 'flow_se'}, inplace=True)
     selected_data['lower'] = selected_data['middle'] - selected_data['flow_se']
     selected_data['upper'] = selected_data['middle'] + selected_data['flow_se']
-    selected_data.drop(columns=['flow_se'], inplace=True)
+    selected_data = selected_data.drop(columns=['flow_se']).reset_index(drop=True)
+    selected_data['target_point_no'] = selected_data.index + 1
     return selected_data
 
 
@@ -93,7 +94,8 @@ def get_flow_data_for_hydrograph(
         if ari not in valid_ari_values:
             raise ValueError(f"Invalid 'ari' value: {ari}. Must be one of {valid_ari_values}.")
         selected_data = get_selected_maf_ari_flow_data(flow_data, maf, ari)
-    selected_flow_data = selected_data[['target_point', 'res_no', 'areakm2', 'maf', f'{bound.value}']]
+    selected_flow_data = selected_data[
+        ['target_point_no', 'target_point', 'res_no', 'areakm2', 'maf', f'{bound.value}']]
     return selected_flow_data
 
 
@@ -106,6 +108,7 @@ def get_hydrograph_data(
         bound: BoundType = BoundType.MIDDLE) -> gpd.GeoDataFrame:
     flow_data = get_flow_data_for_hydrograph(matched_data, maf, ari, bound)
     data = {
+        'target_point_no': [],
         'target_point': [],
         'res_no': [],
         'areakm2': [],
@@ -113,6 +116,7 @@ def get_hydrograph_data(
         'flow': []
     }
     for _, row in flow_data.iterrows():
+        data['target_point_no'].extend([row['target_point_no']] * 3)
         data['target_point'].extend([row['target_point']] * 3)
         data['res_no'].extend([row['res_no']] * 3)
         data['areakm2'].extend([row['areakm2']] * 3)
