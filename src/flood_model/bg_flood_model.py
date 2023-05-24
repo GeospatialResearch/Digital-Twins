@@ -97,7 +97,7 @@ def bg_model_inputs(
                 param_file.write(f"{position} = {bndfile},2;\n")
         for river_file_path in bg_path.glob('river[0-9]*_*.txt'):
             river = process_river_files(river_file_path)
-            param_file.write(f"river = {river};")
+            param_file.write(f"river = {river};\n")
     model_output_to_db(outfile, catchment_boundary)
 
 
