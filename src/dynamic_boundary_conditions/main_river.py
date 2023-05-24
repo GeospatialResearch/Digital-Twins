@@ -3,6 +3,7 @@ import pathlib
 import geopandas as gpd
 from shapely.geometry import LineString
 
+from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.river_enum import BoundType
 from src.dynamic_boundary_conditions import (
@@ -10,7 +11,8 @@ from src.dynamic_boundary_conditions import (
     river_network_for_aoi,
     osm_waterways,
     river_osm_combine,
-    hydrograph
+    hydrograph,
+    river_model_input
 )
 
 
@@ -81,7 +83,10 @@ def main():
         maf=True,
         ari=None,
         bound=BoundType.MIDDLE)
-    print(hydrograph_data)
+
+    # --- Generate river model inputs for BG-Flood ---------------------------------------------------------------------
+    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    river_model_input.generate_river_model_input(bg_flood_path, hydrograph_data)
 
 
 if __name__ == "__main__":
