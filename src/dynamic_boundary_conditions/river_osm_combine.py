@@ -144,7 +144,6 @@ def get_target_points(
     hydro_dem, res_no = get_hydro_dem_resolution()
     closest_osm_waterway['boundary_line_buffered'] = (
         closest_osm_waterway['boundary_line'].buffer(distance=res_no, cap_style=2))
-
     target_points = gpd.GeoDataFrame()
     for i in range(len(closest_osm_waterway)):
         row_data = closest_osm_waterway.iloc[i:i + 1].reset_index(drop=True)
@@ -155,6 +154,7 @@ def get_target_points(
         min_z_dem_coord = get_min_elevation_dem_coord(z_elevation, midpoint_coord)
         merged_data = row_data.merge(min_z_dem_coord, how='left', left_index=True, right_index=True)
         target_points = pd.concat([target_points, merged_data])
+    target_points['res_no'] = res_no
     target_points = target_points.set_geometry('target_point').reset_index(drop=True)
     return target_points
 
