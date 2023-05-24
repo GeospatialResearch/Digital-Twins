@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from typing import Union, Optional, Tuple
+from typing import Union, Tuple
 
 import geopandas as gpd
 import pandas as pd
@@ -78,14 +78,15 @@ def get_hydro_dem_data() -> xr.Dataset:
     return hydro_dem
 
 
-def get_hydro_dem_resolution(hydro_dem: xr.Dataset) -> Union[Optional[int], Optional[float]]:
+def get_hydro_dem_resolution() -> Tuple[xr.Dataset, Union[int, float]]:
+    hydro_dem = get_hydro_dem_data()
     unique_resolutions = list(set(abs(res) for res in hydro_dem.rio.resolution()))
     res_no = unique_resolutions[0] if len(unique_resolutions) == 1 else None
     res_description = int(hydro_dem.description.split()[-1])
-    if res_no == res_description:
-        return res_no
-    else:
+    if res_no != res_description:
         raise ValueError("Inconsistent resolution.")
+    else:
+        return hydro_dem, res_no
 
 
 def get_osm_bound_point_in_dem(
@@ -140,8 +141,7 @@ def get_min_elevation_dem_coord(
 
 def get_target_points(
         closest_osm_waterway: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    hydro_dem = get_hydro_dem_data()
-    res_no = get_hydro_dem_resolution(hydro_dem)
+    hydro_dem, res_no = get_hydro_dem_resolution()
     closest_osm_waterway['boundary_line_buffered'] = (
         closest_osm_waterway['boundary_line'].buffer(distance=res_no, cap_style=2))
 
