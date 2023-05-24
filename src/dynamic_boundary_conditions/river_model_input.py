@@ -30,7 +30,7 @@ pd.set_option('expand_frame_repr', False)
 
 def remove_existing_river_inputs(bg_flood_path: pathlib.Path):
     # iterate through all files in the directory
-    for file_path in bg_flood_path.glob('river[0-9]*_*.txt'):
+    for file_path in bg_flood_path.glob('river[0-9]*.txt'):
         # remove the file
         file_path.unlink()
 
