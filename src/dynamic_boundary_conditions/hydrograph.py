@@ -1,9 +1,11 @@
 import logging
+import pathlib
 from typing import List, Union
 import re
 
 import geopandas as gpd
 
+from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.river_enum import BoundType
 from src.dynamic_boundary_conditions import (
@@ -137,7 +139,7 @@ def main():
 
     # --- river_data_to_from_db.py -------------------------------------------------------------------------------------
     # Store REC1 data to db
-    rec1_data_dir = "U:/Research/FloodRiskResearch/DigitalTwin/stored_data/rec1_data"
+    rec1_data_dir = config.get_env_variable("DATA_DIR_REC1", cast_to=pathlib.Path)
     river_data_to_from_db.store_rec1_data_to_db(engine, rec1_data_dir)
     # Store sea-draining catchments data to db
     river_data_to_from_db.store_sea_drain_catchments_to_db(engine, layer_id=99776)

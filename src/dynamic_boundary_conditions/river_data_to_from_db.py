@@ -40,21 +40,22 @@ def check_table_exists(engine, db_table_name: str) -> bool:
     return table_exists
 
 
-def get_rec1_data_from_niwa(rec1_data_dir: str) -> gpd.GeoDataFrame:
-    rec1_data_dir = pathlib.Path(rec1_data_dir)
+def get_rec1_data_from_niwa(
+        rec1_data_dir: pathlib.Path,
+        file_name: str = "NZ_Flood_Statistics_Henderson_Collins_V2_Layer.shp") -> gpd.GeoDataFrame:
     # Check if the REC1 data directory exists, if not, raise an error
     if not rec1_data_dir.exists():
         raise InvalidDirectoryError(f"REC1 data directory '{rec1_data_dir}' does not exist.")
     # Check if there are any Shape files in the specified directory
     if not any(rec1_data_dir.glob("*.shp")):
         raise FileNotFoundError(f"No REC1 data files found in {rec1_data_dir}")
-    rec1_file_path = rec1_data_dir / "NZ_Flood_Statistics_Henderson_Collins_V2_Layer.shp"
+    rec1_file_path = rec1_data_dir / file_name
     rec1_nz = gpd.read_file(rec1_file_path)
     rec1_nz.columns = rec1_nz.columns.str.lower()
     return rec1_nz
 
 
-def store_rec1_data_to_db(engine, rec1_data_dir: str):
+def store_rec1_data_to_db(engine, rec1_data_dir: pathlib.Path):
     if check_table_exists(engine, "rec1_data"):
         log.info("Table 'rec1_data' already exists in the database.")
     else:
@@ -123,7 +124,7 @@ def main():
 
     # --- river_data_to_from_db.py -------------------------------------------------------------------------------------
     # Store REC1 data to db
-    rec1_data_dir = "U:/Research/FloodRiskResearch/DigitalTwin/stored_data/rec1_data"
+    rec1_data_dir = config.get_env_variable("DATA_DIR_REC1", cast_to=pathlib.Path)
     store_rec1_data_to_db(engine, rec1_data_dir)
     # Store sea-draining catchments data to db
     store_sea_drain_catchments_to_db(engine, layer_id=99776)
