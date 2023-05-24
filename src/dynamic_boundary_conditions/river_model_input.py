@@ -1,7 +1,5 @@
 import logging
 import pathlib
-from typing import List, Union
-import re
 
 import geopandas as gpd
 import pandas as pd
