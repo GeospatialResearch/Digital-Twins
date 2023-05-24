@@ -112,7 +112,7 @@ def get_hydrograph_data(
         'target_point': [],
         'res_no': [],
         'areakm2': [],
-        'time_mins': [],
+        'mins': [],
         'flow': []
     }
     for _, row in flow_data.iterrows():
@@ -120,9 +120,12 @@ def get_hydrograph_data(
         data['target_point'].extend([row['target_point']] * 3)
         data['res_no'].extend([row['res_no']] * 3)
         data['areakm2'].extend([row['areakm2']] * 3)
-        data['time_mins'].extend([0, time_to_peak_mins, river_length_mins])
+        data['mins'].extend([0, time_to_peak_mins, river_length_mins])
         data['flow'].extend([row['maf'] * 0.1, row['middle'], 0])
     hydrograph_data = gpd.GeoDataFrame(data, geometry="target_point", crs=flow_data.crs)
+    hydrograph_data = hydrograph_data.assign(
+        hours=hydrograph_data["mins"] / 60,
+        seconds=hydrograph_data["mins"] * 60)
     return hydrograph_data
 
 
