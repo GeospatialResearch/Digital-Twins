@@ -108,6 +108,10 @@ def get_hydrograph_data(
         maf: bool,
         ari: Union[int, None] = None,
         bound: BoundType = BoundType.MIDDLE) -> gpd.GeoDataFrame:
+    min_time_to_peak_mins = river_length_mins / 2
+    if time_to_peak_mins < min_time_to_peak_mins:
+        raise ValueError(
+            "'time_to_peak_mins' needs to be at least half of 'river_length_mins'.")
     flow_data = get_flow_data_for_hydrograph(matched_data, maf, ari, bound)
     data = {
         'target_point_no': [],
@@ -122,7 +126,10 @@ def get_hydrograph_data(
         data['target_point'].extend([row['target_point']] * 3)
         data['res_no'].extend([row['res_no']] * 3)
         data['areakm2'].extend([row['areakm2']] * 3)
-        data['mins'].extend([0, time_to_peak_mins, river_length_mins])
+        data['mins'].extend(
+            [time_to_peak_mins - min_time_to_peak_mins,
+             time_to_peak_mins,
+             time_to_peak_mins + min_time_to_peak_mins])
         data['flow'].extend([row['maf'] * 0.1, row['middle'], 0])
     hydrograph_data = gpd.GeoDataFrame(data, geometry="target_point", crs=flow_data.crs)
     hydrograph_data = hydrograph_data.assign(
