@@ -27,8 +27,7 @@ def main():
     # BG-Flood path
     flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
     bg_flood_path = pathlib.Path(flood_model_dir)
-    # Get StatsNZ and NIWA api key
-    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
+    # Get NIWA api key
     niwa_api_key = config.get_env_variable("NIWA_API_KEY")
     # Connect to the database
     engine = setup_environment.get_database()
@@ -37,7 +36,7 @@ def main():
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     catchment_area = tide_query_location.get_catchment_area(catchment_file)
     # Store regional council clipped data in the database
-    tide_query_location.regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
+    tide_query_location.regional_council_clipped_to_db(engine, layer_id=111181)
     # Get regions (clipped) that intersect with the catchment area from the database
     regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
     # Get the location (coordinates) to fetch tide data for

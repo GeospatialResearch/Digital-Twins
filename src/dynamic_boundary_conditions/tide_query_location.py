@@ -44,17 +44,22 @@ def get_catchment_area(catchment_file: pathlib.Path) -> gpd.GeoDataFrame:
     return catchment_area
 
 
-def get_stats_nz_dataset(key: str, layer_id: int) -> gpd.GeoDataFrame:
-    vector_fetcher = geoapis.vector.StatsNz(key, verbose=True, crs=2193)
+def get_stats_nz_dataset(layer_id: int) -> gpd.GeoDataFrame:
+    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
+    vector_fetcher = geoapis.vector.StatsNz(stats_nz_api_key, verbose=True, crs=2193)
     response_data = vector_fetcher.run(layer_id)
     return response_data
 
 
-def get_regional_council_clipped(key: str, layer_id: int) -> gpd.GeoDataFrame:
-    regional_clipped = get_stats_nz_dataset(key, layer_id)
+def get_regional_council_clipped(layer_id: int) -> gpd.GeoDataFrame:
+    regional_clipped = get_stats_nz_dataset(layer_id)
     regional_clipped.columns = regional_clipped.columns.str.lower()
     # move geometry column to last column
-    regional_clipped = regional_clipped.drop(columns=['geometry'], axis=1).assign(geometry=regional_clipped['geometry'])
+    regional_clipped = (
+        regional_clipped
+        .drop(columns=['geometry'], axis=1)
+        .assign(geometry=regional_clipped['geometry'])
+    )
     regional_clipped = gpd.GeoDataFrame(regional_clipped)
     return regional_clipped
 
@@ -75,11 +80,11 @@ def check_table_exists(engine, db_table_name: str) -> bool:
     return table_exists
 
 
-def regional_council_clipped_to_db(engine, key: str, layer_id: int):
+def regional_council_clipped_to_db(engine, layer_id: int):
     if check_table_exists(engine, "region_geometry_clipped"):
         log.info("Table 'region_geometry_clipped' already exists in the database.")
     else:
-        regional_clipped = get_regional_council_clipped(key, layer_id)
+        regional_clipped = get_regional_council_clipped(layer_id)
         regional_clipped.to_postgis("region_geometry_clipped", engine, index=False, if_exists="replace")
         log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
 
@@ -195,8 +200,6 @@ def get_tide_query_locations(
 
 
 def main():
-    # Get StatsNZ api key
-    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
     # Connect to the database
     engine = setup_environment.get_database()
     write_nz_bbox_to_file(engine)
@@ -204,7 +207,7 @@ def main():
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     catchment_area = get_catchment_area(catchment_file)
     # Store regional council clipped data in the database
-    regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
+    regional_council_clipped_to_db(engine, layer_id=111181)
     # Get regions (clipped) that intersect with the catchment area from the database
     regions_clipped = get_regions_clipped_from_db(engine, catchment_area)
     # Get the location (coordinates) to fetch tide data for
