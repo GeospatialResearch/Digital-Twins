@@ -98,14 +98,16 @@ def get_rec1_data_from_db(
         catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area["geometry"][0]
     sea_drain_query = f"""
-    SELECT * FROM sea_draining_catchments AS sdc
+    SELECT * 
+    FROM sea_draining_catchments AS sdc
     WHERE ST_Intersects(sdc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"""
     sdc_data = gpd.GeoDataFrame.from_postgis(sea_drain_query, engine, geom_col="geometry")
     sdc_polygon = sdc_data.unary_union
     sdc_area = gpd.GeoDataFrame(geometry=[sdc_polygon], crs=sdc_data.crs)
     combined_polygon = pd.concat([sdc_area, catchment_area]).unary_union
     rec1_query = f"""
-    SELECT * FROM rec1_data AS rec
+    SELECT * 
+    FROM rec1_data AS rec
     WHERE ST_Intersects(rec.geometry, ST_GeomFromText('{combined_polygon}', 2193))"""
     rec1_data = gpd.GeoDataFrame.from_postgis(rec1_query, engine, geom_col="geometry")
     rec1_data = rec1_data.drop_duplicates()
