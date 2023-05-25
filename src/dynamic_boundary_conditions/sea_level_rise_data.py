@@ -27,10 +27,6 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-class InvalidDirectoryError(Exception):
-    pass
-
-
 def get_slr_data_directory(folder_name: str = "slr_data") -> pathlib.Path:
     """
     Returns a Path object pointing to the directory containing the sea level rise data files.
@@ -44,7 +40,7 @@ def get_slr_data_directory(folder_name: str = "slr_data") -> pathlib.Path:
     slr_data_dir = pathlib.Path(__file__).parent / folder_name
     # Check if the sea level rise data directory exists, if not, raise an error
     if not slr_data_dir.exists():
-        raise InvalidDirectoryError(f"Sea level rise data directory '{slr_data_dir}' does not exist.")
+        raise FileNotFoundError(f"Sea level rise data directory not found: '{slr_data_dir}'.")
     return slr_data_dir
 
 
