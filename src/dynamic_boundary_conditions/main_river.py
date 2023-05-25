@@ -85,8 +85,8 @@ def main():
         bound=BoundType.MIDDLE)
 
     # --- Generate river model inputs for BG-Flood ---------------------------------------------------------------------
-    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-    river_model_input.generate_river_model_input(bg_flood_path, hydrograph_data)
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    river_model_input.generate_river_model_input(bg_flood_dir, hydrograph_data)
 
 
 if __name__ == "__main__":

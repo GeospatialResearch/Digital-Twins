@@ -28,15 +28,15 @@ log.addHandler(stream_handler)
 pd.set_option('expand_frame_repr', False)
 
 
-def remove_existing_river_inputs(bg_flood_path: pathlib.Path):
+def remove_existing_river_inputs(bg_flood_dir: pathlib.Path):
     # iterate through all files in the directory
-    for file_path in bg_flood_path.glob('river[0-9]*.txt'):
+    for file_path in bg_flood_dir.glob('river[0-9]*.txt'):
         # remove the file
         file_path.unlink()
 
 
-def generate_river_model_input(bg_flood_path: pathlib.Path, hydrograph_data: gpd.GeoDataFrame):
-    remove_existing_river_inputs(bg_flood_path)
+def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.GeoDataFrame):
+    remove_existing_river_inputs(bg_flood_dir)
     grouped = hydrograph_data.groupby(
         ['target_point_no', hydrograph_data['target_point'].to_wkt(), 'res_no', 'areakm2'],
         sort=False)
@@ -46,9 +46,9 @@ def generate_river_model_input(bg_flood_path: pathlib.Path, hydrograph_data: gpd
         target_cell = group_data['target_cell'].unique()[0]
         x_min, y_min, x_max, y_max = target_cell.bounds
         input_data = group_data[['seconds', 'flow']].reset_index(drop=True)
-        file_path = bg_flood_path / f"river{target_point_no}_{x_min}_{x_max}_{y_min}_{y_max}.txt"
+        file_path = bg_flood_dir / f"river{target_point_no}_{x_min}_{x_max}_{y_min}_{y_max}.txt"
         input_data.to_csv(file_path, index=False, header=False)
-    log.info(f"Successfully generated river model inputs for BG-Flood. Located in: {bg_flood_path}")
+    log.info(f"Successfully generated river model inputs for BG-Flood. Located in: {bg_flood_dir}")
 
 
 def main():
@@ -96,8 +96,8 @@ def main():
     print(hydrograph_data)
 
     # --- Generate river model inputs for BG-Flood ---------------------------------------------------------------------
-    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-    generate_river_model_input(bg_flood_path, hydrograph_data)
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    generate_river_model_input(bg_flood_dir, hydrograph_data)
 
 
 if __name__ == "__main__":
