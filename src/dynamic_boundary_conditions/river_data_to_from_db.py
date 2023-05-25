@@ -20,10 +20,6 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-class InvalidDirectoryError(Exception):
-    pass
-
-
 def check_table_exists(engine, db_table_name: str) -> bool:
     """
     Check if table exists in the database.
@@ -45,7 +41,7 @@ def get_rec1_data_from_niwa(
         file_name: str = "NZ_Flood_Statistics_Henderson_Collins_V2_Layer.shp") -> gpd.GeoDataFrame:
     # Check if the REC1 data directory exists, if not, raise an error
     if not rec1_data_dir.exists():
-        raise InvalidDirectoryError(f"REC1 data directory '{rec1_data_dir}' does not exist.")
+        raise FileNotFoundError(f"REC1 data directory not found: {rec1_data_dir}")
     # Check if there are any Shape files in the specified directory
     if not any(rec1_data_dir.glob("*.shp")):
         raise FileNotFoundError(f"No REC1 data files found in {rec1_data_dir}")
