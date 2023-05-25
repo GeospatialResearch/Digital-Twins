@@ -128,6 +128,7 @@ def get_hydrograph_data(
     hydrograph_data = hydrograph_data.assign(
         hours=hydrograph_data["mins"] / 60,
         seconds=hydrograph_data["mins"] * 60)
+    hydrograph_data['flow'] = hydrograph_data.pop('flow')
     return hydrograph_data
 
 
