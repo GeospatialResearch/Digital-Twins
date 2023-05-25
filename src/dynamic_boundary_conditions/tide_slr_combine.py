@@ -135,8 +135,6 @@ def get_combined_tide_slr_data(
 
 
 def main():
-    # Get NIWA api key
-    niwa_api_key = config.get_env_variable("NIWA_API_KEY")
     # Connect to the database
     engine = setup_environment.get_database()
     tide_query_location.write_nz_bbox_to_file(engine)
@@ -153,7 +151,6 @@ def main():
     # Get tide data
     tide_data_king = tide_data_from_niwa.get_tide_data(
         approach=ApproachType.KING_TIDE,
-        api_key=niwa_api_key,
         datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
         tide_length_mins=2880,

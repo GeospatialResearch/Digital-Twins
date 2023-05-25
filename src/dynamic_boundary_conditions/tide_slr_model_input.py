@@ -48,11 +48,6 @@ def generate_uniform_boundary_input(bg_flood_path: pathlib.Path, tide_slr_data: 
 
 
 def main():
-    # BG-Flood path
-    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
-    bg_flood_path = pathlib.Path(flood_model_dir)
-    # Get NIWA api key
-    niwa_api_key = config.get_env_variable("NIWA_API_KEY")
     # Connect to the database
     engine = setup_environment.get_database()
     tide_query_location.write_nz_bbox_to_file(engine)
@@ -69,7 +64,6 @@ def main():
     # Get tide data
     tide_data_king = tide_data_from_niwa.get_tide_data(
         approach=ApproachType.KING_TIDE,
-        api_key=niwa_api_key,
         datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
         tide_length_mins=2880,
@@ -87,6 +81,8 @@ def main():
         add_vlm=False,
         percentile=50)
     # Generate the model input for BG-Flood
+    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
+    bg_flood_path = pathlib.Path(flood_model_dir)
     generate_uniform_boundary_input(bg_flood_path, tide_slr_data)
 
 
