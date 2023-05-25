@@ -80,7 +80,6 @@ def get_date_ranges(
 
 
 def gen_api_query_param_list(
-        api_key: str,
         lat: Union[int, float],
         long: Union[int, float],
         datum: DatumType,
@@ -91,8 +90,6 @@ def gen_api_query_param_list(
 
     Parameters
     ----------
-    api_key : str
-        NIWA api key (https://developer.niwa.co.nz/).
     lat : Union[int, float]
         Latitude range -29 to -53 (- eg: -30.876).
     long : Union[int, float]
@@ -113,11 +110,13 @@ def gen_api_query_param_list(
         raise ValueError(f"longitude is {long}, must range from 160 to 180 or from -175 to -180.")
     if interval_mins is not None and not (10 <= interval_mins <= 1440):
         raise ValueError(f"interval is {interval_mins}, must range from 10 to 1440.")
+    # Get NIWA api key
+    niwa_api_key = config.get_env_variable("NIWA_API_KEY")
     # Create a list of api query parameters for all 'date_ranges'
     query_param_list = []
     for start_date, number_of_days in date_ranges.items():
         query_param = {
-            "apikey": api_key,
+            "apikey": niwa_api_key,
             "lat": str(lat),
             "long": str(long),
             "numberOfDays": number_of_days,
@@ -198,7 +197,6 @@ def convert_to_nz_timezone(tide_data_utc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
 def fetch_tide_data_from_niwa(
         tide_query_loc: gpd.GeoDataFrame,
-        api_key: str,
         datum: DatumType,
         start_date: date = date.today(),
         total_days: int = 365,
@@ -210,8 +208,6 @@ def fetch_tide_data_from_niwa(
     ----------
     tide_query_loc : gpd.GeoDataFrame
         GeoPandas dataframe containing the query coordinate and its position.
-    api_key : str
-        NIWA api key (https://developer.niwa.co.nz/).
     datum : DatumType
         Datum used. LAT: Lowest astronomical tide; MSL: Mean sea level.
     start_date : date
@@ -230,7 +226,7 @@ def fetch_tide_data_from_niwa(
         query_loc_row = gpd.GeoDataFrame([row], crs=tide_query_loc.crs)
         lat, long, position = get_query_loc_coords_position(query_loc_row)
         # Get the list of api query parameters used to retrieve high and low tide data
-        query_param_list = gen_api_query_param_list(api_key, lat, long, datum, date_ranges, interval_mins)
+        query_param_list = gen_api_query_param_list(lat, long, datum, date_ranges, interval_mins)
         # Iterate over the list of API query parameters to fetch high and low tide data for the requested period
         query_loc_tide = asyncio.run(fetch_tide_data_for_requested_period(query_param_list))
         query_loc_tide['position'] = position
@@ -300,7 +296,6 @@ def add_time_information(
 def fetch_highest_tide_side_data_from_niwa(
         tide_data: gpd.GeoDataFrame,
         tide_length_mins: int,
-        api_key: str,
         datum: DatumType,
         interval_mins: Optional[int] = None) -> gpd.GeoDataFrame:
     grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
@@ -313,7 +308,7 @@ def fetch_highest_tide_side_data_from_niwa(
         # get unique pairs of coordinates
         highest_tide_query_loc = group_data[['position', 'geometry']].drop_duplicates().reset_index(drop=True)
         highest_tide_data = fetch_tide_data_from_niwa(
-            highest_tide_query_loc, api_key, datum, start_date, total_days, interval_mins)
+            highest_tide_query_loc, datum, start_date, total_days, interval_mins)
         highest_tide_data = highest_tide_data.loc[
             highest_tide_data['datetime_nz'].between(start_datetime, end_datetime)]
         # add time information, i.e. mins, hours, seconds
@@ -325,7 +320,6 @@ def fetch_highest_tide_side_data_from_niwa(
 
 def get_tide_data(
         approach: ApproachType,
-        api_key: str,
         datum: DatumType,
         tide_query_loc: gpd.GeoDataFrame,
         start_date: date = date.today(),
@@ -336,25 +330,26 @@ def get_tide_data(
         if tide_length_mins is None:
             raise ValueError("tide_length_mins parameter must be provided for ApproachType.KING_TIDE")
         tide_data = fetch_tide_data_from_niwa(
-            tide_query_loc, api_key, datum, start_date, total_days=365, interval_mins=None)
+            tide_query_loc, datum, start_date, total_days=365, interval_mins=None)
         data_around_highest_tide = fetch_highest_tide_side_data_from_niwa(
-            tide_data, tide_length_mins, api_key, datum, interval_mins)
+            tide_data, tide_length_mins, datum, interval_mins)
         return data_around_highest_tide
     else:
         if total_days is None:
             raise ValueError("total_days parameter must be provided for ApproachType.PERIOD_TIDE")
-        tide_data = fetch_tide_data_from_niwa(tide_query_loc, api_key, datum, start_date, total_days, interval_mins)
+        tide_data = fetch_tide_data_from_niwa(tide_query_loc, datum, start_date, total_days, interval_mins)
         return tide_data
 
 
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
+    tide_query_location.write_nz_bbox_to_file(engine)
     # Catchment polygon
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     catchment_area = tide_query_location.get_catchment_area(catchment_file)
-    # Get NIWA api key
-    niwa_api_key = config.get_env_variable("NIWA_API_KEY")
+    # Store regional council clipped data in the database
+    tide_query_location.regional_council_clipped_to_db(engine, layer_id=111181)
     # Get regions (clipped) that intersect with the catchment area from the database
     regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
     # Get the location (coordinates) to fetch tide data for
@@ -363,7 +358,6 @@ def main():
     # Get tide data
     tide_data_king = get_tide_data(
         approach=ApproachType.KING_TIDE,
-        api_key=niwa_api_key,
         datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
         tide_length_mins=2880,
@@ -371,7 +365,6 @@ def main():
     print(tide_data_king)
     tide_data_period = get_tide_data(
         approach=ApproachType.PERIOD_TIDE,
-        api_key=niwa_api_key,
         datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
         start_date=date(2023, 1, 1),

@@ -25,35 +25,29 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def remove_existing_boundary_input(bg_flood_path: pathlib.Path):
+def remove_existing_boundary_input(bg_flood_dir: pathlib.Path):
     # iterate through all files in the directory
-    for file_path in bg_flood_path.glob('*_bnd.txt'):
+    for file_path in bg_flood_dir.glob('*_bnd.txt'):
         # remove the file
         file_path.unlink()
 
 
-def gen_uniform_boundary_input(bg_flood_path: pathlib.Path, tide_slr_data: pd.DataFrame):
-    remove_existing_boundary_input(bg_flood_path)
+def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pd.DataFrame):
+    remove_existing_boundary_input(bg_flood_dir)
     grouped = tide_slr_data.groupby('position')
     for position, group_data in grouped:
         input_data = group_data[['seconds', 'tide_slr_metres']]
-        file_path = bg_flood_path / f"{position}_bnd.txt"
+        file_path = bg_flood_dir / f"{position}_bnd.txt"
         input_data.to_csv(file_path, sep='\t', index=False, header=False)
         # Add "# Water level boundary" line at the beginning of the file
         with open(file_path, 'r+') as file:
             content = file.read()
             file.seek(0, 0)
             file.write('# Water level boundary\n' + content)
-    log.info(f"Successfully generated the uniform boundary input for BG-Flood. Located in: {bg_flood_path}")
+    log.info(f"Successfully generated the uniform boundary input for BG-Flood. Located in: {bg_flood_dir}")
 
 
 def main():
-    # BG-Flood path
-    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
-    bg_flood_path = pathlib.Path(flood_model_dir)
-    # Get StatsNZ and NIWA api key
-    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
-    niwa_api_key = config.get_env_variable("NIWA_API_KEY")
     # Connect to the database
     engine = setup_environment.get_database()
     tide_query_location.write_nz_bbox_to_file(engine)
@@ -61,7 +55,7 @@ def main():
     catchment_file = pathlib.Path(r"selected_polygon.geojson")
     catchment_area = tide_query_location.get_catchment_area(catchment_file)
     # Store regional council clipped data in the database
-    tide_query_location.regional_council_clipped_to_db(engine, stats_nz_api_key, 111181)
+    tide_query_location.regional_council_clipped_to_db(engine, layer_id=111181)
     # Get regions (clipped) that intersect with the catchment area from the database
     regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
     # Get the location (coordinates) to fetch tide data for
@@ -70,7 +64,6 @@ def main():
     # Get tide data
     tide_data_king = tide_data_from_niwa.get_tide_data(
         approach=ApproachType.KING_TIDE,
-        api_key=niwa_api_key,
         datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
         tide_length_mins=2880,
@@ -88,7 +81,8 @@ def main():
         add_vlm=False,
         percentile=50)
     # Generate the model input for BG-Flood
-    gen_uniform_boundary_input(bg_flood_path, tide_slr_data)
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    generate_uniform_boundary_input(bg_flood_dir, tide_slr_data)
 
 
 if __name__ == "__main__":
