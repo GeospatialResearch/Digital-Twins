@@ -44,7 +44,7 @@ def get_rec1_data_from_niwa(
         raise FileNotFoundError(f"REC1 data directory not found: {rec1_data_dir}")
     # Check if there are any Shape files in the specified directory
     if not any(rec1_data_dir.glob("*.shp")):
-        raise FileNotFoundError(f"No REC1 data files found in {rec1_data_dir}")
+        raise FileNotFoundError(f"REC1 data files not found: {rec1_data_dir}")
     rec1_file_path = rec1_data_dir / file_name
     rec1_nz = gpd.read_file(rec1_file_path)
     rec1_nz.columns = rec1_nz.columns.str.lower()
