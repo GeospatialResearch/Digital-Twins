@@ -65,7 +65,7 @@ def process_river_input_files(
 def bg_model_inputs(
         bg_flood_dir: pathlib.Path,
         dem_path,
-        output_dir: pathlib.Path,
+        model_output_dir: pathlib.Path,
         catchment_boundary,
         resolution,
         end_time,
@@ -89,9 +89,9 @@ def bg_model_inputs(
     elev_var = list(keys)[1]
     rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
     # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
-    outfile = rf"{output_dir}/output_{dt_string}.nc"
+    if not os.path.isdir(model_output_dir):
+        os.makedirs(model_output_dir)
+    outfile = rf"{model_output_dir}/output_{dt_string}.nc"
     valid_bg_flood_dir = valid_bg_flood_model(bg_flood_dir)
     with open(rf"{valid_bg_flood_dir}/BG_param.txt", "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
@@ -154,16 +154,16 @@ def find_latest_model_output(output_dir: pathlib.Path):
     return latest_file
 
 
-def add_crs_to_latest_model_output(output_dir: pathlib.Path):
+def add_crs_to_latest_model_output(model_output_dir: pathlib.Path):
     """
     Add CRS to the latest BG-Flood Model Output.
 
     Parameters
     ----------
-    output_dir : pathlib.Path
+    model_output_dir : pathlib.Path
         BG-Flood model output directory.
     """
-    latest_file = find_latest_model_output(output_dir)
+    latest_file = find_latest_model_output(model_output_dir)
     with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
         latest_output.load()
         if latest_output.rio.crs is None:
@@ -173,7 +173,7 @@ def add_crs_to_latest_model_output(output_dir: pathlib.Path):
 
 def run_model(
         bg_flood_dir: pathlib.Path,
-        output_dir: pathlib.Path,
+        model_output_dir: pathlib.Path,
         instructions,
         catchment_boundary,
         resolution,
@@ -185,11 +185,18 @@ def run_model(
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
     bg_model_inputs(
-        bg_flood_dir, dem_path, output_dir, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
+        bg_flood_dir,
+        dem_path,
+        model_output_dir,
+        catchment_boundary,
+        resolution,
+        end_time,
+        output_timestep,
+        rain_input_type
     )
     os.chdir(bg_flood_dir)
     subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
-    add_crs_to_latest_model_output(output_dir)
+    add_crs_to_latest_model_output(model_output_dir)
 
 
 def read_and_fill_instructions():
@@ -211,9 +218,7 @@ def main():
     # BG-Flood Model directory
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # BG-Flood Model output directory
-    data_dir = config.get_env_variable("DATA_DIR")
-    output_dir = pathlib.Path(data_dir) / "model_output"
-
+    model_output_dir = config.get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
     instructions = read_and_fill_instructions()
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
@@ -224,7 +229,7 @@ def main():
     end_time = 900.0
     run_model(
         bg_flood_dir=bg_flood_dir,
-        output_dir=output_dir,
+        model_output_dir=model_output_dir,
         instructions=instructions,
         catchment_boundary=catchment_boundary,
         resolution=resolution,
