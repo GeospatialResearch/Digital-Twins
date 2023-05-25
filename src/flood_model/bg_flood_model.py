@@ -37,11 +37,11 @@ log.addHandler(stream_handler)
 Base = declarative_base()
 
 
-def valid_bg_flood_model(bg_flood_path: pathlib.Path):
+def valid_bg_flood_model(bg_flood_dir: pathlib.Path):
     """Check if the flood_model path exists."""
-    if bg_flood_path.exists():
-        return bg_flood_path
-    raise FileNotFoundError(f"BG-flood model at '{bg_flood_path}' not found.")
+    if bg_flood_dir.exists():
+        return bg_flood_dir
+    raise FileNotFoundError(f"BG-flood model at '{bg_flood_dir}' not found.")
 
 
 def process_tide_input_files(
