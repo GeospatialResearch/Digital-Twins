@@ -25,26 +25,26 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def remove_existing_boundary_input(bg_flood_path: pathlib.Path):
+def remove_existing_boundary_input(bg_flood_dir: pathlib.Path):
     # iterate through all files in the directory
-    for file_path in bg_flood_path.glob('*_bnd.txt'):
+    for file_path in bg_flood_dir.glob('*_bnd.txt'):
         # remove the file
         file_path.unlink()
 
 
-def generate_uniform_boundary_input(bg_flood_path: pathlib.Path, tide_slr_data: pd.DataFrame):
-    remove_existing_boundary_input(bg_flood_path)
+def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pd.DataFrame):
+    remove_existing_boundary_input(bg_flood_dir)
     grouped = tide_slr_data.groupby('position')
     for position, group_data in grouped:
         input_data = group_data[['seconds', 'tide_slr_metres']]
-        file_path = bg_flood_path / f"{position}_bnd.txt"
+        file_path = bg_flood_dir / f"{position}_bnd.txt"
         input_data.to_csv(file_path, sep='\t', index=False, header=False)
         # Add "# Water level boundary" line at the beginning of the file
         with open(file_path, 'r+') as file:
             content = file.read()
             file.seek(0, 0)
             file.write('# Water level boundary\n' + content)
-    log.info(f"Successfully generated the uniform boundary input for BG-Flood. Located in: {bg_flood_path}")
+    log.info(f"Successfully generated the uniform boundary input for BG-Flood. Located in: {bg_flood_dir}")
 
 
 def main():
@@ -81,9 +81,8 @@ def main():
         add_vlm=False,
         percentile=50)
     # Generate the model input for BG-Flood
-    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
-    bg_flood_path = pathlib.Path(flood_model_dir)
-    generate_uniform_boundary_input(bg_flood_path, tide_slr_data)
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    generate_uniform_boundary_input(bg_flood_dir, tide_slr_data)
 
 
 if __name__ == "__main__":
