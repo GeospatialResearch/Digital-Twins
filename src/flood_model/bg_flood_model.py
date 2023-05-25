@@ -36,13 +36,14 @@ log.addHandler(stream_handler)
 Base = declarative_base()
 
 
-def process_river_files(river_file_path: pathlib.Path):
-    file_name_parts = river_file_path.stem.split('_')
-    file_name = file_name_parts[0] + river_file_path.suffix
+def process_river_input_files(
+        river_input_file_path: pathlib.Path) -> str:
+    file_name_parts = river_input_file_path.stem.split('_')
+    file_name = file_name_parts[0] + river_input_file_path.suffix
     extents = ','.join(file_name_parts[1:])
     river = f"{file_name},{extents}"
-    new_file_path = river_file_path.with_name(file_name)
-    river_file_path.rename(new_file_path)
+    new_file_path = river_input_file_path.with_name(file_name)
+    river_input_file_path.rename(new_file_path)
     return river
 
 
@@ -95,8 +96,8 @@ def bg_model_inputs(
             if os.path.exists(bndfile_path):
                 position = bndfile.split('_')[0]
                 param_file.write(f"{position} = {bndfile},2;\n")
-        for river_file_path in bg_path.glob('river[0-9]*_*.txt'):
-            river = process_river_files(river_file_path)
+        for river_input_file_path in bg_path.glob('river[0-9]*_*.txt'):
+            river = process_river_input_files(river_input_file_path)
             param_file.write(f"river = {river};\n")
     model_output_to_db(outfile, catchment_boundary)
 
