@@ -10,6 +10,7 @@ import os
 import pathlib
 import subprocess
 from datetime import datetime
+from typing import Tuple
 
 import xarray as xr
 from geoalchemy2 import Geometry
@@ -34,6 +35,13 @@ log.addHandler(stream_handler)
 
 
 Base = declarative_base()
+
+
+def process_tide_input_files(
+        tide_input_file_path: pathlib.Path) -> Tuple[str, str]:
+    tide_position = tide_input_file_path.stem.split('_')[0]
+    tide_file = tide_input_file_path.name
+    return tide_position, tide_file
 
 
 def process_river_input_files(
@@ -89,13 +97,9 @@ def bg_model_inputs(
                          f"rain = {rainfall};\n"
                          f"outvars = h, hmax, zb, zs, u, v;\n"
                          f"outfile = {outfile};\n")
-        # Check if any bndfile.txt files exist, and add lines accordingly
-        bndfiles = ['left_bnd.txt', 'right_bnd.txt', 'top_bnd.txt', 'bot_bnd.txt']
-        for bndfile in bndfiles:
-            bndfile_path = rf"{valid_bg_path}/{bndfile}"
-            if os.path.exists(bndfile_path):
-                position = bndfile.split('_')[0]
-                param_file.write(f"{position} = {bndfile},2;\n")
+        for tide_input_file_path in bg_path.glob('*_bnd.txt'):
+            tide_position, tide_file = process_tide_input_files(tide_input_file_path)
+            param_file.write(f"{tide_position} = {tide_file},2;\n")
         for river_input_file_path in bg_path.glob('river[0-9]*_*.txt'):
             river = process_river_input_files(river_input_file_path)
             param_file.write(f"river = {river};\n")
