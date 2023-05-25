@@ -64,7 +64,7 @@ def main():
         add_vlm=False,
         percentile=50)
     # Generate the model input for BG-Flood
-    tide_slr_model_input.gen_uniform_boundary_input(bg_flood_path, tide_slr_data)
+    tide_slr_model_input.generate_uniform_boundary_input(bg_flood_path, tide_slr_data)
 
 
 if __name__ == "__main__":

@@ -32,7 +32,7 @@ def remove_existing_boundary_input(bg_flood_path: pathlib.Path):
         file_path.unlink()
 
 
-def gen_uniform_boundary_input(bg_flood_path: pathlib.Path, tide_slr_data: pd.DataFrame):
+def generate_uniform_boundary_input(bg_flood_path: pathlib.Path, tide_slr_data: pd.DataFrame):
     remove_existing_boundary_input(bg_flood_path)
     grouped = tide_slr_data.groupby('position')
     for position, group_data in grouped:
@@ -88,7 +88,7 @@ def main():
         add_vlm=False,
         percentile=50)
     # Generate the model input for BG-Flood
-    gen_uniform_boundary_input(bg_flood_path, tide_slr_data)
+    generate_uniform_boundary_input(bg_flood_path, tide_slr_data)
 
 
 if __name__ == "__main__":
