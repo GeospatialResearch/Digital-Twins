@@ -27,8 +27,6 @@ def main():
     # BG-Flood path
     flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
     bg_flood_path = pathlib.Path(flood_model_dir)
-    # remove existing boundary input files
-    tide_slr_model_input.remove_existing_boundary_input(bg_flood_path)
     # Get StatsNZ and NIWA api key
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
     niwa_api_key = config.get_env_variable("NIWA_API_KEY")
