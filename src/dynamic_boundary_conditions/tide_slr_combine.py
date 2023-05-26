@@ -14,7 +14,7 @@ from scipy.interpolate import interp1d
 import shapely.wkt
 
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
+from src.dynamic_boundary_conditions.tide_enum import ApproachType
 from src.dynamic_boundary_conditions import (
     main_tide_slr,
     tide_query_location,
@@ -144,11 +144,11 @@ def main():
 
     # Get tide data
     tide_data_king = tide_data_from_niwa.get_tide_data(
-        approach=ApproachType.KING_TIDE,
-        datum=DatumType.LAT,
         tide_query_loc=tide_query_loc,
+        approach=ApproachType.KING_TIDE,
         tide_length_mins=2880,
         interval_mins=10)
+
     # Store sea level rise data to database and get closest sea level rise site data from database
     sea_level_rise_data.store_slr_data_to_db(engine)
     slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data_king)
