@@ -51,16 +51,16 @@ def main():
     # Connect to the database
     engine = setup_environment.get_database()
     tide_query_location.write_nz_bbox_to_file(engine)
-    # Catchment polygon
-    catchment_file = pathlib.Path(r"selected_polygon.geojson")
-    catchment_area = tide_query_location.get_catchment_area(catchment_file)
+    # Get catchment area
+    catchment_area = tide_query_location.get_catchment_area("selected_polygon.geojson")
+
     # Store regional council clipped data in the database
-    tide_query_location.regional_council_clipped_to_db(engine, layer_id=111181)
-    # Get regions (clipped) that intersect with the catchment area from the database
-    regions_clipped = tide_query_location.get_regions_clipped_from_db(engine, catchment_area)
+    tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)
+    # Get regional council clipped data that intersect with the catchment area from the database
+    regions_clipped = tide_query_location.get_regional_council_clipped_from_db(engine, catchment_area)
     # Get the location (coordinates) to fetch tide data for
-    tide_query_loc = tide_query_location.get_tide_query_locations(
-        engine, catchment_area, regions_clipped, distance_km=1)
+    tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area, regions_clipped)
+
     # Get tide data
     tide_data_king = tide_data_from_niwa.get_tide_data(
         approach=ApproachType.KING_TIDE,
