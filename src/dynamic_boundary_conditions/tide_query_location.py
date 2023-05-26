@@ -5,16 +5,15 @@
 """
 
 import logging
-import pathlib
-from typing import Union
 
 import sqlalchemy
-from shapely.geometry import LineString, Point, box
+from shapely.geometry import LineString, Point
 import geopandas as gpd
-
 import geoapis.vector
+
 from src import config
 from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions import main_tide_slr
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -24,26 +23,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
-    file_path = pathlib.Path.cwd() / file_name
-    if not file_path.is_file():
-        query = "SELECT * FROM region_geometry"
-        region_geom = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-        nz_geom = region_geom.query('shape_area == shape_area.max()').reset_index(drop=True)
-        min_x, min_y, max_x, max_y = nz_geom.total_bounds
-        bbox = box(min_x, min_y, max_x, max_y)
-        nz_bbox = gpd.GeoDataFrame(geometry=[bbox], crs=2193)
-        nz_bbox.to_file(file_name, driver="GeoJSON")
-
-
-def get_catchment_area(
-        catchment_file: Union[str, pathlib.Path],
-        to_crs: int = 2193) -> gpd.GeoDataFrame:
-    catchment_area = gpd.read_file(catchment_file)
-    catchment_area = catchment_area.to_crs(to_crs)
-    return catchment_area
 
 
 def check_table_exists(engine, db_table_name: str) -> bool:
@@ -216,9 +195,9 @@ def get_tide_query_locations(
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
-    write_nz_bbox_to_file(engine)
+    main_tide_slr.write_nz_bbox_to_file(engine)
     # Get catchment area
-    catchment_area = get_catchment_area("selected_polygon.geojson")
+    catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
 
     # Store regional council clipped data in the database
     store_regional_council_clipped_to_db(engine, layer_id=111181)

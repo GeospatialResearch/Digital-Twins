@@ -11,10 +11,9 @@ import geopandas as gpd
 import pandas as pd
 import pyarrow.csv as csv
 
-from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
-from src.dynamic_boundary_conditions import tide_query_location, tide_data_from_niwa
+from src.dynamic_boundary_conditions import main_tide_slr, tide_query_location, tide_data_from_niwa
 from src.dynamic_boundary_conditions.tide_query_location import check_table_exists
 
 log = logging.getLogger(__name__)
@@ -123,9 +122,9 @@ def get_closest_slr_data(engine, tide_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
-    tide_query_location.write_nz_bbox_to_file(engine)
+    main_tide_slr.write_nz_bbox_to_file(engine)
     # Get catchment area
-    catchment_area = tide_query_location.get_catchment_area("selected_polygon.geojson")
+    catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
 
     # Store regional council clipped data in the database
     tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)

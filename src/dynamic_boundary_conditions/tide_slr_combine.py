@@ -5,7 +5,6 @@
 """
 
 import logging
-import pathlib
 import re
 
 import shapely.wkt
@@ -14,10 +13,14 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 
-from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
-from src.dynamic_boundary_conditions import tide_query_location, tide_data_from_niwa, sea_level_rise_data
+from src.dynamic_boundary_conditions import (
+    main_tide_slr,
+    tide_query_location,
+    tide_data_from_niwa,
+    sea_level_rise_data,
+)
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -137,9 +140,9 @@ def get_combined_tide_slr_data(
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
-    tide_query_location.write_nz_bbox_to_file(engine)
+    main_tide_slr.write_nz_bbox_to_file(engine)
     # Get catchment area
-    catchment_area = tide_query_location.get_catchment_area("selected_polygon.geojson")
+    catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
 
     # Store regional council clipped data in the database
     tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)

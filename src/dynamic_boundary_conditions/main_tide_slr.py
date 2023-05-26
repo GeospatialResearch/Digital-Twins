@@ -6,6 +6,10 @@
 
 import logging
 import pathlib
+from typing import Union
+
+import geopandas as gpd
+from shapely.geometry import box
 
 from src import config
 from src.digitaltwin import setup_environment
@@ -23,12 +27,32 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
+def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
+    file_path = pathlib.Path.cwd() / file_name
+    if not file_path.is_file():
+        query = "SELECT * FROM region_geometry"
+        region_geom = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+        nz_geom = region_geom.query('shape_area == shape_area.max()').reset_index(drop=True)
+        min_x, min_y, max_x, max_y = nz_geom.total_bounds
+        bbox = box(min_x, min_y, max_x, max_y)
+        nz_bbox = gpd.GeoDataFrame(geometry=[bbox], crs=2193)
+        nz_bbox.to_file(file_name, driver="GeoJSON")
+
+
+def get_catchment_area(
+        catchment_file: Union[str, pathlib.Path],
+        to_crs: int = 2193) -> gpd.GeoDataFrame:
+    catchment_area = gpd.read_file(catchment_file)
+    catchment_area = catchment_area.to_crs(to_crs)
+    return catchment_area
+
+
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
-    tide_query_location.write_nz_bbox_to_file(engine)
+    write_nz_bbox_to_file(engine)
     # Get catchment area
-    catchment_area = tide_query_location.get_catchment_area("selected_polygon.geojson")
+    catchment_area = get_catchment_area("selected_polygon.geojson")
 
     # Store regional council clipped data in the database
     tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)
