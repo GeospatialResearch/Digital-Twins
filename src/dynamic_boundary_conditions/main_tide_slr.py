@@ -4,7 +4,6 @@
 @Author: sli229
 """
 
-import logging
 import pathlib
 from typing import Union
 
@@ -21,16 +20,6 @@ from src.dynamic_boundary_conditions import (
     tide_slr_combine,
     tide_slr_model_input
 )
-
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):

@@ -4,7 +4,6 @@
 @Author: sli229
 """
 
-import logging
 from datetime import date, timedelta
 from typing import Dict, List, Tuple, Union, Optional
 import asyncio
@@ -18,15 +17,6 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_tide_slr, tide_query_location
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[float, float, str]:

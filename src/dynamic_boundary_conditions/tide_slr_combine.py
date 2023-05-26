@@ -22,15 +22,6 @@ from src.dynamic_boundary_conditions import (
     sea_level_rise_data,
 )
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
-
 
 def split_slr_measurementname_column(slr_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     slr_data_split = slr_data.copy()
