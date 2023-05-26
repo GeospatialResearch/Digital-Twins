@@ -5,16 +5,15 @@
 """
 
 import logging
-import pathlib
 
-import pandas as pd
 import sqlalchemy
-from shapely.geometry import LineString, Point, box
+from shapely.geometry import LineString, Point
 import geopandas as gpd
-
 import geoapis.vector
+
 from src import config
 from src.digitaltwin import setup_environment
+from src.dynamic_boundary_conditions import main_tide_slr
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -24,44 +23,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
-    file_path = pathlib.Path.cwd() / file_name
-    if not file_path.is_file():
-        query = "SELECT * FROM region_geometry"
-        region_geom = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-        nz_geom = region_geom.query('shape_area == shape_area.max()').reset_index(drop=True)
-        min_x, min_y, max_x, max_y = nz_geom.total_bounds
-        bbox = box(min_x, min_y, max_x, max_y)
-        nz_bbox = gpd.GeoDataFrame(geometry=[bbox], crs=2193)
-        nz_bbox.to_file(file_name, driver="GeoJSON")
-
-
-def get_catchment_area(catchment_file: pathlib.Path) -> gpd.GeoDataFrame:
-    catchment_area = gpd.read_file(catchment_file)
-    catchment_area = catchment_area.to_crs(2193)
-    return catchment_area
-
-
-def get_stats_nz_dataset(layer_id: int) -> gpd.GeoDataFrame:
-    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
-    vector_fetcher = geoapis.vector.StatsNz(stats_nz_api_key, verbose=True, crs=2193)
-    response_data = vector_fetcher.run(layer_id)
-    return response_data
-
-
-def get_regional_council_clipped(layer_id: int) -> gpd.GeoDataFrame:
-    regional_clipped = get_stats_nz_dataset(layer_id)
-    regional_clipped.columns = regional_clipped.columns.str.lower()
-    # move geometry column to last column
-    regional_clipped = (
-        regional_clipped
-        .drop(columns=['geometry'], axis=1)
-        .assign(geometry=regional_clipped['geometry'])
-    )
-    regional_clipped = gpd.GeoDataFrame(regional_clipped)
-    return regional_clipped
 
 
 def check_table_exists(engine, db_table_name: str) -> bool:
@@ -80,16 +41,47 @@ def check_table_exists(engine, db_table_name: str) -> bool:
     return table_exists
 
 
-def regional_council_clipped_to_db(engine, layer_id: int):
+def get_data_from_stats_nz(
+        layer_id: int,
+        crs: int = 2193,
+        bounding_polygon: gpd.GeoDataFrame = None,
+        verbose: bool = True) -> gpd.GeoDataFrame:
+    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
+    vector_fetcher = geoapis.vector.StatsNz(
+        key=stats_nz_api_key,
+        bounding_polygon=bounding_polygon,
+        verbose=verbose,
+        crs=crs)
+    stats_data = vector_fetcher.run(layer_id)
+    return stats_data
+
+
+def get_regional_council_clipped(
+        layer_id: int = 111181,
+        crs: int = 2193,
+        bounding_polygon: gpd.GeoDataFrame = None,
+        verbose: bool = True) -> gpd.GeoDataFrame:
+    regional_clipped = get_data_from_stats_nz(layer_id, crs, bounding_polygon, verbose)
+    regional_clipped.columns = regional_clipped.columns.str.lower()
+    regional_clipped['geometry'] = regional_clipped.pop('geometry')
+    return regional_clipped
+
+
+def store_regional_council_clipped_to_db(
+        engine,
+        layer_id: int = 111181,
+        crs: int = 2193,
+        bounding_polygon: gpd.GeoDataFrame = None,
+        verbose: bool = True):
     if check_table_exists(engine, "region_geometry_clipped"):
         log.info("Table 'region_geometry_clipped' already exists in the database.")
     else:
-        regional_clipped = get_regional_council_clipped(layer_id)
+        regional_clipped = get_regional_council_clipped(layer_id, crs, bounding_polygon, verbose)
         regional_clipped.to_postgis("region_geometry_clipped", engine, index=False, if_exists="replace")
         log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
 
 
-def get_regions_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_regional_council_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area["geometry"][0]
     query = f"SELECT * FROM region_geometry_clipped AS rgc " \
             f"WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
@@ -97,22 +89,23 @@ def get_regions_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd
     return regions_clipped
 
 
-def get_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame, distance_km: int) -> gpd.GeoDataFrame:
+def get_nz_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame, distance_km: int) -> gpd.GeoDataFrame:
     distance_m = distance_km * 1000
     catchment_area_buffered = catchment_area.buffer(distance=distance_m, join_style=2)
-    area_of_interest = gpd.GeoDataFrame(geometry=catchment_area_buffered)
-    aoi_polygon = area_of_interest["geometry"][0]
-    query = f"SELECT * FROM \"_50258-nz-coastlines\" AS coast " \
-            f"WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{aoi_polygon}', 2193))"
+    catchment_area_buffered_polygon = catchment_area_buffered.iloc[0]
+    query = f"""
+    SELECT * 
+    FROM "_50258-nz-coastlines" AS coast  
+    WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{catchment_area_buffered_polygon}', 2193))"""
     coastline = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return coastline
 
 
-def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> pd.DataFrame:
+def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     # Get the exterior boundary of the catchment polygon
     boundary_lines = catchment_area["geometry"][0].exterior.coords
-    # Create an empty dictionary to store boundary segment properties
-    boundary_segments = {}
+    # Create an empty list to store boundary segment properties
+    boundary_segments = []
     # Loop through each boundary line segment
     for i in range(len(boundary_lines) - 1):
         # Get the start and end points of the current boundary segment
@@ -133,24 +126,24 @@ def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> pd.DataFram
             raise ValueError("Failed to identify catchment boundary line position.")
         # Create a LineString object for the current boundary segment
         segment = LineString([start_point, end_point])
-        # Add the boundary segment and its properties to the dictionary
-        boundary_segments[i] = {'line_position': position, 'centroid': centroid, 'boundary': segment}
-    # Convert the dictionary to a GeoDataFrame
-    boundary_info = pd.DataFrame(boundary_segments).T
+        # Add the boundary segment and its properties to the list
+        boundary_segments.append({'line_position': position, 'centroid': centroid, 'boundary': segment})
+    # Convert the list to a GeoDataFrame
+    boundary_info = gpd.GeoDataFrame(boundary_segments, geometry='boundary', crs=catchment_area.crs)
     return boundary_info
 
 
 def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     boundary_info = get_catchment_boundary_info(catchment_area)
     boundary_lines = boundary_info[['line_position', 'boundary']].rename(columns={'boundary': 'geometry'})
-    boundary_lines = boundary_lines.set_geometry('geometry', crs=2193)
+    boundary_lines = boundary_lines.set_geometry('geometry', crs=catchment_area.crs)
     return boundary_lines
 
 
 def get_catchment_boundary_centroids(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     boundary_info = get_catchment_boundary_info(catchment_area)
     boundary_centroids = boundary_info[['line_position', 'centroid']].rename(columns={'centroid': 'geometry'})
-    boundary_centroids = boundary_centroids.set_geometry('geometry', crs=2193)
+    boundary_centroids = boundary_centroids.set_geometry('geometry', crs=catchment_area.crs)
     return boundary_centroids
 
 
@@ -164,7 +157,7 @@ def get_non_intersection_centroid_position(
         centroid = row['centroid']
         # Calculate the distance from the centroid to each line
         distances = {}
-        for boundary_index, boundary_row in boundary_lines.iterrows():
+        for _, boundary_row in boundary_lines.iterrows():
             distances[boundary_row['line_position']] = centroid.distance(boundary_row['geometry'])
         # Find the name of the closest line based on the minimum distance
         closest_line = min(distances, key=distances.get)
@@ -183,7 +176,7 @@ def get_tide_query_locations(
     if not non_intersection.empty:
         tide_query_location = get_non_intersection_centroid_position(catchment_area, non_intersection)
     else:
-        coastline = get_coastline_from_db(engine, catchment_area, distance_km)
+        coastline = get_nz_coastline_from_db(engine, catchment_area, distance_km)
         if not coastline.empty:
             coastline_geom = coastline['geometry'].iloc[0]
             boundary_centroids = get_catchment_boundary_centroids(catchment_area)
@@ -202,16 +195,16 @@ def get_tide_query_locations(
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
-    write_nz_bbox_to_file(engine)
-    # Catchment polygon
-    catchment_file = pathlib.Path(r"selected_polygon.geojson")
-    catchment_area = get_catchment_area(catchment_file)
+    main_tide_slr.write_nz_bbox_to_file(engine)
+    # Get catchment area
+    catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
+
     # Store regional council clipped data in the database
-    regional_council_clipped_to_db(engine, layer_id=111181)
-    # Get regions (clipped) that intersect with the catchment area from the database
-    regions_clipped = get_regions_clipped_from_db(engine, catchment_area)
+    store_regional_council_clipped_to_db(engine, layer_id=111181)
+    # Get regional council clipped data that intersect with the catchment area from the database
+    regions_clipped = get_regional_council_clipped_from_db(engine, catchment_area)
     # Get the location (coordinates) to fetch tide data for
-    tide_query_loc = get_tide_query_locations(engine, catchment_area, regions_clipped, distance_km=1)
+    tide_query_loc = get_tide_query_locations(engine, catchment_area, regions_clipped)
     print(tide_query_loc)
 
 
