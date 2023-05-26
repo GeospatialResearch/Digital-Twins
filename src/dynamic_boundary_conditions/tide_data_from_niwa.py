@@ -5,20 +5,19 @@
 """
 
 import logging
-import pathlib
 from datetime import date, timedelta
 from typing import Dict, List, Tuple, Union, Optional
+import asyncio
 
+import aiohttp
+import geopandas as gpd
 import numpy as np
 import pandas as pd
-import geopandas as gpd
-import asyncio
-import aiohttp
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 from src.dynamic_boundary_conditions import main_tide_slr, tide_query_location
+from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

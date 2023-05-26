@@ -12,8 +12,8 @@ import pandas as pd
 import pyarrow.csv as csv
 
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 from src.dynamic_boundary_conditions import main_tide_slr, tide_query_location, tide_data_from_niwa
+from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 from src.dynamic_boundary_conditions.tide_query_location import check_table_exists
 
 log = logging.getLogger(__name__)
