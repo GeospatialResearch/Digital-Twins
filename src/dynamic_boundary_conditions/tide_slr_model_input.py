@@ -73,9 +73,12 @@ def main():
         tide_length_mins=2880,
         interval_mins=10)
 
-    # Store sea level rise data to database and get closest sea level rise site data from database
-    sea_level_rise_data.store_slr_data_to_db(engine)
+    # Store sea level rise data to database
+    slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
+    sea_level_rise_data.store_slr_data_to_db(engine, slr_data_dir)
+    # Get closest sea level rise site data from database
     slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data_king)
+
     # Combine tide and sea level rise data
     tide_slr_data = tide_slr_combine.get_combined_tide_slr_data(
         tide_data=tide_data_king,
@@ -85,6 +88,7 @@ def main():
         ssp_scenario='SSP1-2.6',
         add_vlm=False,
         percentile=50)
+
     # Generate the model input for BG-Flood
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     generate_uniform_boundary_input(bg_flood_dir, tide_slr_data)

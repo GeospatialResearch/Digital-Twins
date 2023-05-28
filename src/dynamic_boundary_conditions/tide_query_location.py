@@ -6,7 +6,6 @@
 
 import logging
 
-import sqlalchemy
 from shapely.geometry import LineString, Point
 import geopandas as gpd
 import geoapis.vector
@@ -23,22 +22,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-def check_table_exists(engine, db_table_name: str) -> bool:
-    """
-    Check if table exists in the database.
-
-    Parameters
-    ----------
-    engine
-        Engine used to connect to the database.
-    db_table_name : str
-        Database table name.
-    """
-    insp = sqlalchemy.inspect(engine)
-    table_exists = insp.has_table(db_table_name, schema="public")
-    return table_exists
 
 
 def get_data_from_stats_nz(
@@ -73,7 +56,7 @@ def store_regional_council_clipped_to_db(
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
         verbose: bool = True):
-    if check_table_exists(engine, "region_geometry_clipped"):
+    if main_tide_slr.check_table_exists(engine, "region_geometry_clipped"):
         log.info("Table 'region_geometry_clipped' already exists in the database.")
     else:
         regional_clipped = get_regional_council_clipped(layer_id, crs, bounding_polygon, verbose)

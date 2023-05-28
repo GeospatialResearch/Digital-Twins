@@ -11,10 +11,10 @@ import geopandas as gpd
 import pandas as pd
 import pyarrow.csv as csv
 
+from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_tide_slr, tide_query_location, tide_data_from_niwa
 from src.dynamic_boundary_conditions.tide_enum import ApproachType
-from src.dynamic_boundary_conditions.tide_query_location import check_table_exists
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -26,38 +26,17 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_slr_data_directory(folder_name: str = "slr_data") -> pathlib.Path:
-    """
-    Returns a Path object pointing to the directory containing the sea level rise data files.
-
-    Parameters
-    ----------
-    folder_name : str = "data"
-        A string representing the name of the folder containing the sea level rise data files. Default is 'data'.
-    """
-    # Construct the path to the sea level rise data directory
-    slr_data_dir = pathlib.Path(__file__).parent / folder_name
-    # Check if the sea level rise data directory exists, if not, raise an error
-    if not slr_data_dir.exists():
-        raise FileNotFoundError(f"Sea level rise data directory not found: '{slr_data_dir}'.")
-    return slr_data_dir
-
-
-def get_slr_data_from_nz_searise(folder_name: str = "slr_data") -> pd.DataFrame:
+def get_slr_data_from_nz_searise(slr_data_dir: pathlib.Path) -> pd.DataFrame:
     """
     Returns a Pandas DataFrame that is a concatenation of all the sea level rise data located in the
     sea level rise data directory.
-
-    Parameters
-    ----------
-    folder_name : str = "data"
-        A string representing the name of the folder containing the sea level rise CSV files. Default is 'data'.
     """
-    # Get the sea level rise data directory
-    slr_data_dir = get_slr_data_directory(folder_name)
+    # Check if the sea level rise data directory exists, if not, raise an error
+    if not slr_data_dir.exists():
+        raise FileNotFoundError(f"Sea level rise data directory not found: '{slr_data_dir}'.")
     # Check if there are any CSV files in the specified directory
     if not any(slr_data_dir.glob("*.csv")):
-        raise FileNotFoundError(f"No sea level rise data files found in {slr_data_dir}")
+        raise FileNotFoundError(f"Sea level rise data files not found in: {slr_data_dir}")
     # Loop through each CSV file in the specified directory
     slr_nz_list = []
     for file_path in slr_data_dir.glob("*.csv"):
@@ -82,11 +61,11 @@ def get_slr_data_from_nz_searise(folder_name: str = "slr_data") -> pd.DataFrame:
     return slr_nz_with_geom
 
 
-def store_slr_data_to_db(engine, folder_name: str = "slr_data"):
-    if check_table_exists(engine, "sea_level_rise"):
+def store_slr_data_to_db(engine, slr_data_dir: pathlib.Path):
+    if main_tide_slr.check_table_exists(engine, "sea_level_rise"):
         log.info("Table 'sea_level_rise_data' already exists in the database.")
     else:
-        slr_nz = get_slr_data_from_nz_searise(folder_name)
+        slr_nz = get_slr_data_from_nz_searise(slr_data_dir)
         slr_nz.to_postgis("sea_level_rise", engine, index=False, if_exists="replace")
         log.info("Added Sea Level Rise data to database.")
 
@@ -140,8 +119,10 @@ def main():
         tide_length_mins=2880,
         interval_mins=10)
 
-    # Store sea level rise data to database and get closest sea level rise site data from database
-    store_slr_data_to_db(engine)
+    # Store sea level rise data to database
+    slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
+    store_slr_data_to_db(engine, slr_data_dir)
+    # Get closest sea level rise site data from database
     slr_data = get_closest_slr_data(engine, tide_data_king)
     print(slr_data)
 

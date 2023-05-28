@@ -4,7 +4,7 @@
 @Author: sli229
 """
 
-import logging
+import pathlib
 import re
 
 import geopandas as gpd
@@ -13,6 +13,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 import shapely.wkt
 
+from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.tide_enum import ApproachType
 from src.dynamic_boundary_conditions import (
@@ -149,9 +150,12 @@ def main():
         tide_length_mins=2880,
         interval_mins=10)
 
-    # Store sea level rise data to database and get closest sea level rise site data from database
-    sea_level_rise_data.store_slr_data_to_db(engine)
+    # Store sea level rise data to database
+    slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
+    sea_level_rise_data.store_slr_data_to_db(engine, slr_data_dir)
+    # Get closest sea level rise site data from database
     slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data_king)
+
     # Combine tide and sea level rise data
     tide_slr_data = get_combined_tide_slr_data(
         tide_data=tide_data_king,
