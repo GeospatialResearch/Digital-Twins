@@ -108,6 +108,7 @@ def get_hydrograph_data(
         maf: bool,
         ari: Union[int, None] = None,
         bound: BoundType = BoundType.MIDDLE) -> gpd.GeoDataFrame:
+    # TODO: modify code to incorporate actual method and align with rainfall/tide data
     min_time_to_peak_mins = river_length_mins / 2
     if time_to_peak_mins < min_time_to_peak_mins:
         raise ValueError(
