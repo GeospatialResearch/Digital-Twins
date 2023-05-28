@@ -275,6 +275,7 @@ def add_time_information(
         tide_length_mins: Optional[int] = None,
         interval_mins: int = 10,
         approach: ApproachType = ApproachType.KING_TIDE) -> gpd.GeoDataFrame:
+    # TODO: function need to be updated to align with rainfall data, there is bug right now
     if approach == ApproachType.KING_TIDE and tide_length_mins is not None:
         time_mins = np.arange(interval_mins, tide_length_mins + interval_mins, interval_mins)
     elif approach == ApproachType.PERIOD_TIDE and total_days is not None:
