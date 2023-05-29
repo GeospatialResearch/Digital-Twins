@@ -60,9 +60,9 @@ def get_slr_scenario_data(
     valid_percentile = [int(col[1:]) for col in percentile_cols]
     if percentile not in valid_percentile:
         raise ValueError(f"Invalid value '{percentile}' for percentile. Must be one of {valid_percentile}.")
+    slr_scenario = slr_scenario[['siteid', 'year', f"p{percentile}", 'geometry', 'position']]
     # Get the final requested sea level rise scenario data
-    slr_scenario_data = slr_scenario[['siteid', 'year', f"p{percentile}", 'geometry', 'position']]
-    slr_scenario_data = slr_scenario_data.rename(columns={f"p{percentile}": "slr_metres"}).reset_index(drop=True)
+    slr_scenario_data = slr_scenario.rename(columns={f"p{percentile}": "slr_metres"}).reset_index(drop=True)
     return slr_scenario_data
 
 
@@ -82,8 +82,7 @@ def get_interpolated_slr_scenario_data(
         f_func = interp1d(group_years, group_data['slr_metres'], kind=interp_method)
         group_data_new = pd.Series(f_func(group_years_new), name='slr_metres')
         group_data_interp = pd.concat([group_years_new, group_data_new], axis=1)
-        group_data_interp[['siteid', 'geometry', 'position']] = site_id, geometry, position
-        group_data_interp['geometry'] = shapely.wkt.loads(geometry)
+        group_data_interp[['siteid', 'geometry', 'position']] = site_id, shapely.wkt.loads(geometry), position
         group_data_interp = gpd.GeoDataFrame(group_data_interp, crs=group_data.crs)
         slr_interp_scenario = pd.concat([slr_interp_scenario, group_data_interp])
     slr_interp_scenario = slr_interp_scenario.reset_index(drop=True)
