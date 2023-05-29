@@ -26,7 +26,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_slr_data_from_nz_searise(slr_data_dir: pathlib.Path) -> pd.DataFrame:
+def get_slr_data_from_nz_searise(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
     """
     Returns a Pandas DataFrame that is a concatenation of all the sea level rise data located in the
     sea level rise data directory.
@@ -77,8 +77,8 @@ def get_slr_data_from_db(engine, single_query_loc: pd.Series) -> gpd.GeoDataFram
     SELECT slr.*, distances.distance
     FROM sea_level_rise AS slr
     JOIN (
-        SELECT siteid, ST_Distance(ST_Transform(geometry, 2193),
-        ST_GeomFromText('{query_loc_geom["geometry"][0]}', 2193)) AS distance
+        SELECT siteid, 
+        ST_Distance(ST_Transform(geometry, 2193), ST_GeomFromText('{query_loc_geom["geometry"][0]}', 2193)) AS distance
         FROM sea_level_rise
         ORDER BY distance
         LIMIT 1
@@ -91,7 +91,7 @@ def get_slr_data_from_db(engine, single_query_loc: pd.Series) -> gpd.GeoDataFram
 def get_closest_slr_data(engine, tide_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     slr_query_loc = tide_data[['position', 'geometry']].drop_duplicates()
     slr_data = gpd.GeoDataFrame()
-    for index, row in slr_query_loc.iterrows():
+    for _, row in slr_query_loc.iterrows():
         query_loc_data = get_slr_data_from_db(engine, row)
         slr_data = pd.concat([slr_data, query_loc_data])
     slr_data = slr_data.reset_index(drop=True)
