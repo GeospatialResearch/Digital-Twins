@@ -24,6 +24,10 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
+class NoTideDataException(Exception):
+    pass
+
+
 def get_data_from_stats_nz(
         layer_id: int,
         crs: int = 2193,
@@ -170,27 +174,31 @@ def get_tide_query_locations(
             tide_query_location = tide_query_location[['line_position', 'geometry']].rename(
                 columns={'line_position': 'position'})
         else:
-            log.info(f"No relevant tide data could be found within {distance_km}km of the catchment area. "
-                     f"As a result, tide data will not be used in the BG-Flood model.")
-            exit()
+            raise NoTideDataException(
+                f"No relevant tide data could be found within {distance_km}km of the catchment area. "
+                f"As a result, tide data will not be used in the BG-Flood model.")
     tide_query_location = tide_query_location.to_crs(4326).reset_index(drop=True)
     return tide_query_location
 
 
 def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    main_tide_slr.write_nz_bbox_to_file(engine)
-    # Get catchment area
-    catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
+    try:
+        # Connect to the database
+        engine = setup_environment.get_database()
+        main_tide_slr.write_nz_bbox_to_file(engine)
+        # Get catchment area
+        catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
 
-    # Store regional council clipped data in the database
-    store_regional_council_clipped_to_db(engine, layer_id=111181)
-    # Get regional council clipped data that intersect with the catchment area from the database
-    regions_clipped = get_regional_council_clipped_from_db(engine, catchment_area)
-    # Get the location (coordinates) to fetch tide data for
-    tide_query_loc = get_tide_query_locations(engine, catchment_area, regions_clipped)
-    print(tide_query_loc)
+        # Store regional council clipped data in the database
+        store_regional_council_clipped_to_db(engine, layer_id=111181)
+        # Get regional council clipped data that intersect with the catchment area from the database
+        regions_clipped = get_regional_council_clipped_from_db(engine, catchment_area)
+        # Get the location (coordinates) to fetch tide data for
+        tide_query_loc = get_tide_query_locations(engine, catchment_area, regions_clipped)
+        print(tide_query_loc)
+
+    except NoTideDataException as error:
+        log.info(error)
 
 
 if __name__ == "__main__":
