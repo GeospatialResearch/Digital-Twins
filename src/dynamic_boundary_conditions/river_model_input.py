@@ -2,19 +2,6 @@ import logging
 import pathlib
 
 import geopandas as gpd
-import pandas as pd
-
-from src import config
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.river_enum import BoundType
-from src.dynamic_boundary_conditions import (
-    main_river,
-    river_data_to_from_db,
-    river_network_for_aoi,
-    osm_waterways,
-    river_osm_combine,
-    hydrograph
-)
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -24,8 +11,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-pd.set_option('expand_frame_repr', False)
 
 
 def remove_existing_river_inputs(bg_flood_dir: pathlib.Path):

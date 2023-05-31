@@ -6,7 +6,6 @@ from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
 from src.dynamic_boundary_conditions import main_river
 
-
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 

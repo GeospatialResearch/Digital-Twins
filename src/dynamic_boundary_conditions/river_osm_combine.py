@@ -10,8 +10,6 @@ import rioxarray as rxr
 from shapely.geometry import Point
 
 from src import config
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_river, river_data_to_from_db, river_network_for_aoi, osm_waterways
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

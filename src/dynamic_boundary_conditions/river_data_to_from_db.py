@@ -7,8 +7,6 @@ import sqlalchemy
 import geoapis.vector
 
 from src import config
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_river
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

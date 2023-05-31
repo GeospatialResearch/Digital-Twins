@@ -33,7 +33,6 @@ stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
 
-
 Base = declarative_base()
 
 

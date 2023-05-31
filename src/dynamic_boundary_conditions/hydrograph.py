@@ -1,20 +1,10 @@
 import logging
-import pathlib
 from typing import List, Union
 import re
 
 import geopandas as gpd
 
-from src import config
-from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.river_enum import BoundType
-from src.dynamic_boundary_conditions import (
-    main_river,
-    river_data_to_from_db,
-    river_network_for_aoi,
-    osm_waterways,
-    river_osm_combine
-)
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
