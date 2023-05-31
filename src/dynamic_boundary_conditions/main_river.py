@@ -46,8 +46,9 @@ def main():
     engine = setup_environment.get_database()
     # Get catchment area
     catchment_area = get_catchment_area(r"selected_polygon.geojson")
+    # BG-Flood Model Directory
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
 
-    # --- river_data_to_from_db.py -------------------------------------------------------------------------------------
     # Store REC1 data to db
     rec1_data_dir = config.get_env_variable("DATA_DIR_REC1", cast_to=pathlib.Path)
     river_data_to_from_db.store_rec1_data_to_db(engine, rec1_data_dir)
@@ -56,25 +57,21 @@ def main():
     # Get REC1 data from db covering area of interest
     rec1_data = river_data_to_from_db.get_rec1_data_from_db(engine, catchment_area)
 
-    # --- river_network_for_aoi.py -------------------------------------------------------------------------------------
     # Create REC1 network covering area of interest
     rec1_network_data = river_network_for_aoi.create_rec1_network_data_for_aoi(rec1_data)
-    rec1_network = river_network_for_aoi.build_rec1_network_for_aoi(rec1_network_data)
+    # rec1_network = river_network_for_aoi.build_rec1_network_for_aoi(rec1_network_data)
     # Get REC1 boundary points crossing the catchment boundary
     rec1_network_data_on_bbox = river_network_for_aoi.get_rec1_network_data_on_bbox(catchment_area, rec1_network_data)
 
-    # --- osm_waterways.py ---------------------------------------------------------------------------------------------
     # Get OSM waterways data for requested catchment area
     osm_waterways_data = osm_waterways.get_waterways_data_from_osm(catchment_area)
     # Get OSM boundary points crossing the catchment boundary
     osm_waterways_data_on_bbox = osm_waterways.get_osm_waterways_data_on_bbox(catchment_area, osm_waterways_data)
 
-    # --- river_osm_combine.py -----------------------------------------------------------------------------------------
     # Find closest OSM waterway to REC1 rivers and get model input target point
     matched_data = river_osm_combine.get_matched_data_with_target_point(
         rec1_network_data_on_bbox, osm_waterways_data_on_bbox, distance_threshold_m=300)
 
-    # --- hydrograph.py ------------------------------------------------------------------------------------------------
     # Get hydrograph data
     hydrograph_data = hydrograph.get_hydrograph_data(
         matched_data,
@@ -84,8 +81,7 @@ def main():
         ari=None,
         bound=BoundType.MIDDLE)
 
-    # --- Generate river model inputs for BG-Flood ---------------------------------------------------------------------
-    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    # Generate river model inputs for BG-Flood
     river_model_input.generate_river_model_input(bg_flood_dir, hydrograph_data)
 
 
