@@ -270,6 +270,22 @@ def get_highest_tide_date_span(start_datetime: pd.Timestamp, end_datetime: pd.Ti
     return start_date, total_days
 
 
+def get_time_mins_to_add(
+        tide_data: gpd.GeoDataFrame,
+        tide_length_mins: int,
+        time_to_peak_mins: int,
+        interval_mins: int = 10):
+    row_count = len(tide_data)
+    time_mins = np.arange(1, row_count + 1) * interval_mins
+    if time_mins[-1] > tide_length_mins:
+        time_mins = np.insert(time_mins[:-1], 0, 0)
+    middle_index = ceil(len(time_mins) / 2) - 1
+    middle_point = time_mins[middle_index]
+    adjustment = time_to_peak_mins - middle_point
+    time_mins = time_mins + adjustment
+    return time_mins
+
+
 def add_time_information(
         tide_data: gpd.GeoDataFrame,
         time_to_peak_mins: int,
@@ -285,23 +301,9 @@ def add_time_information(
         raise ValueError("'time_to_peak_mins' needs to be at least half of the duration of the tide in minutes.")
 
     if approach == ApproachType.KING_TIDE and tide_length_mins is not None:
-        row_count = len(tide_data)
-        time_mins = np.arange(1, row_count + 1) * interval_mins
-        if time_mins[-1] > tide_length_mins:
-            time_mins = np.insert(time_mins[:-1], 0, 0)
-        middle_index = ceil(len(time_mins) / 2) - 1
-        middle_point = time_mins[middle_index]
-        adjustment = time_to_peak_mins - middle_point
-        time_mins = time_mins + adjustment
+        time_mins = get_time_mins_to_add(tide_data, tide_length_mins, time_to_peak_mins, interval_mins)
     elif approach == ApproachType.PERIOD_TIDE and total_days is not None:
-        row_count = len(tide_data)
-        time_mins = np.arange(1, row_count + 1) * interval_mins
-        if time_mins[-1] > tide_length_mins:
-            time_mins = np.insert(time_mins[:-1], 0, 0)
-        middle_index = ceil(len(time_mins) / 2) - 1
-        middle_point = time_mins[middle_index]
-        adjustment = time_to_peak_mins - middle_point
-        time_mins = time_mins + adjustment
+        time_mins = get_time_mins_to_add(tide_data, tide_length_mins, time_to_peak_mins, interval_mins)
     else:
         raise ValueError("Either 'tide_length_mins' or 'total_days' must be provided.")
 
