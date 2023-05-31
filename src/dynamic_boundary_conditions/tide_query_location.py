@@ -6,13 +6,11 @@
 
 import logging
 
-import sqlalchemy
 from shapely.geometry import LineString, Point
 import geopandas as gpd
 import geoapis.vector
 
 from src import config
-from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_tide_slr
 
 log = logging.getLogger(__name__)
@@ -25,20 +23,8 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def check_table_exists(engine, db_table_name: str) -> bool:
-    """
-    Check if table exists in the database.
-
-    Parameters
-    ----------
-    engine
-        Engine used to connect to the database.
-    db_table_name : str
-        Database table name.
-    """
-    insp = sqlalchemy.inspect(engine)
-    table_exists = insp.has_table(db_table_name, schema="public")
-    return table_exists
+class NoTideDataException(Exception):
+    pass
 
 
 def get_data_from_stats_nz(
@@ -73,7 +59,7 @@ def store_regional_council_clipped_to_db(
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
         verbose: bool = True):
-    if check_table_exists(engine, "region_geometry_clipped"):
+    if main_tide_slr.check_table_exists(engine, "region_geometry_clipped"):
         log.info("Table 'region_geometry_clipped' already exists in the database.")
     else:
         regional_clipped = get_regional_council_clipped(layer_id, crs, bounding_polygon, verbose)
@@ -83,8 +69,10 @@ def store_regional_council_clipped_to_db(
 
 def get_regional_council_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area["geometry"][0]
-    query = f"SELECT * FROM region_geometry_clipped AS rgc " \
-            f"WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"
+    query = f"""
+    SELECT *
+    FROM region_geometry_clipped AS rgc
+    WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"""
     regions_clipped = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return regions_clipped
 
@@ -185,28 +173,8 @@ def get_tide_query_locations(
             tide_query_location = tide_query_location[['line_position', 'geometry']].rename(
                 columns={'line_position': 'position'})
         else:
-            log.info(f"No relevant tide data could be found within {distance_km}km of the catchment area. "
-                     f"As a result, tide data will not be used in the BG-Flood model.")
-            exit()
+            raise NoTideDataException(
+                f"No relevant tide data could be found within {distance_km}km of the catchment area. "
+                f"As a result, tide data will not be used in the BG-Flood model.")
     tide_query_location = tide_query_location.to_crs(4326).reset_index(drop=True)
     return tide_query_location
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    main_tide_slr.write_nz_bbox_to_file(engine)
-    # Get catchment area
-    catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
-
-    # Store regional council clipped data in the database
-    store_regional_council_clipped_to_db(engine, layer_id=111181)
-    # Get regional council clipped data that intersect with the catchment area from the database
-    regions_clipped = get_regional_council_clipped_from_db(engine, catchment_area)
-    # Get the location (coordinates) to fetch tide data for
-    tide_query_loc = get_tide_query_locations(engine, catchment_area, regions_clipped)
-    print(tide_query_loc)
-
-
-if __name__ == "__main__":
-    main()

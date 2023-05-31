@@ -5,6 +5,7 @@
 """
 
 from datetime import date, timedelta
+from math import ceil
 from typing import Dict, List, Tuple, Union, Optional
 import asyncio
 
@@ -14,8 +15,6 @@ import numpy as np
 import pandas as pd
 
 from src import config
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_tide_slr, tide_query_location
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 
 
@@ -269,20 +268,37 @@ def get_highest_tide_date_span(start_datetime: pd.Timestamp, end_datetime: pd.Ti
     return start_date, total_days
 
 
+def get_time_mins_to_add(
+        tide_data: gpd.GeoDataFrame,
+        tide_length_mins: int,
+        time_to_peak_mins: int,
+        interval_mins: int = 10):
+    row_count = len(tide_data)
+    time_mins = np.arange(1, row_count + 1) * interval_mins
+    if time_mins[-1] > tide_length_mins:
+        time_mins = np.insert(time_mins[:-1], 0, 0)
+    middle_index = ceil(len(time_mins) / 2) - 1
+    middle_point = time_mins[middle_index]
+    adjustment = time_to_peak_mins - middle_point
+    time_mins = time_mins + adjustment
+    return time_mins
+
+
 def add_time_information(
         tide_data: gpd.GeoDataFrame,
+        time_to_peak_mins: int,
         total_days: Optional[int] = None,
         tide_length_mins: Optional[int] = None,
         interval_mins: int = 10,
         approach: ApproachType = ApproachType.KING_TIDE) -> gpd.GeoDataFrame:
-    if approach == ApproachType.KING_TIDE and tide_length_mins is not None:
-        time_mins = np.arange(interval_mins, tide_length_mins + interval_mins, interval_mins)
-    elif approach == ApproachType.PERIOD_TIDE and total_days is not None:
-        length_mins = total_days * 24 * 60
-        time_mins = np.arange(interval_mins, length_mins + interval_mins, interval_mins)
-    else:
-        raise ValueError("Either 'tide_length_mins' or 'total_days' must be provided.")
+    if approach == ApproachType.PERIOD_TIDE and total_days is not None:
+        tide_length_mins = total_days * 24 * 60
 
+    min_time_to_peak_mins = tide_length_mins / 2
+    if time_to_peak_mins < min_time_to_peak_mins:
+        raise ValueError("'time_to_peak_mins' needs to be at least half of the duration of the tide in minutes.")
+
+    time_mins = get_time_mins_to_add(tide_data, tide_length_mins, time_to_peak_mins, interval_mins)
     grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
     tide_data_w_time = gpd.GeoDataFrame()
     for _, group_data in grouped:
@@ -321,6 +337,7 @@ def fetch_highest_tide_side_data_from_niwa(
 
 def get_tide_data(
         tide_query_loc: gpd.GeoDataFrame,
+        time_to_peak_mins: int,
         approach: ApproachType = ApproachType.KING_TIDE,
         start_date: date = date.today(),
         total_days: Optional[int] = None,
@@ -341,6 +358,7 @@ def get_tide_data(
         tide_data_king = add_time_information(
             tide_data=data_around_highest_tide,
             tide_length_mins=tide_length_mins,
+            time_to_peak_mins=time_to_peak_mins,
             interval_mins=interval_mins,
             approach=approach)
         return tide_data_king
@@ -355,40 +373,7 @@ def get_tide_data(
         tide_data_period = add_time_information(
             tide_data=tide_data,
             total_days=total_days,
+            time_to_peak_mins=time_to_peak_mins,
             interval_mins=interval_mins,
             approach=approach)
         return tide_data_period
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    main_tide_slr.write_nz_bbox_to_file(engine)
-    # Get catchment area
-    catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
-
-    # Store regional council clipped data in the database
-    tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)
-    # Get regional council clipped data that intersect with the catchment area from the database
-    regions_clipped = tide_query_location.get_regional_council_clipped_from_db(engine, catchment_area)
-    # Get the location (coordinates) to fetch tide data for
-    tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area, regions_clipped)
-
-    # Get tide data
-    tide_data_king = get_tide_data(
-        tide_query_loc=tide_query_loc,
-        approach=ApproachType.KING_TIDE,
-        tide_length_mins=2880,
-        interval_mins=10)
-    print(tide_data_king)
-    tide_data_period = get_tide_data(
-        tide_query_loc=tide_query_loc,
-        approach=ApproachType.PERIOD_TIDE,
-        start_date=date(2024, 1, 1),
-        total_days=3,
-        interval_mins=10)
-    print(tide_data_period)
-
-
-if __name__ == "__main__":
-    main()

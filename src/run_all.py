@@ -22,12 +22,7 @@ if __name__ == '__main__':
     lidar_metadata_in_db.main()
     log.debug("main_rainfall.main()")
     main_rainfall.main()
-    try:
-        log.debug("main_tide_slr.main()")
-        main_tide_slr.main()
-    except SystemExit:
-        pass
-    log.debug("main_river.main()")
-    main_river.main()
+    log.debug("main_tide_slr.main()")
+    main_tide_slr.main()
     log.debug("bg_flood_model.main()")
     bg_flood_model.main()

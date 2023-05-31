@@ -12,15 +12,6 @@ import numpy as np
 from scipy.interpolate import interp1d
 import shapely.wkt
 
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.tide_enum import ApproachType
-from src.dynamic_boundary_conditions import (
-    main_tide_slr,
-    tide_query_location,
-    tide_data_from_niwa,
-    sea_level_rise_data,
-)
-
 
 def split_slr_measurementname_column(slr_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     slr_data_split = slr_data.copy()
@@ -58,9 +49,9 @@ def get_slr_scenario_data(
     valid_percentile = [int(col[1:]) for col in percentile_cols]
     if percentile not in valid_percentile:
         raise ValueError(f"Invalid value '{percentile}' for percentile. Must be one of {valid_percentile}.")
+    slr_scenario = slr_scenario[['siteid', 'year', f"p{percentile}", 'geometry', 'position']]
     # Get the final requested sea level rise scenario data
-    slr_scenario_data = slr_scenario[['siteid', 'year', f"p{percentile}", 'geometry', 'position']]
-    slr_scenario_data = slr_scenario_data.rename(columns={f"p{percentile}": "slr_metres"}).reset_index(drop=True)
+    slr_scenario_data = slr_scenario.rename(columns={f"p{percentile}": "slr_metres"}).reset_index(drop=True)
     return slr_scenario_data
 
 
@@ -80,8 +71,7 @@ def get_interpolated_slr_scenario_data(
         f_func = interp1d(group_years, group_data['slr_metres'], kind=interp_method)
         group_data_new = pd.Series(f_func(group_years_new), name='slr_metres')
         group_data_interp = pd.concat([group_years_new, group_data_new], axis=1)
-        group_data_interp[['siteid', 'geometry', 'position']] = site_id, geometry, position
-        group_data_interp['geometry'] = shapely.wkt.loads(geometry)
+        group_data_interp[['siteid', 'geometry', 'position']] = site_id, shapely.wkt.loads(geometry), position
         group_data_interp = gpd.GeoDataFrame(group_data_interp, crs=group_data.crs)
         slr_interp_scenario = pd.concat([slr_interp_scenario, group_data_interp])
     slr_interp_scenario = slr_interp_scenario.reset_index(drop=True)
@@ -125,43 +115,3 @@ def get_combined_tide_slr_data(
     slr_interp_scenario = get_interpolated_slr_scenario_data(slr_scenario_data, increment_year, interp_method)
     tide_slr_data = add_slr_to_tide(tide_data, slr_interp_scenario, proj_year)
     return tide_slr_data
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    main_tide_slr.write_nz_bbox_to_file(engine)
-    # Get catchment area
-    catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
-
-    # Store regional council clipped data in the database
-    tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)
-    # Get regional council clipped data that intersect with the catchment area from the database
-    regions_clipped = tide_query_location.get_regional_council_clipped_from_db(engine, catchment_area)
-    # Get the location (coordinates) to fetch tide data for
-    tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area, regions_clipped)
-
-    # Get tide data
-    tide_data_king = tide_data_from_niwa.get_tide_data(
-        tide_query_loc=tide_query_loc,
-        approach=ApproachType.KING_TIDE,
-        tide_length_mins=2880,
-        interval_mins=10)
-
-    # Store sea level rise data to database and get closest sea level rise site data from database
-    sea_level_rise_data.store_slr_data_to_db(engine)
-    slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data_king)
-    # Combine tide and sea level rise data
-    tide_slr_data = get_combined_tide_slr_data(
-        tide_data=tide_data_king,
-        slr_data=slr_data,
-        proj_year=2030,
-        confidence_level='low',
-        ssp_scenario='SSP1-2.6',
-        add_vlm=False,
-        percentile=50)
-    print(tide_slr_data)
-
-
-if __name__ == "__main__":
-    main()
