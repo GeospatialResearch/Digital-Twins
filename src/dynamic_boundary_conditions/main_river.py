@@ -41,6 +41,13 @@ def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDat
     return catchment_boundary_lines
 
 
+def remove_existing_river_inputs(bg_flood_dir: pathlib.Path):
+    # iterate through all files in the directory
+    for file_path in bg_flood_dir.glob('river[0-9]*.txt'):
+        # remove the file
+        file_path.unlink()
+
+
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
@@ -48,6 +55,8 @@ def main():
     catchment_area = get_catchment_area(r"selected_polygon.geojson")
     # BG-Flood Model Directory
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    # Remove existing river model input files
+    remove_existing_river_inputs(bg_flood_dir)
 
     # Store REC1 data to db
     rec1_data_dir = config.get_env_variable("DATA_DIR_REC1", cast_to=pathlib.Path)

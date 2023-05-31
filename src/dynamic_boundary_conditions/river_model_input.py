@@ -3,6 +3,8 @@ import pathlib
 
 import geopandas as gpd
 
+from src.dynamic_boundary_conditions import main_river
+
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
@@ -13,15 +15,8 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def remove_existing_river_inputs(bg_flood_dir: pathlib.Path):
-    # iterate through all files in the directory
-    for file_path in bg_flood_dir.glob('river[0-9]*.txt'):
-        # remove the file
-        file_path.unlink()
-
-
 def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.GeoDataFrame):
-    remove_existing_river_inputs(bg_flood_dir)
+    main_river.remove_existing_river_inputs(bg_flood_dir)
     grouped = hydrograph_data.groupby(
         ['target_point_no', hydrograph_data['target_point'].to_wkt(), 'res_no', 'areakm2'],
         sort=False)
