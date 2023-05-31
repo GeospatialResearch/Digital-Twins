@@ -69,6 +69,13 @@ def check_table_exists(engine, db_table_name: str) -> bool:
     return table_exists
 
 
+def remove_existing_boundary_input(bg_flood_dir: pathlib.Path):
+    # iterate through all files in the directory
+    for file_path in bg_flood_dir.glob('*_bnd.txt'):
+        # remove the file
+        file_path.unlink()
+
+
 def main():
     try:
         # Connect to the database
@@ -79,7 +86,7 @@ def main():
         # BG-Flood Model Directory
         bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
         # Remove existing tide model input files
-        tide_slr_model_input.remove_existing_boundary_input(bg_flood_dir)
+        remove_existing_boundary_input(bg_flood_dir)
 
         # Store regional council clipped data in the database
         tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)

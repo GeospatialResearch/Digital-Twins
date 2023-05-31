@@ -9,6 +9,8 @@ import pathlib
 
 import pandas as pd
 
+from src.dynamic_boundary_conditions import main_tide_slr
+
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
@@ -19,15 +21,8 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def remove_existing_boundary_input(bg_flood_dir: pathlib.Path):
-    # iterate through all files in the directory
-    for file_path in bg_flood_dir.glob('*_bnd.txt'):
-        # remove the file
-        file_path.unlink()
-
-
 def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pd.DataFrame):
-    remove_existing_boundary_input(bg_flood_dir)
+    main_tide_slr.remove_existing_boundary_input(bg_flood_dir)
     grouped = tide_slr_data.groupby('position')
     for position, group_data in grouped:
         input_data = group_data[['seconds', 'tide_slr_metres']]
