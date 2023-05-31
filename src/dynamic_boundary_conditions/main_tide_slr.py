@@ -78,6 +78,7 @@ def main():
         tide_query_loc=tide_query_loc,
         approach=ApproachType.KING_TIDE,
         tide_length_mins=2880,
+        time_to_peak_mins=1440,
         interval_mins=10)
 
     # Store sea level rise data to database
