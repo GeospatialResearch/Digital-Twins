@@ -4,7 +4,6 @@
 @Author: sli229
 """
 
-import logging
 from datetime import date, timedelta
 from math import ceil
 from typing import Dict, List, Tuple, Union, Optional
@@ -16,18 +15,7 @@ import numpy as np
 import pandas as pd
 
 from src import config
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_tide_slr, tide_query_location
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[float, float, str]:
@@ -389,43 +377,3 @@ def get_tide_data(
             interval_mins=interval_mins,
             approach=approach)
         return tide_data_period
-
-
-def main():
-    try:
-        # Connect to the database
-        engine = setup_environment.get_database()
-        main_tide_slr.write_nz_bbox_to_file(engine)
-        # Get catchment area
-        catchment_area = main_tide_slr.get_catchment_area("selected_polygon.geojson")
-
-        # Store regional council clipped data in the database
-        tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)
-        # Get regional council clipped data that intersect with the catchment area from the database
-        regions_clipped = tide_query_location.get_regional_council_clipped_from_db(engine, catchment_area)
-        # Get the location (coordinates) to fetch tide data for
-        tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area, regions_clipped)
-
-        # Get tide data
-        tide_data_king = get_tide_data(
-            tide_query_loc=tide_query_loc,
-            approach=ApproachType.KING_TIDE,
-            tide_length_mins=2880,
-            time_to_peak_mins=1440,
-            interval_mins=10)
-        print(tide_data_king)
-        tide_data_period = get_tide_data(
-            tide_query_loc=tide_query_loc,
-            approach=ApproachType.PERIOD_TIDE,
-            start_date=date(2023, 12, 31),
-            total_days=2,
-            time_to_peak_mins=1440,
-            interval_mins=10)
-        print(tide_data_period)
-
-    except tide_query_location.NoTideDataException as error:
-        log.info(error)
-
-
-if __name__ == "__main__":
-    main()
