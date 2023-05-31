@@ -67,9 +67,10 @@ def bg_model_inputs(
     # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
-    outfile = rf"{output_dir}/output_{dt_string}.nc"
+    outfile = (output_dir / f"output_{dt_string}.nc").as_posix()
     valid_bg_path = bg_model_path(bg_path)
-    with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
+    param_file_path = valid_bg_path / "BG_param.txt"
+    with open(param_file_path, "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
                          f"gpudevice = {gpu_device};\n"
                          f"mask = {mask};\n"
@@ -205,8 +206,8 @@ def main():
     flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
     bg_path = pathlib.Path(flood_model_dir)
     # BG-Flood Model output directory
-    data_dir = config.get_env_variable("DATA_DIR")
-    output_dir = pathlib.Path(data_dir) / "model_output"
+    data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path)
+    output_dir = data_dir / "model_output"
 
     instructions = read_and_fill_instructions()
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
