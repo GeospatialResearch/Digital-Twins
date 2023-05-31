@@ -4,8 +4,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 import networkx as nx
 
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_river, river_data_to_from_db
+from src.dynamic_boundary_conditions import main_river
 
 
 def add_first_last_coords_to_rec1(rec1_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -85,31 +84,3 @@ def get_rec1_network_data_on_bbox(
     rec1_network_data_on_bbox.rename(columns={'geometry': 'boundary_line'}, inplace=True)
     rec1_network_data_on_bbox.drop(columns=['index_right'], inplace=True)
     return rec1_network_data_on_bbox
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    # Get catchment area
-    catchment_area = main_river.get_catchment_area(r"selected_polygon.geojson")
-
-    # --- river_data_to_from_db.py -------------------------------------------------------------------------------------
-    # Store REC1 data to db
-    rec1_data_dir = "U:/Research/FloodRiskResearch/DigitalTwin/stored_data/rec1_data"
-    river_data_to_from_db.store_rec1_data_to_db(engine, rec1_data_dir)
-    # Store sea-draining catchments data to db
-    river_data_to_from_db.store_sea_drain_catchments_to_db(engine, layer_id=99776)
-    # Get REC1 data from db covering area of interest
-    rec1_data = river_data_to_from_db.get_rec1_data_from_db(engine, catchment_area)
-
-    # --- river_network_for_aoi.py -------------------------------------------------------------------------------------
-    # Create REC1 network covering area of interest
-    rec1_network_data = create_rec1_network_data_for_aoi(rec1_data)
-    rec1_network = build_rec1_network_for_aoi(rec1_network_data)
-    # Get REC1 boundary points crossing the catchment boundary
-    rec1_network_data_on_bbox = get_rec1_network_data_on_bbox(catchment_area, rec1_network_data)
-    print(rec1_network_data_on_bbox)
-
-
-if __name__ == "__main__":
-    main()
