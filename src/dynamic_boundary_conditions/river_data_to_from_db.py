@@ -112,24 +112,3 @@ def get_rec1_data_from_db(
     rec1_data = gpd.GeoDataFrame.from_postgis(rec1_query, engine, geom_col="geometry")
     rec1_data = rec1_data.drop_duplicates()
     return rec1_data
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    # Get catchment area
-    catchment_area = main_river.get_catchment_area(r"selected_polygon.geojson")
-
-    # --- river_data_to_from_db.py -------------------------------------------------------------------------------------
-    # Store REC1 data to db
-    rec1_data_dir = config.get_env_variable("DATA_DIR_REC1", cast_to=pathlib.Path)
-    store_rec1_data_to_db(engine, rec1_data_dir)
-    # Store sea-draining catchments data to db
-    store_sea_drain_catchments_to_db(engine, layer_id=99776)
-    # Get REC1 data from db covering area of interest
-    rec1_data = get_rec1_data_from_db(engine, catchment_area)
-    print(rec1_data)
-
-
-if __name__ == "__main__":
-    main()

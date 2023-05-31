@@ -83,19 +83,3 @@ def get_osm_waterways_data_on_bbox(
     osm_waterways_data_on_bbox.rename(columns={'geometry': 'boundary_line'}, inplace=True)
     osm_waterways_data_on_bbox.drop(columns=['index_right'], inplace=True)
     return osm_waterways_data_on_bbox
-
-
-def main():
-    # Get catchment area
-    catchment_area = main_river.get_catchment_area(r"selected_polygon.geojson")
-
-    # --- osm_waterways.py ---------------------------------------------------------------------------------------------
-    # Get OSM waterways data for requested catchment area
-    osm_waterways_data = get_waterways_data_from_osm(catchment_area)
-    # Get OSM boundary points crossing the catchment boundary
-    osm_waterways_data_on_bbox = get_osm_waterways_data_on_bbox(catchment_area, osm_waterways_data)
-    print(osm_waterways_data_on_bbox)
-
-
-if __name__ == "__main__":
-    main()
