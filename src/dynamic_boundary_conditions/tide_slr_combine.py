@@ -4,7 +4,6 @@
 @Author: sli229
 """
 
-import logging
 import re
 
 import geopandas as gpd
