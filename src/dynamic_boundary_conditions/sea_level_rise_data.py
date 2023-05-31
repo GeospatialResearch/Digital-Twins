@@ -93,4 +93,3 @@ def get_closest_slr_data(engine, tide_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
         slr_data = pd.concat([slr_data, query_loc_data])
     slr_data = slr_data.reset_index(drop=True)
     return slr_data
-
