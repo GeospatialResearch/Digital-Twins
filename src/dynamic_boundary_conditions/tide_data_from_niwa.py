@@ -277,13 +277,15 @@ def add_time_information(
         tide_length_mins: Optional[int] = None,
         interval_mins: int = 10,
         approach: ApproachType = ApproachType.KING_TIDE) -> gpd.GeoDataFrame:
+    if approach == ApproachType.PERIOD_TIDE and total_days is not None:
+        tide_length_mins = total_days * 24 * 60
+
     min_time_to_peak_mins = tide_length_mins / 2
     if time_to_peak_mins < min_time_to_peak_mins:
-        raise ValueError(
-            "'time_to_peak_mins' needs to be at least half of 'tide_length_mins'.")
+        raise ValueError("'time_to_peak_mins' needs to be at least half of the duration of the tide in minutes.")
 
-    row_count = len(tide_data)
     if approach == ApproachType.KING_TIDE and tide_length_mins is not None:
+        row_count = len(tide_data)
         time_mins = np.arange(1, row_count + 1) * interval_mins
         if time_mins[-1] > tide_length_mins:
             time_mins = np.insert(time_mins[:-1], 0, 0)
@@ -292,8 +294,14 @@ def add_time_information(
         adjustment = time_to_peak_mins - middle_point
         time_mins = time_mins + adjustment
     elif approach == ApproachType.PERIOD_TIDE and total_days is not None:
-        length_mins = total_days * 24 * 60
-        time_mins = np.arange(interval_mins, length_mins + interval_mins, interval_mins)
+        row_count = len(tide_data)
+        time_mins = np.arange(1, row_count + 1) * interval_mins
+        if time_mins[-1] > tide_length_mins:
+            time_mins = np.insert(time_mins[:-1], 0, 0)
+        middle_index = ceil(len(time_mins) / 2) - 1
+        middle_point = time_mins[middle_index]
+        adjustment = time_to_peak_mins - middle_point
+        time_mins = time_mins + adjustment
     else:
         raise ValueError("Either 'tide_length_mins' or 'total_days' must be provided.")
 
@@ -399,14 +407,14 @@ def main():
         time_to_peak_mins=1440,
         interval_mins=10)
     print(tide_data_king)
-    # tide_data_period = get_tide_data(
-    #     tide_query_loc=tide_query_loc,
-    #     approach=ApproachType.PERIOD_TIDE,
-    #     start_date=date(2024, 1, 1),
-    #     total_days=3,
-    #     time_to_peak_mins=1440,
-    #     interval_mins=10)
-    # print(tide_data_period)
+    tide_data_period = get_tide_data(
+        tide_query_loc=tide_query_loc,
+        approach=ApproachType.PERIOD_TIDE,
+        start_date=date(2023, 12, 31),
+        total_days=2,
+        time_to_peak_mins=1440,
+        interval_mins=10)
+    print(tide_data_period)
 
 
 if __name__ == "__main__":
