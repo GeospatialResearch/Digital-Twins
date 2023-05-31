@@ -300,13 +300,7 @@ def add_time_information(
     if time_to_peak_mins < min_time_to_peak_mins:
         raise ValueError("'time_to_peak_mins' needs to be at least half of the duration of the tide in minutes.")
 
-    if approach == ApproachType.KING_TIDE and tide_length_mins is not None:
-        time_mins = get_time_mins_to_add(tide_data, tide_length_mins, time_to_peak_mins, interval_mins)
-    elif approach == ApproachType.PERIOD_TIDE and total_days is not None:
-        time_mins = get_time_mins_to_add(tide_data, tide_length_mins, time_to_peak_mins, interval_mins)
-    else:
-        raise ValueError("Either 'tide_length_mins' or 'total_days' must be provided.")
-
+    time_mins = get_time_mins_to_add(tide_data, tide_length_mins, time_to_peak_mins, interval_mins)
     grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
     tide_data_w_time = gpd.GeoDataFrame()
     for _, group_data in grouped:
