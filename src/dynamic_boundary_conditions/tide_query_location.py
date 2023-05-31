@@ -67,8 +67,8 @@ def store_regional_council_clipped_to_db(
 def get_regional_council_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area["geometry"][0]
     query = f"""
-    SELECT * 
-    FROM region_geometry_clipped AS rgc 
+    SELECT *
+    FROM region_geometry_clipped AS rgc
     WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"""
     regions_clipped = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return regions_clipped
