@@ -77,7 +77,7 @@ def get_slr_data_from_db(engine, single_query_loc: pd.Series) -> gpd.GeoDataFram
     SELECT slr.*, distances.distance
     FROM sea_level_rise AS slr
     JOIN (
-        SELECT siteid, 
+        SELECT siteid,
         ST_Distance(ST_Transform(geometry, 2193), ST_GeomFromText('{query_loc_geom["geometry"][0]}', 2193)) AS distance
         FROM sea_level_rise
         ORDER BY distance
