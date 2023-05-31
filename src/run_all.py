@@ -1,8 +1,8 @@
 import logging
 
 from src.digitaltwin import get_data_from_db, run
-from src.dynamic_boundary_conditions import main_rainfall, main_tide_slr
 from src.lidar import lidar_metadata_in_db
+from src.dynamic_boundary_conditions import main_rainfall, main_tide_slr, main_river
 from src.flood_model import bg_flood_model
 
 log = logging.getLogger(__name__)
@@ -27,5 +27,7 @@ if __name__ == '__main__':
         main_tide_slr.main()
     except SystemExit:
         pass
+    log.debug("main_river.main()")
+    main_river.main()
     log.debug("bg_flood_model.main()")
     bg_flood_model.main()
