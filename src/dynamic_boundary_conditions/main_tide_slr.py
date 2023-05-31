@@ -76,6 +76,10 @@ def main():
         write_nz_bbox_to_file(engine)
         # Get catchment area
         catchment_area = get_catchment_area("selected_polygon.geojson")
+        # BG-Flood Model Directory
+        bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+        # Remove existing tide model input files
+        tide_slr_model_input.remove_existing_boundary_input(bg_flood_dir)
 
         # Store regional council clipped data in the database
         tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)
@@ -109,7 +113,6 @@ def main():
             percentile=50)
 
         # Generate the model input for BG-Flood
-        bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
         tide_slr_model_input.generate_uniform_boundary_input(bg_flood_dir, tide_slr_data)
 
     except tide_query_location.NoTideDataException as error:
