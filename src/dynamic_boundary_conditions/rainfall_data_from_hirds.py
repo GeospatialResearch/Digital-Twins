@@ -4,12 +4,13 @@
 @Author: pkh35, sli229
 """
 
-import requests
-from requests.structures import CaseInsensitiveDict
 import re
-import pandas as pd
 from typing import List, NamedTuple
 from io import StringIO
+
+import requests
+from requests.structures import CaseInsensitiveDict
+import pandas as pd
 
 
 def get_site_url_key(site_id: str, idf: bool) -> str:

@@ -4,12 +4,14 @@
 @Author: pkh35, sli229
 """
 
+import logging
+
 import requests
 from requests.structures import CaseInsensitiveDict
 import pandas as pd
 import geopandas as gpd
-import logging
 from geoalchemy2 import Geometry
+
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
