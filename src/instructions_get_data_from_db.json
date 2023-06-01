@@ -1,6 +1,6 @@
 {
-  "selected_area": "./selected_polygon.geojson",
+  "selected_area": "./nz_bbox.geojson",
   "source_name": [
-    "_50327-nz-river-centrelines"
+    "_50258-nz-coastlines"
   ]
 }

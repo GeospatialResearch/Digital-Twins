@@ -1,7 +1,7 @@
 import logging
 
 from src.digitaltwin import get_data_from_db, run
-from src.dynamic_boundary_conditions import main_rainfall
+from src.dynamic_boundary_conditions import main_rainfall, main_tide_slr
 from src.lidar import lidar_metadata_in_db
 from src.flood_model import bg_flood_model
 
@@ -22,5 +22,7 @@ if __name__ == '__main__':
     lidar_metadata_in_db.main()
     log.debug("main_rainfall.main()")
     main_rainfall.main()
+    log.debug("main_tide_slr.main()")
+    main_tide_slr.main()
     log.debug("bg_flood_model.main()")
     bg_flood_model.main()

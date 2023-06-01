@@ -62,8 +62,6 @@ def rainfall_sites_to_db(engine):
     ----------
     engine
         Engine used to connect to the database.
-    sites : gpd.GeoDataFrame
-        Rainfall sites in New Zealand.
     """
     if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites"):
         log.info("Rainfall sites data already exists in the database.")
