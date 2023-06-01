@@ -6,7 +6,6 @@
 
 import logging
 import pathlib
-from typing import Union
 
 import sqlalchemy
 import geopandas as gpd
