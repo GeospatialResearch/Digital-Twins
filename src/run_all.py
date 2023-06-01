@@ -1,8 +1,10 @@
 import logging
 
+import geopandas as gpd
+
 from src.digitaltwin import get_data_from_db, run
-from src.dynamic_boundary_conditions import main_rainfall, main_tide_slr
 from src.lidar import lidar_metadata_in_db
+from src.dynamic_boundary_conditions import main_rainfall, main_tide_slr
 from src.flood_model import bg_flood_model
 
 log = logging.getLogger(__name__)
@@ -13,7 +15,9 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
+
 if __name__ == '__main__':
+    selected_polygon_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     log.debug("run.main()")
     run.main()
     log.debug("get_data_from_db.main()")
@@ -23,6 +27,6 @@ if __name__ == '__main__':
     log.debug("main_rainfall.main()")
     main_rainfall.main()
     log.debug("main_tide_slr.main()")
-    main_tide_slr.main()
+    main_tide_slr.main(selected_polygon_gdf)
     log.debug("bg_flood_model.main()")
     bg_flood_model.main()
