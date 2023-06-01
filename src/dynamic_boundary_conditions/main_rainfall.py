@@ -17,7 +17,7 @@ from src.dynamic_boundary_conditions import rainfall_sites, thiessen_polygons, h
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
 
 
-def catchment_area_geometry_info(catchment_boundary: gpd.GeoDataFrame, to_crs=4326) -> Polygon:
+def catchment_area_geometry_info(catchment_boundary: gpd.GeoDataFrame, to_crs: int = 4326) -> Polygon:
     """
         Extract shapely geometry polygon from the catchment boundary in the given crs
 
@@ -25,6 +25,8 @@ def catchment_area_geometry_info(catchment_boundary: gpd.GeoDataFrame, to_crs=43
         ----------
         catchment_boundary
             The data frame of the catchment boundary polygon
+        to_crs: int = 4326
+            Specify the output's coordinate reference system. Default is 4326.
         """
     return catchment_boundary.to_crs(to_crs)["geometry"][0]
 
