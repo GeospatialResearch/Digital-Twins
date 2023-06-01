@@ -12,6 +12,7 @@ import subprocess
 from datetime import datetime
 from typing import Tuple
 
+import geopandas as gpd
 import xarray as xr
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, String
@@ -21,6 +22,7 @@ from sqlalchemy.orm import sessionmaker
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.flood_model.serve_model import add_model_output_to_geoserver
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
 from src.lidar import dem_metadata_in_db
 
@@ -64,7 +66,7 @@ def process_river_input_files(
 def bg_model_inputs(
         bg_flood_dir: pathlib.Path,
         dem_path,
-        model_output_dir: pathlib.Path,
+        output_file: pathlib.Path,
         catchment_boundary,
         resolution,
         end_time,
@@ -80,19 +82,14 @@ def bg_model_inputs(
     smallnc = 0 means Level of refinement to apply to resolution based on the
     adaptive resolution trigger
     """
-    now = datetime.now()
-    dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
     with xr.open_dataset(dem_path) as file_nc:
         max_temp_xr = file_nc
     keys = max_temp_xr.data_vars.keys()
     elev_var = list(keys)[1]
     rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
-    # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
-    if not os.path.isdir(model_output_dir):
-        os.makedirs(model_output_dir)
-    outfile = (model_output_dir / f"output_{dt_string}.nc").as_posix()
     valid_bg_flood_dir = valid_bg_flood_model(bg_flood_dir)
     param_file_path = valid_bg_flood_dir / "BG_param.txt"
+    outfile = output_file.as_posix()
     with open(param_file_path, "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
                          f"gpudevice = {gpu_device};\n"
@@ -127,48 +124,33 @@ def model_output_to_db(outfile, catchment_boundary):
     session.commit()
 
 
+def latest_model_output_from_db() -> pathlib.Path:
+    """Retrieve the latest model output file path, by querying the database"""
+    engine = setup_environment.get_database()
+    row = engine.execute("SELECT * FROM model_output ORDER BY access_date DESC LIMIT 1 ").fetchone()
+    return pathlib.Path(row["filepath"])
+
+
+def add_crs_to_latest_model_output():
+    """
+    Add CRS to the latest BG-Flood Model Output.
+    """
+    latest_file = latest_model_output_from_db()
+    with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
+        latest_output.load()
+        if latest_output.rio.crs is None:
+            latest_output.rio.write_crs("epsg:2193", inplace=True)
+    latest_output.to_netcdf(latest_file)
+
+
 class BGDEM(Base):
     """Class used to create model_output table in the database."""
-
     __tablename__ = "model_output"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     filepath = Column(String)
     Filename = Column(String)
     access_date = Column(DateTime, default=datetime.now())
     geometry = Column(Geometry("POLYGON"))
-
-
-def find_latest_model_output(output_dir: pathlib.Path):
-    """
-    Find the latest BG-Flood model output.
-
-    Parameters
-    ----------
-    output_dir : pathlib.Path
-        BG-Flood model output directory.
-    """
-    list_of_files = list(output_dir.glob("*.nc"))
-    if not len(list_of_files):
-        raise ValueError(f"Missing BG-Flood Model output in: {output_dir}")
-    latest_file = max(list_of_files, key=os.path.getctime)
-    return latest_file
-
-
-def add_crs_to_latest_model_output(model_output_dir: pathlib.Path):
-    """
-    Add CRS to the latest BG-Flood Model Output.
-
-    Parameters
-    ----------
-    model_output_dir : pathlib.Path
-        BG-Flood model output directory.
-    """
-    latest_file = find_latest_model_output(model_output_dir)
-    with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
-        latest_output.load()
-        if latest_output.rio.crs is None:
-            latest_output.rio.write_crs("epsg:2193", inplace=True)
-    latest_output.to_netcdf(latest_file)
 
 
 def run_model(
@@ -183,62 +165,90 @@ def run_model(
         engine
 ):
     """Call the functions."""
-    dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
+    dem_path = dem_metadata_in_db.get_dem_path(instructions, catchment_boundary, engine)
+
+    now = datetime.now()
+    dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
+    output_file = (model_output_dir / f"output_{dt_string}.nc")
+
     bg_model_inputs(
         bg_flood_dir,
         dem_path,
-        model_output_dir,
+        output_file,
         catchment_boundary,
         resolution,
         end_time,
         output_timestep,
         rain_input_type
     )
+    cwd = os.getcwd()
     os.chdir(bg_flood_dir)
     subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
-    add_crs_to_latest_model_output(model_output_dir)
+    os.chdir(cwd)
+    add_crs_to_latest_model_output()
+    add_model_output_to_geoserver(output_file)
 
 
-def read_and_fill_instructions():
+def read_and_fill_instructions(catchment_file_path: pathlib.Path):
     """Reads instruction file and adds keys and uses selected_polygon.geojson as catchment_boundary"""
     linz_api_key = config.get_env_variable("LINZ_API_KEY")
     instruction_file = pathlib.Path("src/flood_model/instructions_geofabrics.json")
     with open(instruction_file, "r") as file_pointer:
         instructions = json.load(file_pointer)
     instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
-    instructions["instructions"]["data_paths"]["catchment_boundary"] = (
-                pathlib.Path(os.getcwd()) / pathlib.Path("selected_polygon.geojson")).as_posix()
+
+    instructions["instructions"]["data_paths"]["catchment_boundary"] = catchment_file_path.as_posix()
     instructions["instructions"]["data_paths"]["local_cache"] = instructions["instructions"]["data_paths"][
         "local_cache"].format(data_dir=config.get_env_variable("DATA_DIR"))
     return instructions
 
 
-def main():
+def create_temp_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pathlib.Path:
+    """Temportary catchment file to be ingested by GeoFabrics"""
+    temp_dir = pathlib.Path("tmp/geofabrics_polygons")
+    # Create temporary storage folder if it does not already exists
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    filepath = temp_dir / "selected_polygon.geojson"
+    selected_polygon_gdf.to_file(filepath)
+    return pathlib.Path(os.getcwd()) / filepath
+
+
+def remove_temp_catchment_boundary_file(file_path: pathlib.Path):
+    """Removes the temporary file from the file system once it is used"""
+    file_path.unlink()
+
+
+def main(selected_polygon_gdf: gpd.GeoDataFrame):
     engine = setup_environment.get_database()
-    # BG-Flood Model directory
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-    # BG-Flood Model output directory
-    model_output_dir = config.get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
-    instructions = read_and_fill_instructions()
-    catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
+    catchment_file_path = create_temp_catchment_boundary_file(selected_polygon_gdf)
+    instructions = read_and_fill_instructions(catchment_file_path)
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
     output_timestep = 100.0
     # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
     # is the last one)
     end_time = 900.0
+
+    # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
+    model_output_dir = config.get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
+    if not os.path.isdir(model_output_dir):
+        os.makedirs(model_output_dir)
+
     run_model(
         bg_flood_dir=bg_flood_dir,
         model_output_dir=model_output_dir,
         instructions=instructions,
-        catchment_boundary=catchment_boundary,
+        catchment_boundary=selected_polygon_gdf,
         resolution=resolution,
         end_time=end_time,
         output_timestep=output_timestep,
         rain_input_type=RainInputType.UNIFORM,
         engine=engine
     )
+    remove_temp_catchment_boundary_file(catchment_file_path)
 
 
 if __name__ == "__main__":
-    main()
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(sample_polygon)

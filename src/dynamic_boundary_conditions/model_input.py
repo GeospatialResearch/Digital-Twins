@@ -14,6 +14,8 @@ from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 
 from src import config
+
+from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db, hyetograph
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
@@ -196,8 +198,8 @@ def main():
     flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
     bg_flood_path = pathlib.Path(flood_model_dir)
     # Catchment polygon
-    catchment_file = pathlib.Path(r"selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
+    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
     # Connect to the database
     engine = setup_environment.get_database()
     # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
@@ -221,6 +223,7 @@ def main():
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     # Write out the requested rainfall model input for BG-Flood
+    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.UNIFORM)
     generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.VARYING)
 

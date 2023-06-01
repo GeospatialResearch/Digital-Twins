@@ -32,11 +32,10 @@ def dem_table(engine):
     DEM.__table__.create(bind=engine, checkfirst=True)
 
 
-def check_dem_exist(instructions, engine):
+def check_dem_exist(selected_polygon: gpd.GeoDataFrame, engine):
     """Only generate DEM if it doesn't exist in the database."""
     dem_table(engine)
-    catchment_boundary = get_catchment_boundary()
-    geometry = str(catchment_boundary["geometry"][0])
+    geometry = str(selected_polygon["geometry"][0])
     query = (
         f"select exists (Select 1 from hydrological_dem where geometry ='{geometry}')"
     )
@@ -52,10 +51,9 @@ def generate_dem(instructions):
     runner.run()
 
 
-def dem_metadata_to_db(instructions, engine):
+def dem_metadata_to_db(instructions, selected_polygon: gpd.GeoDataFrame, engine):
     """Store metadata of the generated DEM in database."""
-    catchment_boundary = get_catchment_boundary()
-    geometry = str(catchment_boundary["geometry"][0])
+    geometry = str(selected_polygon["geometry"][0])
     data_paths = instructions["instructions"]["data_paths"]
     cache_path = pathlib.Path(data_paths["local_cache"])
     subfolder = data_paths["subfolder"]
@@ -68,26 +66,18 @@ def dem_metadata_to_db(instructions, engine):
     session.commit()
 
 
-def dem_metadata_from_db(instructions, engine):
+def dem_metadata_from_db(selected_polygon: gpd.GeoDataFrame, engine):
     """Get requested dem information from the database."""
-    catchment_boundary = get_catchment_boundary()
-    geometry = str(catchment_boundary["geometry"][0])
+    geometry = str(selected_polygon["geometry"][0])
     query = f"SELECT filepath FROM hydrological_dem WHERE geometry = '{geometry}'"
     dem = engine.execute(query)
     return dem.fetchone()[0]
 
 
-def get_dem_path(instructions, engine):
+def get_dem_path(instructions, selected_polygon: gpd.GeoDataFrame, engine):
     """Pass dem information to other functions."""
-    if check_dem_exist(instructions, engine) is False:
+    if not check_dem_exist(selected_polygon, engine):
         generate_dem(instructions)
-        dem_metadata_to_db(instructions, engine)
-    dem_filepath = dem_metadata_from_db(instructions, engine)
+        dem_metadata_to_db(instructions, selected_polygon, engine)
+    dem_filepath = dem_metadata_from_db(selected_polygon, engine)
     return dem_filepath
-
-
-def get_catchment_boundary():
-    """Get catchment boundary from instructions file"""
-    catchment_boundary_path = "selected_polygon.geojson"
-    catchment_boundary = gpd.read_file(catchment_boundary_path)
-    return catchment_boundary

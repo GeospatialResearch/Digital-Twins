@@ -28,7 +28,7 @@ def get_data_from_db(engine, geometry: gpd.GeoDataFrame, source_list: tuple):
         print(output_data)
 
 
-def main():
+def main(selected_polygon_gdf: gpd.GeoDataFrame):
     engine = setup_environment.get_database()
     # load in the instructions, get the source list and polygon from the user
     instructions_file_path = pathlib.Path().cwd() / pathlib.Path(
@@ -37,9 +37,10 @@ def main():
     with open(instructions_file_path, "r") as file_pointer:
         instructions = json.load(file_pointer)
     source_list = tuple(instructions["source_name"])
-    geometry = gpd.GeoDataFrame.from_file(instructions["selected_area"], crs=2193)
-    get_data_from_db(engine, geometry, source_list)
+
+    get_data_from_db(engine, selected_polygon_gdf, source_list)
 
 
 if __name__ == "__main__":
-    main()
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(sample_polygon)
