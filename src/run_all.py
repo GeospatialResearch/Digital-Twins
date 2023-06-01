@@ -1,5 +1,4 @@
 import logging
-import geopandas as gpd
 
 import geopandas as gpd
 
