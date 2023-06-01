@@ -5,7 +5,6 @@
 """
 
 import logging
-import pathlib
 from typing import Optional
 
 import geopandas as gpd
@@ -133,8 +132,8 @@ def rainfall_data_from_db(
 
 def main():
     # Catchment polygon
-    catchment_file = pathlib.Path(r"selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_file)
+    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
     # Connect to the database
     engine = setup_environment.get_database()
     # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
