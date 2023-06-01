@@ -27,7 +27,7 @@ if __name__ == '__main__':
     log.debug("main_rainfall.main()")
     main_rainfall.main()
     log.debug("main_tide_slr.main()")
-    main_tide_slr.main()
+    main_tide_slr.main(selected_polygon_gdf)
     log.debug("main_river.main()")
     main_river.main(selected_polygon_gdf)
     log.debug("bg_flood_model.main()")
