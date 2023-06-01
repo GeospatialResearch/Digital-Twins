@@ -16,10 +16,10 @@ from src.dynamic_boundary_conditions import (
 )
 
 
-def get_catchment_area(catchment_file: str) -> gpd.GeoDataFrame:
-    catchment_file = pathlib.Path(catchment_file)
-    catchment_area = gpd.read_file(catchment_file)
-    catchment_area = catchment_area.to_crs(2193)
+def get_catchment_area(
+        catchment_area: gpd.GeoDataFrame,
+        to_crs: int = 2193) -> gpd.GeoDataFrame:
+    catchment_area = catchment_area.to_crs(to_crs)
     return catchment_area
 
 
@@ -48,11 +48,11 @@ def remove_existing_river_inputs(bg_flood_dir: pathlib.Path):
         file_path.unlink()
 
 
-def main():
+def main(selected_polygon_gdf: gpd.GeoDataFrame):
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area
-    catchment_area = get_catchment_area(r"selected_polygon.geojson")
+    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
     # BG-Flood Model Directory
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # Remove existing river model input files
@@ -95,4 +95,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(sample_polygon)
