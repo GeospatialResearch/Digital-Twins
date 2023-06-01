@@ -5,8 +5,8 @@
 """
 
 import logging
-import pathlib
 import pandas as pd
+import geopandas as gpd
 import numpy as np
 from typing import Union
 from math import floor, ceil

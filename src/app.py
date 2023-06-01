@@ -1,11 +1,9 @@
 import logging
-import pathlib
 from http.client import OK, ACCEPTED, BAD_REQUEST
 
-import shapely
 import xarray
 from celery.result import AsyncResult
-from flask import Flask, Response, jsonify, make_response, request, send_file
+from flask import Flask, Response, jsonify, make_response, request
 from flask_cors import CORS
 from pyproj import Transformer
 from shapely import box
@@ -81,13 +79,13 @@ def get_wfs_layer_latest_model(model_id):
     }), OK)
 
 
-
 def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:
     xmin = min([lng1, lng2])
     ymin = min([lat1, lat2])
     xmax = max([lng1, lng2])
     ymax = max([lat1, lat2])
     return box(xmin, ymin, xmax, ymax).wkt
+
 
 @app.route('/model/depth', methods=["GET"])
 def get_depth_at_point() -> Response:
@@ -104,7 +102,6 @@ def get_depth_at_point() -> Response:
 
     ds = xarray.open_dataset(latest_model_output_from_db().as_posix())
 
-
     transformer = Transformer.from_crs(4326, 2193)
     y, x = transformer.transform(lat, lng)
     da = ds["hmax_P0"].sel(xx_P0=x, yy_P0=y, method="nearest")
@@ -116,6 +113,7 @@ def get_depth_at_point() -> Response:
         "time": times,
         "depth": depths
     }), OK)
+
 
 def valid_coordinates(latitude: float, longitude: float) -> bool:
     return (-90 < latitude <= 90) and (-180 < longitude <= 180)
