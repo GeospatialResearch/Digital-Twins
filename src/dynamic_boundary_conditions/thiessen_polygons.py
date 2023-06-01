@@ -6,7 +6,6 @@
 """
 
 import logging
-import pathlib
 
 import geopandas as gpd
 import pandas as pd

@@ -14,8 +14,6 @@ from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 
 from src import config
-
-from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db, hyetograph
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod

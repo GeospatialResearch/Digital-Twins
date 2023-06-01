@@ -7,7 +7,6 @@
 import pandas as pd
 import geopandas as gpd
 import sqlalchemy
-import pathlib
 import logging
 from typing import List
 from src.digitaltwin import setup_environment

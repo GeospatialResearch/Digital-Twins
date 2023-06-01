@@ -5,7 +5,6 @@
 """
 
 import logging
-import pathlib
 from typing import Optional
 
 import geopandas as gpd
