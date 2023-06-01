@@ -82,6 +82,12 @@ def bg_model_inputs(
     smallnc = 0 means Level of refinement to apply to resolution based on the
     adaptive resolution trigger
     """
+    """Set parameters to run the flood model.
+        mask is used for visualising all the values larger than 15.
+        If we are using the gpu then set to 0 (if no gpu type -1).
+        smallnc = 0 means Level of refinement to apply to resolution based on the
+        adaptive resolution trigger
+        """
     with xr.open_dataset(dem_path) as file_nc:
         max_temp_xr = file_nc
     keys = max_temp_xr.data_vars.keys()
