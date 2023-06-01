@@ -10,6 +10,7 @@ import os
 import pathlib
 import subprocess
 from datetime import datetime
+from typing import Tuple
 
 import xarray as xr
 from geoalchemy2 import Geometry
@@ -32,14 +33,38 @@ stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
 
-
 Base = declarative_base()
 
 
+def valid_bg_flood_model(bg_flood_dir: pathlib.Path):
+    """Check if the flood_model path exists."""
+    if bg_flood_dir.exists():
+        return bg_flood_dir
+    raise FileNotFoundError(f"BG-flood model at '{bg_flood_dir}' not found.")
+
+
+def process_tide_input_files(
+        tide_input_file_path: pathlib.Path) -> Tuple[str, str]:
+    tide_position = tide_input_file_path.stem.split('_')[0]
+    tide_file = tide_input_file_path.name
+    return tide_position, tide_file
+
+
+def process_river_input_files(
+        river_input_file_path: pathlib.Path) -> str:
+    file_name_parts = river_input_file_path.stem.split('_')
+    file_name = file_name_parts[0] + river_input_file_path.suffix
+    extents = ','.join(file_name_parts[1:])
+    river = f"{file_name},{extents}"
+    new_file_path = river_input_file_path.with_name(file_name)
+    river_input_file_path.rename(new_file_path)
+    return river
+
+
 def bg_model_inputs(
-        bg_path,
+        bg_flood_dir: pathlib.Path,
         dem_path,
-        output_dir: pathlib.Path,
+        model_output_dir: pathlib.Path,
         catchment_boundary,
         resolution,
         end_time,
@@ -62,14 +87,12 @@ def bg_model_inputs(
     keys = max_temp_xr.data_vars.keys()
     elev_var = list(keys)[1]
     rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
-    river = "RiverDis.txt"
-    extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
-    outfile = (output_dir / f"output_{dt_string}.nc").as_posix()
-    valid_bg_path = bg_model_path(bg_path)
-    param_file_path = valid_bg_path / "BG_param.txt"
+    if not os.path.isdir(model_output_dir):
+        os.makedirs(model_output_dir)
+    outfile = (model_output_dir / f"output_{dt_string}.nc").as_posix()
+    valid_bg_flood_dir = valid_bg_flood_model(bg_flood_dir)
+    param_file_path = valid_bg_flood_dir / "BG_param.txt"
     with open(param_file_path, "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
                          f"gpudevice = {gpu_device};\n"
@@ -79,26 +102,15 @@ def bg_model_inputs(
                          f"outputtimestep = {output_timestep};\n"
                          f"endtime = {end_time};\n"
                          f"rain = {rainfall};\n"
-                         f"river = {river},{extents};\n"
                          f"outvars = h, hmax, zb, zs, u, v;\n"
                          f"outfile = {outfile};\n")
-        # Check if any bndfile.txt files exist, and add lines accordingly
-        bndfiles = ['left_bnd.txt', 'right_bnd.txt', 'top_bnd.txt', 'bot_bnd.txt']
-        for bndfile in bndfiles:
-            bndfile_path = rf"{valid_bg_path}/{bndfile}"
-            if os.path.exists(bndfile_path):
-                position = bndfile.split('_')[0]
-                param_file.write(f"{position} = {bndfile},2;\n")
+        for tide_input_file_path in valid_bg_flood_dir.glob('*_bnd.txt'):
+            tide_position, tide_file = process_tide_input_files(tide_input_file_path)
+            param_file.write(f"{tide_position} = {tide_file},2;\n")
+        for river_input_file_path in valid_bg_flood_dir.glob('river[0-9]*_*.txt'):
+            river = process_river_input_files(river_input_file_path)
+            param_file.write(f"river = {river};\n")
     model_output_to_db(outfile, catchment_boundary)
-    river_discharge_info(bg_path)
-
-
-def bg_model_path(file_path):
-    """Check if the flood_model path exists."""
-    model_file = pathlib.Path(file_path)
-    if model_file.exists():
-        return model_file
-    raise FileNotFoundError(f"flood model {file_path} not found")
 
 
 def model_output_to_db(outfile, catchment_boundary):
@@ -113,12 +125,6 @@ def model_output_to_db(outfile, catchment_boundary):
     session = Session()
     session.add(flood_dem)
     session.commit()
-
-
-def river_discharge_info(bg_path):
-    """Get the river discharge info. from design hydrographs."""
-    with open(bg_path / "RiverDis.txt") as file:
-        print(file.read())
 
 
 class BGDEM(Base):
@@ -148,16 +154,16 @@ def find_latest_model_output(output_dir: pathlib.Path):
     return latest_file
 
 
-def add_crs_to_latest_model_output(output_dir: pathlib.Path):
+def add_crs_to_latest_model_output(model_output_dir: pathlib.Path):
     """
     Add CRS to the latest BG-Flood Model Output.
 
     Parameters
     ----------
-    output_dir : pathlib.Path
+    model_output_dir : pathlib.Path
         BG-Flood model output directory.
     """
-    latest_file = find_latest_model_output(output_dir)
+    latest_file = find_latest_model_output(model_output_dir)
     with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
         latest_output.load()
         if latest_output.rio.crs is None:
@@ -166,8 +172,8 @@ def add_crs_to_latest_model_output(output_dir: pathlib.Path):
 
 
 def run_model(
-        bg_path,
-        output_dir: pathlib.Path,
+        bg_flood_dir: pathlib.Path,
+        model_output_dir: pathlib.Path,
         instructions,
         catchment_boundary,
         resolution,
@@ -179,11 +185,18 @@ def run_model(
     """Call the functions."""
     dem_path = dem_metadata_in_db.get_dem_path(instructions, engine)
     bg_model_inputs(
-        bg_path, dem_path, output_dir, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
+        bg_flood_dir,
+        dem_path,
+        model_output_dir,
+        catchment_boundary,
+        resolution,
+        end_time,
+        output_timestep,
+        rain_input_type
     )
-    os.chdir(bg_path)
-    subprocess.run([bg_path / "BG_flood.exe"], check=True)
-    add_crs_to_latest_model_output(output_dir)
+    os.chdir(bg_flood_dir)
+    subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
+    add_crs_to_latest_model_output(model_output_dir)
 
 
 def read_and_fill_instructions():
@@ -203,12 +216,9 @@ def read_and_fill_instructions():
 def main():
     engine = setup_environment.get_database()
     # BG-Flood Model directory
-    flood_model_dir = config.get_env_variable("FLOOD_MODEL_DIR")
-    bg_path = pathlib.Path(flood_model_dir)
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # BG-Flood Model output directory
-    data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path)
-    output_dir = data_dir / "model_output"
-
+    model_output_dir = config.get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
     instructions = read_and_fill_instructions()
     catchment_boundary = dem_metadata_in_db.get_catchment_boundary()
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
@@ -218,8 +228,8 @@ def main():
     # is the last one)
     end_time = 900.0
     run_model(
-        bg_path=bg_path,
-        output_dir=output_dir,
+        bg_flood_dir=bg_flood_dir,
+        model_output_dir=model_output_dir,
         instructions=instructions,
         catchment_boundary=catchment_boundary,
         resolution=resolution,
