@@ -27,7 +27,7 @@ log.addHandler(stream_handler)
 def get_database():
     """Exit the program if connection fails."""
     engine = get_connection_from_profile()
-    log.info("Connected to PostgreSQL database!")
+    log.debug("Connected to PostgreSQL database!")
     return engine
 
 

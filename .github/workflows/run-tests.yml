@@ -20,6 +20,24 @@ jobs:
         run: |
           flake8 src --show-source --count --statistics --max-line-length=120
 
+
+  linting-js:
+    name: Lint Front-end application
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./visualisation
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Run linting
+        run: npm run lint
+
+
   unit-tests:
     name: Run unit tests with pytest
     runs-on: ubuntu-latest
