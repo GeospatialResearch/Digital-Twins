@@ -225,8 +225,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
     resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     # Saving the outputs after each `outputtimestep` seconds
     output_timestep = 100.0
-    # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds
-    # is the last one)
+    # Saving the outputs till `endtime` number of seconds (or the output after `endtime` seconds is the last one)
     end_time = 900.0
 
     # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
