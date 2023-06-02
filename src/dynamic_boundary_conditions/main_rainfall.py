@@ -19,7 +19,7 @@ from src.dynamic_boundary_conditions import (
     hirds_rainfall_data_to_db,
     hirds_rainfall_data_from_db,
     hyetograph,
-    model_input,
+    rainfall_model_input,
 )
 
 
@@ -74,12 +74,12 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
 
     # Write out mean catchment rainfall data in a text file (used as spatially uniform rainfall input into BG-Flood)
-    sites_coverage = model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
+    sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     # Write out the requested rainfall model input for BG-Flood
     bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-    model_input.generate_rain_model_input(
+    rainfall_model_input.generate_rain_model_input(
         hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.UNIFORM)
-    model_input.generate_rain_model_input(
+    rainfall_model_input.generate_rain_model_input(
         hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.VARYING)
 
 
