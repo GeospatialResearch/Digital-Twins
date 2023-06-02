@@ -7,24 +7,24 @@ Created on Wed Nov 10 13:22:27 2021.
 
 import pathlib
 
-import geofabrics.processor
 import geopandas as gpd
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+import geofabrics.processor
+
 Base = declarative_base()
 
 
-class DEM(Base):
-    """Class used to create hydrological_dem table."""
-
+class HydroDEM(Base):
+    """Class used to create 'hydrological_dem' table."""
     __tablename__ = "hydrological_dem"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    filepath = Column(String)
-    Filename = Column(String)
-    geometry = Column(Geometry("POLYGON"))
+    file_path = Column(String)
+    file_name = Column(String)
+    geometry = Column(Geometry("GEOMETRY", srid=2193), comment="catchment area coverage")
 
 
 def dem_table(engine):
@@ -59,7 +59,7 @@ def dem_metadata_to_db(instructions, selected_polygon: gpd.GeoDataFrame, engine)
     subfolder = data_paths["subfolder"]
     result_dem_name = data_paths["result_dem"]
     result_dem_path = (cache_path / subfolder / result_dem_name).as_posix()
-    lidar = DEM(filepath=result_dem_path, Filename=result_dem_name, geometry=geometry)
+    lidar = HydroDEM(filepath=result_dem_path, Filename=result_dem_name, geometry=geometry)
     Session = sessionmaker(bind=engine)
     session = Session()
     session.add(lidar)
