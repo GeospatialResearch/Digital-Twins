@@ -158,22 +158,3 @@ def rainfall_data_to_db(engine, sites_in_catchment: gpd.GeoDataFrame, idf: bool)
             add_each_site_rainfall_data(engine, sites_id_in_catchment, idf)
         else:
             log.info("There are no sites within the requested catchment area, select a wider area.")
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    # Get catchment polygon
-    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
-
-    # Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area
-    sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
-
-    # Store rainfall data of all the sites within the catchment area in the database
-    # Set idf to False for rain depth data and to True for rain intensity data
-    rainfall_data_to_db(engine, sites_in_catchment, idf=False)
-
-
-if __name__ == "__main__":
-    main()

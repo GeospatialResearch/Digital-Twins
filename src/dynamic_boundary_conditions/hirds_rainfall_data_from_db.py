@@ -128,29 +128,3 @@ def rainfall_data_from_db(
         rain_data = get_each_site_rainfall_data(engine, site_id, rcp, time_period, ari, duration, idf)
         rain_data_in_catchment = pd.concat([rain_data_in_catchment, rain_data], ignore_index=True)
     return rain_data_in_catchment
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    # Get catchment polygon
-    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
-
-    # Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area
-    sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
-
-    # Requested scenario
-    rcp = 2.6
-    time_period = "2031-2050"
-    ari = 100
-    # For a requested scenario, get all rainfall data for sites within the catchment area from the database
-    # Set idf to False for rain depth data and to True for rain intensity data
-    rain_depth_in_catchment = rainfall_data_from_db(engine, sites_in_catchment, rcp, time_period, ari, idf=False)
-    print(rain_depth_in_catchment)
-    rain_intensity_in_catchment = rainfall_data_from_db(engine, sites_in_catchment, rcp, time_period, ari, idf=True)
-    print(rain_intensity_in_catchment)
-
-
-if __name__ == "__main__":
-    main()

@@ -72,15 +72,3 @@ def rainfall_sites_to_db(engine):
         sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,
                          dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
         log.info("Stored rainfall sites data in the database.")
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-
-    # Fetch rainfall sites data from the HIRDS website and store it to the database
-    rainfall_sites_to_db(engine)
-
-
-if __name__ == "__main__":
-    main()

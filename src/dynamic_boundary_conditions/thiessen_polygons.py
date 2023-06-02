@@ -130,23 +130,3 @@ def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
     # Reset the index
     sites_in_catchment.reset_index(drop=True, inplace=True)
     return sites_in_catchment
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    # Get catchment polygon
-    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
-
-    # Calculate the area covered by each rainfall site across New Zealand and store it in the database
-    nz_boundary_polygon = get_new_zealand_boundary(engine)
-    sites_in_nz = get_sites_within_aoi(engine, nz_boundary_polygon)
-    thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
-    # Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area
-    sites_in_catchment = thiessen_polygons_from_db(engine, catchment_polygon)
-    print(sites_in_catchment)
-
-
-if __name__ == "__main__":
-    main()
