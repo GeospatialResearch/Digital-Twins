@@ -204,13 +204,13 @@ def read_and_fill_instructions(catchment_file_path: pathlib.Path):
 
 
 def create_temp_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pathlib.Path:
-    """Temportary catchment file to be ingested by GeoFabrics"""
+    """Temporary catchment file to be ingested by GeoFabrics"""
     temp_dir = pathlib.Path("tmp/geofabrics_polygons")
-    # Create temporary storage folder if it does not already exists
+    # Create temporary storage folder if it does not already exist
     temp_dir.mkdir(parents=True, exist_ok=True)
-    filepath = temp_dir / "selected_polygon.geojson"
-    selected_polygon_gdf.to_file(filepath)
-    return pathlib.Path(os.getcwd()) / filepath
+    temp_file_path = temp_dir / "selected_polygon.geojson"
+    selected_polygon_gdf.to_file(temp_file_path.as_posix(), driver='GeoJSON')
+    return pathlib.Path.cwd() / temp_file_path
 
 
 def remove_temp_catchment_boundary_file(file_path: pathlib.Path):
