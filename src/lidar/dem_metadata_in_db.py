@@ -7,12 +7,13 @@ Created on Wed Nov 10 13:22:27 2021.
 
 import pathlib
 
-import geofabrics.processor
 import geopandas as gpd
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+import geofabrics.processor
 
 Base = declarative_base()
 
