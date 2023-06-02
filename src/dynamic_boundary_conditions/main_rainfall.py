@@ -70,7 +70,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
 
     # Get hyetograph data for all sites within the catchment area
     hyetograph_data = hyetograph.get_hyetograph_data(
-        rain_depth_in_catchment,
+        rain_depth_in_catchment=rain_depth_in_catchment,
         storm_length_mins=2880,
         time_to_peak_mins=1440,
         increment_mins=10,
@@ -81,7 +81,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
 
     # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
     sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
-
     # Write out the requested rainfall model input for BG-Flood
     rainfall_model_input.generate_rain_model_input(
         hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.UNIFORM)
