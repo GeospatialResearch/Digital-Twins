@@ -1,7 +1,9 @@
 import unittest
 import pathlib
+
 import geopandas as gpd
 from shapely.geometry import Polygon
+
 from src.dynamic_boundary_conditions import thiessen_polygons
 
 

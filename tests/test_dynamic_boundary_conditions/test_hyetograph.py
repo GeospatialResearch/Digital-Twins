@@ -1,8 +1,10 @@
 import unittest
+from unittest.mock import patch
+from typing import List
+
 import pandas as pd
 import numpy as np
-from typing import List
-from unittest.mock import patch
+
 from src.dynamic_boundary_conditions import hyetograph
 
 

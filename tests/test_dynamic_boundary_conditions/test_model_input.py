@@ -1,10 +1,12 @@
 import unittest
+from unittest.mock import patch
 import pathlib
-from shapely.geometry import Polygon
+
 import geopandas as gpd
 import pandas as pd
 import numpy as np
-from unittest.mock import patch
+from shapely.geometry import Polygon
+
 from src.dynamic_boundary_conditions import rainfall_model_input
 
 
