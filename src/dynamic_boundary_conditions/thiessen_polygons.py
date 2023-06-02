@@ -134,8 +134,8 @@ def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
 
 def main():
     # Catchment polygon
-    catchement_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchement_gdf)
+    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
     # Connect to the database
     engine = setup_environment.get_database()
     # Calculate the area covered by each rainfall site across New Zealand and store it in the database
