@@ -131,13 +131,15 @@ def rainfall_data_from_db(
 
 
 def main():
-    # Catchment polygon
-    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
     # Connect to the database
     engine = setup_environment.get_database()
-    # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
+    # Get catchment polygon
+    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
+
+    # Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
+
     # Requested scenario
     rcp = 2.6
     time_period = "2031-2050"

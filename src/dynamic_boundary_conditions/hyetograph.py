@@ -372,13 +372,15 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
 
 
 def main():
-    # Catchment polygon
-    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
     # Connect to the database
     engine = setup_environment.get_database()
-    # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
+    # Get catchment polygon
+    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
+
+    # Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
+
     # Requested scenario
     rcp = 2.6
     time_period = "2031-2050"
@@ -387,6 +389,7 @@ def main():
     # Set idf to False for rain depth data and to True for rain intensity data
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
         engine, sites_in_catchment, rcp, time_period, ari, idf=False)
+
     # Get hyetograph data for all sites within the catchment area
     hyetograph_data = get_hyetograph_data(
         rain_depth_in_catchment,

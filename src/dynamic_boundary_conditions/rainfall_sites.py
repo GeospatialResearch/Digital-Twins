@@ -77,6 +77,7 @@ def rainfall_sites_to_db(engine):
 def main():
     # Connect to the database
     engine = setup_environment.get_database()
+
     # Fetch rainfall sites data from the HIRDS website and store it to the database
     rainfall_sites_to_db(engine)
 
