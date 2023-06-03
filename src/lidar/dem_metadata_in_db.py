@@ -98,7 +98,7 @@ def generate_hydro_dem(
         engine: Engine,
         instructions: Dict[str, Any],
         catchment_boundary: gpd.GeoDataFrame) -> None:
-    """Pass dem information to other functions."""
+    """Generate the hydrologically conditioned DEM for the catchment area."""
     if not check_hydro_dem_exist(engine, catchment_boundary):
         run_geofabrics_hydro_dem(instructions)
         store_hydro_dem_metadata_to_db(engine, instructions, catchment_boundary)
