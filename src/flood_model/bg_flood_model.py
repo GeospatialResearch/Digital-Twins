@@ -160,7 +160,7 @@ def get_bg_flood_model_inputs(
 
 
 def run_bg_flood_model(
-        engine,
+        engine: Engine,
         bg_flood_dir: pathlib.Path,
         model_output_dir: pathlib.Path,
         catchment_boundary: gpd.GeoDataFrame,
@@ -216,7 +216,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
         catchment_boundary=selected_polygon_gdf,
         output_timestep=100,  # Saving the outputs after each `outputtimestep` seconds
         end_time=900,  # Saving the outputs till `endtime` number of seconds
-        rain_input_type=RainInputType.UNIFORM)
+        rain_input_type=RainInputType.UNIFORM
+    )
 
 
 if __name__ == "__main__":
