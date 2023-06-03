@@ -12,7 +12,7 @@ import geoapis.vector
 from sqlalchemy.engine import Engine
 
 from src import config
-from src.dynamic_boundary_conditions import main_tide_slr
+from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -60,8 +60,9 @@ def store_regional_council_clipped_to_db(
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
         verbose: bool = True) -> None:
-    if main_tide_slr.check_table_exists(engine, "region_geometry_clipped"):
-        log.info("Table 'region_geometry_clipped' already exists in the database.")
+    table_name = "region_geometry_clipped"
+    if tables.check_table_exists(engine, "region_geometry_clipped"):
+        log.info(f"Table '{table_name}' already exists in the database.")
     else:
         regional_clipped = get_regional_council_clipped(layer_id, crs, bounding_polygon, verbose)
         regional_clipped.to_postgis("region_geometry_clipped", engine, index=False, if_exists="replace")

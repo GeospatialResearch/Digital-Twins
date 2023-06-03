@@ -3,11 +3,11 @@ import pathlib
 
 import geopandas as gpd
 import pandas as pd
-import sqlalchemy
 import geoapis.vector
 from sqlalchemy.engine import Engine
 
 from src import config
+from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -17,22 +17,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-def check_table_exists(engine: Engine, db_table_name: str) -> bool:
-    """
-    Check if table exists in the database.
-
-    Parameters
-    ----------
-    engine : Engine
-        Engine used to connect to the database.
-    db_table_name : str
-        Database table name.
-    """
-    insp = sqlalchemy.inspect(engine)
-    table_exists = insp.has_table(db_table_name, schema="public")
-    return table_exists
 
 
 def get_rec1_data_from_niwa(
@@ -51,8 +35,9 @@ def get_rec1_data_from_niwa(
 
 
 def store_rec1_data_to_db(engine: Engine, rec1_data_dir: pathlib.Path) -> None:
-    if check_table_exists(engine, "rec1_data"):
-        log.info("Table 'rec1_data' already exists in the database.")
+    table_name = "rec1_data"
+    if tables.check_table_exists(engine, "rec1_data"):
+        log.info(f"Table '{table_name}' already exists in the database.")
     else:
         rec1_nz = get_rec1_data_from_niwa(rec1_data_dir)
         rec1_nz.to_postgis("rec1_data", engine, index=False, if_exists="replace")
@@ -82,8 +67,9 @@ def store_sea_drain_catchments_to_db(
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
         verbose: bool = True) -> None:
-    if check_table_exists(engine, "sea_draining_catchments"):
-        log.info("Table 'sea_draining_catchments' already exists in the database.")
+    table_name = "sea_draining_catchments"
+    if tables.check_table_exists(engine, table_name):
+        log.info(f"Table '{table_name}' already exists in the database.")
     else:
         sdc_data = get_data_from_mfe(layer_id, crs, bounding_polygon, verbose)
         sdc_data.columns = sdc_data.columns.str.lower()

@@ -9,9 +9,9 @@ from typing import List
 
 import pandas as pd
 import geopandas as gpd
-import sqlalchemy
 from sqlalchemy.engine import Engine
 
+from src.digitaltwin import tables
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 
 log = logging.getLogger(__name__)
@@ -35,21 +35,6 @@ def db_rain_table_name(idf: bool) -> str:
     """
     table_name = "rainfall_depth" if idf is False else "rainfall_intensity"
     return table_name
-
-
-def check_table_exists(engine: Engine, db_table_name: str) -> bool:
-    """
-    Check if table exists in the database.
-
-    Parameters
-    ----------
-    engine : Engine
-        Engine used to connect to the database.
-    db_table_name : str
-        Database table name.
-    """
-    insp = sqlalchemy.inspect(engine)
-    return insp.has_table(db_table_name, schema="public")
 
 
 def get_sites_id_in_catchment(sites_in_catchment: gpd.GeoDataFrame) -> List[str]:
@@ -143,15 +128,15 @@ def rainfall_data_to_db(engine: Engine, sites_in_catchment: gpd.GeoDataFrame, id
         Set to False for rainfall depth data, and True for rainfall intensity data.
     """
     sites_id_in_catchment = get_sites_id_in_catchment(sites_in_catchment)
-    rain_table_name = db_rain_table_name(idf)
+    table_name = db_rain_table_name(idf)
     # check if 'rainfall_depth' or 'rainfall_intensity' table is already in the database
-    if check_table_exists(engine, rain_table_name):
+    if tables.check_table_exists(engine, table_name):
         sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment, idf)
         # Check if sites_id_not_in_db is not empty
         if sites_id_not_in_db:
             add_each_site_rainfall_data(engine, sites_id_not_in_db, idf)
         else:
-            log.info(f"{rain_table_name} data for sites in the requested catchment already available in the database.")
+            log.info(f"{table_name} data for sites in the requested catchment already available in the database.")
     else:
         # check if sites_id_in_catchment is not empty
         if sites_id_in_catchment:

@@ -12,7 +12,7 @@ import pandas as pd
 import pyarrow.csv as csv
 from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions import main_tide_slr
+from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -60,8 +60,9 @@ def get_slr_data_from_nz_searise(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame
 
 
 def store_slr_data_to_db(engine: Engine, slr_data_dir: pathlib.Path) -> None:
-    if main_tide_slr.check_table_exists(engine, "sea_level_rise"):
-        log.info("Table 'sea_level_rise_data' already exists in the database.")
+    table_name = "sea_level_rise"
+    if tables.check_table_exists(engine, table_name):
+        log.info(f"Table '{table_name}' already exists in the database.")
     else:
         slr_nz = get_slr_data_from_nz_searise(slr_data_dir)
         slr_nz.to_postgis("sea_level_rise", engine, index=False, if_exists="replace")

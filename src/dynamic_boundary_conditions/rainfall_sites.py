@@ -13,7 +13,7 @@ import geopandas as gpd
 from geoalchemy2 import Geometry
 from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
+from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -65,8 +65,9 @@ def rainfall_sites_to_db(engine: Engine) -> None:
     engine : Engine
         Engine used to connect to the database.
     """
-    if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites"):
-        log.info("Rainfall sites data already exists in the database.")
+    table_name = "rainfall_sites"
+    if tables.check_table_exists(engine, table_name):
+        log.info(f"Table '{table_name}' already exists in the database.")
     else:
         sites = get_rainfall_sites_in_df()
         sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,

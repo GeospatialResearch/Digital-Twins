@@ -4,18 +4,20 @@ Created on Tue Aug 10 13:29:55 2021.
 
 @author: pkh35, sli229
 """
+
+import logging
 from datetime import datetime
+from typing import Tuple
+
+import pandas as pd
+import geoapis.vector
+
 from geoalchemy2 import Geometry
-from sqlalchemy import Column, Integer, DateTime, Unicode, Date
+from sqlalchemy import inspect, Column, Integer, DateTime, Unicode, Date
+from sqlalchemy.engine import Engine
 from sqlalchemy.dialects.postgresql import JSONB, JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import sqlalchemy
-import geoapis.vector
-import pandas as pd
-import logging
-
-Base = declarative_base()
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -25,6 +27,8 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
+
+Base = declarative_base()
 
 
 def region_geometry(key):
@@ -94,7 +98,23 @@ class dbsession:
             session.rollback()
 
 
-def table_exists(engine, name, schema="public"):
-    """Check whether table already exist in the database"""
-    check_exists = sqlalchemy.inspect(engine).has_table(name, schema)
-    return check_exists
+def check_table_exists(engine: Engine, table_name: str, schema: str = "public") -> Tuple[str, bool]:
+    """
+    Check if table exists in the database.
+
+    Parameters
+    ----------
+    engine : Engine
+        Engine used to connect to the database.
+    table_name : str
+        The name of the table to check.
+    schema : str = "public"
+        Name of the schema where the table resides. Defaults to "public".
+
+    Returns
+    -------
+    bool
+        True if the table exists, False otherwise.
+    """
+    inspector = inspect(engine)
+    return inspector.has_table(table_name, schema=schema)

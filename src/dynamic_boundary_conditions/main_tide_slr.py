@@ -50,22 +50,6 @@ def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> 
     return catchment_area
 
 
-def check_table_exists(engine: Engine, db_table_name: str) -> bool:
-    """
-    Check if table exists in the database.
-
-    Parameters
-    ----------
-    engine : Engine
-        Engine used to connect to the database.
-    db_table_name : str
-        Database table name.
-    """
-    insp = sqlalchemy.inspect(engine)
-    table_exists = insp.has_table(db_table_name, schema="public")
-    return table_exists
-
-
 def remove_existing_boundary_input(bg_flood_dir: pathlib.Path) -> None:
     # iterate through all files in the directory
     for file_path in bg_flood_dir.glob('*_bnd.txt'):

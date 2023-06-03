@@ -13,7 +13,7 @@ from geovoronoi import voronoi_regions_from_coords, points_to_coords
 from shapely.geometry import Polygon
 from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
+from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -105,8 +105,9 @@ def thiessen_polygons_to_db(engine: Engine, area_of_interest: Polygon, sites_in_
     sites_in_aoi : gpd.GeoDataFrame
         Rainfall sites within the area of interest.
     """
-    if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites_voronoi"):
-        log.info("Rainfall sites coverage data already exists in the database.")
+    table_name = "rainfall_sites_voronoi"
+    if tables.check_table_exists(engine, table_name):
+        log.info(f"Table '{table_name}' already exists in the database.")
     else:
         rainfall_sites_voronoi = thiessen_polygons_calculator(area_of_interest, sites_in_aoi)
         rainfall_sites_voronoi.to_postgis("rainfall_sites_voronoi", engine, if_exists="replace")
