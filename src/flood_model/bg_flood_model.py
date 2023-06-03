@@ -173,7 +173,7 @@ def run_bg_flood_model(
         small_nc: int = 0,
         rain_input_type: RainInputType = RainInputType.UNIFORM) -> None:
     # TODO: need to check 'get_dem_path', need to type hint for it as well
-    dem_path = dem_metadata_in_db.get_dem_path(instructions, catchment_boundary, engine)
+    dem_path = dem_metadata_in_db.generate_hydro_dem(engine, instructions, catchment_boundary)
     # Check BG-Flood Model directory exists
     bg_flood_dir = check_bg_flood_dir_exists(bg_flood_dir)
     # Create model output folder if it does not already exist

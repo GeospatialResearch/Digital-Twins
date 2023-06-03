@@ -96,7 +96,10 @@ def dem_metadata_from_db(selected_polygon: gpd.GeoDataFrame, engine: Engine):
     return dem.fetchone()[0]
 
 
-def get_dem_path(instructions, catchment_boundary: gpd.GeoDataFrame, engine):
+def generate_hydro_dem(
+        engine: Engine,
+        instructions: Dict[str, Any],
+        catchment_boundary: gpd.GeoDataFrame):
     """Pass dem information to other functions."""
     if not check_hydro_dem_exist(engine, catchment_boundary):
         run_geofabrics_hydro_dem(instructions)
