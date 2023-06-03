@@ -9,9 +9,9 @@ from typing import Optional
 
 import geopandas as gpd
 import pandas as pd
+from sqlalchemy.engine import Engine
 
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_to_db
+from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -40,7 +40,7 @@ def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
 
 
 def get_each_site_rainfall_data(
-        engine,
+        engine: Engine,
         site_id: str,
         rcp: Optional[float],
         time_period: Optional[str],
@@ -54,7 +54,7 @@ def get_each_site_rainfall_data(
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     site_id : str
         HIRDS rainfall site id.
@@ -91,7 +91,7 @@ def get_each_site_rainfall_data(
 
 
 def rainfall_data_from_db(
-        engine,
+        engine: Engine,
         sites_in_catchment: gpd.GeoDataFrame,
         rcp: Optional[float],
         time_period: Optional[str],
@@ -104,7 +104,7 @@ def rainfall_data_from_db(
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     sites_in_catchment : gpd.GeoDataFrame
         Rainfall sites coverage areas (thiessen polygons) that are within the catchment area.

@@ -9,6 +9,7 @@ import logging
 from shapely.geometry import LineString, Point
 import geopandas as gpd
 import geoapis.vector
+from sqlalchemy.engine import Engine
 
 from src import config
 from src.dynamic_boundary_conditions import main_tide_slr
@@ -54,11 +55,11 @@ def get_regional_council_clipped(
 
 
 def store_regional_council_clipped_to_db(
-        engine,
+        engine: Engine,
         layer_id: int = 111181,
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
-        verbose: bool = True):
+        verbose: bool = True) -> None:
     if main_tide_slr.check_table_exists(engine, "region_geometry_clipped"):
         log.info("Table 'region_geometry_clipped' already exists in the database.")
     else:
@@ -67,7 +68,7 @@ def store_regional_council_clipped_to_db(
         log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
 
 
-def get_regional_council_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_regional_council_clipped_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area["geometry"][0]
     query = f"""
     SELECT *
@@ -77,7 +78,7 @@ def get_regional_council_clipped_from_db(engine, catchment_area: gpd.GeoDataFram
     return regions_clipped
 
 
-def get_nz_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame, distance_km: int) -> gpd.GeoDataFrame:
+def get_nz_coastline_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame, distance_km: int) -> gpd.GeoDataFrame:
     distance_m = distance_km * 1000
     catchment_area_buffered = catchment_area.buffer(distance=distance_m, join_style=2)
     catchment_area_buffered_polygon = catchment_area_buffered.iloc[0]
@@ -156,7 +157,7 @@ def get_non_intersection_centroid_position(
 
 
 def get_tide_query_locations(
-        engine,
+        engine: Engine,
         catchment_area: gpd.GeoDataFrame,
         regions_clipped: gpd.GeoDataFrame,
         distance_km: int = 1) -> gpd.GeoDataFrame:

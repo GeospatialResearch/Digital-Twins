@@ -10,6 +10,7 @@ import pathlib
 import sqlalchemy
 import geopandas as gpd
 from shapely.geometry import box
+from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin import setup_environment
@@ -32,7 +33,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
+def write_nz_bbox_to_file(engine: Engine, file_name: str = "nz_bbox.geojson") -> None:
     file_path = pathlib.Path.cwd() / file_name
     if not file_path.is_file():
         query = "SELECT * FROM region_geometry"
@@ -44,20 +45,18 @@ def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
         nz_bbox.to_file(file_name, driver="GeoJSON")
 
 
-def get_catchment_area(
-        catchment_area: gpd.GeoDataFrame,
-        to_crs: int = 2193) -> gpd.GeoDataFrame:
+def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> gpd.GeoDataFrame:
     catchment_area = catchment_area.to_crs(to_crs)
     return catchment_area
 
 
-def check_table_exists(engine, db_table_name: str) -> bool:
+def check_table_exists(engine: Engine, db_table_name: str) -> bool:
     """
     Check if table exists in the database.
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     db_table_name : str
         Database table name.
@@ -67,14 +66,14 @@ def check_table_exists(engine, db_table_name: str) -> bool:
     return table_exists
 
 
-def remove_existing_boundary_input(bg_flood_dir: pathlib.Path):
+def remove_existing_boundary_input(bg_flood_dir: pathlib.Path) -> None:
     # iterate through all files in the directory
     for file_path in bg_flood_dir.glob('*_bnd.txt'):
         # remove the file
         file_path.unlink()
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame):
+def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     try:
         # Connect to the database
         engine = setup_environment.get_database()

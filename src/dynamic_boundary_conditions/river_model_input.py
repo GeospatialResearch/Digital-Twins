@@ -15,7 +15,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.GeoDataFrame):
+def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.GeoDataFrame) -> None:
     main_river.remove_existing_river_inputs(bg_flood_dir)
     grouped = hydrograph_data.groupby(
         ['target_point_no', hydrograph_data['target_point'].to_wkt(), 'res_no', 'areakm2'],

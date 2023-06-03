@@ -11,9 +11,9 @@ import geopandas as gpd
 import pandas as pd
 from geovoronoi import voronoi_regions_from_coords, points_to_coords
 from shapely.geometry import Polygon
+from sqlalchemy.engine import Engine
 
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_rainfall, hirds_rainfall_data_to_db
+from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -25,13 +25,13 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_new_zealand_boundary(engine) -> Polygon:
+def get_new_zealand_boundary(engine: Engine) -> Polygon:
     """
     Get the boundary geometry of New Zealand from the 'region_geometry' table in the database.
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     """
     query = "SELECT geometry FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
@@ -41,14 +41,14 @@ def get_new_zealand_boundary(engine) -> Polygon:
     return nz_boundary_polygon
 
 
-def get_sites_within_aoi(engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
+def get_sites_within_aoi(engine: Engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     """
     Get all rainfall sites within the catchment area from the database and return the required data in
     GeoDataFrame format.
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     area_of_interest : Polygon
         Area of interest polygon.
@@ -92,13 +92,13 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
     return rainfall_sites_voronoi
 
 
-def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame):
+def thiessen_polygons_to_db(engine: Engine, area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame) -> None:
     """
     Store thiessen polygon outputs (i.e. rainfall sites coverages) to the database。
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     area_of_interest : Polygon
         Area of interest polygon.
@@ -113,13 +113,13 @@ def thiessen_polygons_to_db(engine, area_of_interest: Polygon, sites_in_aoi: gpd
         log.info("Stored rainfall sites voronoi (thiessen polygons) data in the database.")
 
 
-def thiessen_polygons_from_db(engine, catchment_polygon: Polygon):
+def thiessen_polygons_from_db(engine: Engine, catchment_polygon: Polygon) -> gpd.GeoDataFrame:
     """
     Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area.
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     catchment_polygon : Polygon
         Desired catchment area.

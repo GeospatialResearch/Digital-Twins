@@ -14,10 +14,8 @@ import xarray as xr
 from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 
-from src import config
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
-from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db, hyetograph
+from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
+from src.dynamic_boundary_conditions import hyetograph
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -95,7 +93,7 @@ def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.G
 def spatial_uniform_rain_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
-        bg_flood_path: pathlib.Path):
+        bg_flood_path: pathlib.Path) -> None:
     """
     Write the relevant mean catchment rainfall intensities data (i.e. 'seconds' and 'rain_intensity_mmhr' columns)
     in a text file (rain_forcing.txt). This can be used as spatially uniform rainfall input into the BG-Flood model.
@@ -145,7 +143,7 @@ def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.Geo
 def spatial_varying_rain_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
-        bg_flood_path: pathlib.Path):
+        bg_flood_path: pathlib.Path) -> None:
     """
     Write the rainfall intensities data cube out in NetCDF format (rain_forcing.nc).
     This can be used as spatially varying rainfall input into the BG-Flood model.
@@ -167,7 +165,7 @@ def generate_rain_model_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
         bg_flood_path: pathlib.Path,
-        input_type: RainInputType):
+        input_type: RainInputType) -> None:
     """
     Generate the requested rainfall model input for BG-Flood, i.e. spatially uniform rain input ('rain_forcing.txt'
     text file) or spatially varying rain input ('rain_forcing.nc' NetCDF file).

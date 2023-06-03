@@ -37,7 +37,7 @@ def catchment_area_geometry_info(catchment_boundary: gpd.GeoDataFrame, to_crs: i
     return catchment_boundary.to_crs(to_crs)["geometry"][0]
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame):
+def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment polygon

@@ -10,6 +10,7 @@ import pathlib
 import geopandas as gpd
 import pandas as pd
 import pyarrow.csv as csv
+from sqlalchemy.engine import Engine
 
 from src.dynamic_boundary_conditions import main_tide_slr
 
@@ -58,7 +59,7 @@ def get_slr_data_from_nz_searise(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame
     return slr_nz_with_geom
 
 
-def store_slr_data_to_db(engine, slr_data_dir: pathlib.Path):
+def store_slr_data_to_db(engine: Engine, slr_data_dir: pathlib.Path) -> None:
     if main_tide_slr.check_table_exists(engine, "sea_level_rise"):
         log.info("Table 'sea_level_rise_data' already exists in the database.")
     else:
@@ -67,7 +68,7 @@ def store_slr_data_to_db(engine, slr_data_dir: pathlib.Path):
         log.info("Added Sea Level Rise data to database.")
 
 
-def get_slr_data_from_db(engine, single_query_loc: pd.Series) -> gpd.GeoDataFrame:
+def get_slr_data_from_db(engine: Engine, single_query_loc: pd.Series) -> gpd.GeoDataFrame:
     query_loc_geom = gpd.GeoDataFrame(geometry=[single_query_loc["geometry"]], crs=4326)
     query_loc_geom = query_loc_geom.to_crs(2193).reset_index(drop=True)
     query = f"""
@@ -85,7 +86,7 @@ def get_slr_data_from_db(engine, single_query_loc: pd.Series) -> gpd.GeoDataFram
     return query_data
 
 
-def get_closest_slr_data(engine, tide_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_closest_slr_data(engine: Engine, tide_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     slr_query_loc = tide_data[['position', 'geometry']].drop_duplicates()
     slr_data = gpd.GeoDataFrame()
     for _, row in slr_query_loc.iterrows():

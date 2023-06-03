@@ -8,15 +8,12 @@ import logging
 from typing import Union
 from math import floor, ceil
 
-import geopandas as gpd
 import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 import plotly.express as px
 
-from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.rainfall_enum import HyetoMethod
-from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_from_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -52,7 +49,7 @@ def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:
             catchment_data.columns.values[index] = int(column_name[:-1]) * 60
     # transpose data frame
     transposed_catchment_data = (
-        catchment_data.set_index("site_id").rename_axis(None).transpose().rename_axis("duration_mins").reset_index()
+        catchment_data.set_index("site_id").rename_axis("").transpose().rename_axis("duration_mins").reset_index()
     )
     return transposed_catchment_data
 
@@ -321,7 +318,7 @@ def hyetograph_data_wide_to_long(hyetograph_data: pd.DataFrame) -> pd.DataFrame:
     return hyetograph_data_long
 
 
-def hyetograph(hyetograph_data: pd.DataFrame, ari: int):
+def hyetograph(hyetograph_data: pd.DataFrame, ari: int) -> None:
     """
     Create interactive individual hyetograph plots for sites within the catchment area.
 

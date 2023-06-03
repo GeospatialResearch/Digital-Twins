@@ -272,7 +272,7 @@ def get_time_mins_to_add(
         tide_data: gpd.GeoDataFrame,
         tide_length_mins: int,
         time_to_peak_mins: int,
-        interval_mins: int = 10):
+        interval_mins: int = 10) -> np.ndarray:
     row_count = len(tide_data)
     time_mins = np.arange(1, row_count + 1) * interval_mins
     if time_mins[-1] > tide_length_mins:

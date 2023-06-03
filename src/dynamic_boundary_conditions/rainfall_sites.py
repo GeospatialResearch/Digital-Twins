@@ -11,8 +11,8 @@ from requests.structures import CaseInsensitiveDict
 import pandas as pd
 import geopandas as gpd
 from geoalchemy2 import Geometry
+from sqlalchemy.engine import Engine
 
-from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
@@ -56,13 +56,13 @@ def get_rainfall_sites_in_df() -> gpd.GeoDataFrame:
     return sites_with_geometry
 
 
-def rainfall_sites_to_db(engine):
+def rainfall_sites_to_db(engine: Engine) -> None:
     """
     Storing rainfall sites data from the HIRDS website in the database.
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     """
     if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites"):

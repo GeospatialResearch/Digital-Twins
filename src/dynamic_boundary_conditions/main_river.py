@@ -16,9 +16,7 @@ from src.dynamic_boundary_conditions import (
 )
 
 
-def get_catchment_area(
-        catchment_area: gpd.GeoDataFrame,
-        to_crs: int = 2193) -> gpd.GeoDataFrame:
+def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> gpd.GeoDataFrame:
     catchment_area = catchment_area.to_crs(to_crs)
     return catchment_area
 
@@ -41,14 +39,14 @@ def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDat
     return catchment_boundary_lines
 
 
-def remove_existing_river_inputs(bg_flood_dir: pathlib.Path):
+def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
     # iterate through all files in the directory
     for file_path in bg_flood_dir.glob('river[0-9]*.txt'):
         # remove the file
         file_path.unlink()
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame):
+def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area

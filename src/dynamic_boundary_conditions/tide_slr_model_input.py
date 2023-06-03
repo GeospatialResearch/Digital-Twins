@@ -21,7 +21,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pd.DataFrame):
+def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pd.DataFrame) -> None:
     main_tide_slr.remove_existing_boundary_input(bg_flood_dir)
     grouped = tide_slr_data.groupby('position')
     for position, group_data in grouped:

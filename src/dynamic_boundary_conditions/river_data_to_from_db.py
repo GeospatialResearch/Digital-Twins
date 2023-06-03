@@ -5,6 +5,7 @@ import geopandas as gpd
 import pandas as pd
 import sqlalchemy
 import geoapis.vector
+from sqlalchemy.engine import Engine
 
 from src import config
 
@@ -18,13 +19,13 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def check_table_exists(engine, db_table_name: str) -> bool:
+def check_table_exists(engine: Engine, db_table_name: str) -> bool:
     """
     Check if table exists in the database.
 
     Parameters
     ----------
-    engine
+    engine : Engine
         Engine used to connect to the database.
     db_table_name : str
         Database table name.
@@ -49,7 +50,7 @@ def get_rec1_data_from_niwa(
     return rec1_nz
 
 
-def store_rec1_data_to_db(engine, rec1_data_dir: pathlib.Path):
+def store_rec1_data_to_db(engine: Engine, rec1_data_dir: pathlib.Path) -> None:
     if check_table_exists(engine, "rec1_data"):
         log.info("Table 'rec1_data' already exists in the database.")
     else:
@@ -62,7 +63,7 @@ def get_data_from_mfe(
         layer_id: int,
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
-        verbose: bool = True):
+        verbose: bool = True) -> gpd.GeoDataFrame:
     mfe_api_key = config.get_env_variable("MFE_API_KEY")
     vector_fetcher = geoapis.vector.WfsQuery(
         key=mfe_api_key,
@@ -71,16 +72,16 @@ def get_data_from_mfe(
         netloc_url="data.mfe.govt.nz",
         geometry_names=['GEOMETRY', 'shape'],
         verbose=verbose)
-    vector_layer = vector_fetcher.run(layer_id)
-    return vector_layer
+    vector_layer_data = vector_fetcher.run(layer_id)
+    return vector_layer_data
 
 
 def store_sea_drain_catchments_to_db(
-        engine,
+        engine: Engine,
         layer_id: int = 99776,
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
-        verbose: bool = True):
+        verbose: bool = True) -> None:
     if check_table_exists(engine, "sea_draining_catchments"):
         log.info("Table 'sea_draining_catchments' already exists in the database.")
     else:
@@ -92,7 +93,7 @@ def store_sea_drain_catchments_to_db(
 
 
 def get_rec1_data_from_db(
-        engine,
+        engine: Engine,
         catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     catchment_polygon = catchment_area["geometry"][0]
     sea_drain_query = f"""
