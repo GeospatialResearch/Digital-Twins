@@ -8,7 +8,6 @@ Created on Fri Jan 14 14:05:35 2022
 import logging
 import pathlib
 import os
-import json
 import subprocess
 from datetime import datetime
 from typing import Tuple, Dict, Any, Union
@@ -25,6 +24,7 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
 from src.flood_model.serve_model import add_model_output_to_geoserver
+from src.lidar import dem_metadata_in_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -215,40 +215,10 @@ def run_bg_flood_model(
     add_model_output_to_geoserver(model_output_path)
 
 
-def read_and_fill_instructions(catchment_file_path: pathlib.Path) -> Dict[str, Any]:
-    """Reads instruction file and adds keys and uses selected_polygon.geojson as catchment_boundary"""
-    linz_api_key = config.get_env_variable("LINZ_API_KEY")
-    instruction_file = pathlib.Path("src/flood_model/instructions_geofabrics.json")
-    with open(instruction_file, "r") as file_pointer:
-        instructions = json.load(file_pointer)
-        instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
-        instructions["instructions"]["data_paths"]["catchment_boundary"] = catchment_file_path.as_posix()
-        instructions["instructions"]["data_paths"]["local_cache"] = instructions["instructions"]["data_paths"][
-            "local_cache"].format(data_dir=config.get_env_variable("DATA_DIR"))
-    return instructions
-
-
-def create_temp_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pathlib.Path:
-    """Temporary catchment file to be ingested by GeoFabrics"""
-    temp_dir = pathlib.Path("tmp/geofabrics_polygons")
-    # Create temporary storage folder if it does not already exist
-    temp_dir.mkdir(parents=True, exist_ok=True)
-    temp_file_path = temp_dir / "selected_polygon.geojson"
-    selected_polygon_gdf.to_file(temp_file_path.as_posix(), driver='GeoJSON')
-    return pathlib.Path.cwd() / temp_file_path
-
-
-def remove_temp_catchment_boundary_file(file_path: pathlib.Path) -> None:
-    """Removes the temporary file from the file system once it is used"""
-    file_path.unlink()
-
-
 def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     engine = setup_environment.get_database()
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     model_output_dir = config.get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
-    catchment_file_path = create_temp_catchment_boundary_file(selected_polygon_gdf)
-    instructions = read_and_fill_instructions(catchment_file_path)
 
     run_bg_flood_model(
         engine=engine,
@@ -259,8 +229,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
         output_timestep=100,  # Saving the outputs after each `outputtimestep` seconds
         end_time=900,  # Saving the outputs till `endtime` number of seconds
         rain_input_type=RainInputType.UNIFORM)
-
-    remove_temp_catchment_boundary_file(catchment_file_path)
 
 
 if __name__ == "__main__":

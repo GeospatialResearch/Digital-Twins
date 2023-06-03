@@ -7,6 +7,7 @@ Created on Wed Nov 10 13:22:27 2021.
 
 import logging
 import pathlib
+import json
 from datetime import datetime
 from typing import Tuple, Dict, Any
 
@@ -17,6 +18,8 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 
+from src import config
+from src.digitaltwin import setup_environment
 import geofabrics.processor
 
 log = logging.getLogger(__name__)
@@ -27,8 +30,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-import geofabrics.processor
 
 Base = declarative_base()
 
@@ -87,6 +88,34 @@ def check_hydro_dem_exist(engine: Engine, catchment_boundary: gpd.GeoDataFrame) 
     return engine.execute(query).scalar()
 
 
+def read_and_fill_instructions(catchment_file_path: pathlib.Path) -> Dict[str, Any]:
+    """Reads instruction file and adds keys and uses selected_polygon.geojson as catchment_boundary"""
+    linz_api_key = config.get_env_variable("LINZ_API_KEY")
+    instruction_file = pathlib.Path("src/flood_model/instructions_geofabrics.json")
+    with open(instruction_file, "r") as file_pointer:
+        instructions = json.load(file_pointer)
+        instructions["instructions"]["apis"]["vector"]["linz"]["key"] = linz_api_key
+        instructions["instructions"]["data_paths"]["catchment_boundary"] = catchment_file_path.as_posix()
+        instructions["instructions"]["data_paths"]["local_cache"] = instructions["instructions"]["data_paths"][
+            "local_cache"].format(data_dir=config.get_env_variable("DATA_DIR"))
+    return instructions
+
+
+def create_temp_catchment_boundary_file(selected_polygon_gdf: gpd.GeoDataFrame) -> pathlib.Path:
+    """Temporary catchment file to be ingested by GeoFabrics"""
+    temp_dir = pathlib.Path("tmp/geofabrics_polygons")
+    # Create temporary storage folder if it does not already exist
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    temp_file_path = temp_dir / "selected_polygon.geojson"
+    selected_polygon_gdf.to_file(temp_file_path.as_posix(), driver='GeoJSON')
+    return pathlib.Path.cwd() / temp_file_path
+
+
+def remove_temp_catchment_boundary_file(file_path: pathlib.Path) -> None:
+    """Removes the temporary file from the file system once it is used"""
+    file_path.unlink()
+
+
 def run_geofabrics_hydro_dem(instructions: Dict[str, Any]) -> None:
     """Use geofabrics to generate the hydrologically conditioned DEM."""
     runner = geofabrics.processor.RawLidarDemGenerator(instructions["instructions"])
@@ -106,3 +135,16 @@ def generate_hydro_dem(
         store_hydro_dem_metadata_to_db(engine, instructions, catchment_boundary)
     else:
         log.info("Hydro DEM for the catchment area already exists in the database.")
+
+
+def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
+    engine = setup_environment.get_database()
+    catchment_file_path = create_temp_catchment_boundary_file(selected_polygon_gdf)
+    instructions = read_and_fill_instructions(catchment_file_path)
+    generate_hydro_dem(engine, instructions, selected_polygon_gdf)
+    remove_temp_catchment_boundary_file(catchment_file_path)
+
+
+if __name__ == "__main__":
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(sample_polygon)
