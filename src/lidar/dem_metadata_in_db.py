@@ -137,6 +137,28 @@ def generate_hydro_dem(
         log.info("Hydro DEM for the catchment area already exists in the database.")
 
 
+def get_catchment_hydro_dem_filepath(
+        engine: Engine,
+        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
+    """Get the hydro DEM file path for the catchment area."""
+    catchment_geom = catchment_boundary["geometry"].iloc[0]
+    query = f"""
+    SELECT file_path
+    FROM hydrological_dem
+    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_geom}', 2193));"""
+    hydro_dem_filepath = engine.execute(query).scalar()
+    return pathlib.Path(hydro_dem_filepath)
+
+
+def get_hydro_dem_resolution_from_instruction_file() -> int:
+    # Get resolution used for hydro DEM from instructions file
+    instruction_file_path = pathlib.Path("src/flood_model/instructions_geofabrics.json")
+    with open(instruction_file_path, "r") as instruction_file:
+        instructions = json.load(instruction_file)
+        resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
+    return resolution
+
+
 def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     engine = setup_environment.get_database()
     catchment_file_path = create_temp_catchment_boundary_file(selected_polygon_gdf)
