@@ -101,8 +101,8 @@ def get_model_output_metadata(
     """Get bg flood model output metadata"""
     output_name = model_output_path.name
     output_path = model_output_path.as_posix()
-    geometry = catchment_boundary["geometry"].to_wkt().iloc[0]
-    return output_name, output_path, geometry
+    catchment_geom = catchment_boundary["geometry"].to_wkt().iloc[0]
+    return output_name, output_path, catchment_geom
 
 
 def store_model_output_metadata_to_db(

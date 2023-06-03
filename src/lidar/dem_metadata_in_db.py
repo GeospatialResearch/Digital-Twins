@@ -54,8 +54,8 @@ def get_hydro_dem_metadata(
     result_dem_path = pathlib.Path(data_paths["local_cache"]) / data_paths["subfolder"] / data_paths["result_dem"]
     hydro_dem_name = result_dem_path.name
     hydro_dem_path = result_dem_path.as_posix()
-    geometry = catchment_boundary["geometry"].to_wkt().iloc[0]
-    return hydro_dem_name, hydro_dem_path, geometry
+    catchment_geom = catchment_boundary["geometry"].to_wkt().iloc[0]
+    return hydro_dem_name, hydro_dem_path, catchment_geom
 
 
 def store_hydro_dem_metadata_to_db(
@@ -75,8 +75,8 @@ def store_hydro_dem_metadata_to_db(
 def check_hydro_dem_exist(engine: Engine, catchment_boundary: gpd.GeoDataFrame) -> bool:
     """Check if hydro DEM already exists in the database for the catchment area."""
     create_hydro_dem_table(engine)
-    geometry = catchment_boundary["geometry"].to_wkt().iloc[0]
-    query = f"SELECT EXISTS (SELECT 1 FROM hydrological_dem WHERE geometry = '{geometry}');"
+    catchment_geom = catchment_boundary["geometry"].to_wkt().iloc[0]
+    query = f"SELECT EXISTS (SELECT 1 FROM hydrological_dem WHERE geometry = '{catchment_geom}');"
     return engine.execute(query).scalar()
 
 
@@ -92,8 +92,8 @@ def get_catchment_hydro_dem_filepath(
         engine: Engine,
         catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
     """Get the hydro DEM file path for the catchment area."""
-    geometry = catchment_boundary["geometry"].to_wkt().iloc[0]
-    query = f"SELECT file_path FROM hydrological_dem WHERE geometry = '{geometry}';"
+    catchment_geom = catchment_boundary["geometry"].to_wkt().iloc[0]
+    query = f"SELECT file_path FROM hydrological_dem WHERE geometry = '{catchment_geom}';"
     hydro_dem_filepath = engine.execute(query).scalar()
     return pathlib.Path(hydro_dem_filepath)
 
