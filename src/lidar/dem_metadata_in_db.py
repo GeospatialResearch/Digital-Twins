@@ -9,9 +9,11 @@ import logging
 import pathlib
 import json
 from datetime import datetime
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict, Any, Union
 
 import geopandas as gpd
+import xarray as xr
+import rioxarray as rxr
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.engine import Engine
@@ -157,6 +159,26 @@ def get_hydro_dem_resolution_from_instruction_file() -> int:
         instructions = json.load(instruction_file)
         resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
     return resolution
+
+
+def get_hydro_dem_data(engine: Engine, catchment_boundary: gpd.GeoDataFrame) -> xr.Dataset:
+    hydro_dem_filepath = get_catchment_hydro_dem_filepath(engine, catchment_boundary)
+    hydro_dem = rxr.open_rasterio(hydro_dem_filepath)
+    hydro_dem = hydro_dem.sel(band=1)
+    return hydro_dem
+
+
+def get_hydro_dem_data_and_resolution(
+        engine: Engine,
+        catchment_boundary: gpd.GeoDataFrame) -> Tuple[xr.Dataset, Union[int, float]]:
+    hydro_dem = get_hydro_dem_data(engine, catchment_boundary)
+    unique_resolutions = list(set(abs(res) for res in hydro_dem.rio.resolution()))
+    res_no = unique_resolutions[0] if len(unique_resolutions) == 1 else None
+    res_description = int(hydro_dem.description.split()[-1])
+    if res_no != res_description:
+        raise ValueError("Inconsistent resolution.")
+    else:
+        return hydro_dem, res_no
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:

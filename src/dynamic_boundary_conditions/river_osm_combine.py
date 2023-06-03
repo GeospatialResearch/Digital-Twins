@@ -1,15 +1,14 @@
 import logging
-import pathlib
-from typing import Union, Tuple
+from typing import Tuple
 
 import geopandas as gpd
 import pandas as pd
 import numpy as np
 import xarray as xr
-import rioxarray as rxr
 from shapely.geometry import Point
+from sqlalchemy.engine import Engine
 
-from src import config
+from src.lidar import dem_metadata_in_db
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -68,25 +67,6 @@ def find_closest_osm_waterway(
     return closest_osm_waterway
 
 
-def get_hydro_dem_data() -> xr.Dataset:
-    data_dir = config.get_env_variable("DATA_DIR")
-    hydro_dem_file_path = pathlib.Path(data_dir) / "cache/results/generated_dem.nc"
-    hydro_dem = rxr.open_rasterio(hydro_dem_file_path)
-    hydro_dem = hydro_dem.sel(band=1)
-    return hydro_dem
-
-
-def get_hydro_dem_resolution() -> Tuple[xr.Dataset, Union[int, float]]:
-    hydro_dem = get_hydro_dem_data()
-    unique_resolutions = list(set(abs(res) for res in hydro_dem.rio.resolution()))
-    res_no = unique_resolutions[0] if len(unique_resolutions) == 1 else None
-    res_description = int(hydro_dem.description.split()[-1])
-    if res_no != res_description:
-        raise ValueError("Inconsistent resolution.")
-    else:
-        return hydro_dem, res_no
-
-
 def get_osm_bound_point_in_dem(
         row_data: gpd.GeoDataFrame,
         clipped_dem: xr.Dataset) -> Tuple[int, int, Point]:
@@ -138,8 +118,10 @@ def get_min_elevation_dem_coord(
 
 
 def get_target_points(
+        engine: Engine,
+        catchment_boundary: gpd.GeoDataFrame,
         closest_osm_waterway: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    hydro_dem, res_no = get_hydro_dem_resolution()
+    hydro_dem, res_no = dem_metadata_in_db.get_hydro_dem_data_and_resolution(engine, catchment_boundary)
     closest_osm_waterway['boundary_line_buffered'] = (
         closest_osm_waterway['boundary_line'].buffer(distance=res_no, cap_style=2))
     target_points = gpd.GeoDataFrame()
@@ -158,13 +140,15 @@ def get_target_points(
 
 
 def get_matched_data_with_target_point(
+        engine: Engine,
+        catchment_boundary: gpd.GeoDataFrame,
         rec1_network_data_on_bbox: gpd.GeoDataFrame,
         osm_waterways_data_on_bbox: gpd.GeoDataFrame,
         distance_threshold_m: int = 300) -> gpd.GeoDataFrame:
     # Find the closest OSM waterways to REC1 river data
     closest_osm_waterway = find_closest_osm_waterway(
         rec1_network_data_on_bbox, osm_waterways_data_on_bbox, distance_threshold_m)
-    target_points = get_target_points(closest_osm_waterway)
+    target_points = get_target_points(engine, catchment_boundary, closest_osm_waterway)
     matched_data = rec1_network_data_on_bbox.merge(target_points, on='objectid', how='right')
     matched_data.drop(columns=['boundary_line_no_x', 'boundary_line_x'], inplace=True)
     matched_data.rename(
