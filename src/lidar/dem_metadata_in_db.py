@@ -69,7 +69,7 @@ def store_hydro_dem_metadata_to_db(
         hydro_dem = HydroDEM(file_name=hydro_dem_name, file_path=hydro_dem_path, geometry=geometry)
         session.add(hydro_dem)
         session.commit()
-        log.info("Hydro DEM metadata stored successfully in the database.")
+        log.info("Hydro DEM metadata for the catchment area successfully stored in the database.")
 
 
 def check_hydro_dem_exist(engine: Engine, catchment_boundary: gpd.GeoDataFrame) -> bool:
@@ -91,6 +91,7 @@ def run_geofabrics_hydro_dem(instructions: Dict[str, Any]) -> None:
     runner.run()
     runner = geofabrics.processor.HydrologicDemGenerator(instructions["instructions"])
     runner.run()
+    log.info("Hydro DEM for the catchment area successfully generated.")
 
 
 def generate_hydro_dem(
@@ -101,3 +102,5 @@ def generate_hydro_dem(
     if not check_hydro_dem_exist(engine, catchment_boundary):
         run_geofabrics_hydro_dem(instructions)
         store_hydro_dem_metadata_to_db(engine, instructions, catchment_boundary)
+    else:
+        log.info("Hydro DEM for the catchment area already exists in the database.")

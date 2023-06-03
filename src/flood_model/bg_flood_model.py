@@ -94,7 +94,7 @@ def store_model_output_metadata_to_db(
         model_output = BGFloodModelOutput(file_name=output_name, file_path=output_path, geometry=geometry)
         session.add(model_output)
         session.commit()
-        log.info("BG-Flood model output metadata stored successfully in the database.")
+        log.info("BG-Flood model output metadata successfully stored in the database.")
 
 
 def latest_model_output_filepath_from_db(engine: Engine) -> pathlib.Path:
