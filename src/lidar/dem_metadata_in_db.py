@@ -152,15 +152,6 @@ def get_catchment_hydro_dem_filepath(
     return pathlib.Path(hydro_dem_filepath)
 
 
-def get_hydro_dem_resolution_from_instruction_file() -> int:
-    # Get resolution used for hydro DEM from instructions file
-    instruction_file_path = pathlib.Path("src/flood_model/instructions_geofabrics.json")
-    with open(instruction_file_path, "r") as instruction_file:
-        instructions = json.load(instruction_file)
-        resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
-    return resolution
-
-
 def get_hydro_dem_data(engine: Engine, catchment_boundary: gpd.GeoDataFrame) -> xr.Dataset:
     hydro_dem_filepath = get_catchment_hydro_dem_filepath(engine, catchment_boundary)
     hydro_dem = rxr.open_rasterio(hydro_dem_filepath)

@@ -177,10 +177,10 @@ def run_bg_flood_model(
     model_output_dir.mkdir(parents=True, exist_ok=True)
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     model_output_path = (model_output_dir / f"output_{dt_string}.nc")
-    # Get hydro DEM file path and resolution from instruction file
+    # Get hydro DEM file path and resolution used
     dem_path = dem_metadata_in_db.get_catchment_hydro_dem_filepath(engine, catchment_boundary)
     if resolution is None:
-        resolution = dem_metadata_in_db.get_hydro_dem_resolution_from_instruction_file()
+        _, resolution = dem_metadata_in_db.get_hydro_dem_data_and_resolution(engine, catchment_boundary)
 
     get_bg_flood_model_inputs(
         bg_flood_dir=bg_flood_dir,
