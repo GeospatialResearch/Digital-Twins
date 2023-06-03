@@ -28,6 +28,8 @@ stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
 
+import geofabrics.processor
+
 Base = declarative_base()
 
 
