@@ -23,7 +23,6 @@ from sqlalchemy.orm import Session
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.lidar import dem_metadata_in_db
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
 from src.flood_model.serve_model import add_model_output_to_geoserver
 
@@ -39,45 +38,24 @@ log.addHandler(stream_handler)
 Base = declarative_base()
 
 
+def get_catchment_hydro_dem_filepath(
+        engine: Engine,
+        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
+    """Get the hydro DEM file path for the catchment area."""
+    catchment_geom = catchment_boundary["geometry"].iloc[0]
+    query = f"""
+    SELECT file_path
+    FROM hydrological_dem
+    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_geom}', 2193));"""
+    hydro_dem_filepath = engine.execute(query).scalar()
+    return pathlib.Path(hydro_dem_filepath)
+
+
 def check_bg_flood_dir_exists(bg_flood_dir: pathlib.Path) -> pathlib.Path:
     """Check if the flood model directory exists."""
     if bg_flood_dir.exists() and bg_flood_dir.is_dir():
         return bg_flood_dir
     raise FileNotFoundError(f"BG-Flood Model not found at: '{bg_flood_dir}'.")
-
-
-def latest_model_output_filepath_from_db(engine: Engine) -> pathlib.Path:
-    """Retrieve the latest model output file path, by querying the database"""
-    row = engine.execute("SELECT * FROM bg_flood_model_output ORDER BY created_at DESC LIMIT 1 ").fetchone()
-    return pathlib.Path(row["file_path"])
-
-
-def add_crs_to_latest_model_output(engine: Engine) -> None:
-    """
-    Add CRS to the latest BG-Flood Model Output.
-    """
-    latest_file = latest_model_output_filepath_from_db(engine)
-    with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
-        latest_output.load()
-        if latest_output.rio.crs is None:
-            latest_output.rio.write_crs("epsg:2193", inplace=True)
-    latest_output.to_netcdf(latest_file)
-
-
-def process_tide_input_files(tide_input_file_path: pathlib.Path) -> Tuple[str, str]:
-    tide_position = tide_input_file_path.stem.split('_')[0]
-    tide_file = tide_input_file_path.name
-    return tide_position, tide_file
-
-
-def process_river_input_files(river_input_file_path: pathlib.Path) -> str:
-    file_name_parts = river_input_file_path.stem.split('_')
-    file_name = file_name_parts[0] + river_input_file_path.suffix
-    extents = ','.join(file_name_parts[1:])
-    river = f"{file_name},{extents}"
-    new_file_path = river_input_file_path.with_name(file_name)
-    river_input_file_path.rename(new_file_path)
-    return river
 
 
 class BGFloodModelOutput(Base):
@@ -119,6 +97,40 @@ def store_model_output_metadata_to_db(
         log.info("BG-Flood model output metadata stored successfully in the database.")
 
 
+def latest_model_output_filepath_from_db(engine: Engine) -> pathlib.Path:
+    """Retrieve the latest model output file path, by querying the database"""
+    row = engine.execute("SELECT * FROM bg_flood_model_output ORDER BY created_at DESC LIMIT 1 ").fetchone()
+    return pathlib.Path(row["file_path"])
+
+
+def add_crs_to_latest_model_output(engine: Engine) -> None:
+    """
+    Add CRS to the latest BG-Flood Model Output.
+    """
+    latest_file = latest_model_output_filepath_from_db(engine)
+    with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
+        latest_output.load()
+        if latest_output.rio.crs is None:
+            latest_output.rio.write_crs("epsg:2193", inplace=True)
+    latest_output.to_netcdf(latest_file)
+
+
+def process_tide_input_files(tide_input_file_path: pathlib.Path) -> Tuple[str, str]:
+    tide_position = tide_input_file_path.stem.split('_')[0]
+    tide_file = tide_input_file_path.name
+    return tide_position, tide_file
+
+
+def process_river_input_files(river_input_file_path: pathlib.Path) -> str:
+    file_name_parts = river_input_file_path.stem.split('_')
+    file_name = file_name_parts[0] + river_input_file_path.suffix
+    extents = ','.join(file_name_parts[1:])
+    river = f"{file_name},{extents}"
+    new_file_path = river_input_file_path.with_name(file_name)
+    river_input_file_path.rename(new_file_path)
+    return river
+
+
 def get_bg_flood_model_inputs(
         bg_flood_dir: pathlib.Path,
         model_output_path: pathlib.Path,
@@ -158,19 +170,6 @@ def get_bg_flood_model_inputs(
         for river_input_file_path in bg_flood_dir.glob('river[0-9]*_*.txt'):
             river = process_river_input_files(river_input_file_path)
             param_file.write(f"river = {river};\n")
-
-
-def get_catchment_hydro_dem_filepath(
-        engine: Engine,
-        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
-    """Get the hydro DEM file path for the catchment area."""
-    catchment_geom = catchment_boundary["geometry"].iloc[0]
-    query = f"""
-    SELECT file_path
-    FROM hydrological_dem
-    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_geom}', 2193));"""
-    hydro_dem_filepath = engine.execute(query).scalar()
-    return pathlib.Path(hydro_dem_filepath)
 
 
 def run_bg_flood_model(
