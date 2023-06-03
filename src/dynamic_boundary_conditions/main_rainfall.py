@@ -41,7 +41,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment polygon
-    catchment_polygon = catchment_area_geometry_info(selected_polygon_gdf)
+    catchment_polygon = catchment_area_geometry_info(selected_polygon_gdf, to_crs=4326)
     # BG-Flood path
     bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
 
