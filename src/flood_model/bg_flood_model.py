@@ -172,7 +172,7 @@ def run_bg_flood_model(
         gpu_device: int = 0,
         small_nc: int = 0,
         rain_input_type: RainInputType = RainInputType.UNIFORM) -> None:
-    dem_path = dem_metadata_in_db.generate_hydro_dem(engine, instructions, catchment_boundary)
+    dem_path = dem_metadata_in_db.get_catchment_hydro_dem_filepath(engine, catchment_boundary)
     # Check BG-Flood Model directory exists
     bg_flood_dir = check_bg_flood_dir_exists(bg_flood_dir)
     # Create model output folder if it does not already exist

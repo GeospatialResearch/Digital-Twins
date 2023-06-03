@@ -93,6 +93,18 @@ def run_geofabrics_hydro_dem(instructions: Dict[str, Any]) -> None:
     runner.run()
 
 
+def generate_hydro_dem(
+        engine: Engine,
+        instructions: Dict[str, Any],
+        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
+    """Pass dem information to other functions."""
+    if not check_hydro_dem_exist(engine, catchment_boundary):
+        run_geofabrics_hydro_dem(instructions)
+        store_hydro_dem_metadata_to_db(engine, instructions, catchment_boundary)
+    hydro_dem_filepath = get_catchment_hydro_dem_filepath(engine, catchment_boundary)
+    return hydro_dem_filepath
+
+
 def get_catchment_hydro_dem_filepath(
         engine: Engine,
         catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
@@ -104,15 +116,3 @@ def get_catchment_hydro_dem_filepath(
     WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_geom}', 2193));"""
     hydro_dem_filepath = engine.execute(query).scalar()
     return pathlib.Path(hydro_dem_filepath)
-
-
-def generate_hydro_dem(
-        engine: Engine,
-        instructions: Dict[str, Any],
-        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
-    """Pass dem information to other functions."""
-    if not check_hydro_dem_exist(engine, catchment_boundary):
-        run_geofabrics_hydro_dem(instructions)
-        store_hydro_dem_metadata_to_db(engine, instructions, catchment_boundary)
-    hydro_dem_filepath = get_catchment_hydro_dem_filepath(engine, catchment_boundary)
-    return hydro_dem_filepath
