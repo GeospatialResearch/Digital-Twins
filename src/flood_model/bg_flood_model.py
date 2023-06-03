@@ -122,7 +122,7 @@ def store_model_output_metadata_to_db(
 def get_bg_flood_model_inputs(
         bg_flood_dir: pathlib.Path,
         model_output_path: pathlib.Path,
-        dem_path,
+        dem_path: pathlib.Path,
         resolution: Union[int, float],
         output_timestep: Union[int, float],
         end_time: Union[int, float],
@@ -142,7 +142,7 @@ def get_bg_flood_model_inputs(
     outfile = model_output_path.as_posix()
     rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
     with open(bg_param_path, "w+") as param_file:
-        param_file.write(f"topo = {dem_path}?{elev_var};\n"
+        param_file.write(f"topo = {dem_path.as_posix()}?{elev_var};\n"
                          f"dx = {resolution};\n"
                          f"outputtimestep = {output_timestep};\n"
                          f"endtime = {end_time};\n"
@@ -172,7 +172,6 @@ def run_bg_flood_model(
         gpu_device: int = 0,
         small_nc: int = 0,
         rain_input_type: RainInputType = RainInputType.UNIFORM) -> None:
-    # TODO: need to check 'get_dem_path', need to type hint for it as well
     dem_path = dem_metadata_in_db.generate_hydro_dem(engine, instructions, catchment_boundary)
     # Check BG-Flood Model directory exists
     bg_flood_dir = check_bg_flood_dir_exists(bg_flood_dir)

@@ -88,21 +88,23 @@ def run_geofabrics_hydro_dem(instructions: Dict[str, Any]) -> None:
     runner.run()
 
 
-def dem_metadata_from_db(selected_polygon: gpd.GeoDataFrame, engine: Engine):
-    """Get requested dem information from the database."""
-    geometry = str(selected_polygon["geometry"][0])
-    query = f"SELECT filepath FROM hydrological_dem WHERE geometry = '{geometry}'"
-    dem = engine.execute(query)
-    return dem.fetchone()[0]
+def get_catchment_hydro_dem_filepath(
+        engine: Engine,
+        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
+    """Get the hydro DEM file path for the catchment area."""
+    geometry = catchment_boundary["geometry"].to_wkt().iloc[0]
+    query = f"SELECT file_path FROM hydrological_dem WHERE geometry = '{geometry}';"
+    hydro_dem_filepath = engine.execute(query).scalar()
+    return pathlib.Path(hydro_dem_filepath)
 
 
 def generate_hydro_dem(
         engine: Engine,
         instructions: Dict[str, Any],
-        catchment_boundary: gpd.GeoDataFrame):
+        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
     """Pass dem information to other functions."""
     if not check_hydro_dem_exist(engine, catchment_boundary):
         run_geofabrics_hydro_dem(instructions)
         store_hydro_dem_metadata_to_db(engine, instructions, catchment_boundary)
-    dem_filepath = dem_metadata_from_db(catchment_boundary, engine)
-    return dem_filepath
+    hydro_dem_filepath = get_catchment_hydro_dem_filepath(engine, catchment_boundary)
+    return hydro_dem_filepath
