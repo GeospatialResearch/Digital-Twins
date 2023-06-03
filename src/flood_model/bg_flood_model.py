@@ -160,6 +160,19 @@ def get_bg_flood_model_inputs(
             param_file.write(f"river = {river};\n")
 
 
+def get_catchment_hydro_dem_filepath(
+        engine: Engine,
+        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
+    """Get the hydro DEM file path for the catchment area."""
+    catchment_geom = catchment_boundary["geometry"].iloc[0]
+    query = f"""
+    SELECT file_path
+    FROM hydrological_dem
+    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_geom}', 2193));"""
+    hydro_dem_filepath = engine.execute(query).scalar()
+    return pathlib.Path(hydro_dem_filepath)
+
+
 def run_bg_flood_model(
         engine,
         bg_flood_dir: pathlib.Path,
@@ -172,7 +185,7 @@ def run_bg_flood_model(
         gpu_device: int = 0,
         small_nc: int = 0,
         rain_input_type: RainInputType = RainInputType.UNIFORM) -> None:
-    dem_path = dem_metadata_in_db.get_catchment_hydro_dem_filepath(engine, catchment_boundary)
+    dem_path = get_catchment_hydro_dem_filepath(engine, catchment_boundary)
     # Check BG-Flood Model directory exists
     bg_flood_dir = check_bg_flood_dir_exists(bg_flood_dir)
     # Create model output folder if it does not already exist
