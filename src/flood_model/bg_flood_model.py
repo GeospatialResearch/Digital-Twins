@@ -176,10 +176,10 @@ def run_bg_flood_model(
         engine,
         bg_flood_dir: pathlib.Path,
         model_output_dir: pathlib.Path,
-        instructions: Dict[str, Any],
         catchment_boundary: gpd.GeoDataFrame,
         output_timestep: Union[int, float],
         end_time: Union[int, float],
+        resolution: Union[int, float],
         mask: Union[int, float] = 9999,
         gpu_device: int = 0,
         small_nc: int = 0,
@@ -191,7 +191,6 @@ def run_bg_flood_model(
     model_output_dir.mkdir(parents=True, exist_ok=True)
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     model_output_path = (model_output_dir / f"output_{dt_string}.nc")
-    resolution = instructions["instructions"]["output"]["grid_params"]["resolution"]
 
     get_bg_flood_model_inputs(
         bg_flood_dir=bg_flood_dir,
@@ -224,10 +223,10 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
         engine=engine,
         bg_flood_dir=bg_flood_dir,
         model_output_dir=model_output_dir,
-        instructions=instructions,
         catchment_boundary=selected_polygon_gdf,
         output_timestep=100,  # Saving the outputs after each `outputtimestep` seconds
         end_time=900,  # Saving the outputs till `endtime` number of seconds
+        resolution=10,
         rain_input_type=RainInputType.UNIFORM)
 
 
