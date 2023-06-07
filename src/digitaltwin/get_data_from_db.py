@@ -27,7 +27,7 @@ def get_nz_boundary_polygon(engine: Engine, to_crs: int = 2193) -> Polygon:
     return nz_boundary_polygon
 
 
-def get_nz_bounding_box(engine: Engine, to_crs: int = 2193, file_name: str = "nz_bbox.geojson") -> None:
+def get_nz_bounding_box_to_file(engine: Engine, to_crs: int = 2193, file_name: str = "nz_bbox.geojson") -> None:
     file_path = pathlib.Path.cwd() / file_name
     if not file_path.is_file():
         nz_boundary_polygon = get_nz_boundary_polygon(engine, to_crs)
