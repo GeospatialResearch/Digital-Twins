@@ -8,7 +8,7 @@ import json
 import pathlib
 
 from src import config
-from src.digitaltwin import setup_environment, insert_api_to_table, get_data_using_geoapis
+from src.digitaltwin import setup_environment, insert_api_to_table, get_data_using_geoapis, get_data_from_db
 
 
 def input_data(file):
@@ -26,32 +26,29 @@ def main():
     # Connect to the database
     engine = setup_environment.get_database()
     # Store regional council data in the database
+    get_data_using_geoapis.store_regional_council_to_db(engine, layer_id=111182, clipped=False)
+    # Store regional council data in the database
     get_data_using_geoapis.store_regional_council_to_db(engine, layer_id=111181, clipped=True)
     # Store sea-draining catchments data in the database
     get_data_using_geoapis.store_sea_drain_catchments_to_db(engine, layer_id=99776)
 
-    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
-    # Create region_geometry table if it doesn't exist in the database
-    # No need to call region_geometry_table function if region_geometry
-    # table exist in the database
-    insert_api_to_table.region_geometry_table(engine, stats_nz_api_key)
+    get_data_from_db.get_nz_bounding_box(engine)
 
     record = input_data("src/digitaltwin/instructions_run.json")
-
     # Substitute api key into link template
     linz_api_key = config.get_env_variable("LINZ_API_KEY")
     record["api"] = record["api"].format(api_key=linz_api_key)
 
     # Call the function to insert record in apilinks table
     insert_api_to_table.insert_records(
-        engine,
-        record["data_provider"],
-        record["source_name"],
-        record["api"],
-        record["region_name"],
-        record["geometry_col_name"],
-        record["url"],
-        record["layer"],
+        engine=engine,
+        data_provider=record["data_provider"],
+        source_name=record["source_name"],
+        api=record["api"],
+        region_name=record["region_name"],
+        geometry_col_name=record["geometry_col_name"],
+        url=record["url"],
+        layer=record["layer"],
     )
 
 

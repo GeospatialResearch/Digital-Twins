@@ -31,27 +31,6 @@ log.addHandler(stream_handler)
 Base = declarative_base()
 
 
-def region_geometry(key):
-    """get the regional polygons data from Stats NZ and create a complete NZ polygon"""
-    # fetch the required regional polygon data from StatsNZ
-    vector_fetcher = geoapis.vector.StatsNz(key, verbose=True, crs=2193)
-    response_data = vector_fetcher.run(105133)
-    response_data.columns = response_data.columns.str.lower()
-    # Move 'geometry' column to be the last column
-    geometry_column = response_data.pop("geometry")
-    response_data = pd.concat([response_data, geometry_column], axis=1)
-    # Dissolve regional polygons to create complete NZ polygon then explode
-    nz_polygon = response_data.dissolve(aggfunc="sum").explode(index_parts=True)
-    nz_polygon.insert(0, "regc2021_v1_00", "100")
-    nz_polygon.insert(1, "regc2021_v1_00_name", "New Zealand")
-    nz_polygon.insert(2, "regc2021_v1_00_name_ascii", "New Zealand")
-    # Combine regional polygons and complete NZ polygon
-    region_geometry_df = pd.concat(
-        [response_data, nz_polygon.iloc[[0]]], ignore_index=True
-    )
-    return region_geometry_df
-
-
 class User_log_info(Base):
     """Class used to create user_log_information table."""
 

@@ -25,22 +25,6 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_new_zealand_boundary(engine: Engine) -> Polygon:
-    """
-    Get the boundary geometry of New Zealand from the 'region_geometry' table in the database.
-
-    Parameters
-    ----------
-    engine : Engine
-        Engine used to connect to the database.
-    """
-    query = "SELECT * FROM region_geometry ORDER BY ST_Area(geometry) DESC LIMIT 1;"
-    nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=2193)
-    nz_boundary = nz_boundary.to_crs(4326)
-    nz_boundary_polygon = nz_boundary["geometry"][0]
-    return nz_boundary_polygon
-
-
 def get_sites_within_aoi(engine: Engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
     """
     Get all rainfall sites within the catchment area from the database and return the required data in

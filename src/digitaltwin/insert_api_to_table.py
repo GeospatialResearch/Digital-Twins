@@ -26,19 +26,6 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def region_geometry_table(engine, stats_nz_api_key):
-    """Create region_geometry table which is used to create the geometry column
-    in the apilinks table."""
-    # create region_geometry table if it doesn't exist in the database
-    try:
-        response_data = tables.region_geometry(key=stats_nz_api_key)
-        response_data.to_postgis(
-            "region_geometry", engine, index=False, if_exists="fail"
-        )
-    except ValueError:
-        log.info("Table 'region_geometry' already exists.")
-
-
 def url_validator(url=None):
     """Check if the url entered by the user is valid."""
     valid = validators.url(url)
@@ -127,7 +114,16 @@ def insert_records(
     )
     dbsession.runQuery(engine, api_query)
     # add geometry column from region_geometry table.
-    query = "UPDATE apilinks SET geometry =\
-    (SELECT geometry FROM region_geometry\
-    WHERE region_geometry.regc2021_v1_00_name = apilinks.region_name)"
+    if region_name == "New Zealand":
+        query = """
+        UPDATE apilinks
+        SET geometry = (
+        SELECT ST_Union(geometry) FROM region_geometry)
+        """
+    else:
+        query = """
+        UPDATE apilinks
+        SET geometry = (
+        SELECT geometry FROM region_geometry WHERE region_geometry.regc2021_v1_00_name = apilinks.region_name
+        );"""
     engine.execute(query)

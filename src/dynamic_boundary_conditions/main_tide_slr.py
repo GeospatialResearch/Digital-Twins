@@ -8,11 +8,9 @@ import logging
 import pathlib
 
 import geopandas as gpd
-from shapely.geometry import box
-from sqlalchemy.engine import Engine
 
 from src import config
-from src.digitaltwin import setup_environment, get_data_using_geoapis
+from src.digitaltwin import setup_environment
 from src.dynamic_boundary_conditions.tide_enum import ApproachType
 from src.dynamic_boundary_conditions import (
     tide_query_location,
@@ -32,18 +30,6 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def write_nz_bbox_to_file(engine: Engine, file_name: str = "nz_bbox.geojson") -> None:
-    file_path = pathlib.Path.cwd() / file_name
-    if not file_path.is_file():
-        query = "SELECT * FROM region_geometry"
-        region_geom = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-        nz_geom = region_geom.query('shape_area == shape_area.max()').reset_index(drop=True)
-        min_x, min_y, max_x, max_y = nz_geom.total_bounds
-        bbox = box(min_x, min_y, max_x, max_y)
-        nz_bbox = gpd.GeoDataFrame(geometry=[bbox], crs=2193)
-        nz_bbox.to_file(file_name, driver="GeoJSON")
-
-
 def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> gpd.GeoDataFrame:
     catchment_area = catchment_area.to_crs(to_crs)
     return catchment_area
@@ -60,7 +46,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     try:
         # Connect to the database
         engine = setup_environment.get_database()
-        write_nz_bbox_to_file(engine)
         # Get catchment area
         catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
         # BG-Flood Model Directory
