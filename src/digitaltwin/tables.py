@@ -9,9 +9,6 @@ import logging
 from datetime import datetime
 from typing import Tuple
 
-import pandas as pd
-import geoapis.vector
-
 from geoalchemy2 import Geometry
 from sqlalchemy import inspect, Column, Integer, DateTime, Unicode, Date
 from sqlalchemy.engine import Engine
