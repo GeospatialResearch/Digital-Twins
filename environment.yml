@@ -23,6 +23,7 @@ dependencies:
   - plotly
   - geocube
   - pyarrow
+  - aiohttp
   - flask
   - flask-cors
   - redis-py
