@@ -38,11 +38,20 @@ log.addHandler(stream_handler)
 Base = declarative_base()
 
 
-def check_bg_flood_dir_exists(bg_flood_dir: pathlib.Path) -> pathlib.Path:
-    """Check if the flood model directory exists."""
+def get_valid_bg_flood_dir() -> pathlib.Path:
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     if bg_flood_dir.exists() and bg_flood_dir.is_dir():
         return bg_flood_dir
     raise FileNotFoundError(f"BG-Flood Model not found at: '{bg_flood_dir}'.")
+
+
+def get_valid_model_output_path() -> pathlib.Path:
+    model_output_dir = config.get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
+    # Create model output folder if it does not already exist
+    model_output_dir.mkdir(parents=True, exist_ok=True)
+    dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    model_output_path = (model_output_dir / f"output_{dt_string}.nc")
+    return model_output_path
 
 
 class BGFloodModelOutput(Base):
@@ -161,8 +170,6 @@ def get_bg_flood_model_inputs(
 
 def run_bg_flood_model(
         engine: Engine,
-        bg_flood_dir: pathlib.Path,
-        model_output_dir: pathlib.Path,
         catchment_boundary: gpd.GeoDataFrame,
         output_timestep: Union[int, float],
         end_time: Union[int, float],
@@ -171,12 +178,10 @@ def run_bg_flood_model(
         gpu_device: int = 0,
         small_nc: int = 0,
         rain_input_type: RainInputType = RainInputType.UNIFORM) -> None:
-    # Check BG-Flood Model directory exists
-    bg_flood_dir = check_bg_flood_dir_exists(bg_flood_dir)
-    # Create model output folder if it does not already exist
-    model_output_dir.mkdir(parents=True, exist_ok=True)
-    dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    model_output_path = (model_output_dir / f"output_{dt_string}.nc")
+    # Get valid bg-flood model directory
+    bg_flood_dir = get_valid_bg_flood_dir()
+    # Get valid model output path
+    model_output_path = get_valid_model_output_path()
     # Get hydro DEM file path and resolution used
     dem_path = dem_metadata_in_db.get_catchment_hydro_dem_filepath(engine, catchment_boundary)
     if resolution is None:
@@ -205,14 +210,11 @@ def run_bg_flood_model(
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
+    # Connect to the database
     engine = setup_environment.get_database()
-    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-    model_output_dir = config.get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
-
+    # Run BG-Flood Model
     run_bg_flood_model(
         engine=engine,
-        bg_flood_dir=bg_flood_dir,
-        model_output_dir=model_output_dir,
         catchment_boundary=selected_polygon_gdf,
         output_timestep=100,  # Saving the outputs after each `outputtimestep` seconds
         end_time=900,  # Saving the outputs till `endtime` number of seconds
