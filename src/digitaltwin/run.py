@@ -31,7 +31,7 @@ def main():
     get_data_using_geoapis.store_regional_council_to_db(engine, layer_id=111181, clipped=True)
     # Store sea-draining catchments data in the database
     get_data_using_geoapis.store_sea_drain_catchments_to_db(engine, layer_id=99776)
-    
+
     get_data_from_db.get_nz_bounding_box_to_file(engine)
 
     record = input_data("src/digitaltwin/instructions_run.json")
