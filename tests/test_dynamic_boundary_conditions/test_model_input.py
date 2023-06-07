@@ -59,7 +59,7 @@ class RainfallModelInputTest(unittest.TestCase):
         result = intersection_area_sizes.gt(org_area_sizes).any()
         self.assertFalse(result)
 
-    @patch("src.dynamic_boundary_conditions.model_input.sites_voronoi_intersect_catchment")
+    @patch("src.dynamic_boundary_conditions.rainfall_model_input.sites_voronoi_intersect_catchment")
     def test_sites_coverage_in_catchment_correct_area_percent(self, mock_intersections):
         """Test to ensure the percentage of area covered by each rainfall site inside the catchment area has
         been calculated correctly and sums up to 1."""
