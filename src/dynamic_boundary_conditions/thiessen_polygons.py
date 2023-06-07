@@ -34,7 +34,7 @@ def get_new_zealand_boundary(engine: Engine) -> Polygon:
     engine : Engine
         Engine used to connect to the database.
     """
-    query = "SELECT geometry FROM region_geometry WHERE regc2021_v1_00_name='New Zealand'"
+    query = "SELECT * FROM region_geometry ORDER BY ST_Area(geometry) DESC LIMIT 1;"
     nz_boundary = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=2193)
     nz_boundary = nz_boundary.to_crs(4326)
     nz_boundary_polygon = nz_boundary["geometry"][0]
