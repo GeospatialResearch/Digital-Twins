@@ -8,8 +8,7 @@ import json
 import pathlib
 
 from src import config
-from src.digitaltwin import insert_api_to_table
-from src.digitaltwin import setup_environment
+from src.digitaltwin import setup_environment, insert_api_to_table, get_data_using_geoapis
 
 
 def input_data(file):
@@ -24,8 +23,13 @@ def input_data(file):
 
 
 def main():
-    # Read in the database - will fail if the database hasn't been setup.
+    # Connect to the database
     engine = setup_environment.get_database()
+    # Store regional council data in the database
+    get_data_using_geoapis.store_regional_council_to_db(engine, layer_id=111181, clipped=True)
+    # Store sea-draining catchments data in the database
+    get_data_using_geoapis.store_sea_drain_catchments_to_db(engine, layer_id=99776)
+
     stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
     # Create region_geometry table if it doesn't exist in the database
     # No need to call region_geometry_table function if region_geometry

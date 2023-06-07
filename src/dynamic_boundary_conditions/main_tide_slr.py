@@ -7,13 +7,12 @@
 import logging
 import pathlib
 
-import sqlalchemy
 import geopandas as gpd
 from shapely.geometry import box
 from sqlalchemy.engine import Engine
 
 from src import config
-from src.digitaltwin import setup_environment
+from src.digitaltwin import setup_environment, get_data_using_geoapis
 from src.dynamic_boundary_conditions.tide_enum import ApproachType
 from src.dynamic_boundary_conditions import (
     tide_query_location,
@@ -69,8 +68,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
         # Remove existing tide model input files
         remove_existing_boundary_input(bg_flood_dir)
 
-        # Store regional council clipped data in the database
-        tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)
         # Get regional council clipped data that intersect with the catchment area from the database
         regions_clipped = tide_query_location.get_regional_council_clipped_from_db(engine, catchment_area)
         # Get the location (coordinates) to fetch tide data for

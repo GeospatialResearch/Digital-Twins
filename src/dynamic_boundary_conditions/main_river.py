@@ -59,8 +59,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Store REC1 data to db
     rec1_data_dir = config.get_env_variable("DATA_DIR_REC1", cast_to=pathlib.Path)
     river_data_to_from_db.store_rec1_data_to_db(engine, rec1_data_dir)
-    # Store sea-draining catchments data to db
-    river_data_to_from_db.store_sea_drain_catchments_to_db(engine, layer_id=99776)
     # Get REC1 data from db covering area of interest
     rec1_data = river_data_to_from_db.get_rec1_data_from_db(engine, catchment_area)
 
