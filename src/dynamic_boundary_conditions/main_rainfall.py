@@ -8,10 +8,10 @@
 import pathlib
 
 import geopandas as gpd
-from shapely.geometry import Polygon
 
 from src import config
 from src.digitaltwin import setup_environment, get_data_from_db
+from src.digitaltwin.utils import get_catchment_area_polygon
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions import (
     rainfall_sites,
@@ -23,25 +23,11 @@ from src.dynamic_boundary_conditions import (
 )
 
 
-def catchment_area_geometry_info(catchment_boundary: gpd.GeoDataFrame, to_crs: int = 4326) -> Polygon:
-    """
-        Extract shapely geometry polygon from the catchment boundary in the given crs
-
-        Parameters
-        ----------
-        catchment_boundary
-            The data frame of the catchment boundary polygon
-        to_crs: int = 4326
-            Specify the output's coordinate reference system. Default is 4326.
-        """
-    return catchment_boundary.to_crs(to_crs)["geometry"][0]
-
-
 def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment polygon
-    catchment_polygon = catchment_area_geometry_info(selected_polygon_gdf, to_crs=4326)
+    catchment_polygon = get_catchment_area_polygon(selected_polygon_gdf, to_crs=4326)
     # BG-Flood path
     bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
 

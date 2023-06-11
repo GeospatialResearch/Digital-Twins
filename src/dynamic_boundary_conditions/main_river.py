@@ -5,6 +5,7 @@ from shapely.geometry import LineString
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.digitaltwin.utils import get_catchment_area
 from src.dynamic_boundary_conditions.river_enum import BoundType
 from src.dynamic_boundary_conditions import (
     river_data_to_from_db,
@@ -14,11 +15,6 @@ from src.dynamic_boundary_conditions import (
     hydrograph,
     river_model_input
 )
-
-
-def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> gpd.GeoDataFrame:
-    catchment_area = catchment_area.to_crs(to_crs)
-    return catchment_area
 
 
 def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:

@@ -11,6 +11,7 @@ import geopandas as gpd
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.digitaltwin.utils import get_catchment_area
 from src.dynamic_boundary_conditions.tide_enum import ApproachType
 from src.dynamic_boundary_conditions import (
     tide_query_location,
@@ -28,11 +29,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
-
-
-def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> gpd.GeoDataFrame:
-    catchment_area = catchment_area.to_crs(to_crs)
-    return catchment_area
 
 
 def remove_existing_boundary_input(bg_flood_dir: pathlib.Path) -> None:
