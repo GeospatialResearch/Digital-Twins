@@ -8,7 +8,7 @@ import json
 import pathlib
 
 from src import config
-from src.digitaltwin import setup_environment, insert_api_to_table, get_data_using_geoapis, get_data_from_db
+from src.digitaltwin import setup_environment, insert_api_to_table, store_data_to_db, get_data_from_db
 
 
 def input_data(file):
@@ -26,11 +26,11 @@ def main():
     # Connect to the database
     engine = setup_environment.get_database()
     # Store regional council data in the database
-    get_data_using_geoapis.store_regional_council_to_db(engine, layer_id=111182, clipped=False)
+    store_data_to_db.store_regional_council_to_db(engine, layer_id=111182, clipped=False)
     # Store regional council data in the database
-    get_data_using_geoapis.store_regional_council_to_db(engine, layer_id=111181, clipped=True)
+    store_data_to_db.store_regional_council_to_db(engine, layer_id=111181, clipped=True)
     # Store sea-draining catchments data in the database
-    get_data_using_geoapis.store_sea_drain_catchments_to_db(engine, layer_id=99776)
+    store_data_to_db.store_sea_drain_catchments_to_db(engine, layer_id=99776)
 
     get_data_from_db.get_nz_bounding_box_to_file(engine)
 
