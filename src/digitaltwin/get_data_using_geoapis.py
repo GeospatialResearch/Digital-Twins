@@ -21,8 +21,8 @@ def get_data_from_stats_nz(
         bounding_polygon=bounding_polygon,
         verbose=verbose,
         crs=crs)
-    stats_data = vector_fetcher.run(layer_id)
-    return stats_data
+    vector_data = vector_fetcher.run(layer_id)
+    return vector_data
 
 
 def get_data_from_mfe(
@@ -38,5 +38,5 @@ def get_data_from_mfe(
         netloc_url="data.mfe.govt.nz",
         geometry_names=['GEOMETRY', 'shape'],
         verbose=verbose)
-    vector_layer_data = vector_fetcher.run(layer_id)
-    return vector_layer_data
+    vector_data = vector_fetcher.run(layer_id)
+    return vector_data
