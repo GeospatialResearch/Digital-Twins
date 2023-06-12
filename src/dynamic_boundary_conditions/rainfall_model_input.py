@@ -15,7 +15,7 @@ from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
-from src.dynamic_boundary_conditions import hyetograph
+from src.dynamic_boundary_conditions import main_rainfall, hyetograph
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -93,7 +93,7 @@ def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.G
 def spatial_uniform_rain_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
-        bg_flood_path: pathlib.Path) -> None:
+        bg_flood_dir: pathlib.Path) -> None:
     """
     Write the relevant mean catchment rainfall intensities data (i.e. 'seconds' and 'rain_intensity_mmhr' columns)
     in a text file (rain_forcing.txt). This can be used as spatially uniform rainfall input into the BG-Flood model.
@@ -104,12 +104,12 @@ def spatial_uniform_rain_input(
         Hyetograph intensities data for sites within the catchment area.
     sites_coverage : gpd.GeoDataFrame
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
-    bg_flood_path : pathlib.Path
-        BG-Flood file path.
+    bg_flood_dir : pathlib.Path
+        BG-Flood directory.
     """
     mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
     spatial_uniform_input = mean_catchment_rain[["seconds", "rain_intensity_mmhr"]]
-    spatial_uniform_input.to_csv(bg_flood_path / "rain_forcing.txt", header=None, index=None, sep="\t")
+    spatial_uniform_input.to_csv(bg_flood_dir / "rain_forcing.txt", header=None, index=None, sep="\t")
 
 
 def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.GeoDataFrame) -> xr.Dataset:
@@ -143,7 +143,7 @@ def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.Geo
 def spatial_varying_rain_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
-        bg_flood_path: pathlib.Path) -> None:
+        bg_flood_dir: pathlib.Path) -> None:
     """
     Write the rainfall intensities data cube out in NetCDF format (rain_forcing.nc).
     This can be used as spatially varying rainfall input into the BG-Flood model.
@@ -154,17 +154,17 @@ def spatial_varying_rain_input(
         Hyetograph intensities data for sites within the catchment area.
     sites_coverage : gpd.GeoDataFrame
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
-    bg_flood_path : pathlib.Path
-        BG-Flood file path.
+    bg_flood_dir : pathlib.Path
+        BG-Flood directory.
     """
     rain_data_cube = create_rain_data_cube(hyetograph_data, sites_coverage)
-    rain_data_cube.to_netcdf(bg_flood_path / "rain_forcing.nc")
+    rain_data_cube.to_netcdf(bg_flood_dir / "rain_forcing.nc")
 
 
 def generate_rain_model_input(
         hyetograph_data: pd.DataFrame,
         sites_coverage: gpd.GeoDataFrame,
-        bg_flood_path: pathlib.Path,
+        bg_flood_dir: pathlib.Path,
         input_type: RainInputType) -> None:
     """
     Generate the requested rainfall model input for BG-Flood, i.e. spatially uniform rain input ('rain_forcing.txt'
@@ -176,15 +176,16 @@ def generate_rain_model_input(
         Hyetograph data for sites within the catchment area.
     sites_coverage : gpd.GeoDataFrame
         Contains the area and the percentage of area covered by each rainfall site inside the catchment area.
-    bg_flood_path : pathlib.Path
-        BG-Flood file path.
+    bg_flood_dir : pathlib.Path
+        BG-Flood directory.
     input_type: RainInputType
         Type of rainfall model input to be generated. One of 'uniform' or 'varying',
         i.e. spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
     """
+    main_rainfall.remove_existing_rain_inputs(bg_flood_dir)
     if input_type == RainInputType.UNIFORM:
-        spatial_uniform_rain_input(hyetograph_data, sites_coverage, bg_flood_path)
-        log.info(f"Successfully generated the spatially uniform rain input for BG-Flood. Located in: {bg_flood_path}")
+        spatial_uniform_rain_input(hyetograph_data, sites_coverage, bg_flood_dir)
+        log.info(f"Successfully generated the spatially uniform rain input for BG-Flood. Located in: {bg_flood_dir}")
     elif input_type == RainInputType.VARYING:
-        spatial_varying_rain_input(hyetograph_data, sites_coverage, bg_flood_path)
-        log.info(f"Successfully generated the spatially varying rain input for BG-Flood. Located in: {bg_flood_path}")
+        spatial_varying_rain_input(hyetograph_data, sites_coverage, bg_flood_dir)
+        log.info(f"Successfully generated the spatially varying rain input for BG-Flood. Located in: {bg_flood_dir}")

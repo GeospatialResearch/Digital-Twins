@@ -23,13 +23,22 @@ from src.dynamic_boundary_conditions import (
 )
 
 
+def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
+    # iterate through all files in the directory
+    for file_path in bg_flood_dir.glob('rain_forcing.*'):
+        # remove the file
+        file_path.unlink()
+
+
 def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment polygon
     catchment_polygon = get_catchment_area_polygon(selected_polygon_gdf, to_crs=4326)
-    # BG-Flood path
-    bg_flood_path = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    # BG-Flood Model Directory
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    # Remove existing rainfall model input files
+    remove_existing_rain_inputs(bg_flood_dir)
 
     # Fetch rainfall sites data from the HIRDS website and store it to the database
     rainfall_sites.rainfall_sites_to_db(engine)
@@ -69,9 +78,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
     # Write out the requested rainfall model input for BG-Flood
     rainfall_model_input.generate_rain_model_input(
-        hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.UNIFORM)
-    rainfall_model_input.generate_rain_model_input(
-        hyetograph_data, sites_coverage, bg_flood_path, input_type=RainInputType.VARYING)
+        hyetograph_data, sites_coverage, bg_flood_dir, input_type=RainInputType.UNIFORM)
 
 
 if __name__ == "__main__":
