@@ -37,7 +37,7 @@ def store_regional_council_to_db(
         regional_council.columns = regional_council.columns.str.lower()
         regional_council['geometry'] = regional_council.pop('geometry')
         regional_council.to_postgis(f"{table_name}", engine, index=False, if_exists="replace")
-        log.info(f"Added {table_name} (StatsNZ {layer_id}) data to database.")
+        log.info(f"Added {table_name} data (StatsNZ {layer_id}) to the database.")
 
 
 def store_sea_drain_catchments_to_db(
@@ -54,4 +54,4 @@ def store_sea_drain_catchments_to_db(
         sdc_data.columns = sdc_data.columns.str.lower()
         sdc_data = sdc_data[['catch_id', 'shape_leng', 'shape_area', 'geometry']]
         sdc_data.to_postgis("sea_draining_catchments", engine, index=False, if_exists="replace")
-        log.info("Added Sea-draining Catchments data to database.")
+        log.info(f"Added Sea-draining Catchments data (MFE {layer_id}) to the database.")
