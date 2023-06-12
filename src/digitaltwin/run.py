@@ -4,8 +4,10 @@ Created on Mon Sep 13 15:21:34 2021
 
 @author: pkh35
 """
-import json
 import pathlib
+import json
+
+import geopandas as gpd
 
 from src import config
 from src.digitaltwin import setup_environment, insert_api_to_table, store_data_to_db, get_data_from_db
@@ -22,15 +24,14 @@ def input_data(file):
     return instruction_node
 
 
-def main():
+def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Connect to the database
     engine = setup_environment.get_database()
-    # Store regional council data in the database
+    # Store data in the database
     store_data_to_db.store_regional_council_to_db(engine, layer_id=111182, clipped=False)
-    # Store regional council data in the database
     store_data_to_db.store_regional_council_to_db(engine, layer_id=111181, clipped=True)
-    # Store sea-draining catchments data in the database
     store_data_to_db.store_sea_drain_catchments_to_db(engine, layer_id=99776)
+    store_data_to_db.store_nz_roads_to_db(engine, layer_id=53382, bounding_polygon=selected_polygon_gdf, verbose=False)
 
     get_data_from_db.get_nz_bounding_box_to_file(engine)
 
@@ -53,4 +54,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(sample_polygon)
