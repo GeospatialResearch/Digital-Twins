@@ -22,7 +22,6 @@ from sqlalchemy.orm import Session
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
 from src.flood_model.serve_model import add_model_output_to_geoserver
 from src.lidar import dem_metadata_in_db
 
@@ -136,8 +135,7 @@ def get_bg_flood_model_inputs(
         end_time: Union[int, float],
         mask: Union[int, float] = 9999,
         gpu_device: int = 0,
-        small_nc: int = 0,
-        rain_input_type: RainInputType = RainInputType.UNIFORM) -> None:
+        small_nc: int = 0) -> None:
     """
     Set parameters to run the flood model.
     mask is used for visualising all the values larger than 9999 by default.
@@ -148,7 +146,6 @@ def get_bg_flood_model_inputs(
         elev_var = list(dem_file.data_vars)[1]
     bg_param_path = bg_flood_dir / "BG_param.txt"
     outfile = model_output_path.as_posix()
-    rainfall = "rain_forcing.txt" if rain_input_type == RainInputType.UNIFORM else "rain_forcing.nc?rain_intensity_mmhr"
     with open(bg_param_path, "w+") as param_file:
         param_file.write(f"topo = {dem_path.as_posix()}?{elev_var};\n"
                          f"dx = {resolution};\n"
@@ -158,8 +155,13 @@ def get_bg_flood_model_inputs(
                          f"gpudevice = {gpu_device};\n"
                          f"smallnc = {small_nc};\n"
                          f"outfile = {outfile};\n"
-                         f"outvars = h, hmax, zb, zs, u, v;\n"
-                         f"rain = {rainfall};\n")
+                         f"outvars = h, hmax, zb, zs, u, v;\n")
+        for rain_input_file_path in bg_flood_dir.glob('rain_forcing.*'):
+            file_extension = rain_input_file_path.suffix[1:]
+            if file_extension == "txt":
+                param_file.write(f"rain = {rain_input_file_path.name};\n")
+            else:
+                param_file.write(f"rain = {rain_input_file_path.name}?rain_intensity_mmhr;\n")
         for tide_input_file_path in bg_flood_dir.glob('*_bnd.txt'):
             tide_position, tide_file = process_tide_input_files(tide_input_file_path)
             param_file.write(f"{tide_position} = {tide_file},2;\n")
@@ -176,8 +178,7 @@ def run_bg_flood_model(
         resolution: Optional[Union[int, float]] = None,
         mask: Union[int, float] = 9999,
         gpu_device: int = 0,
-        small_nc: int = 0,
-        rain_input_type: RainInputType = RainInputType.UNIFORM) -> None:
+        small_nc: int = 0) -> None:
     # Get valid bg-flood model directory
     bg_flood_dir = get_valid_bg_flood_dir()
     # Get valid model output path
@@ -196,8 +197,7 @@ def run_bg_flood_model(
         end_time=end_time,
         mask=mask,
         gpu_device=gpu_device,
-        small_nc=small_nc,
-        rain_input_type=rain_input_type)
+        small_nc=small_nc)
 
     cwd = pathlib.Path.cwd()
     os.chdir(bg_flood_dir)
@@ -217,8 +217,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
         engine=engine,
         catchment_boundary=selected_polygon_gdf,
         output_timestep=100,  # Saving the outputs after each `outputtimestep` seconds
-        end_time=900,  # Saving the outputs till `endtime` number of seconds
-        rain_input_type=RainInputType.UNIFORM
+        end_time=900  # Saving the outputs till `endtime` number of seconds
     )
 
 
