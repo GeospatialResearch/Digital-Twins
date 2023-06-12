@@ -52,6 +52,6 @@ def store_sea_drain_catchments_to_db(
     else:
         sdc_data = get_data_from_mfe(layer_id, crs, bounding_polygon, verbose)
         sdc_data.columns = sdc_data.columns.str.lower()
-        sdc_data = sdc_data[['catch_id', 'shape_leng', 'shape_area', 'geometry']]
+        sdc_data['geometry'] = sdc_data.pop('geometry')
         sdc_data.to_postgis("sea_draining_catchments", engine, index=False, if_exists="replace")
         log.info(f"Added Sea-draining Catchments data (MFE {layer_id}) to the database.")
