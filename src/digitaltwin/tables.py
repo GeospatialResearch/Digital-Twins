@@ -74,7 +74,7 @@ class dbsession:
             session.rollback()
 
 
-def check_table_exists(engine: Engine, table_name: str, schema: str = "public") -> Tuple[str, bool]:
+def check_table_exists(engine: Engine, table_name: str, schema: str = "public") -> bool:
     """
     Check if table exists in the database.
 
