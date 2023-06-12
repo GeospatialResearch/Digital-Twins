@@ -10,6 +10,12 @@ import geoapis.vector
 from src import config
 
 
+def clean_fetched_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    fetched_data.columns = fetched_data.columns.str.lower()
+    fetched_data['geometry'] = fetched_data.pop('geometry')
+    return fetched_data
+
+
 def get_data_from_stats_nz(
         layer_id: int,
         crs: int = 2193,
@@ -22,6 +28,7 @@ def get_data_from_stats_nz(
         verbose=verbose,
         crs=crs)
     vector_data = vector_fetcher.run(layer_id)
+    vector_data = clean_fetched_data(vector_data)
     return vector_data
 
 
@@ -39,4 +46,5 @@ def get_data_from_mfe(
         geometry_names=['GEOMETRY', 'shape'],
         verbose=verbose)
     vector_data = vector_fetcher.run(layer_id)
+    vector_data = clean_fetched_data(vector_data)
     return vector_data

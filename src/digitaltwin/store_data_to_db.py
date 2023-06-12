@@ -34,8 +34,6 @@ def store_regional_council_to_db(
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
         regional_council = get_data_from_stats_nz(layer_id, crs, bounding_polygon, verbose)
-        regional_council.columns = regional_council.columns.str.lower()
-        regional_council['geometry'] = regional_council.pop('geometry')
         regional_council.to_postgis(f"{table_name}", engine, index=False, if_exists="replace")
         log.info(f"Added {table_name} data (StatsNZ {layer_id}) to the database.")
 
@@ -51,7 +49,5 @@ def store_sea_drain_catchments_to_db(
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
         sdc_data = get_data_from_mfe(layer_id, crs, bounding_polygon, verbose)
-        sdc_data.columns = sdc_data.columns.str.lower()
-        sdc_data['geometry'] = sdc_data.pop('geometry')
         sdc_data.to_postgis("sea_draining_catchments", engine, index=False, if_exists="replace")
         log.info(f"Added Sea-draining Catchments data (MFE {layer_id}) to the database.")
