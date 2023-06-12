@@ -32,6 +32,22 @@ def get_data_from_stats_nz(
     return vector_data
 
 
+def get_data_from_linz(
+        layer_id: int,
+        crs: int = 2193,
+        bounding_polygon: gpd.GeoDataFrame = None,
+        verbose: bool = True) -> gpd.GeoDataFrame:
+    linz_api_key = config.get_env_variable("LINZ_API_KEY")
+    vector_fetcher = geoapis.vector.Linz(
+        key=linz_api_key,
+        bounding_polygon=bounding_polygon,
+        verbose=verbose,
+        crs=crs)
+    vector_data = vector_fetcher.run(layer_id)
+    vector_data = clean_fetched_data(vector_data)
+    return vector_data
+
+
 def get_data_from_mfe(
         layer_id: int,
         crs: int = 2193,
