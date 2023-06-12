@@ -40,4 +40,3 @@ def get_data_from_mfe(
         verbose=verbose)
     vector_layer_data = vector_fetcher.run(layer_id)
     return vector_layer_data
-
