@@ -99,3 +99,50 @@ def store_nz_roads_to_db(
             log.info(f"Added {table_name} data (LINZ {layer_id}) for the catchment area to the database.")
         else:
             log.info("The requested catchment area does not contain any roads.")
+
+
+def get_building_outline_id_not_in_db(
+        engine: Engine,
+        table_name: str,
+        nz_building_outlines: gpd.GeoDataFrame) -> set:
+    query = f"SELECT DISTINCT building_outline_id FROM {table_name};"
+    building_outline_id_in_db = set(pd.read_sql_query(query, engine)["building_outline_id"])
+    nz_building_outline_id = set(nz_building_outlines["building_outline_id"])
+    building_outline_id_not_in_db = nz_building_outline_id - building_outline_id_in_db
+    return building_outline_id_not_in_db
+
+
+def add_nz_building_outlines_to_db(
+        engine: Engine,
+        table_name: str,
+        layer_id: int,
+        crs: int = 2193,
+        bounding_polygon: gpd.GeoDataFrame = None,
+        verbose: bool = True) -> None:
+    nz_buildings = get_data_from_linz(layer_id, crs, bounding_polygon, verbose)
+    building_outline_id_not_in_db = get_building_outline_id_not_in_db(engine, table_name, nz_buildings)
+
+    if building_outline_id_not_in_db:
+        nz_buildings_not_in_db = nz_buildings[nz_buildings['building_outline_id'].isin(building_outline_id_not_in_db)]
+        nz_buildings_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
+        log.info(f"Added {table_name} data (LINZ {layer_id}) for the catchment area to the database.")
+    else:
+        log.info(f"{table_name} data for the requested catchment area already in the database.")
+
+
+def store_nz_building_outlines_to_db(
+        engine: Engine,
+        layer_id: int,
+        crs: int = 2193,
+        bounding_polygon: gpd.GeoDataFrame = None,
+        verbose: bool = True) -> None:
+    table_name = "nz_building_outlines"
+    if tables.check_table_exists(engine, table_name):
+        add_nz_building_outlines_to_db(engine, table_name, layer_id, crs, bounding_polygon, verbose)
+    else:
+        nz_buildings = get_data_from_linz(layer_id, crs, bounding_polygon, verbose)
+        if not nz_buildings.empty:
+            nz_buildings.to_postgis(table_name, engine, index=False, if_exists="replace")
+            log.info(f"Added {table_name} data (LINZ {layer_id}) for the catchment area to the database.")
+        else:
+            log.info("The requested catchment area does not contain any building outlines.")

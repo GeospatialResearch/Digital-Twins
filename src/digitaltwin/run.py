@@ -31,7 +31,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     store_data_to_db.store_regional_council_to_db(engine, layer_id=111182, clipped=False)
     store_data_to_db.store_regional_council_to_db(engine, layer_id=111181, clipped=True)
     store_data_to_db.store_sea_drain_catchments_to_db(engine, layer_id=99776)
-    store_data_to_db.store_nz_roads_to_db(engine, layer_id=53382, bounding_polygon=selected_polygon_gdf, verbose=False)
+    store_data_to_db.store_nz_roads_to_db(engine, layer_id=53382, bounding_polygon=selected_polygon_gdf)
+    store_data_to_db.store_nz_building_outlines_to_db(engine, layer_id=101292, bounding_polygon=selected_polygon_gdf)
 
     get_data_from_db.get_nz_bounding_box_to_file(engine)
 
