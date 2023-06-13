@@ -7,7 +7,6 @@ Created on Tue Aug 10 13:29:55 2021.
 
 import logging
 from datetime import datetime
-from typing import Tuple
 
 from geoalchemy2 import Geometry
 from sqlalchemy import inspect, Column, Integer, DateTime, Unicode, Date
