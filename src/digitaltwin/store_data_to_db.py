@@ -88,7 +88,7 @@ def store_nz_roads_to_db(
         layer_id: int,
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
-        verbose: bool = True) -> None:
+        verbose: bool = False) -> None:
     table_name = "nz_roads"
     if tables.check_table_exists(engine, table_name):
         add_nz_roads_to_db(engine, table_name, layer_id, crs, bounding_polygon, verbose)
@@ -135,7 +135,7 @@ def store_nz_building_outlines_to_db(
         layer_id: int,
         crs: int = 2193,
         bounding_polygon: gpd.GeoDataFrame = None,
-        verbose: bool = True) -> None:
+        verbose: bool = False) -> None:
     table_name = "nz_building_outlines"
     if tables.check_table_exists(engine, table_name):
         add_nz_building_outlines_to_db(engine, table_name, layer_id, crs, bounding_polygon, verbose)
