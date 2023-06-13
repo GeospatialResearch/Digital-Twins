@@ -33,7 +33,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     store_data_to_db.store_sea_drain_catchments_to_db(engine, layer_id=99776)
     store_data_to_db.store_nz_roads_to_db(engine, layer_id=53382, bounding_polygon=selected_polygon_gdf)
     store_data_to_db.store_nz_building_outlines_to_db(engine, layer_id=101292, bounding_polygon=selected_polygon_gdf)
-
+    # Write nz bounding box out to file
     get_data_from_db.get_nz_bounding_box_to_file(engine)
 
     record = input_data("src/digitaltwin/instructions_run.json")
