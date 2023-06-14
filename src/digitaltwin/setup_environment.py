@@ -65,7 +65,3 @@ def get_engine(host: str, port: str, db: str, username: str, password: str) -> E
     engine = create_engine(url)
     Base.metadata.create_all(engine)
     return engine
-
-
-if __name__ == "__main__":
-    get_database()
