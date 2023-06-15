@@ -92,17 +92,18 @@ def store_model_output_metadata_to_db(
         log.info("BG-Flood model output metadata successfully stored in the database.")
 
 
-def latest_model_output_filepath_from_db(engine: Engine) -> pathlib.Path:
+def latest_model_output_from_db() -> pathlib.Path:
     """Retrieve the latest model output file path, by querying the database"""
+    engine = setup_environment.get_database()
     row = engine.execute("SELECT * FROM bg_flood_model_output ORDER BY created_at DESC LIMIT 1 ").fetchone()
     return pathlib.Path(row["file_path"])
 
 
-def add_crs_to_latest_model_output(engine: Engine) -> None:
+def add_crs_to_latest_model_output() -> None:
     """
     Add CRS to the latest BG-Flood Model Output.
     """
-    latest_file = latest_model_output_filepath_from_db(engine)
+    latest_file = latest_model_output_from_db()
     with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
         latest_output.load()
         if latest_output.rio.crs is None:
@@ -205,7 +206,7 @@ def run_bg_flood_model(
     os.chdir(cwd)
 
     store_model_output_metadata_to_db(engine, model_output_path, catchment_boundary)
-    add_crs_to_latest_model_output(engine)
+    add_crs_to_latest_model_output()
     add_model_output_to_geoserver(model_output_path)
 
 
