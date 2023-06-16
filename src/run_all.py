@@ -19,7 +19,7 @@ log.addHandler(stream_handler)
 if __name__ == '__main__':
     selected_polygon_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     log.debug("run.main()")
-    run.main()
+    run.main(selected_polygon_gdf)
     log.debug("get_data_from_db.main()")
     get_data_from_db.main(selected_polygon_gdf)
     log.debug("lidar_metadata_in_db.main()")
