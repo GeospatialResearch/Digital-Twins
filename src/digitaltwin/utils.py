@@ -21,7 +21,7 @@ def get_catchment_area_polygon(catchment_area: gpd.GeoDataFrame, to_crs: int = 2
     ----------
     catchment_area
         Catchment area GeoPandas data frame.
-    to_crs: int = 4326
+    to_crs: int = 2193
         Specify the output's coordinate reference system. Default is 2193.
     """
     return catchment_area.to_crs(to_crs)["geometry"][0]
