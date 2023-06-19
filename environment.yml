@@ -6,7 +6,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python>=3.11
+  - python==3.11  # 11 for StrEnum
   - pip
   - python-dotenv
   - lxml==4.9.2
@@ -27,6 +27,7 @@ dependencies:
   - flask
   - flask-cors
   - redis-py
+  - dask==2022.12.1
   - pip:
     - geofabrics==0.10.11
     - geovoronoi==0.4.0
