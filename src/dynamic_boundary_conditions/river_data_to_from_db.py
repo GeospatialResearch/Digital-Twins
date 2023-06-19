@@ -34,11 +34,11 @@ def get_rec1_data_from_niwa(
 
 def store_rec1_data_to_db(engine: Engine, rec1_data_dir: pathlib.Path) -> None:
     table_name = "rec1_data"
-    if tables.check_table_exists(engine, "rec1_data"):
+    if tables.check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
         rec1_nz = get_rec1_data_from_niwa(rec1_data_dir)
-        rec1_nz.to_postgis("rec1_data", engine, index=False, if_exists="replace")
+        rec1_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info("Added REC1 data to database.")
 
 
