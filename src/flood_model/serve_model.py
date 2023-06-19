@@ -4,6 +4,7 @@ import shutil
 import subprocess
 
 import rasterio as rio
+import xarray as xr
 import requests
 
 from src.config import get_env_variable
@@ -19,8 +20,14 @@ def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
     temp_dir.mkdir(parents=True, exist_ok=True)
     gtiff_filepath = temp_dir / new_name
     # Convert the max depths to geo tiff
-    subprocess.run(f'gdal_translate -of "GTiff" -a_srs "EPSG:2193" NETCDF:"{nc_file_path}":hmax_P0 {gtiff_filepath}',
-                   check=True)
+    # subprocess.run(f'gdal_translate -of "GTiff" -a_srs "EPSG:2193" NETCDF:"{nc_file_path}":hmax_P0 {gtiff_filepath}',
+    #                check=True)
+    with xr.open_dataset(nc_file_path) as ds:
+        ds = ds.drop_vars(['blockid', 'blockxo', 'blockyo', 'blockwidth', 'blocklevel', 'blockstatus'])
+        ds = ds.rename({'xx_P0': 'x', 'yy_P0': 'y'})
+        ds = ds.rio.set_spatial_dims(x_dim='x', y_dim='y')
+        ds.rio.write_crs("epsg:2193", inplace=True)
+        ds['hmax_P0'].rio.to_raster(gtiff_filepath)
     return pathlib.Path(os.getcwd()) / gtiff_filepath
 
 
