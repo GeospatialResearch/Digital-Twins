@@ -86,6 +86,17 @@ class HydroDEM(Base):
     geometry = Column(Geometry("GEOMETRY", srid=2193), comment="catchment area coverage")
 
 
+class BGFloodModelOutput(Base):
+    """Class used to create the 'bg_flood_model_output' table in the database."""
+
+    __tablename__ = "bg_flood_model_output"
+    unique_id = Column(Integer, primary_key=True, autoincrement=True)
+    file_name = Column(String)
+    file_path = Column(String)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
+    geometry = Column(Geometry("GEOMETRY", srid=2193), comment="catchment area coverage")
+
+
 def create_table(engine: Engine, table: Base) -> None:
     """
     Create a table in the database if it doesn't already exist, using the provided engine.

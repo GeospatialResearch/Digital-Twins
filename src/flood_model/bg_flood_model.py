@@ -14,14 +14,12 @@ from typing import Tuple, Union, Optional
 
 import geopandas as gpd
 import xarray as xr
-from geoalchemy2 import Geometry
-from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.digitaltwin.tables import BGFloodModelOutput, create_table, execute_query
 from src.flood_model.serve_model import add_model_output_to_geoserver
 from src.lidar import dem_metadata_in_db
 
@@ -53,21 +51,6 @@ def get_valid_model_output_path() -> pathlib.Path:
     return model_output_path
 
 
-class BGFloodModelOutput(Base):
-    """Class used to create the 'bg_flood_model_output' table in the database."""
-    __tablename__ = "bg_flood_model_output"
-    unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    file_name = Column(String)
-    file_path = Column(String)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
-    geometry = Column(Geometry("GEOMETRY", srid=2193), comment="catchment area coverage")
-
-
-def create_model_output_table(engine: Engine) -> None:
-    """Create bg_flood_model_output table if it doesn't exist."""
-    BGFloodModelOutput.__table__.create(bind=engine, checkfirst=True)
-
-
 def get_model_output_metadata(
         model_output_path: pathlib.Path,
         catchment_boundary: gpd.GeoDataFrame) -> Tuple[str, str, str]:
@@ -83,13 +66,11 @@ def store_model_output_metadata_to_db(
         model_output_path: pathlib.Path,
         catchment_boundary: gpd.GeoDataFrame) -> None:
     """Store metadata of the bg flood model output in the database."""
-    create_model_output_table(engine)
+    create_table(engine, BGFloodModelOutput)
     output_name, output_path, geometry = get_model_output_metadata(model_output_path, catchment_boundary)
-    with Session(engine) as session:
-        model_output = BGFloodModelOutput(file_name=output_name, file_path=output_path, geometry=geometry)
-        session.add(model_output)
-        session.commit()
-        log.info("BG-Flood model output metadata successfully stored in the database.")
+    query = BGFloodModelOutput(file_name=output_name, file_path=output_path, geometry=geometry)
+    execute_query(engine, query)
+    log.info("BG-Flood model output metadata successfully stored in the database.")
 
 
 def latest_model_output_from_db() -> pathlib.Path:
