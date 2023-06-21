@@ -68,7 +68,7 @@ class UserLogInfo(Base):
         Geometric representation of the catchment area coverage.
     """
 
-    __tablename__ = "user_log_information_test"
+    __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
     created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="log created datetime")
