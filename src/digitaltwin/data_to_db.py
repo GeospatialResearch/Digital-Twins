@@ -111,9 +111,11 @@ def get_vector_data_id_not_in_db(
         engine: Engine,
         vector_data: gpd.GeoDataFrame,
         table_name: str,
-        unique_column_name: str) -> Set[int]:
+        unique_column_name: str,
+        area_of_interest: gpd.GeoDataFrame) -> Set[int]:
     """
-    Get the IDs from the fetched vector_data that are not present in the specified database table.
+    Get the IDs from the fetched vector_data that are not present in the specified database table
+    for the area of interest.
 
     Parameters
     ----------
@@ -125,6 +127,8 @@ def get_vector_data_id_not_in_db(
         The name of the table in the database.
     unique_column_name : str
         The name of the unique column in the table.
+    area_of_interest : gpd.GeoDataFrame
+        The GeoDataFrame representing the area of interest.
 
     Returns
     -------
@@ -133,9 +137,10 @@ def get_vector_data_id_not_in_db(
     """
     # Get the unique IDs from the vector_data
     vector_data_ids = set(vector_data[unique_column_name])
-    # Create a SQL query to fetch the unique IDs from the specified table
-    # TODO: update query - take aoi into consideration
-    query = f"SELECT DISTINCT {unique_column_name} FROM {table_name};"
+    # Fetch the unique IDs from the specified table that intersect with the area of interest
+    aoi_polygon = area_of_interest["geometry"][0]
+    query = f"SELECT DISTINCT {unique_column_name} FROM {table_name} AS ids " \
+            f"WHERE ST_Intersects(ids.geometry, ST_GeomFromText('{aoi_polygon}', 2193))"
     # Execute the query and retrieve the IDs present in the database
     ids_in_db = set(pd.read_sql(query, engine)[unique_column_name])
     # Find the IDs from vector_data that are not present in the database
@@ -228,7 +233,8 @@ def non_nz_geospatial_layers_data_to_db(
             # Fetch vector data using geoapis
             vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, area_of_interest)
             # Get IDs from the vector data that are not in the database
-            ids_not_in_db = get_vector_data_id_not_in_db(engine, vector_data, table_name, unique_column_name)
+            ids_not_in_db = get_vector_data_id_not_in_db(
+                engine, vector_data, table_name, unique_column_name, area_of_interest)
             if ids_not_in_db:
                 # Get vector data that contains only the IDs not present in the database
                 vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
