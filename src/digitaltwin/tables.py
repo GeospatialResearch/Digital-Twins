@@ -72,7 +72,7 @@ class UserLogInfo(Base):
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
     created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="log created datetime")
-    geometry = Column(Geometry("POLYGON", srid=2193), comment="catchment area coverage")
+    geometry = Column(Geometry("POLYGON", srid=2193))
 
 
 class HydroDEM(Base):
@@ -83,7 +83,7 @@ class HydroDEM(Base):
     file_name = Column(String)
     file_path = Column(String)
     created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
-    geometry = Column(Geometry("GEOMETRY", srid=2193), comment="catchment area coverage")
+    geometry = Column(Geometry("GEOMETRY", srid=2193))
 
 
 class BGFloodModelOutput(Base):
@@ -94,7 +94,7 @@ class BGFloodModelOutput(Base):
     file_name = Column(String)
     file_path = Column(String)
     created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
-    geometry = Column(Geometry("GEOMETRY", srid=2193), comment="catchment area coverage")
+    geometry = Column(Geometry("GEOMETRY", srid=2193))
 
 
 def create_table(engine: Engine, table: Base) -> None:
