@@ -4,11 +4,8 @@
 @Author: sli229
 """
 
-import pathlib
-
 import geopandas as gpd
 from shapely.geometry import Polygon
-from shapely.geometry import box
 from sqlalchemy.engine import Engine
 
 
@@ -82,13 +79,3 @@ def get_nz_boundary_polygon(engine: Engine, to_crs: int = 2193) -> Polygon:
     nz_boundary = nz_boundary.to_crs(to_crs)
     nz_boundary_polygon = nz_boundary["geometry"][0]
     return nz_boundary_polygon
-
-
-def get_nz_bounding_box_to_file(engine: Engine, to_crs: int = 2193, file_name: str = "nz_bbox.geojson") -> None:
-    file_path = pathlib.Path.cwd() / file_name
-    if not file_path.is_file():
-        nz_boundary_polygon = get_nz_boundary_polygon(engine, to_crs)
-        min_x, min_y, max_x, max_y = nz_boundary_polygon.bounds
-        bbox = box(min_x, min_y, max_x, max_y)
-        nz_bbox = gpd.GeoDataFrame(geometry=[bbox], crs=2193)
-        nz_bbox.to_file(file_name, driver="GeoJSON")

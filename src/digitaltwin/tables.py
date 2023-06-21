@@ -1,90 +1,111 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 10 13:29:55 2021.
-
-@author: pkh35, sli229
+@Date: 17/06/2023
+@Author: sli229
 """
 
-import logging
 from datetime import datetime
 
 from geoalchemy2 import Geometry
-from sqlalchemy import inspect, Column, Integer, DateTime, Unicode, Date
+from sqlalchemy import inspect, Column, String, Integer, DateTime
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
-from sqlalchemy.dialects.postgresql import JSONB, JSON
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
+from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
 
-class User_log_info(Base):
-    """Class used to create user_log_information table."""
+class GeospatialLayers(Base):
+    """
+    Class representing the 'geospatial_layers' table.
 
-    __tablename__ = "user_log_information"
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each geospatial layer entry (primary key).
+    data_provider : str
+        Name of the data provider.
+    layer_id : int
+        Identifier for the layer.
+    table_name : str
+        Name of the table containing the data.
+    unique_column_name : str, optional
+        Name of the unique column in the table.
+    coverage_area : str, optional
+        Coverage area of the geospatial data. It can be either the whole country or NULL.
+    url : str
+        URL pointing to the geospatial layer.
+    """
+
+    __tablename__ = "geospatial_layers"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    source_list = Column(JSONB)
-    geometry = Column(Geometry("POLYGON"))
-    accessed_date = Column(DateTime, default=datetime.now())
+    data_provider = Column(String, nullable=False)
+    layer_id = Column(Integer, nullable=False)
+    table_name = Column(String, nullable=False)
+    unique_column_name = Column(String, nullable=True)
+    coverage_area = Column(String, nullable=True)
+    url = Column(String, nullable=False)
 
 
-class Apilink(Base):
-    """Class used to create apilinks table."""
+class UserLogInfo(Base):
+    """
+    Class representing the 'user_log_information' table.
 
-    __tablename__ = "apilinks"
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each log entry (primary key).
+    source_table_list : List[str]
+        A list of tables (geospatial layers) associated with the log entry.
+    created_at : datetime
+        Timestamp indicating when the log entry was created.
+    geometry : Polygon
+        Geometric representation of the catchment area coverage.
+    """
+
+    __tablename__ = "user_log_information_test"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    data_provider = Column(Unicode)
-    source_name = Column(Unicode, unique=True)
-    layer = Column(Integer)
-    region_name = Column(Unicode)
-    source_api = Column(Unicode)
-    api_modified_date = Column(Date)
-    url = Column(Unicode)
-    access_date = Column(DateTime, default=datetime.now())
-    query_dictionary = Column(JSON)
-    geometry_col_name = Column(Unicode)
-    geometry = Column(Geometry)
+    source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="log created datetime")
+    geometry = Column(Geometry("POLYGON", srid=2193), comment="catchment area coverage")
 
 
-class dbsession:
-    """Class used to connect to postgreSQL"""
+def create_table(engine: Engine, table: Base) -> None:
+    """
+    Create a table in the database if it doesn't already exist, using the provided engine.
 
-    def sessionCreate(self, table, engine):
-        # checkfirst=True to make sure the table doesn't exist
-        table.__table__.create(engine, checkfirst=True)
+    Parameters
+    ----------
+    engine : Engine
+        Engine used to connect to the database.
+    table : Base
+        Class representing the table to create.
 
-    def runQuery(self, engine, query):
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        try:
-            session.add(query)
-            session.commit()
-        except Exception as error:
-            log.info(error)
-            session.rollback()
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    table.__table__.create(bind=engine, checkfirst=True)
 
 
 def check_table_exists(engine: Engine, table_name: str, schema: str = "public") -> bool:
     """
-    Check if table exists in the database.
+    Check if a table exists in the database.
 
     Parameters
     ----------
     engine : Engine
         Engine used to connect to the database.
     table_name : str
-        The name of the table to check.
-    schema : str = "public"
-        Name of the schema where the table resides. Defaults to "public".
+        The name of the table to check for existence.
+    schema : str, optional
+        The name of the schema where the table resides. Defaults to "public".
 
     Returns
     -------
@@ -93,3 +114,30 @@ def check_table_exists(engine: Engine, table_name: str, schema: str = "public") 
     """
     inspector = inspect(engine)
     return inspector.has_table(table_name, schema=schema)
+
+
+def execute_query(engine: Engine, query) -> None:
+    """
+    Execute the given query on the provided engine using a session.
+
+    Parameters
+    ----------
+    engine : Engine
+        Engine used to connect to the database.
+    query
+        The query to be executed.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    with Session(engine) as session:
+        try:
+            session.add(query)
+            session.commit()
+        except Exception as error:
+            session.rollback()
+            raise error
+        finally:
+            session.close()
