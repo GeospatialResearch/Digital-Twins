@@ -8,20 +8,17 @@ Created on Wed Nov 10 13:22:27 2021.
 import logging
 import pathlib
 import json
-from datetime import datetime
 from typing import Tuple, Dict, Any, Union
 
 import geopandas as gpd
 import xarray as xr
 import rioxarray as rxr
-from geoalchemy2 import Geometry
-from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.digitaltwin.tables import HydroDEM, create_table, execute_query
 import geofabrics.processor
 
 log = logging.getLogger(__name__)
@@ -34,21 +31,6 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 Base = declarative_base()
-
-
-class HydroDEM(Base):
-    """Class used to create 'hydrological_dem' table."""
-    __tablename__ = "hydrological_dem"
-    unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    file_name = Column(String)
-    file_path = Column(String)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
-    geometry = Column(Geometry("GEOMETRY", srid=2193), comment="catchment area coverage")
-
-
-def create_hydro_dem_table(engine: Engine) -> None:
-    """Create 'hydrological_dem' table in the database if it doesn't exist."""
-    HydroDEM.__table__.create(bind=engine, checkfirst=True)
 
 
 def get_hydro_dem_metadata(
@@ -68,18 +50,16 @@ def store_hydro_dem_metadata_to_db(
         instructions: Dict[str, Any],
         catchment_boundary: gpd.GeoDataFrame) -> None:
     """Store metadata of the hydrologically conditioned DEM in the database."""
-    create_hydro_dem_table(engine)
+    create_table(engine, HydroDEM)
     hydro_dem_name, hydro_dem_path, geometry = get_hydro_dem_metadata(instructions, catchment_boundary)
-    with Session(engine) as session:
-        hydro_dem = HydroDEM(file_name=hydro_dem_name, file_path=hydro_dem_path, geometry=geometry)
-        session.add(hydro_dem)
-        session.commit()
-        log.info("Hydro DEM metadata for the catchment area successfully stored in the database.")
+    query = HydroDEM(file_name=hydro_dem_name, file_path=hydro_dem_path, geometry=geometry)
+    execute_query(engine, query)
+    log.info("Hydro DEM metadata for the catchment area successfully stored in the database.")
 
 
 def check_hydro_dem_exist(engine: Engine, catchment_boundary: gpd.GeoDataFrame) -> bool:
     """Check if hydro DEM already exists in the database for the catchment area."""
-    create_hydro_dem_table(engine)
+    create_table(engine, HydroDEM)
     catchment_geom = catchment_boundary["geometry"].iloc[0]
     query = f"""
     SELECT EXISTS (
