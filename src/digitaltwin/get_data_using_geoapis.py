@@ -96,6 +96,11 @@ def fetch_vector_data_using_geoapis(
 
     # Fetch the vector data using the determined vector fetcher
     vector_data = vector_fetcher.run(layer_id)
-    # Clean the fetched vector data
-    vector_data = clean_fetched_vector_data(vector_data)
+    # Check if vector_data is not None and is an instance of gpd.GeoDataFrame
+    if vector_data is not None and isinstance(vector_data, gpd.GeoDataFrame):
+        # Clean the fetched vector data
+        vector_data = clean_fetched_vector_data(vector_data)
+    else:
+        # Create an empty GeoDataFrame to indicate no returned vector data
+        vector_data = gpd.GeoDataFrame()
     return vector_data
