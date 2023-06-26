@@ -185,74 +185,6 @@ def nz_geospatial_layers_data_to_db(
             log.info(f"Table '{table_name}' already exists in the database.")
 
 
-def non_nz_geospatial_layers_data_to_db(
-        engine: Engine,
-        catchment_area: gpd.GeoDataFrame,
-        crs: int = 2193,
-        verbose: bool = False) -> None:
-    """
-    Fetches non-NZ geospatial layers data using 'geoapis' and stores it into the database.
-
-    Parameters
-    ----------
-    engine : Engine
-        Engine used to connect to the database.
-    catchment_area : gpd.GeoDataFrame
-        The GeoDataFrame representing the catchment area.
-    crs : int, optional
-        The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
-        Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
-    # Get non-NZ geospatial layers from the database
-    non_nz_geo_layers = get_non_nz_geospatial_layers(engine)
-
-    for _, layer_row in non_nz_geo_layers.iterrows():
-        # Extract geospatial layer information
-        data_provider, layer_id, table_name, unique_column_name = get_geospatial_layer_info(layer_row)
-        try:
-            non_intersection_area = get_non_intersection_area_from_db(engine, catchment_area, table_name)
-        except NoNonIntersectionError as error:
-            log.info(error)
-            continue
-        # Check if the table already exists in the database
-        if not check_table_exists(engine, table_name):
-            # Fetch vector data using geoapis
-            vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, non_intersection_area)
-            if not vector_data.empty:
-                # Insert vector data into the database
-                vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-                log.info(
-                    f"Added {table_name} data ({data_provider} {layer_id}) for the catchment area to the database.")
-            else:
-                log.info(
-                    f"The requested catchment area does not contain any {table_name} data ({data_provider} {layer_id})")
-        else:
-            # Fetch vector data using geoapis
-            vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, non_intersection_area)
-            if not vector_data.empty:
-                # Get IDs from the vector data that are not in the database
-                ids_not_in_db = get_vector_data_id_not_in_db(
-                    engine, vector_data, table_name, unique_column_name, non_intersection_area)
-                if ids_not_in_db:
-                    # Get vector data that contains only the IDs not present in the database
-                    vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
-                    # Insert vector data into the database
-                    vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
-                    log.info(
-                        f"Added new {table_name} data ({data_provider} {layer_id}) "
-                        f"for the catchment area to the database.")
-                else:
-                    log.info(f"{table_name} data for the requested catchment area already in the database.")
-            else:
-                log.info(f"{table_name} data for the requested catchment area already in the database!")
-
-
 def get_non_intersection_area_from_db(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
@@ -305,6 +237,156 @@ def get_non_intersection_area_from_db(
         return non_intersection_area
     else:
         raise NoNonIntersectionError(f"The '{table_name}' data for the catchment area has already been requested.")
+
+
+def process_new_non_nz_geospatial_layers(
+        engine: Engine,
+        data_provider: str,
+        layer_id: int,
+        table_name: str,
+        area_of_interest: gpd.GeoDataFrame,
+        crs: int = 2193,
+        verbose: bool = False) -> None:
+    """
+    Fetches new non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+
+    Parameters
+    ----------
+    engine : Engine
+        Engine used to connect to the database.
+    data_provider : str
+        The data provider of the geospatial layer.
+    layer_id : int
+        The ID of the geospatial layer.
+    table_name : str
+        The database table name of the geospatial layer.
+    area_of_interest : gpd.GeoDataFrame
+        The GeoDataFrame representing the area of interest.
+    crs : int, optional
+        The coordinate reference system (CRS) code to use. Default is 2193.
+    verbose : bool, optional
+        Whether to print messages. Default is False.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Fetch vector data using geoapis
+    vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, area_of_interest)
+    # Check if the fetched vector data is empty
+    if vector_data.empty:
+        log.info(f"The requested catchment area does not contain any {table_name} data ({data_provider} {layer_id}).")
+    else:
+        # Insert vector data into the database
+        vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
+        log.info(f"Added {table_name} data ({data_provider} {layer_id}) for the catchment area to the database.")
+
+
+def process_existing_non_nz_geospatial_layers(
+        engine: Engine,
+        data_provider: str,
+        layer_id: int,
+        table_name: str,
+        unique_column_name: str,
+        area_of_interest: gpd.GeoDataFrame,
+        crs: int = 2193,
+        verbose: bool = False) -> None:
+    """
+    Fetches existing non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+
+    Parameters
+    ----------
+    engine : Engine
+        Engine used to connect to the database.
+    data_provider : str
+        The data provider of the geospatial layer.
+    layer_id : int
+        The ID of the geospatial layer.
+    table_name : str
+        The database table name of the geospatial layer.
+    unique_column_name : str
+        The unique column name used for record identification in the database table.
+    area_of_interest : gpd.GeoDataFrame
+        The GeoDataFrame representing the area of interest.
+    crs : int, optional
+        The coordinate reference system (CRS) code to use. Default is 2193.
+    verbose : bool, optional
+        Whether to print messages. Default is False.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Fetch vector data using geoapis
+    vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, area_of_interest)
+    # Check if the fetched vector data is empty
+    if vector_data.empty:
+        log.info(f"{table_name} data for the requested catchment area already in the database!")
+    else:
+        # Get IDs from the vector data that are not in the database
+        ids_not_in_db = get_vector_data_id_not_in_db(
+            engine, vector_data, table_name, unique_column_name, area_of_interest)
+        # Check if there are IDs not in the database
+        if ids_not_in_db:
+            # Get vector data that contains only the IDs not present in the database
+            vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
+            # Insert vector data into the database
+            vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
+            log.info(
+                f"Added new {table_name} data ({data_provider} {layer_id}) for the catchment area to the database.")
+        else:
+            log.info(f"{table_name} data for the requested catchment area already in the database.")
+
+
+def non_nz_geospatial_layers_data_to_db(
+        engine: Engine,
+        catchment_area: gpd.GeoDataFrame,
+        crs: int = 2193,
+        verbose: bool = False) -> None:
+    """
+    Fetches non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+
+    Parameters
+    ----------
+    engine : Engine
+        Engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        The GeoDataFrame representing the catchment area.
+    crs : int, optional
+        The coordinate reference system (CRS) code to use. Default is 2193.
+    verbose : bool, optional
+        Whether to print messages. Default is False.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Get non-NZ geospatial layers from the database
+    non_nz_geo_layers = get_non_nz_geospatial_layers(engine)
+
+    # Iterate over each non-NZ geospatial layer
+    for _, layer_row in non_nz_geo_layers.iterrows():
+        # Extract geospatial layer information
+        data_provider, layer_id, table_name, unique_column_name = get_geospatial_layer_info(layer_row)
+        try:
+            # Get the non-intersection area of the catchment area
+            non_intersection_area = get_non_intersection_area_from_db(engine, catchment_area, table_name)
+        except NoNonIntersectionError as error:
+            log.info(error)
+            continue
+
+        # Check if the table already exists in the database
+        if not check_table_exists(engine, table_name):
+            # Process new non-NZ geospatial layers
+            process_new_non_nz_geospatial_layers(
+                engine, data_provider, layer_id, table_name, non_intersection_area, crs, verbose)
+        else:
+            # Process existing non-NZ geospatial layers
+            process_existing_non_nz_geospatial_layers(
+                engine, data_provider, layer_id, table_name, unique_column_name, non_intersection_area, crs, verbose)
 
 
 def store_geospatial_layers_data_to_db(
