@@ -76,12 +76,29 @@ class UserLogInfo(Base):
 
 
 class HydroDEM(Base):
-    """Class used to create 'hydrological_dem' table."""
+    """
+    Class representing the 'hydrological_dem' table.
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each entry (primary key).
+    file_name : str
+        Name of the hydrological DEM file.
+    file_path : str
+        Path to the hydrological DEM file.
+    created_at : datetime
+        Timestamp indicating when the output was created.
+    geometry : Geometry
+        Geometric representation of the hydrological DEM.
+    """
 
     __tablename__ = "hydrological_dem"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    file_name = Column(String)
-    file_path = Column(String)
+    file_name = Column(String, comment="name of the hydro-DEM file")
+    file_path = Column(String, comment="path to the hydro-DEM file")
     created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
     geometry = Column(Geometry("GEOMETRY", srid=2193))
 
