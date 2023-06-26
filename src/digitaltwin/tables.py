@@ -92,7 +92,7 @@ class HydroDEM(Base):
     created_at : datetime
         Timestamp indicating when the output was created.
     geometry : Geometry
-        Geometric representation of the hydrological DEM.
+        Geometric representation of the catchment area coverage.
     """
 
     __tablename__ = "hydrological_dem"
@@ -120,7 +120,7 @@ class BGFloodModelOutput(Base):
     created_at : datetime
         Timestamp indicating when the output was created.
     geometry : Geometry
-        Geometric representation of the flood model output.
+        Geometric representation of the catchment area coverage.
     """
 
     __tablename__ = "bg_flood_model_output"
