@@ -94,8 +94,8 @@ def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, int, str, str]
 
     Returns
     -------
-    Tuple[str, str, int, str]
-        A tuple containing the values for data_provider, table_name, layer_id, and unique_column_name.
+    Tuple[str, int, str, str]
+        A tuple containing the values for data_provider, layer_id, table_name, and unique_column_name.
     """
     # Extract information from the single layer entry
     data_provider = layer_row['data_provider']
