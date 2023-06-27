@@ -7,6 +7,7 @@
 from datetime import date, timedelta
 from math import ceil
 from typing import Dict, List, Tuple, Union, Optional
+import io
 import asyncio
 
 import aiohttp
@@ -130,15 +131,34 @@ async def fetch_tide_data(
         An aiohttp ClientSession object.
     query_param : Dict[str, Union[str, int]]
         The query parameters used to retrieve high and low tide data for a specific location and time period.
-    url: str = 'https://api.niwa.co.nz/tides/data'
-        Tide API HTTP request url.
+    url : str, optional
+        Tide API HTTP request URL. Defaults to 'https://api.niwa.co.nz/tides/data'.
+        Can be either 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the fetched high and low tide data.
     """
     async with session.get(url, params=query_param) as resp:
-        resp_dict = await resp.json()
-        tide_df = pd.DataFrame(resp_dict['values'])
-        tide_df.insert(loc=0, column='datum', value=resp_dict['metadata']['datum'])
-        tide_df.insert(loc=1, column='latitude', value=resp_dict['metadata']['latitude'])
-        tide_df.insert(loc=2, column='longitude', value=resp_dict['metadata']['longitude'])
+        if url == "https://api.niwa.co.nz/tides/data":
+            # Process response as JSON
+            resp_dict = await resp.json()
+            tide_df = pd.DataFrame(resp_dict['values'])
+            tide_df.insert(loc=0, column='datum', value=resp_dict['metadata']['datum'])
+            tide_df.insert(loc=1, column='latitude', value=resp_dict['metadata']['latitude'])
+            tide_df.insert(loc=2, column='longitude', value=resp_dict['metadata']['longitude'])
+        else:
+            # Process response as CSV
+            resp_text = await resp.text()
+            data = pd.read_csv(io.StringIO(resp_text)).reset_index()
+            header_index = data[data['index'] == 'TIME'].index[0]
+            tide_df = data[header_index + 1:].reset_index(drop=True)
+            tide_df.columns = [header.lower() for header in data.iloc[header_index].tolist()]
+            tide_df['value'] = tide_df['value'].astype(float)
+            tide_df.insert(loc=0, column='datum', value=data[data['index'] == 'Datum'].values[0][1].strip())
+            tide_df.insert(loc=1, column='latitude', value=float(data[data['index'] == 'Latitude'].values[0][1]))
+            tide_df.insert(loc=2, column='longitude', value=float(data[data['index'] == 'Longitude'].values[0][1]))
         geometry = gpd.points_from_xy(tide_df['longitude'], tide_df['latitude'])
         tide_df = gpd.GeoDataFrame(tide_df, geometry=geometry, crs=4326)
         return tide_df
@@ -153,18 +173,42 @@ async def fetch_tide_data_for_requested_period(
     Parameters
     ----------
     query_param_list : List[Dict[str, Union[str, int]]]
-        A list of api query parameters used to retrieve high and low tide data for the entire requested period.
-    url: str = 'https://api.niwa.co.nz/tides/data'
-        Tide API HTTP request url.
+        A list of API query parameters used to retrieve high and low tide data for the entire requested period.
+    url : str, optional
+        Tide API HTTP request URL. Defaults to 'https://api.niwa.co.nz/tides/data'.
+        Can be either 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the fetched high and low tide data for the requested period.
+
+    Raises
+    ------
+    ValueError
+        If an invalid URL is specified for the Tide API HTTP request.
     """
-    tasks = []
-    async with aiohttp.ClientSession() as session:
-        # Create a list of tasks that fetch tide data for each query parameter
-        for query_param in query_param_list:
-            tasks.append(fetch_tide_data(session, query_param=query_param, url=url))
-        # Wait for all tasks to complete and concatenate the results into a single DataFrame
-        query_results = await asyncio.gather(*tasks, return_exceptions=True)
-        tide_data = pd.concat(query_results)
+    # Validate the URL
+    if url not in ["https://api.niwa.co.nz/tides/data", "https://api.niwa.co.nz/tides/data.csv"]:
+        raise ValueError(
+            "Invalid URL specified for the Tide API HTTP request. "
+            "Valid URLs are 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.")
+
+    retry = True
+    while retry:
+        try:
+            tasks = []
+            async with aiohttp.ClientSession() as session:
+                # Create a list of tasks that fetch tide data for each query parameter
+                for query_param in query_param_list:
+                    tasks.append(fetch_tide_data(session, query_param=query_param, url=url))
+                # Wait for all tasks to complete and concatenate the results into a single DataFrame
+                query_results = await asyncio.gather(*tasks, return_exceptions=True)
+                tide_data = pd.concat(query_results).reset_index(drop=True)
+            retry = False
+        except TypeError:
+            # If TypeError occurs, switch to the alternative URL and retry
+            url = 'https://api.niwa.co.nz/tides/data.csv'
     return tide_data
 
 
