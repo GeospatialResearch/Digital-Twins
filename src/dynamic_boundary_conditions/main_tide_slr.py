@@ -84,6 +84,9 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     except tide_query_location.NoTideDataException as error:
         log.info(error)
 
+    except RuntimeError as error:
+        log.info(error)
+
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")

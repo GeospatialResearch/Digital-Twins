@@ -187,15 +187,16 @@ async def fetch_tide_data_for_requested_period(
     ------
     ValueError
         If an invalid URL is specified for the Tide API HTTP request.
+    RuntimeError
+        If failed to fetch tide data.
     """
     # Validate the URL
-    if url not in ["https://api.niwa.co.nz/tides/data", "https://api.niwa.co.nz/tides/data.csv"]:
-        raise ValueError(
-            "Invalid URL specified for the Tide API HTTP request. "
-            "Valid URLs are 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.")
+    valid_urls = ["https://api.niwa.co.nz/tides/data", "https://api.niwa.co.nz/tides/data.csv"]
+    if url not in valid_urls:
+        raise ValueError(f"Invalid URL specified for the Tide API HTTP request. "
+                         f"Valid URLs are: {', '.join(valid_urls)}")
 
-    retry = True
-    while retry:
+    while True:
         try:
             tasks = []
             async with aiohttp.ClientSession() as session:
@@ -205,11 +206,16 @@ async def fetch_tide_data_for_requested_period(
                 # Wait for all tasks to complete and concatenate the results into a single DataFrame
                 query_results = await asyncio.gather(*tasks, return_exceptions=True)
                 tide_data = pd.concat(query_results).reset_index(drop=True)
-            retry = False
+            return tide_data
         except TypeError:
-            # If TypeError occurs, switch to the alternative URL and retry
-            url = 'https://api.niwa.co.nz/tides/data.csv'
-    return tide_data
+            # If TypeError occurs, it means the Tide API did not return the expected data format.
+            # This can happen if the data source at the current URL is not available or the data is corrupt.
+            # In such cases, try fetching the data from an alternative URL.
+            if url == 'https://api.niwa.co.nz/tides/data':
+                url = 'https://api.niwa.co.nz/tides/data.csv'
+            else:
+                # If the alternative URL also fails, raise a RuntimeError to indicate the failure.
+                raise RuntimeError("Failed to fetch tide data.")
 
 
 def convert_to_nz_timezone(tide_data_utc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
