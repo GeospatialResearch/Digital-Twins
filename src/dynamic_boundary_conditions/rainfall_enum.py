@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Enum(s) used in the dynamic_boundary_conditions rainfall module.
+@Description: Enum(s) used in the rainfall module.
 @Author: sli229
 """
 
@@ -9,6 +9,8 @@ from enum import StrEnum
 
 class HyetoMethod(StrEnum):
     """
+    Enum class representing different hyetograph methods.
+
     Attributes
     ----------
     ALT_BLOCK : str
@@ -22,6 +24,8 @@ class HyetoMethod(StrEnum):
 
 class RainInputType(StrEnum):
     """
+    Enum class representing different types of rain input used in the BG-Flood Model.
+
     Attributes
     ----------
     UNIFORM : str
