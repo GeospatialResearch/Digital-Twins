@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Main rainfall script used to fetch and store rainfall data to the database, and generate the
-              requested rainfall model input for BG-Flood etc.
+@Description: Main rainfall script used to fetch and store rainfall data in the database, and
+              to generate the requested rainfall model input for BG-Flood etc.
 @Author: pkh35, sli229
 """
 
@@ -24,9 +24,22 @@ from src.dynamic_boundary_conditions import (
 
 
 def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
-    # iterate through all files in the directory
+    """
+    Remove existing rain input files from the specified directory.
+
+    Parameters
+    ----------
+    bg_flood_dir : pathlib.Path
+        BG-Flood model directory containing the rain input files.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Iterate through all files in the directory
     for file_path in bg_flood_dir.glob('rain_forcing.*'):
-        # remove the file
+        # Remove the file
         file_path.unlink()
 
 
@@ -37,7 +50,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     catchment_polygon = get_catchment_area_polygon(selected_polygon_gdf, to_crs=4326)
     # BG-Flood Model Directory
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-    # Remove existing rainfall model input files
+    # Remove any existing rainfall model inputs in the BG-Flood directory
     remove_existing_rain_inputs(bg_flood_dir)
 
     # Fetch rainfall sites data from the HIRDS website and store it to the database
@@ -47,7 +60,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     nz_boundary_polygon = get_nz_boundary_polygon(engine, to_crs=4326)
     sites_in_nz = thiessen_polygons.get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygons.thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
-    # Get all rainfall sites coverage areas (thiessen polygons) that intersects or are within the catchment area
+    # Get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
 
     # Store rainfall data of all the sites within the catchment area in the database
@@ -74,9 +87,9 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Create interactive hyetograph plots for sites within the catchment area
     # hyetograph.hyetograph(hyetograph_data, ari)
 
-    # Get the intersection of rainfall sites coverage areas (thiessen polygons) and the catchment area
+    # Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area
     sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
-    # Write out the requested rainfall model input for BG-Flood
+    # Generate the requested rainfall model input for BG-Flood
     rainfall_model_input.generate_rain_model_input(
         hyetograph_data, sites_coverage, bg_flood_dir, input_type=RainInputType.UNIFORM)
 
