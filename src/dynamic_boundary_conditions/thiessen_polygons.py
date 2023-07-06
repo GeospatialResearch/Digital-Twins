@@ -68,6 +68,12 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
     -------
     gpd.GeoDataFrame
         GeoDataFrame containing the Thiessen polygons, site information, and area covered by each rainfall site.
+
+    Raises
+    ------
+    ValueError
+        - If the provided 'area_of_interest' polygon is empty.
+        - If the provided 'sites_in_aoi' GeoDataFrame does not contain any data.
     """
     # Check if the area of interest is empty
     if area_of_interest.is_empty:
