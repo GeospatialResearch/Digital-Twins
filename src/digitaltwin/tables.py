@@ -187,6 +187,11 @@ def execute_query(engine: Engine, query) -> None:
     -------
     None
         This function does not return any value.
+
+    Raises
+    ------
+    Exception
+        If an error occurs during the execution of the query.
     """
     with Session(engine) as session:
         try:
