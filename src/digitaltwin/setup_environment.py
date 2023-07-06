@@ -31,7 +31,7 @@ def get_database() -> Engine:
     Returns
     -------
     Engine
-        SQLAlchemy engine object connected to the database.
+        Engine used to connect to the database.
 
     Raises
     ------
@@ -53,7 +53,7 @@ def get_connection_from_profile() -> Engine:
     Returns
     -------
     Engine
-        SQLAlchemy engine object connected to the database.
+        Engine used to connect to the database.
 
     Raises
     ------
@@ -90,7 +90,7 @@ def get_engine(host: str, port: str, db: str, username: str, password: str) -> E
     Returns
     -------
     Engine
-        SQLAlchemy engine object connected to the specified database.
+        Engine used to connect to the database.
     """
     url = f'postgresql://{username}:{password}@{host}:{port}/{db}'
     engine = create_engine(url)
