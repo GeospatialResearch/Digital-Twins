@@ -55,7 +55,7 @@ def fetch_vector_data_using_geoapis(
     """
     Fetch vector data using 'geoapis' based on the specified data provider, layer ID, and other parameters.
 
-    Parameters:
+    Parameters
     -----------
     data_provider : str
         The data provider to use. Supported values: "StatsNZ", "LINZ", "LRIS", "MFE".
@@ -68,15 +68,15 @@ def fetch_vector_data_using_geoapis(
     bounding_polygon : gpd.GeoDataFrame, optional
         Bounding polygon for data fetching. Default is all of New Zealand.
 
-    Returns:
+    Returns
     --------
     gpd.GeoDataFrame
         The fetched vector data as a GeoDataFrame.
 
-    Raises:
+    Raises
     -------
     ValueError
-        If an unsupported data_provider value is provided.
+        If an unsupported 'data_provider' value is provided.
     """
     # Determine the appropriate vector fetcher based on the data provider
     if data_provider == "StatsNZ":
