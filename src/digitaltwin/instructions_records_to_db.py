@@ -76,7 +76,8 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
     Raises
     ------
     ValueError
-        If both 'coverage_area' and 'unique_column_name' are provided or if both are not provided.
+        - If both 'coverage_area' and 'unique_column_name' are provided.
+        - If both 'coverage_area' and 'unique_column_name' are not provided.
     """
     # Retrieve the values of 'coverage_area' and 'unique_column_name' from the instruction dictionary
     coverage_area = instruction.get("coverage_area")
@@ -84,7 +85,7 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
     # Check if both 'coverage_area' and 'unique_column_name' are provided
     if coverage_area and unique_column_name:
         raise ValueError(
-            f"Both 'coverage_area' and 'unique_column_name' provided for {section}. Only one can be provided.")
+            f"Both 'coverage_area' and 'unique_column_name' provided for {section}. Only one should be provided.")
     # Check if both 'coverage_area' and 'unique_column_name' are not provided
     if not coverage_area and not unique_column_name:
         raise ValueError(
