@@ -375,6 +375,7 @@ def non_nz_geospatial_layers_data_to_db(
             # Get the non-intersection area of the catchment area
             non_intersection_area = get_non_intersection_area_from_db(engine, catchment_area, table_name)
         except NoNonIntersectionError as error:
+            # Log the error and continue to the next layer
             log.info(error)
             continue
 
