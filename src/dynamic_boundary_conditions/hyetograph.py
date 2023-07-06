@@ -83,9 +83,8 @@ def get_interpolated_data(
     Raises
     ------
     ValueError
-        If the specified 'increment_mins' is out of range.
-    ValueError
-        If the specified 'interp_method' is not supported.
+        - If the specified 'increment_mins' is out of range.
+        - If the specified 'interp_method' is not supported.
     """
     # Extract the duration column from the transposed catchment data
     duration = transposed_catchment_data['duration_mins']
