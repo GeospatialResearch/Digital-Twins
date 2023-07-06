@@ -209,7 +209,7 @@ def get_non_intersection_area_from_db(
 
     Raises
     ------
-    ValueError
+    NoNonIntersectionError
         If the non-intersecting area is empty, it suggests that the catchment area is already fully covered.
     """
     # Create the 'user_log_information' table if it doesn't exist
