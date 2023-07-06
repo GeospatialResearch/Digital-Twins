@@ -45,15 +45,20 @@ def validate_url_reachability(section: str, url: str) -> None:
     Raises
     ------
     ValueError
-        If the URL is invalid or unreachable.
+        - If the URL is invalid.
+        - If the URL is unreachable.
     """
     # Check if the URL is valid
     if not validators.url(url):
         raise ValueError(f"Invalid URL provided for {section}: '{url}'")
-    # Check if the response status code is 200 (OK)
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise ValueError(f"Unreachable URL provided for {section}: '{url}'")
+    # Check if the URL is reachable
+    try:
+        # Send a GET request to the URL
+        response = requests.get(url)
+        # Raise an exception if the response status code indicates an error
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        raise ValueError(f"Unreachable URL provided for {section}: '{url}'\n{e}")
 
 
 def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None:
