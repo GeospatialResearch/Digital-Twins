@@ -49,10 +49,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
         # Remove existing tide model input files
         remove_existing_boundary_input(bg_flood_dir)
 
-        # Get regional council clipped data that intersect with the catchment area from the database
-        regions_clipped = tide_query_location.get_regional_council_clipped_from_db(engine, catchment_area)
         # Get the location (coordinates) to fetch tide data for
-        tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area, regions_clipped)
+        tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area)
 
         # Get tide data
         tide_data_king = tide_data_from_niwa.get_tide_data(
