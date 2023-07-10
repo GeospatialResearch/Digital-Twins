@@ -61,8 +61,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
             interval_mins=10)
 
         # Store sea level rise data to database
-        slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
-        sea_level_rise_data.store_slr_data_to_db(engine, slr_data_dir)
+        sea_level_rise_data.store_slr_data_to_db(engine)
         # Get closest sea level rise site data from database
         slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data_king)
 

@@ -12,6 +12,7 @@ import pandas as pd
 import pyarrow.csv as csv
 from sqlalchemy.engine import Engine
 
+from src import config
 from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
@@ -24,11 +25,12 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_slr_data_from_nz_searise(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
+def get_slr_data_from_nz_searise() -> gpd.GeoDataFrame:
     """
     Returns a Pandas DataFrame that is a concatenation of all the sea level rise data located in the
     sea level rise data directory.
     """
+    slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
     # Check if the sea level rise data directory exists, if not, raise an error
     if not slr_data_dir.exists():
         raise FileNotFoundError(f"Sea level rise data directory not found: '{slr_data_dir}'.")
@@ -59,12 +61,12 @@ def get_slr_data_from_nz_searise(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame
     return slr_nz_with_geom
 
 
-def store_slr_data_to_db(engine: Engine, slr_data_dir: pathlib.Path) -> None:
+def store_slr_data_to_db(engine: Engine) -> None:
     table_name = "sea_level_rise"
     if tables.check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
-        slr_nz = get_slr_data_from_nz_searise(slr_data_dir)
+        slr_nz = get_slr_data_from_nz_searise()
         slr_nz.to_postgis("sea_level_rise", engine, index=False, if_exists="replace")
         log.info("Added Sea Level Rise data to database.")
 
