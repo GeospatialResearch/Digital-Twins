@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description:
+@Description: Main tide and sea level rise script used to fetch tide data, read and store sea level rise data in the
+              database, and generate the requested uniform boundary model input for BG-Flood etc.
 @Author: sli229
 """
 
@@ -32,9 +33,22 @@ log.addHandler(stream_handler)
 
 
 def remove_existing_boundary_input(bg_flood_dir: pathlib.Path) -> None:
-    # iterate through all files in the directory
+    """
+    Remove existing uniform boundary input files from the specified directory.
+
+    Parameters
+    ----------
+    bg_flood_dir : pathlib.Path
+        BG-Flood model directory containing the uniform boundary input files.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Iterate through all files in the directory
     for file_path in bg_flood_dir.glob('*_bnd.txt'):
-        # remove the file
+        # Remove the file
         file_path.unlink()
 
 
@@ -46,13 +60,12 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
         catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
         # BG-Flood Model Directory
         bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-        # Remove existing tide model input files
+        # Remove any existing uniform boundary model inputs in the BG-Flood directory
         remove_existing_boundary_input(bg_flood_dir)
 
-        # Get the location (coordinates) to fetch tide data for
+        # Get the locations used to fetch tide data
         tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area)
-
-        # Get tide data
+        # Fetch tide data from NIWA using the tide API
         tide_data_king = tide_data_from_niwa.get_tide_data(
             tide_query_loc=tide_query_loc,
             approach=ApproachType.KING_TIDE,
@@ -60,12 +73,12 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
             time_to_peak_mins=1440,
             interval_mins=10)
 
-        # Store sea level rise data to database
+        # Store sea level rise data to the database
         sea_level_rise_data.store_slr_data_to_db(engine)
-        # Get closest sea level rise site data from database
-        slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data_king)
+        # Get the closest sea level rise data from the database
+        slr_data = sea_level_rise_data.get_slr_data_from_db(engine, tide_data_king)
 
-        # Combine tide and sea level rise data
+        # Combine the tide and sea level rise (SLR) data
         tide_slr_data = tide_slr_combine.get_combined_tide_slr_data(
             tide_data=tide_data_king,
             slr_data=slr_data,
@@ -75,13 +88,15 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
             add_vlm=False,
             percentile=50)
 
-        # Generate the model input for BG-Flood
+        # Generate the uniform boundary model input
         tide_slr_model_input.generate_uniform_boundary_input(bg_flood_dir, tide_slr_data)
 
     except tide_query_location.NoTideDataException as error:
+        # Log an info message to indicate the absence of tide data
         log.info(error)
 
     except RuntimeError as error:
+        # Log an info message to indicate that a runtime error occurred
         log.info(error)
 
 
