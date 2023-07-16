@@ -39,8 +39,7 @@ def get_slr_data_from_nz_searise() -> gpd.GeoDataFrame:
     Raises
     ------
     FileNotFoundError
-        - If the sea level rise data directory is not found.
-        - If no sea level rise CSV files are found in the directory.
+        If the sea level rise data directory does not exist or if there are no CSV files in the specified directory.
     """
     # Get the sea level rise data directory from the environment variable
     slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
@@ -95,10 +94,10 @@ def store_slr_data_to_db(engine: Engine) -> None:
     if tables.check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
-        # Retrieve sea level rise data from NZ Sea level rise datasets
+        # Get sea level rise data from the NZ Sea level rise datasets
         slr_nz = get_slr_data_from_nz_searise()
         # Store the sea level rise data to the database table
-        slr_nz.to_postgis(f"{table_name}", engine, index=False, if_exists="replace")
+        slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info(f"Stored '{table_name}' data in the database.")
 
 
