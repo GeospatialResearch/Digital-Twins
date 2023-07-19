@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Nov 10 13:22:27 2021.
-
 @author: pkh35, sli229
 """
 
@@ -121,33 +120,73 @@ def generate_hydro_dem(
 
 def get_catchment_hydro_dem_filepath(
         engine: Engine,
-        catchment_boundary: gpd.GeoDataFrame) -> pathlib.Path:
-    """Get the hydro DEM file path for the catchment area."""
-    catchment_geom = catchment_boundary["geometry"].iloc[0]
+        catchment_area: gpd.GeoDataFrame) -> pathlib.Path:
+    """
+    Retrieves the file path of the Hydrologically conditioned DEM (Hydro DEM) for the specified catchment area.
+
+    Parameters
+    ----------
+    engine : Engine
+        Engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    pathlib.Path
+        The file path of the Hydrologically conditioned DEM (Hydro DEM) for the specified catchment area.
+    """
+    # Extract the geometry of the catchment area
+    catchment_polygon = catchment_area["geometry"].iloc[0]
+    # Construct the query to retrieve the Hydro DEM file path
     query = f"""
     SELECT file_path
     FROM hydrological_dem
-    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_geom}', 2193));"""
+    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_polygon}', 2193));"""
+    # Execute the query and retrieve the Hydro DEM file path
     hydro_dem_filepath = engine.execute(query).scalar()
+    # Convert the file path to a pathlib.Path object
     return pathlib.Path(hydro_dem_filepath)
-
-
-def get_hydro_dem_data(engine: Engine, catchment_boundary: gpd.GeoDataFrame) -> xr.Dataset:
-    hydro_dem_filepath = get_catchment_hydro_dem_filepath(engine, catchment_boundary)
-    hydro_dem = rxr.open_rasterio(hydro_dem_filepath)
-    hydro_dem = hydro_dem.sel(band=1)
-    return hydro_dem
 
 
 def get_hydro_dem_data_and_resolution(
         engine: Engine,
-        catchment_boundary: gpd.GeoDataFrame) -> Tuple[xr.Dataset, Union[int, float]]:
-    hydro_dem = get_hydro_dem_data(engine, catchment_boundary)
-    unique_resolutions = list(set(abs(res) for res in hydro_dem.rio.resolution()))
-    res_no = unique_resolutions[0] if len(unique_resolutions) == 1 else None
+        catchment_area: gpd.GeoDataFrame) -> Tuple[xr.Dataset, Union[int, float]]:
+    """
+    Retrieves the Hydrologically Conditioned DEM (Hydro DEM) data and resolution for the specified catchment area.
+
+    Parameters
+    ----------
+    engine : Engine
+        Engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    Tuple[xr.Dataset, Union[int, float]]
+        A tuple containing the Hydro DEM data as a xarray Dataset and the resolution as an integer or float.
+
+    Raises
+    ------
+    ValueError
+        If there is an inconsistency between the resolution in the metadata and the actual resolution of the Hydro DEM.
+    """
+    # Retrieve the file path of the Hydro DEM for the specified catchment area
+    hydro_dem_filepath = get_catchment_hydro_dem_filepath(engine, catchment_area)
+    # Open the Hydro DEM using rioxarray
+    hydro_dem = rxr.open_rasterio(hydro_dem_filepath)
+    # Select the first band of the Hydro DEM
+    hydro_dem = hydro_dem.sel(band=1)
+    # Get the unique resolution from the Hydro DEM
+    unique_resolution = list(set(abs(res) for res in hydro_dem.rio.resolution()))
+    # Check if there is only one unique resolution
+    res_no = unique_resolution[0] if len(unique_resolution) == 1 else None
+    # Get the resolution from the Hydro DEM description
     res_description = int(hydro_dem.description.split()[-1])
+    # Check if the resolution from the metadata matches the actual resolution
     if res_no != res_description:
-        raise ValueError("Inconsistent resolution.")
+        raise ValueError("Inconsistent resolution between metadata and actual resolution of the Hydro DEM.")
     else:
         return hydro_dem, res_no
 
