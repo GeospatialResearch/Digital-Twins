@@ -57,10 +57,10 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Get REC1 data from the database for the catchment area
     rec1_data = river_data_to_from_db.get_rec1_data_from_db(engine, catchment_area)
 
-    # Create REC1 network covering area of interest
-    rec1_network_data = river_network_for_aoi.create_rec1_network_data_for_aoi(rec1_data)
-    # rec1_network = river_network_for_aoi.build_rec1_network_for_aoi(rec1_network_data)
-    # Get REC1 boundary points crossing the catchment boundary
+    # Create a river network for the catchment area using the REC1 data
+    rec1_network_data = river_network_for_aoi.create_rec1_network_data(rec1_data)
+    # rec1_network = river_network_for_aoi.build_rec1_network(rec1_network_data)
+    # Obtain the REC1 network data that corresponds to the points of intersection on the catchment area boundary
     rec1_network_data_on_bbox = river_network_for_aoi.get_rec1_network_data_on_bbox(catchment_area, rec1_network_data)
 
     # Get OSM waterways data for requested catchment area
