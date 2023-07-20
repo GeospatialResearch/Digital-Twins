@@ -52,10 +52,9 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Remove existing river model input files
     remove_existing_river_inputs(bg_flood_dir)
 
-    # Store REC1 data to db
-    rec1_data_dir = config.get_env_variable("DATA_DIR_REC1", cast_to=pathlib.Path)
-    river_data_to_from_db.store_rec1_data_to_db(engine, rec1_data_dir)
-    # Get REC1 data from db covering area of interest
+    # Store REC1 data to the database
+    river_data_to_from_db.store_rec1_data_to_db(engine)
+    # Get REC1 data from the database for the catchment area
     rec1_data = river_data_to_from_db.get_rec1_data_from_db(engine, catchment_area)
 
     # Create REC1 network covering area of interest
