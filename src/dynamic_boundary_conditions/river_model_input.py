@@ -18,11 +18,11 @@ log.addHandler(stream_handler)
 def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.GeoDataFrame) -> None:
     main_river.remove_existing_river_inputs(bg_flood_dir)
     grouped = hydrograph_data.groupby(
-        ['target_point_no', hydrograph_data['target_point'].to_wkt(), 'res_no', 'areakm2'],
+        ['target_point_no', hydrograph_data['target_point'].to_wkt(), 'dem_resolution', 'areakm2'],
         sort=False)
     for group_name, group_data in grouped:
-        target_point_no, _, res_no, _ = group_name
-        group_data['target_cell'] = group_data['target_point'].buffer(distance=res_no / 2, cap_style=3)
+        target_point_no, _, dem_resolution, _ = group_name
+        group_data['target_cell'] = group_data['target_point'].buffer(distance=dem_resolution / 2, cap_style=3)
         target_cell = group_data['target_cell'].unique()[0]
         x_min, y_min, x_max, y_max = target_cell.bounds
         input_data = group_data[['seconds', 'flow']].reset_index(drop=True)
