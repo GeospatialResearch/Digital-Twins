@@ -11,7 +11,7 @@ from src.dynamic_boundary_conditions import (
     river_data_to_from_db,
     river_network_for_aoi,
     osm_waterways,
-    river_osm_combine,
+    rec1_osm_match,
     hydrograph,
     river_model_input
 )
@@ -69,7 +69,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     osm_waterways_data_on_bbox = osm_waterways.get_osm_waterways_data_on_bbox(catchment_area, osm_waterways_data)
 
     # Find the closest OSM waterway to each REC1 river and determine the target points used for the model input
-    matched_data = river_osm_combine.get_matched_data_with_target_locations(
+    matched_data = rec1_osm_match.get_matched_data_with_target_locations(
         engine, catchment_area, rec1_network_data_on_bbox, osm_waterways_data_on_bbox, distance_m=300)
 
     # Get hydrograph data
