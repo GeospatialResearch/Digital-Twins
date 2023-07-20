@@ -63,9 +63,9 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Obtain the REC1 network data that corresponds to the points of intersection on the catchment area boundary
     rec1_network_data_on_bbox = river_network_for_aoi.get_rec1_network_data_on_bbox(catchment_area, rec1_network_data)
 
-    # Get OSM waterways data for requested catchment area
-    osm_waterways_data = osm_waterways.get_waterways_data_from_osm(catchment_area)
-    # Get OSM boundary points crossing the catchment boundary
+    # Fetch OSM waterways data for the catchment area
+    osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
+    # Obtain the OSM waterways data that corresponds to the points of intersection on the catchment area boundary
     osm_waterways_data_on_bbox = osm_waterways.get_osm_waterways_data_on_bbox(catchment_area, osm_waterways_data)
 
     # Find closest OSM waterway to REC1 rivers and get model input target point
