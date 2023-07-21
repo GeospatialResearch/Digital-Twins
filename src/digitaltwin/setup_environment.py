@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This module provides functions for connecting to a database using SQLAlchemy.
+@Description: This script provides functions for connecting to a database using SQLAlchemy.
+@Author: pkh35, sli229
 """
 
 import logging
