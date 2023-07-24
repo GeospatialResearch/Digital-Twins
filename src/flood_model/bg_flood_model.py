@@ -53,21 +53,21 @@ def get_valid_model_output_path() -> pathlib.Path:
 
 def get_model_output_metadata(
         model_output_path: pathlib.Path,
-        catchment_boundary: gpd.GeoDataFrame) -> Tuple[str, str, str]:
+        catchment_area: gpd.GeoDataFrame) -> Tuple[str, str, str]:
     """Get bg flood model output metadata"""
     output_name = model_output_path.name
     output_path = model_output_path.as_posix()
-    catchment_geom = catchment_boundary["geometry"].to_wkt().iloc[0]
+    catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
     return output_name, output_path, catchment_geom
 
 
 def store_model_output_metadata_to_db(
         engine: Engine,
         model_output_path: pathlib.Path,
-        catchment_boundary: gpd.GeoDataFrame) -> None:
+        catchment_area: gpd.GeoDataFrame) -> None:
     """Store metadata of the bg flood model output in the database."""
     create_table(engine, BGFloodModelOutput)
-    output_name, output_path, geometry = get_model_output_metadata(model_output_path, catchment_boundary)
+    output_name, output_path, geometry = get_model_output_metadata(model_output_path, catchment_area)
     query = BGFloodModelOutput(file_name=output_name, file_path=output_path, geometry=geometry)
     execute_query(engine, query)
     log.info("BG-Flood model output metadata successfully stored in the database.")
@@ -154,7 +154,7 @@ def get_bg_flood_model_inputs(
 
 def run_bg_flood_model(
         engine: Engine,
-        catchment_boundary: gpd.GeoDataFrame,
+        catchment_area: gpd.GeoDataFrame,
         output_timestep: Union[int, float],
         end_time: Union[int, float],
         resolution: Optional[Union[int, float]] = None,
@@ -166,9 +166,9 @@ def run_bg_flood_model(
     # Get valid model output path
     model_output_path = get_valid_model_output_path()
     # Get hydro DEM file path and resolution used
-    dem_path = dem_metadata_in_db.get_catchment_hydro_dem_filepath(engine, catchment_boundary)
+    dem_path = dem_metadata_in_db.get_catchment_hydro_dem_filepath(engine, catchment_area)
     if resolution is None:
-        _, resolution = dem_metadata_in_db.get_hydro_dem_data_and_resolution(engine, catchment_boundary)
+        _, resolution = dem_metadata_in_db.get_hydro_dem_data_and_resolution(engine, catchment_area)
 
     get_bg_flood_model_inputs(
         bg_flood_dir=bg_flood_dir,
@@ -186,7 +186,7 @@ def run_bg_flood_model(
     subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
     os.chdir(cwd)
 
-    store_model_output_metadata_to_db(engine, model_output_path, catchment_boundary)
+    store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
     add_crs_to_latest_model_output()
     add_model_output_to_geoserver(model_output_path)
 
@@ -197,7 +197,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Run BG-Flood Model
     run_bg_flood_model(
         engine=engine,
-        catchment_boundary=selected_polygon_gdf,
+        catchment_area=selected_polygon_gdf,
         output_timestep=100,  # Saving the outputs after each `outputtimestep` seconds
         end_time=900  # Saving the outputs till `endtime` number of seconds
     )
