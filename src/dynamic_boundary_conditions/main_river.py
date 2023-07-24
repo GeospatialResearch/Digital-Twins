@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+@Description: Main river script used to read and store REC1 data in the database, fetch OSM waterways data,
+              create a river network, and generate the requested river model inputs for BG-Flood etc.
+@Author: sli229
+"""
+
 import pathlib
 
 import geopandas as gpd
@@ -18,9 +25,23 @@ from src.dynamic_boundary_conditions import (
 
 
 def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """
+    Get the boundary lines of the catchment area.
+
+    Parameters
+    ----------
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the boundary lines of the catchment area.
+    """
+    # Extract the catchment polygon from the GeoDataFrame
     catchment_polygon = catchment_area["geometry"].iloc[0]
     # Create an empty list to store the individual boundary line segments
-    boundary_lines = []
+    boundary_lines_list = []
     # Extract the exterior (outer boundary) of the polygon
     exterior = catchment_polygon.exterior
     # Iterate over the coordinates of the exterior boundary
@@ -28,17 +49,31 @@ def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDat
         # Create a LineString using two consecutive coordinates
         line_segment = LineString([exterior.coords[i], exterior.coords[i + 1]])
         # Append the line segment to the list of boundary lines
-        boundary_lines.append(line_segment)
-    # Create a GeoDataFrame from the list of boundary lines
-    catchment_boundary_lines = gpd.GeoDataFrame(geometry=boundary_lines, crs=catchment_area.crs).reset_index(drop=True)
-    catchment_boundary_lines['boundary_line_no'] = catchment_boundary_lines.index + 1
-    return catchment_boundary_lines
+        boundary_lines_list.append(line_segment)
+    # Create a GeoDataFrame from the list of boundary lines and reset the index
+    boundary_lines = gpd.GeoDataFrame(geometry=boundary_lines_list, crs=catchment_area.crs).reset_index(drop=True)
+    # Assign a unique identifier (boundary_line_no) starting from 1 to each boundary line segment
+    boundary_lines.insert(0, 'boundary_line_no', boundary_lines.index + 1)
+    return boundary_lines
 
 
 def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
-    # iterate through all files in the directory
+    """
+    Remove existing river input files from the specified directory.
+
+    Parameters
+    ----------
+    bg_flood_dir : pathlib.Path
+        BG-Flood model directory containing the river input files.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Iterate through all files in the directory
     for file_path in bg_flood_dir.glob('river[0-9]*.txt'):
-        # remove the file
+        # Remove the file
         file_path.unlink()
 
 
@@ -49,7 +84,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
     # BG-Flood Model Directory
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-    # Remove existing river model input files
+    # Remove any existing river model inputs in the BG-Flood directory
     remove_existing_river_inputs(bg_flood_dir)
 
     # Store REC1 data to the database
