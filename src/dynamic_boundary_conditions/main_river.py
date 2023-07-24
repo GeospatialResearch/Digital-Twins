@@ -72,10 +72,10 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     matched_data = rec1_osm_match.get_matched_data_with_target_locations(
         engine, catchment_area, rec1_network_data_on_bbox, osm_waterways_data_on_bbox, distance_m=300)
 
-    # Get hydrograph data
+    # Generate hydrograph data for the requested river flow scenario
     hydrograph_data = hydrograph.get_hydrograph_data(
         matched_data,
-        river_length_mins=2880,
+        flow_length_mins=2880,
         time_to_peak_mins=1440,
         maf=True,
         ari=None,
