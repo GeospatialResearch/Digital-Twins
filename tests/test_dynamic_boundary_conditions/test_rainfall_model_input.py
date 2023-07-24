@@ -47,13 +47,15 @@ class RainfallModelInputTest(unittest.TestCase):
 
     def test_sites_voronoi_intersect_catchment_within_catchment(self):
         """Test to ensure returned intersections (overlapped areas) are each within the catchment area."""
-        intersections = rainfall_model_input.sites_voronoi_intersect_catchment(self.sites_in_catchment, self.selected_polygon)
+        intersections = rainfall_model_input.sites_voronoi_intersect_catchment(
+            self.sites_in_catchment, self.selected_polygon)
         self.assertTrue(intersections.within(self.selected_polygon.buffer(1 / 1e13)).unique())
 
     def test_sites_voronoi_intersect_catchment_area_size(self):
         """Test to ensure the area size of each returned intersection (overlapped areas) is not greater than
         its original area size."""
-        intersections = rainfall_model_input.sites_voronoi_intersect_catchment(self.sites_in_catchment, self.selected_polygon)
+        intersections = rainfall_model_input.sites_voronoi_intersect_catchment(
+            self.sites_in_catchment, self.selected_polygon)
         org_area_sizes = self.sites_in_catchment.to_crs(3857).area / 1e6
         intersection_area_sizes = intersections.to_crs(3857).area / 1e6
         result = intersection_area_sizes.gt(org_area_sizes).any()
