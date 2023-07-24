@@ -34,7 +34,7 @@ def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
     duration : str
         Storm duration. Valid options are: '10m', '20m', '30m', '1h', '2h', '6h', '12h', '24h', '48h', '72h',
         '96h', '120h', or 'all'.
-    
+
     Returns
     -------
     pd.DataFrame
