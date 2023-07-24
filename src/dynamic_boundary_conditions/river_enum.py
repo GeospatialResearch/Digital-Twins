@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Enum(s) used in the dynamic_boundary_conditions river module.
+@Description: Enum(s) used in the river module.
 @Author: sli229
 """
 
@@ -9,14 +9,16 @@ from enum import StrEnum
 
 class BoundType(StrEnum):
     """
+    Enum class representing different types of estimates used in river flow scenarios.
+
     Attributes
     ----------
     LOWER : str
-        Lower.
+        Lower bound of a confidence interval.
     MIDDLE : str
-        Middle.
+        Point estimate or sample mean.
     UPPER : str
-        Upper.
+        Upper bound of a confidence interval.
     """
     LOWER = "lower"
     MIDDLE = "middle"
