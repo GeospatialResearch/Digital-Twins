@@ -38,14 +38,14 @@ class ThiessenPolygonsTest(unittest.TestCase):
         empty_area_of_interest = Polygon()
         with self.assertRaises(ValueError) as context:
             thiessen_polygons.thiessen_polygons_calculator(empty_area_of_interest, self.sites_in_nz)
-        self.assertEqual("No data available for area_of_interest passed as argument", str(context.exception))
+        self.assertEqual("No data available for 'area_of_interest' passed as argument.", str(context.exception))
 
     def test_thiessen_polygons_calculator_sites_in_aoi_empty(self):
         """Test to ensure ValueError is raised when 'sites_in_aoi' is empty."""
         empty_sites_in_aoi = gpd.GeoDataFrame()
         with self.assertRaises(ValueError) as context:
             thiessen_polygons.thiessen_polygons_calculator(self.nz_boundary_polygon, empty_sites_in_aoi)
-        self.assertEqual("No data available for sites_in_aoi passed as argument", str(context.exception))
+        self.assertEqual("No data available for 'sites_in_aoi' passed as argument.", str(context.exception))
 
     def test_thiessen_polygons_calculator_correct_voronoi_number(self):
         """Test to ensure thiessen polygons are created for all rainfall sites within New Zealand."""

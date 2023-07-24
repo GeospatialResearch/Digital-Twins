@@ -77,10 +77,10 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
     """
     # Check if the area of interest is empty
     if area_of_interest.is_empty:
-        raise ValueError("No data available for 'area_of_interest' passed as argument")
+        raise ValueError("No data available for 'area_of_interest' passed as argument.")
     # Check if the rainfall sites GeoDataFrame is empty
     if sites_in_aoi.empty:
-        raise ValueError("No data available for 'sites_in_aoi' passed as argument")
+        raise ValueError("No data available for 'sites_in_aoi' passed as argument.")
     # Convert the rainfall site coordinates to an array of coordinates
     coordinates = points_to_coords(sites_in_aoi["geometry"])
     # Generate Voronoi regions from the coordinates within the area of interest
