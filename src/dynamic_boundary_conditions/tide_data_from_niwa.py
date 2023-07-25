@@ -18,6 +18,10 @@ import pandas as pd
 from src import config
 from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
 
+# URLs for retrieving tide data from the NIWA Tide API in JSON and CSV formats, respectively
+TIDE_API_URL_DATA = 'https://api.niwa.co.nz/tides/data'
+TIDE_API_URL_DATA_CSV = 'https://api.niwa.co.nz/tides/data.csv'
+
 
 def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[float, float, str]:
     """
@@ -169,7 +173,7 @@ def gen_api_query_param_list(
 async def fetch_tide_data(
         session: aiohttp.ClientSession,
         query_param: Dict[str, Union[str, int]],
-        url: str = 'https://api.niwa.co.nz/tides/data') -> gpd.GeoDataFrame:
+        url: str = TIDE_API_URL_DATA) -> gpd.GeoDataFrame:
     """
     Fetch tide data using the provided query parameters within a single API call.
 
@@ -190,7 +194,7 @@ async def fetch_tide_data(
     """
     # Send a GET request to the provided URL with the query parameters
     async with session.get(url, params=query_param) as resp:
-        if url == "https://api.niwa.co.nz/tides/data":
+        if url == TIDE_API_URL_DATA:
             # Process response as JSON
             resp_dict = await resp.json()
             # Create a DataFrame from the 'values' field of the response dictionary
@@ -225,7 +229,7 @@ async def fetch_tide_data(
 
 async def fetch_tide_data_for_requested_period(
         query_param_list: List[Dict[str, Union[str, int]]],
-        url: str = 'https://api.niwa.co.nz/tides/data') -> gpd.GeoDataFrame:
+        url: str = TIDE_API_URL_DATA) -> gpd.GeoDataFrame:
     """
     Iterate over the list of API query parameters to fetch tide data for the requested period.
 
@@ -250,7 +254,7 @@ async def fetch_tide_data_for_requested_period(
         If failed to fetch tide data.
     """
     # Check if the provided URL is valid
-    valid_urls = ["https://api.niwa.co.nz/tides/data", "https://api.niwa.co.nz/tides/data.csv"]
+    valid_urls = [TIDE_API_URL_DATA, TIDE_API_URL_DATA_CSV]
     if url not in valid_urls:
         raise ValueError(f"Invalid URL specified for the Tide API HTTP request. "
                          f"Valid URLs are: {', '.join(valid_urls)}")
@@ -271,9 +275,9 @@ async def fetch_tide_data_for_requested_period(
             # If a TypeError occurs, it means the Tide API did not return the expected data format.
             # This can happen if the data source at the current URL is not available or the data is corrupt.
             # In such cases, try fetching the data from an alternative URL.
-            if url == 'https://api.niwa.co.nz/tides/data':
+            if url == TIDE_API_URL_DATA:
                 # Switch to the alternative URL
-                url = 'https://api.niwa.co.nz/tides/data.csv'
+                url = TIDE_API_URL_DATA_CSV
             else:
                 # If the alternative URL also fails, raise a RuntimeError to indicate the failure.
                 raise RuntimeError("Failed to fetch tide data.")
