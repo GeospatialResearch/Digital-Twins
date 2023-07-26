@@ -40,7 +40,7 @@ def clean_river_flow_data(matched_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     # Copy input GeoDataFrame to preserve original data
     river_flow_data = matched_data.copy()
-    # Select columns starting with 'h' and include 'target_point' and 'dem_resolution'
+    # Select columns starting with 'h' and include 'areakm2', 'target_point' and 'dem_resolution'
     river_flow_data = river_flow_data.filter(regex=r'^h|^areakm2$|^target_point$|^dem_resolution$')
     # Define a mapping of old column names to new column names for renaming
     column_mapping = {
