@@ -131,7 +131,7 @@ def get_existing_geospatial_layers(engine: Engine) -> pd.DataFrame:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Returns
     -------
@@ -178,7 +178,7 @@ def store_instructions_records_to_db(engine: Engine) -> None:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Returns
     -------

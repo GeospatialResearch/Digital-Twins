@@ -138,7 +138,7 @@ def create_table(engine: Engine, table: Base) -> None:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     table : Base
         Class representing the table to create.
 
@@ -157,7 +157,7 @@ def check_table_exists(engine: Engine, table_name: str, schema: str = "public") 
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     table_name : str
         The name of the table to check for existence.
     schema : str, optional
@@ -179,7 +179,7 @@ def execute_query(engine: Engine, query) -> None:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     query
         The query to be executed.
 

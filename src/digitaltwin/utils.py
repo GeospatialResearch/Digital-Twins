@@ -35,7 +35,7 @@ def get_nz_boundary_polygon(engine: Engine, to_crs: int = 2193) -> Polygon:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     to_crs : int, optional
         Coordinate Reference System (CRS) code to convert the boundary polygon to. Default is 2193.
 

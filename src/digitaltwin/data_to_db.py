@@ -36,7 +36,7 @@ def get_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Returns
     -------
@@ -63,7 +63,7 @@ def get_non_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Returns
     -------
@@ -118,7 +118,7 @@ def get_vector_data_id_not_in_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     vector_data : gpd.GeoDataFrame
         The GeoDataFrame containing the fetched vector data.
     table_name : str
@@ -156,7 +156,7 @@ def nz_geospatial_layers_data_to_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     crs : int, optional
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool, optional
@@ -196,7 +196,7 @@ def get_non_intersection_area_from_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         The GeoDataFrame representing the catchment area.
     table_name : str
@@ -253,7 +253,7 @@ def process_new_non_nz_geospatial_layers(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     data_provider : str
         The data provider of the geospatial layer.
     layer_id : int
@@ -298,7 +298,7 @@ def process_existing_non_nz_geospatial_layers(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     data_provider : str
         The data provider of the geospatial layer.
     layer_id : int
@@ -351,7 +351,7 @@ def non_nz_geospatial_layers_data_to_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         The GeoDataFrame representing the catchment area.
     crs : int, optional
@@ -401,7 +401,7 @@ def store_geospatial_layers_data_to_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         The GeoDataFrame representing the catchment area.
     crs : int, optional
@@ -427,7 +427,7 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         The GeoDataFrame representing the catchment area.
 

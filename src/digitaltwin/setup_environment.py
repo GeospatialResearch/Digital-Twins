@@ -32,7 +32,7 @@ def get_database() -> Engine:
     Returns
     -------
     Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Raises
     ------
@@ -54,7 +54,7 @@ def get_connection_from_profile() -> Engine:
     Returns
     -------
     Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Raises
     ------
@@ -91,7 +91,7 @@ def get_engine(host: str, port: str, db: str, username: str, password: str) -> E
     Returns
     -------
     Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     """
     url = f'postgresql://{username}:{password}@{host}:{port}/{db}'
     engine = create_engine(url)
