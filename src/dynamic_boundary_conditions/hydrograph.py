@@ -100,7 +100,7 @@ def get_river_flow_scenario_data(
         Mandatory when 'maf' is set to False, and should be set to None when 'maf' is set to True.
     bound : BoundType, optional
         Set the type of bound (estimate) for the river flow scenario data.
-        Valid options include: BoundType.LOWER, BoundType.MIDDLE, or BoundType.UPPER.
+        Valid options include: 'BoundType.LOWER', 'BoundType.MIDDLE', or 'BoundType.UPPER'.
 
     Returns
     -------
@@ -175,7 +175,7 @@ def get_hydrograph_data(
         Mandatory when 'maf' is set to False, and should be set to None when 'maf' is set to True.
     bound : BoundType, optional
         Set the type of bound (estimate) for the river flow scenario data.
-        Valid options include: BoundType.LOWER, BoundType.MIDDLE, or BoundType.UPPER.
+        Valid options include: 'BoundType.LOWER', 'BoundType.MIDDLE', or 'BoundType.UPPER'.
 
     Returns
     -------

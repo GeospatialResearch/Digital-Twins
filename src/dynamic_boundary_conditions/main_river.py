@@ -64,7 +64,7 @@ def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
     Parameters
     ----------
     bg_flood_dir : pathlib.Path
-        BG-Flood model directory containing the river input files.
+        The BG-Flood model directory containing the river input files.
 
     Returns
     -------

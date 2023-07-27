@@ -63,7 +63,7 @@ def store_rec1_data_to_db(engine: Engine) -> None:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Returns
     -------
@@ -92,14 +92,14 @@ def get_rec1_data_from_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the retrieved REC1 data for the specified catchment area.
+        A GeoDataFrame containing the retrieved REC1 data for the specified catchment area.
     """
     # Extract the geometry of the catchment area
     catchment_polygon = catchment_area["geometry"][0]

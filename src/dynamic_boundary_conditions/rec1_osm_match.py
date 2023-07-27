@@ -227,7 +227,7 @@ def get_closest_osm_waterways_with_target_locations(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     rec1_network_data_on_bbox : gpd.GeoDataFrame
@@ -281,7 +281,7 @@ def get_matched_data_with_target_locations(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     rec1_network_data_on_bbox : gpd.GeoDataFrame
