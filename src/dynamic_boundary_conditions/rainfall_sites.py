@@ -82,7 +82,7 @@ def rainfall_sites_to_db(engine: Engine) -> None:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Returns
     -------

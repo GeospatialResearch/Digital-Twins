@@ -69,7 +69,7 @@ def get_sites_id_not_in_db(engine: Engine, sites_id_in_catchment: List[str], idf
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     sites_id_in_catchment : List[str]
         Rainfall site IDs within the catchment area.
     idf : bool
@@ -100,7 +100,7 @@ def add_rainfall_data_to_db(engine: Engine, site_id: str, idf: bool) -> None:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     site_id : str
         HIRDS rainfall site ID.
     idf : bool
@@ -135,7 +135,7 @@ def add_each_site_rainfall_data(engine: Engine, sites_id_list: List[str], idf: b
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     sites_id_list : List[str]
         List of rainfall sites' IDs.
     idf : bool
@@ -157,7 +157,7 @@ def rainfall_data_to_db(engine: Engine, sites_in_catchment: gpd.GeoDataFrame, id
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     sites_in_catchment : gpd.GeoDataFrame
         Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
     idf : bool

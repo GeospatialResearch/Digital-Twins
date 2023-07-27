@@ -61,7 +61,7 @@ def get_each_site_rainfall_data(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     site_id : str
         HIRDS rainfall site ID.
     rcp : Optional[float]
@@ -125,7 +125,7 @@ def rainfall_data_from_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     sites_in_catchment : gpd.GeoDataFrame
         Rainfall sites coverage areas (Thiessen polygons) within the catchment area.
     rcp : Optional[float]
@@ -144,7 +144,7 @@ def rainfall_data_from_db(
     Returns
     -------
     pd.DataFrame
-        DataFrame containing the rainfall data for the sites within the catchment area.
+        A DataFrame containing the rainfall data for the sites within the catchment area.
     """
     # Get the site IDs within the catchment area
     sites_id_in_catchment = hirds_rainfall_data_to_db.get_sites_id_in_catchment(sites_in_catchment)

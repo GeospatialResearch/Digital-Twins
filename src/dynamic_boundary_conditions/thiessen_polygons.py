@@ -33,14 +33,14 @@ def get_sites_within_aoi(engine: Engine, area_of_interest: Polygon) -> gpd.GeoDa
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     area_of_interest : Polygon
         The polygon representing the area of interest.
 
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the rainfall sites within the area of interest.
+        A GeoDataFrame containing the rainfall sites within the area of interest.
     """
     # Construct the query to fetch rainfall sites within the area of interest
     query = f"SELECT * FROM rainfall_sites AS rs " \
@@ -67,7 +67,7 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the Thiessen polygons, site information, and area covered by each rainfall site.
+        A GeoDataFrame containing the Thiessen polygons, site information, and area covered by each rainfall site.
 
     Raises
     ------
@@ -106,7 +106,7 @@ def thiessen_polygons_to_db(engine: Engine, area_of_interest: Polygon, sites_in_
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     area_of_interest : Polygon
         The polygon representing the area of interest.
     sites_in_aoi : gpd.GeoDataFrame
@@ -137,14 +137,14 @@ def thiessen_polygons_from_db(engine: Engine, catchment_polygon: Polygon) -> gpd
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_polygon : Polygon
         The polygon representing the catchment area.
 
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the coverage areas (Thiessen polygons) of rainfall sites within the catchment area.
+        A GeoDataFrame containing the coverage areas (Thiessen polygons) of rainfall sites within the catchment area.
     """
     # Construct the query to get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
     query = f"SELECT * FROM rainfall_sites_voronoi AS rsv " \

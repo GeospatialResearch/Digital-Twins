@@ -38,7 +38,7 @@ def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        DataFrame containing the cleaned and transposed scenario data.
+        A DataFrame containing the cleaned and transposed scenario data.
     """
     # Drop unnecessary columns
     catchment_data = rain_depth_in_catchment.drop(columns=["category", "rcp", "time_period", "ari", "aep"])
@@ -78,7 +78,7 @@ def get_interpolated_data(
     Returns
     -------
     pd.DataFrame
-        DataFrame containing the interpolated scenario data.
+        A DataFrame containing the interpolated scenario data.
 
     Raises
     ------
@@ -132,7 +132,7 @@ def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataF
     Returns
     -------
     pd.DataFrame
-        DataFrame containing the incremental rainfall depths.
+        A DataFrame containing the incremental rainfall depths.
     """
     # Calculate the difference between consecutive rows to get the incremental rainfall depths
     interp_increment_data = interp_catchment_data.diff()[1:]

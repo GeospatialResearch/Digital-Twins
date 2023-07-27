@@ -45,7 +45,8 @@ def sites_voronoi_intersect_catchment(
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the catchment area.
+        A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
+        catchment area.
     """
     # Create a GeoDataFrame representing the catchment area
     catchment_area = gpd.GeoDataFrame(index=[0], crs=4326, geometry=[catchment_polygon])
@@ -71,8 +72,8 @@ def sites_coverage_in_catchment(
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the catchment area,
-        with calculated size and percentage of area covered by each rainfall site.
+        A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
+        catchment area, with calculated size and percentage of area covered by each rainfall site.
     """
     # Get the intersecting areas between the rainfall site coverage areas and the catchment area
     sites_coverage = sites_voronoi_intersect_catchment(sites_in_catchment, catchment_polygon)
@@ -103,7 +104,7 @@ def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.G
     Returns
     -------
     pd.DataFrame
-        DataFrame containing the mean catchment rainfall intensities across all durations.
+        A DataFrame containing the mean catchment rainfall intensities across all durations.
     """
     # Create a copy of the hyetograph data to store the mean catchment rainfall
     mean_catchment_rain = hyetograph_data.copy()
