@@ -11,7 +11,7 @@ import geopandas as gpd
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import get_catchment_area_polygon, get_nz_boundary_polygon
+from src.digitaltwin.utils import get_catchment_area, get_nz_boundary_polygon
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions import (
     rainfall_sites,
@@ -46,8 +46,9 @@ def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
 def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # Connect to the database
     engine = setup_environment.get_database()
-    # Get catchment polygon
-    catchment_polygon = get_catchment_area_polygon(selected_polygon_gdf, to_crs=4326)
+    # Get catchment area
+    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=4326)
+
     # BG-Flood Model Directory
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # Remove any existing rainfall model inputs in the BG-Flood directory
@@ -61,7 +62,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     sites_in_nz = thiessen_polygons.get_sites_within_aoi(engine, nz_boundary_polygon)
     thiessen_polygons.thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
     # Get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
-    sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
+    sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_area)
 
     # Store rainfall data of all the sites within the catchment area in the database
     # Set idf to False for rain depth data and to True for rain intensity data
@@ -88,7 +89,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     # hyetograph.hyetograph(hyetograph_data, ari)
 
     # Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area
-    sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_polygon)
+    sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_area)
     # Generate the requested rainfall model input for BG-Flood
     rainfall_model_input.generate_rain_model_input(
         hyetograph_data, sites_coverage, bg_flood_dir, input_type=RainInputType.UNIFORM)

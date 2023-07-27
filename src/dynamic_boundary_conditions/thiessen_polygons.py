@@ -129,7 +129,7 @@ def thiessen_polygons_to_db(engine: Engine, area_of_interest: Polygon, sites_in_
         log.info(f"Stored '{table_name}' data in the database.")
 
 
-def thiessen_polygons_from_db(engine: Engine, catchment_polygon: Polygon) -> gpd.GeoDataFrame:
+def thiessen_polygons_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Get the coverage areas (Thiessen polygons) of all rainfall sites that intersect or are within the
     specified catchment area.
@@ -138,17 +138,21 @@ def thiessen_polygons_from_db(engine: Engine, catchment_polygon: Polygon) -> gpd
     ----------
     engine : Engine
         The engine used to connect to the database.
-    catchment_polygon : Polygon
-        The polygon representing the catchment area.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the coverage areas (Thiessen polygons) of rainfall sites within the catchment area.
     """
+    # Extract the geometry of the catchment area
+    catchment_polygon = catchment_area["geometry"].iloc[0]
     # Construct the query to get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
-    query = f"SELECT * FROM rainfall_sites_voronoi AS rsv " \
-            f"WHERE ST_Intersects(rsv.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"
+    query = f"""
+    SELECT *
+    FROM rainfall_sites_voronoi AS rsv
+    WHERE ST_Intersects(rsv.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"""
     # Retrieve the data from the database
     sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
