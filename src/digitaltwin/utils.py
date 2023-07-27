@@ -28,29 +28,6 @@ def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> 
     return catchment_area.to_crs(to_crs)
 
 
-def get_catchment_area_polygon(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> Polygon:
-    """
-    Retrieve the polygon representing the catchment area.
-
-    Parameters
-    ----------
-    catchment_area : gpd.GeoDataFrame
-        The GeoDataFrame representing the catchment area.
-    to_crs : int, optional
-        Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
-
-    Returns
-    -------
-    Polygon
-        The polygon from the catchment area GeoDataFrame, converted to the specified CRS.
-    """
-    # Convert the catchment area to the specified CRS
-    catchment_area_crs = catchment_area.to_crs(to_crs)
-    # Extract the first polygon from the geometry column
-    catchment_polygon = catchment_area_crs["geometry"].iloc[0]
-    return catchment_polygon
-
-
 def get_nz_boundary_polygon(engine: Engine, to_crs: int = 2193) -> Polygon:
     """
     Get the boundary polygon of New Zealand.
