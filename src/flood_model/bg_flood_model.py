@@ -119,7 +119,7 @@ def store_model_output_metadata_to_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     model_output_path : pathlib.Path
         The path to the BG Flood model output file.
     catchment_area : gpd.GeoDataFrame
@@ -363,7 +363,7 @@ def run_bg_flood_model(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     model_output_path : pathlib.Path
