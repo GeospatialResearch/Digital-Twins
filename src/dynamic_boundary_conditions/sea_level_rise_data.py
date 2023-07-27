@@ -139,7 +139,8 @@ def get_closest_slr_data(engine: Engine, single_query_loc: pd.Series) -> gpd.Geo
         FROM sea_level_rise
         ORDER BY distance
         LIMIT 1
-    ) AS distances ON slr.siteid = distances.siteid"""
+    ) AS distances ON slr.siteid = distances.siteid;
+    """
     # Execute the query and retrieve the data as a GeoDataFrame
     query_data = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     # Add the position information to the retrieved data

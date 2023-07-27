@@ -142,7 +142,8 @@ def get_catchment_hydro_dem_filepath(
     query = f"""
     SELECT file_path
     FROM hydrological_dem
-    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_polygon}', 2193));"""
+    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    """
     # Execute the query and retrieve the Hydro DEM file path
     hydro_dem_filepath = engine.execute(query).scalar()
     # Convert the file path to a pathlib.Path object

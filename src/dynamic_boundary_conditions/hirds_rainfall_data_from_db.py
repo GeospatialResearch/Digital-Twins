@@ -96,13 +96,19 @@ def get_each_site_rainfall_data(
                          "If 'rcp' is None, 'time_period' should also be None, and vice versa.")
     elif rcp is not None and time_period is not None:
         # Query for specific rcp and time_period
-        query = f"""SELECT * FROM {rain_table_name}
-        WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
+        query = f"""
+        SELECT *
+        FROM {rain_table_name}
+        WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};
+        """
         rain_data = pd.read_sql_query(query, engine)
     else:
         # Query for historical data (rcp is None and time_period is None)
-        query = f"""SELECT * FROM {rain_table_name}
-        WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};"""
+        query = f"""
+        SELECT *
+        FROM {rain_table_name}
+        WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};
+        """
         rain_data = pd.read_sql_query(query, engine)
         # Filter for historical data
         rain_data.query("category == 'hist'", inplace=True)

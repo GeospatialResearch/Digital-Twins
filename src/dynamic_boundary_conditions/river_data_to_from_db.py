@@ -107,7 +107,8 @@ def get_rec1_data_from_db(
     sea_drain_query = f"""
     SELECT *
     FROM sea_draining_catchments AS sdc
-    WHERE ST_Intersects(sdc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"""
+    WHERE ST_Intersects(sdc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    """
     # Create a GeoDataFrame from the sea-draining catchment data retrieved from the database
     sdc_data = gpd.GeoDataFrame.from_postgis(sea_drain_query, engine, geom_col="geometry")
     # Unify the sea-draining catchment polygons into a single polygon
@@ -120,7 +121,8 @@ def get_rec1_data_from_db(
     rec1_query = f"""
     SELECT *
     FROM rec1_data AS rec
-    WHERE ST_Intersects(rec.geometry, ST_GeomFromText('{combined_polygon}', 2193))"""
+    WHERE ST_Intersects(rec.geometry, ST_GeomFromText('{combined_polygon}', 2193));
+    """
     # Execute the query and retrieve the REC1 data from the database
     rec1_data = gpd.GeoDataFrame.from_postgis(rec1_query, engine, geom_col="geometry")
     # Remove any duplicate records from the REC1 data

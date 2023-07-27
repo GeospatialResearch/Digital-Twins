@@ -49,7 +49,8 @@ def get_regional_council_clipped_from_db(
     query = f"""
     SELECT *
     FROM region_geometry_clipped AS rgc
-    WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"""
+    WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    """
     # Execute the query and retrieve the result as a GeoDataFrame
     regions_clipped = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return regions_clipped
@@ -85,7 +86,8 @@ def get_nz_coastline_from_db(
     query = f"""
     SELECT *
     FROM "_50258-nz-coastlines" AS coast
-    WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{catchment_area_buffered_polygon}', 2193))"""
+    WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{catchment_area_buffered_polygon}', 2193));
+    """
     # Execute the query and retrieve the result as a GeoDataFrame
     coastline = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return coastline

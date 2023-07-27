@@ -137,8 +137,11 @@ def get_vector_data_id_not_in_db(
     vector_data_ids = set(vector_data[unique_column_name])
     # Fetch the unique IDs from the specified table that intersect with the area of interest
     aoi_polygon = area_of_interest["geometry"][0]
-    query = f"SELECT DISTINCT {unique_column_name} FROM {table_name} AS ids " \
-            f"WHERE ST_Intersects(ids.geometry, ST_GeomFromText('{aoi_polygon}', 2193))"
+    query = f"""
+    SELECT DISTINCT {unique_column_name}
+    FROM {table_name} AS ids
+    WHERE ST_Intersects(ids.geometry, ST_GeomFromText('{aoi_polygon}', 2193));
+    """
     # Execute the query and retrieve the IDs present in the database
     ids_in_db = set(pd.read_sql(query, engine)[unique_column_name])
     # Find the IDs from vector_data that are not present in the database
@@ -218,13 +221,14 @@ def get_non_intersection_area_from_db(
     catchment_polygon = catchment_area["geometry"][0]
     # Build the SQL query to find intersections between the user log information and the catchment area
     query = f"""
-            SELECT *
-            FROM (
-                SELECT *
-                FROM {UserLogInfo.__tablename__}
-                WHERE '{table_name}' = ANY(source_table_list)
-            ) AS sub
-            WHERE ST_Intersects(sub.geometry, ST_GeomFromText('{catchment_polygon}', 2193));"""
+    SELECT *
+    FROM (
+        SELECT *
+        FROM {UserLogInfo.__tablename__}
+        WHERE '{table_name}' = ANY(source_table_list)
+    ) AS sub
+    WHERE ST_Intersects(sub.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    """
     # Execute the SQL query and retrieve the intersections as a GeoDataFrame
     user_log_intersections = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     # Check if there are no intersections

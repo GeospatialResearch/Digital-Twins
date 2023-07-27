@@ -43,8 +43,11 @@ def get_sites_within_aoi(engine: Engine, area_of_interest: Polygon) -> gpd.GeoDa
         A GeoDataFrame containing the rainfall sites within the area of interest.
     """
     # Construct the query to fetch rainfall sites within the area of interest
-    query = f"SELECT * FROM rainfall_sites AS rs " \
-            f"WHERE ST_Within(rs.geometry, ST_GeomFromText('{area_of_interest}', 4326))"
+    query = f"""
+    SELECT *
+    FROM rainfall_sites AS rs
+    WHERE ST_Within(rs.geometry, ST_GeomFromText('{area_of_interest}', 4326));
+    """
     # Execute the query and retrieve the results as a GeoDataFrame
     sites_in_aoi = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
@@ -152,7 +155,8 @@ def thiessen_polygons_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) 
     query = f"""
     SELECT *
     FROM rainfall_sites_voronoi AS rsv
-    WHERE ST_Intersects(rsv.geometry, ST_GeomFromText('{catchment_polygon}', 4326))"""
+    WHERE ST_Intersects(rsv.geometry, ST_GeomFromText('{catchment_polygon}', 4326));
+    """
     # Retrieve the data from the database
     sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
