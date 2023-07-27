@@ -34,14 +34,14 @@ def get_regional_council_clipped_from_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the regional council clipped data for the catchment area.
+        A GeoDataFrame containing the regional council clipped data for the catchment area.
     """
     # Extract the catchment polygon from the GeoDataFrame
     catchment_polygon = catchment_area["geometry"][0]
@@ -65,7 +65,7 @@ def get_nz_coastline_from_db(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     distance_km : int, optional
@@ -74,7 +74,7 @@ def get_nz_coastline_from_db(
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the New Zealand coastline data within the specified distance of the catchment area.
+        A GeoDataFrame containing the New Zealand coastline data within the specified distance of the catchment area.
     """
     # Convert distance from kilometers to meters
     distance_m = distance_km * 1000
@@ -103,7 +103,7 @@ def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> gpd.GeoData
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing information about the boundary segments of the catchment area.
+        A GeoDataFrame containing information about the boundary segments of the catchment area.
 
     Raises
     ------
@@ -154,7 +154,7 @@ def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDat
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the boundary lines of the catchment area.
+        A GeoDataFrame containing the boundary lines of the catchment area.
     """
     # Get the boundary information of the catchment area
     boundary_info = get_catchment_boundary_info(catchment_area)
@@ -177,7 +177,7 @@ def get_catchment_boundary_centroids(catchment_area: gpd.GeoDataFrame) -> gpd.Ge
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the centroids of the boundary lines of the catchment area.
+        A GeoDataFrame containing the centroids of the boundary lines of the catchment area.
     """
     # Get the boundary information of the catchment area
     boundary_info = get_catchment_boundary_info(catchment_area)
@@ -242,7 +242,7 @@ def get_tide_query_locations(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     distance_km : int, optional

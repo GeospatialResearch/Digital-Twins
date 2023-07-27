@@ -28,7 +28,7 @@ def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: p
     Parameters
     ----------
     bg_flood_dir : pathlib.Path
-        BG-Flood model directory.
+        The BG-Flood model directory.
     tide_slr_data : pd.DataFrame
         A DataFrame containing the combined tide and sea level rise data.
 

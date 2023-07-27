@@ -22,12 +22,12 @@ def split_slr_measurementname_column(slr_data: gpd.GeoDataFrame) -> gpd.GeoDataF
     Parameters
     ----------
     slr_data : gpd.GeoDataFrame
-        GeoDataFrame containing the sea level rise data.
+        A GeoDataFrame containing the sea level rise data.
 
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the sea level rise data with additional columns for extracted information:
+        A GeoDataFrame containing the sea level rise data with additional columns for extracted information:
         'confidence_level', 'ssp_scenario', and 'add_vlm'.
     """
     # Create a copy of the sea level rise data
@@ -138,7 +138,7 @@ def get_interpolated_slr_scenario_data(
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the interpolated sea level rise scenario data.
+        A GeoDataFrame containing the interpolated sea level rise scenario data.
 
     Raises
     ------

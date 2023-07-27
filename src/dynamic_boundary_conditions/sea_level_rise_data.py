@@ -81,7 +81,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     Returns
     -------
@@ -108,7 +108,7 @@ def get_closest_slr_data(engine: Engine, single_query_loc: pd.Series) -> gpd.Geo
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     single_query_loc : pd.Series
         Pandas Series containing the location coordinate and additional information used for retrieval.
@@ -116,7 +116,7 @@ def get_closest_slr_data(engine: Engine, single_query_loc: pd.Series) -> gpd.Geo
     Returns
     -------
     gpd.GeoDataFrame
-        GeoDataFrame containing the closest sea level rise data for the query location from the database.
+        A GeoDataFrame containing the closest sea level rise data for the query location from the database.
     """
     # Create a GeoDataFrame with the query location geometry
     query_loc_geom = gpd.GeoDataFrame(geometry=[single_query_loc["geometry"]], crs=4326)
@@ -154,7 +154,7 @@ def get_slr_data_from_db(engine: Engine, tide_data: gpd.GeoDataFrame) -> gpd.Geo
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
 
     tide_data : gpd.GeoDataFrame
         A GeoDataFrame containing tide data with added time information (seconds, minutes, hours) and location details.
