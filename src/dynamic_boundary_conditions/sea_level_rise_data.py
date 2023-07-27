@@ -175,5 +175,5 @@ def get_slr_data_from_db(engine: Engine, tide_data: gpd.GeoDataFrame) -> gpd.Geo
         # Concatenate the closest sea level rise data for the query location with the overall sea level rise data
         slr_data = pd.concat([slr_data, query_loc_data])
     # Reset the index of the closest sea level rise data
-    slr_data = slr_data.reset_index(drop=True)
+    slr_data = gpd.GeoDataFrame(slr_data).reset_index(drop=True)
     return slr_data
