@@ -1,7 +1,6 @@
 import os
 import pathlib
 import shutil
-import subprocess
 
 import rasterio as rio
 import xarray as xr
