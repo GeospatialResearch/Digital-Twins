@@ -10,7 +10,6 @@ import logging
 import geopandas as gpd
 import pandas as pd
 from geovoronoi import voronoi_regions_from_coords, points_to_coords
-from shapely.geometry import Polygon
 from sqlalchemy.engine import Engine
 
 from src.digitaltwin import tables
@@ -25,7 +24,7 @@ stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
 
 
-def get_sites_within_aoi(engine: Engine, area_of_interest: Polygon) -> gpd.GeoDataFrame:
+def get_sites_within_aoi(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Get all rainfall sites within the area of interest from the database and return the required data as a
     GeoDataFrame.
@@ -34,19 +33,21 @@ def get_sites_within_aoi(engine: Engine, area_of_interest: Polygon) -> gpd.GeoDa
     ----------
     engine : Engine
         The engine used to connect to the database.
-    area_of_interest : Polygon
-        The polygon representing the area of interest.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame representing the area of interest.
 
     Returns
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the rainfall sites within the area of interest.
     """
+    # Extract the geometry of the area of interest
+    aoi_polygon = area_of_interest["geometry"].iloc[0]
     # Construct the query to fetch rainfall sites within the area of interest
     query = f"""
     SELECT *
     FROM rainfall_sites AS rs
-    WHERE ST_Within(rs.geometry, ST_GeomFromText('{area_of_interest}', 4326));
+    WHERE ST_Within(rs.geometry, ST_GeomFromText('{aoi_polygon}', 4326));
     """
     # Execute the query and retrieve the results as a GeoDataFrame
     sites_in_aoi = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
@@ -55,15 +56,17 @@ def get_sites_within_aoi(engine: Engine, area_of_interest: Polygon) -> gpd.GeoDa
     return sites_in_aoi
 
 
-def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def thiessen_polygons_calculator(
+        area_of_interest: gpd.GeoDataFrame,
+        sites_in_aoi: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Create Thiessen polygons for rainfall sites within the area of interest and calculate the area covered by each
     rainfall site.
 
     Parameters
     ----------
-    area_of_interest : Polygon
-        The polygon representing the area of interest.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame representing the area of interest.
     sites_in_aoi : gpd.GeoDataFrame
         Rainfall sites within the area of interest.
 
@@ -75,19 +78,21 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
     Raises
     ------
     ValueError
-        - If the provided 'area_of_interest' polygon is empty.
+        - If the provided 'area_of_interest' GeoDataFrame does not contain any data.
         - If the provided 'sites_in_aoi' GeoDataFrame does not contain any data.
     """
-    # Check if the area of interest is empty
-    if area_of_interest.is_empty:
+    # Check if the area of interest GeoDataFrame is empty
+    if area_of_interest.empty:
         raise ValueError("No data available for 'area_of_interest' passed as argument.")
     # Check if the rainfall sites GeoDataFrame is empty
     if sites_in_aoi.empty:
         raise ValueError("No data available for 'sites_in_aoi' passed as argument.")
     # Convert the rainfall site coordinates to an array of coordinates
     coordinates = points_to_coords(sites_in_aoi["geometry"])
+    # Extract the geometry of the area of interest
+    aoi_polygon = area_of_interest["geometry"].iloc[0]
     # Generate Voronoi regions from the coordinates within the area of interest
-    region_polys, region_pts = voronoi_regions_from_coords(coordinates, area_of_interest, per_geom=False)
+    region_polys, region_pts = voronoi_regions_from_coords(coordinates, aoi_polygon, per_geom=False)
     voronoi_regions = list(region_polys.values())
     sites_in_voronoi_order = pd.DataFrame()
     for site_index in region_pts.values():
@@ -101,7 +106,7 @@ def thiessen_polygons_calculator(area_of_interest: Polygon, sites_in_aoi: gpd.Ge
     return rainfall_sites_voronoi
 
 
-def thiessen_polygons_to_db(engine: Engine, area_of_interest: Polygon, sites_in_aoi: gpd.GeoDataFrame) -> None:
+def thiessen_polygons_to_db(engine: Engine, area_of_interest: gpd.GeoDataFrame, sites_in_aoi: gpd.GeoDataFrame) -> None:
     """
     Store the data representing the Thiessen polygons, site information, and the area covered by
     each rainfall site in the database.
@@ -110,8 +115,8 @@ def thiessen_polygons_to_db(engine: Engine, area_of_interest: Polygon, sites_in_
     ----------
     engine : Engine
         The engine used to connect to the database.
-    area_of_interest : Polygon
-        The polygon representing the area of interest.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame representing the area of interest.
     sites_in_aoi : gpd.GeoDataFrame
         Rainfall sites within the area of interest.
 

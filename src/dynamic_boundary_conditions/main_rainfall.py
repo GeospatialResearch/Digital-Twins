@@ -11,7 +11,7 @@ import geopandas as gpd
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import get_catchment_area, get_nz_boundary_polygon
+from src.digitaltwin.utils import get_catchment_area, get_nz_boundary
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions import (
     rainfall_sites,
@@ -58,9 +58,9 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     rainfall_sites.rainfall_sites_to_db(engine)
 
     # Calculate the area covered by each rainfall site across New Zealand and store it in the database
-    nz_boundary_polygon = get_nz_boundary_polygon(engine, to_crs=4326)
-    sites_in_nz = thiessen_polygons.get_sites_within_aoi(engine, nz_boundary_polygon)
-    thiessen_polygons.thiessen_polygons_to_db(engine, nz_boundary_polygon, sites_in_nz)
+    nz_boundary = get_nz_boundary(engine, to_crs=4326)
+    sites_in_nz = thiessen_polygons.get_sites_within_aoi(engine, nz_boundary)
+    thiessen_polygons.thiessen_polygons_to_db(engine, nz_boundary, sites_in_nz)
     # Get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_area)
 
