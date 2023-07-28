@@ -185,7 +185,7 @@ def get_interpolated_slr_scenario_data(
         # Concatenate the interpolated group data to the overall interpolated scenario data
         slr_interp_scenario = pd.concat([slr_interp_scenario, interp_group_data])
     # Reset the index of the interpolated sea level rise scenario data
-    slr_interp_scenario = slr_interp_scenario.reset_index(drop=True)
+    slr_interp_scenario = gpd.GeoDataFrame(slr_interp_scenario).reset_index(drop=True)
     return slr_interp_scenario
 
 
