@@ -1,11 +1,9 @@
 import unittest
 from unittest.mock import patch
-import pathlib
 
 import geopandas as gpd
 import pandas as pd
 import numpy as np
-from shapely.geometry import Polygon
 
 from src.dynamic_boundary_conditions import rainfall_model_input
 
@@ -14,25 +12,32 @@ class RainfallModelInputTest(unittest.TestCase):
     """Tests for rainfall_model_input.py."""
 
     @staticmethod
-    def get_catchment_polygon(filepath: str) -> Polygon:
+    def get_catchment_area(catchment_file: str, to_crs: int = 4326) -> gpd.GeoDataFrame:
         """
-        Get the catchment boundary geometry (polygon).
+        Read catchment area data from a GeoJSON file and convert it to the desired coordinate reference system (CRS).
 
         Parameters
         ----------
-        filepath
-            The file path of the catchment polygon GeoJSON data file.
+        catchment_file : str
+            The file path to the GeoJSON file containing the catchment area data.
+        to_crs : int, optional
+            Coordinate Reference System (CRS) code to convert the catchment area to. Default is 4326.
+
+        Returns
+        -------
+        gpd.GeoDataFrame
+            A GeoDataFrame representing the catchment area in the desired CRS.
         """
-        catchment_file = pathlib.Path(filepath)
-        catchment = gpd.read_file(catchment_file)
-        catchment = catchment.to_crs(4326)
-        catchment_polygon = catchment["geometry"][0]
-        return catchment_polygon
+        # Load the catchment area data from the GeoJSON file
+        catchment_area = gpd.GeoDataFrame.from_file(catchment_file)
+        # Convert the catchment area data to the desired CRS
+        catchment_area_crs_transformed = catchment_area.to_crs(to_crs)
+        return catchment_area_crs_transformed
 
     @classmethod
     def setUpClass(cls):
         """Get all relevant data used for testing."""
-        cls.selected_polygon = cls.get_catchment_polygon(
+        cls.catchment_area = cls.get_catchment_area(
             r"tests/test_dynamic_boundary_conditions/data/selected_polygon.geojson")
         cls.sites_in_catchment = gpd.read_file(
             r"tests/test_dynamic_boundary_conditions/data/sites_in_catchment.geojson")
@@ -48,14 +53,16 @@ class RainfallModelInputTest(unittest.TestCase):
     def test_sites_voronoi_intersect_catchment_within_catchment(self):
         """Test to ensure returned intersections (overlapped areas) are each within the catchment area."""
         intersections = rainfall_model_input.sites_voronoi_intersect_catchment(
-            self.sites_in_catchment, self.selected_polygon)
-        self.assertTrue(intersections.within(self.selected_polygon.buffer(1 / 1e13)).unique())
+            self.sites_in_catchment, self.catchment_area)
+        catchment_polygon = self.catchment_area["geometry"].iloc[0]
+        result = intersections.within(catchment_polygon.buffer(1 / 1e13)).all()
+        self.assertTrue(result)
 
     def test_sites_voronoi_intersect_catchment_area_size(self):
         """Test to ensure the area size of each returned intersection (overlapped areas) is not greater than
         its original area size."""
         intersections = rainfall_model_input.sites_voronoi_intersect_catchment(
-            self.sites_in_catchment, self.selected_polygon)
+            self.sites_in_catchment, self.catchment_area)
         org_area_sizes = self.sites_in_catchment.to_crs(3857).area / 1e6
         intersection_area_sizes = intersections.to_crs(3857).area / 1e6
         result = intersection_area_sizes.gt(org_area_sizes).any()
@@ -68,7 +75,7 @@ class RainfallModelInputTest(unittest.TestCase):
         mock_intersections.return_value = self.intersections.copy()
         sites_coverage = rainfall_model_input.sites_coverage_in_catchment(
             sites_in_catchment=gpd.GeoDataFrame(),
-            catchment_polygon=Polygon())
+            catchment_area=gpd.GeoDataFrame())
 
         sites_area = (self.intersections.to_crs(3857).area / 1e6)
         sites_area_percent = sites_area / sites_area.sum()
