@@ -268,8 +268,8 @@ async def fetch_tide_data_for_requested_period(
                     tasks.append(fetch_tide_data(session, query_param=query_param, url=url))
                 # Wait for all tasks to complete and retrieve the results
                 query_results = await asyncio.gather(*tasks, return_exceptions=True)
-                # Concatenate the results into a single DataFrame
-                tide_data = pd.concat(query_results).reset_index(drop=True)
+                # Concatenate the results into a single GeoDataFrame and reset the index
+                tide_data = gpd.GeoDataFrame(pd.concat(query_results)).reset_index(drop=True)
             return tide_data
         except TypeError:
             # If a TypeError occurs, it means the Tide API did not return the expected data format.
@@ -501,7 +501,7 @@ def fetch_tide_data_around_highest_tide(
         # Concatenate the filtered tide data to the existing data around the highest tide
         tide_data_around_highest_tide = pd.concat([tide_data_around_highest_tide, highest_tide_data])
     # Reset the index of the data around the highest tide
-    tide_data_around_highest_tide = tide_data_around_highest_tide.reset_index(drop=True)
+    tide_data_around_highest_tide = gpd.GeoDataFrame(tide_data_around_highest_tide).reset_index(drop=True)
     return tide_data_around_highest_tide
 
 
@@ -631,7 +631,7 @@ def add_time_information(
         # Concatenate the group data to the main tide data with time information
         tide_data_w_time = pd.concat([tide_data_w_time, group_data])
     # Reset the index of the tide data with time information
-    tide_data_w_time = tide_data_w_time.reset_index(drop=True)
+    tide_data_w_time = gpd.GeoDataFrame(tide_data_w_time).reset_index(drop=True)
     return tide_data_w_time
 
 
