@@ -12,7 +12,6 @@ import pathlib
 import geopandas as gpd
 import pandas as pd
 import xarray as xr
-from shapely.geometry import Polygon
 from geocube.api.core import make_geocube
 
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
