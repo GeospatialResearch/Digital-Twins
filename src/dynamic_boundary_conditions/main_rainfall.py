@@ -5,13 +5,14 @@
 @Author: pkh35, sli229
 """
 
+import logging
 import pathlib
 
 import geopandas as gpd
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import get_catchment_area, get_nz_boundary
+from src.digitaltwin.utils import get_catchment_area, get_nz_boundary, setup_logging
 from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions import (
     rainfall_sites,
@@ -43,7 +44,9 @@ def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
         file_path.unlink()
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
+    # Set up logging with the specified log level
+    setup_logging(log_level)
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area

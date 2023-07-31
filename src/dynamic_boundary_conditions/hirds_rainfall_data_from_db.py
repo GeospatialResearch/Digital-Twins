@@ -4,7 +4,6 @@
 @Author: pkh35, sli229
 """
 
-import logging
 from typing import Optional
 
 import geopandas as gpd
@@ -12,15 +11,6 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 
 from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:

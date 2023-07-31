@@ -15,13 +15,6 @@ from src.digitaltwin import tables
 from src.dynamic_boundary_conditions import rainfall_data_from_hirds
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def db_rain_table_name(idf: bool) -> str:

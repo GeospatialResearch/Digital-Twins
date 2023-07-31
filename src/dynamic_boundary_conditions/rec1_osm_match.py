@@ -6,7 +6,6 @@
 @Author: sli229
 """
 
-import logging
 from typing import Union
 
 import geopandas as gpd
@@ -17,15 +16,6 @@ from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
 from src.lidar import dem_metadata_in_db
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def match_rec1_river_and_osm_waterway(

@@ -17,13 +17,6 @@ from sqlalchemy.engine import Engine
 from src.digitaltwin.tables import GeospatialLayers, create_table
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def validate_url_reachability(section: str, url: str) -> None:

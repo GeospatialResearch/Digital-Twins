@@ -4,7 +4,6 @@
 @Author: sli229
 """
 
-import logging
 from typing import Union
 from math import floor, ceil
 
@@ -14,15 +13,6 @@ from scipy.interpolate import interp1d
 import plotly.express as px
 
 from src.dynamic_boundary_conditions.rainfall_enum import HyetoMethod
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:

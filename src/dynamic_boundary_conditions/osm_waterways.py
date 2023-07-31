@@ -6,7 +6,6 @@
 @Author: sli229
 """
 
-import logging
 import pathlib
 
 import geopandas as gpd
@@ -15,15 +14,6 @@ from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
 from src import config
 from src.dynamic_boundary_conditions import main_river
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def configure_osm_cache() -> None:

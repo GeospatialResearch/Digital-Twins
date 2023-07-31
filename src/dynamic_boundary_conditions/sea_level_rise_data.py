@@ -18,13 +18,6 @@ from src import config
 from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def get_slr_data_from_nz_searise() -> gpd.GeoDataFrame:

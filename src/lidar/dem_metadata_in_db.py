@@ -17,17 +17,11 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.digitaltwin.utils import setup_logging
 from src.digitaltwin.tables import HydroDEM, create_table, execute_query
 import geofabrics.processor
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 Base = declarative_base()
 
@@ -192,7 +186,8 @@ def get_hydro_dem_data_and_resolution(
         return hydro_dem, res_no
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
+    setup_logging(log_level)
     engine = setup_environment.get_database()
     catchment_file_path = create_temp_catchment_boundary_file(selected_polygon_gdf)
     instructions = read_and_fill_instructions(catchment_file_path)

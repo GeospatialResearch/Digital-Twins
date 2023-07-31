@@ -5,22 +5,12 @@
 @Author: sli229
 """
 
-import logging
 from typing import List, Union, Optional
 import re
 
 import geopandas as gpd
 
 from src.dynamic_boundary_conditions.river_enum import BoundType
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def clean_river_flow_data(matched_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:

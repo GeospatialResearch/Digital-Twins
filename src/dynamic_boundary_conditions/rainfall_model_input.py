@@ -18,13 +18,6 @@ from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
 from src.dynamic_boundary_conditions import main_rainfall, hyetograph
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def sites_voronoi_intersect_catchment(

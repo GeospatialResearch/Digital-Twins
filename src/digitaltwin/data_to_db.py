@@ -15,13 +15,6 @@ from src.digitaltwin.tables import UserLogInfo, create_table, check_table_exists
 from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 class NoNonIntersectionError(Exception):

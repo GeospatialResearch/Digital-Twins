@@ -4,20 +4,9 @@
 @Author: sli229
 """
 
-import logging
-
 from shapely.geometry import LineString, Point
 import geopandas as gpd
 from sqlalchemy.engine import Engine
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 class NoTideDataException(Exception):
