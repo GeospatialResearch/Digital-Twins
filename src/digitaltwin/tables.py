@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Date: 17/06/2023
+@Description: This script contains SQLAlchemy models for various database tables and utility functions for
+              database operations.
 @Author: sli229
 """
 
@@ -39,7 +40,6 @@ class GeospatialLayers(Base):
     url : str
         URL pointing to the geospatial layer.
     """
-
     __tablename__ = "geospatial_layers"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     data_provider = Column(String, nullable=False)
@@ -67,7 +67,6 @@ class UserLogInfo(Base):
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """
-
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
@@ -94,7 +93,6 @@ class HydroDEM(Base):
     geometry : Geometry
         Geometric representation of the catchment area coverage.
     """
-
     __tablename__ = "hydrological_dem"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     file_name = Column(String, comment="name of the hydro-DEM file")
@@ -122,7 +120,6 @@ class BGFloodModelOutput(Base):
     geometry : Geometry
         Geometric representation of the catchment area coverage.
     """
-
     __tablename__ = "bg_flood_model_output"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     file_name = Column(String, comment="name of the flood model output file")

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Date: 16/06/2023
+@Description: This script provides utility functions for logging configuration and geospatial data manipulation.
 @Author: sli229
 """
 

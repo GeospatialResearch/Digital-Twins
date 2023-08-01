@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Date: 14/06/2023
+@Description: This script processes 'instructions_run' records, validates URLs and instruction fields, and stores them
+              in the 'geospatial_layers' table of the database.
 @Author: sli229
 """
 

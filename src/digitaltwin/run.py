@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Date: 17/06/2023
+@Description: This script automates the retrieval and storage of geospatial data from various providers using the
+              'geoapis' library. It populates the 'geospatial_layers' table in the database and stores user log
+              information for tracking and reference purposes.
 @Author: sli229
 """
 
