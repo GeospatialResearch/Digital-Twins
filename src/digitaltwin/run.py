@@ -13,10 +13,13 @@ import geopandas as gpd
 from src.digitaltwin import setup_environment, instructions_records_to_db, data_to_db
 from src.digitaltwin.utils import get_catchment_area, setup_logging
 
+log = logging.getLogger(__name__)
+
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
     # Set up logging with the specified log level
     setup_logging(log_level)
+    log.debug("Executing run.main()")
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area

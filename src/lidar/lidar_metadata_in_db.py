@@ -145,6 +145,7 @@ def get_lidar_path(engine, geometry_df):
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
     setup_logging(log_level)
+    log.debug("Executing lidar_metadata_in_db.main()")
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)
     data_dir = config.get_env_variable("DATA_DIR")

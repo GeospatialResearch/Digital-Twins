@@ -418,6 +418,7 @@ def run_bg_flood_model(
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
     # Set up logging with the specified log level
     setup_logging(log_level)
+    log.debug("Executing bg_flood_model.main()")
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area

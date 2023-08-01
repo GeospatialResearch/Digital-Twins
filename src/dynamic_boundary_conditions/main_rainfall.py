@@ -23,6 +23,8 @@ from src.dynamic_boundary_conditions import (
     rainfall_model_input,
 )
 
+log = logging.getLogger(__name__)
+
 
 def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
     """
@@ -47,6 +49,7 @@ def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
     # Set up logging with the specified log level
     setup_logging(log_level)
+    log.debug("Executing main_rainfall.main()")
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area
