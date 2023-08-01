@@ -12,8 +12,8 @@ from sqlalchemy.engine import Engine
 
 def setup_logging(log_level: int = logging.DEBUG) -> None:
     """
-    Configure the root logger with the specified log level and format, and exclude specific loggers from propagating
-    their messages to the root logger.
+    Configures the root logger with the specified log level and formats, captures warnings, and excludes
+    specific loggers from propagating their messages to the root logger.
 
     Parameters
     ----------
@@ -32,14 +32,13 @@ def setup_logging(log_level: int = logging.DEBUG) -> None:
     None
         This function does not return any value.
     """
-    # Check if handlers already exist and remove them if needed
-    if logging.root.handlers:
-        for handler in logging.root.handlers[:]:
-            logging.root.removeHandler(handler)
-    # Create a logging format
-    logging_format = '%(levelname)s:%(asctime)s:%(name)s:%(message)s'
-    # Create and configure the root logger with the specified log level and format
-    logging.basicConfig(level=log_level, format=logging_format)
+    # Define the logging format and date format
+    logging_format = "%(asctime)s | %(levelname)-8s | %(name)60s %(lineno)4d | %(funcName)40s : %(message)s"
+    date_format = "%Y-%m-%d %H:%M:%S"
+    # Create and configure the root logger with the specified log level and formats
+    logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format, force=True)
+    # Capture warnings using the logging framework
+    logging.captureWarnings(True)
     # List of loggers to prevent messages from reaching the root logger
     loggers_to_exclude = ["urllib3", "fiona", "botocore", "pyproj", "asyncio", "rasterio"]
     # Iterate through the loggers to exclude
