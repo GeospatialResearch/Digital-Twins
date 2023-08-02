@@ -22,7 +22,7 @@ from sqlalchemy.orm import sessionmaker
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import setup_logging
+from src.digitaltwin.utils import LogLevel, setup_logging
 
 log = logging.getLogger(__name__)
 
@@ -143,7 +143,7 @@ def get_lidar_path(engine, geometry_df):
     return output_data["filepath"]
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
     setup_logging(log_level)
     engine = setup_environment.get_database()
     Lidar.__table__.create(bind=engine, checkfirst=True)

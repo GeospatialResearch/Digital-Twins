@@ -1,8 +1,6 @@
-import logging
-
 import geopandas as gpd
 
-from src.digitaltwin.utils import setup_logging
+from src.digitaltwin.utils import LogLevel, setup_logging
 from src.digitaltwin import run
 from src.lidar import lidar_metadata_in_db, dem_metadata_in_db
 from src.dynamic_boundary_conditions import main_rainfall, main_tide_slr, main_river
@@ -10,7 +8,7 @@ from src.flood_model import bg_flood_model
 
 
 def main():
-    setup_logging(log_level=logging.DEBUG)
+    setup_logging(log_level=LogLevel.DEBUG)
     selected_polygon_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     run.main(selected_polygon_gdf)
     lidar_metadata_in_db.main(selected_polygon_gdf)

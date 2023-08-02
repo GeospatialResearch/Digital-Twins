@@ -5,7 +5,6 @@
 @Author: sli229
 """
 
-import logging
 import pathlib
 
 import geopandas as gpd
@@ -13,7 +12,7 @@ from shapely.geometry import LineString
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import get_catchment_area, setup_logging
+from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.dynamic_boundary_conditions.river_enum import BoundType
 from src.dynamic_boundary_conditions import (
     river_data_to_from_db,
@@ -78,7 +77,7 @@ def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
         file_path.unlink()
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database

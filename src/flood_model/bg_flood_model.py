@@ -20,7 +20,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import get_catchment_area, setup_logging
+from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, execute_query
 from src.flood_model.serve_model import add_model_output_to_geoserver
 from src.lidar import dem_metadata_in_db
@@ -415,7 +415,7 @@ def run_bg_flood_model(
     os.chdir(cwd)
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database

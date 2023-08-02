@@ -7,6 +7,7 @@
 import logging
 import pathlib
 import inspect
+from enum import IntEnum
 
 import geopandas as gpd
 from sqlalchemy.engine import Engine
@@ -14,7 +15,35 @@ from sqlalchemy.engine import Engine
 log = logging.getLogger(__name__)
 
 
-def setup_logging(log_level: int = logging.DEBUG) -> None:
+class LogLevel(IntEnum):
+    """
+    Enum class representing different logging levels mapped to their corresponding numeric values from the
+    logging library.
+
+    Attributes
+    ----------
+    CRITICAL : int
+        The critical logging level. Corresponds to logging.CRITICAL (50).
+    ERROR : int
+        The error logging level. Corresponds to logging.ERROR (40).
+    WARNING : int
+        The warning logging level. Corresponds to logging.WARNING (30).
+    INFO : int
+        The info logging level. Corresponds to logging.INFO (20).
+    DEBUG : int
+        The debug logging level. Corresponds to logging.DEBUG (10).
+    NOTSET : int
+        The not-set logging level. Corresponds to logging.NOTSET (0).
+    """
+    CRITICAL = logging.CRITICAL
+    ERROR = logging.ERROR
+    WARNING = logging.WARNING
+    INFO = logging.INFO
+    DEBUG = logging.DEBUG
+    NOTSET = logging.NOTSET
+
+
+def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
     Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
     loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
@@ -23,14 +52,14 @@ def setup_logging(log_level: int = logging.DEBUG) -> None:
     Parameters
     ----------
     log_level : int, optional
-        The log level to set for the root logger. Defaults to logging.DEBUG.
+        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
         The available logging levels and their corresponding numeric values are:
-        - logging.CRITICAL (50)
-        - logging.ERROR (40)
-        - logging.WARNING (30)
-        - logging.INFO (20)
-        - logging.DEBUG (10)
-        - logging.NOTSET (0)
+        - LogLevel.CRITICAL (50)
+        - LogLevel.ERROR (40)
+        - LogLevel.WARNING (30)
+        - LogLevel.INFO (20)
+        - LogLevel.DEBUG (10)
+        - LogLevel.NOTSET (0)
 
     Returns
     -------

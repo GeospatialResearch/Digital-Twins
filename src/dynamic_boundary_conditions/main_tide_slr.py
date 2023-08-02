@@ -12,7 +12,8 @@ import geopandas as gpd
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import get_catchment_area, setup_logging
+from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
+
 from src.dynamic_boundary_conditions.tide_enum import ApproachType
 from src.dynamic_boundary_conditions import (
     tide_query_location,
@@ -45,7 +46,7 @@ def remove_existing_boundary_input(bg_flood_dir: pathlib.Path) -> None:
         file_path.unlink()
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
     try:
         # Set up logging with the specified log level
         setup_logging(log_level)
