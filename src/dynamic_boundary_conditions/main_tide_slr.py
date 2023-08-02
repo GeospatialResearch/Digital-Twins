@@ -92,8 +92,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
         log.info(error)
 
     except RuntimeError as error:
-        # Log an info message to indicate that a runtime error occurred
-        log.info(error)
+        # Log a warning message to indicate that a runtime error occurred while fetching tide data
+        log.warning(error)
 
 
 if __name__ == "__main__":
