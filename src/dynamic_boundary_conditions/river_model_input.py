@@ -52,4 +52,4 @@ def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.
         # Save the river model input as a text file
         model_input_data.to_csv(file_path, index=False, header=False)
     # Log a message indicating the successful generation of the river model inputs
-    log.info(f"Successfully generated the river model inputs for BG-Flood. Located in: {bg_flood_dir}")
+    log.info("Successfully generated the river model inputs for BG-Flood.")

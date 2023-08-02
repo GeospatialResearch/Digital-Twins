@@ -47,5 +47,5 @@ def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: p
             content = file.read()
             file.seek(0, 0)
             file.write('# Water level boundary\n' + content)
-    # Log a message indicating the successful generation of the uniform boundary model input
-    log.info(f"Successfully generated the uniform boundary input for BG-Flood. Located in: {bg_flood_dir}")
+    # Log a message indicating the successful generation of the uniform boundary model inputs
+    log.info("Successfully generated the uniform boundary model inputs for BG-Flood.")
