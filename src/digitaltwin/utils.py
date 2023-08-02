@@ -7,6 +7,7 @@
 import logging
 import pathlib
 import inspect
+import warnings
 from enum import IntEnum
 
 import geopandas as gpd
@@ -71,8 +72,10 @@ def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
     date_format = "%Y-%m-%d %H:%M:%S"
     # Create and configure the root logger with the specified log level and formats
     logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format, force=True)
-    # Capture warnings using the logging framework
+    # Enable capturing Python warnings and redirect them to the logging system
     logging.captureWarnings(True)
+    # Suppress (ignore) Python warnings from appearing in the console
+    warnings.simplefilter("ignore")
     # List of loggers to prevent messages from reaching the root logger
     loggers_to_exclude = ["urllib3", "fiona", "botocore", "pyproj", "asyncio", "rasterio"]
     # Iterate through the loggers to exclude
