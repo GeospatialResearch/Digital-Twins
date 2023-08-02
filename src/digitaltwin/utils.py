@@ -5,15 +5,20 @@
 """
 
 import logging
+import pathlib
+import inspect
 
 import geopandas as gpd
 from sqlalchemy.engine import Engine
 
+log = logging.getLogger(__name__)
+
 
 def setup_logging(log_level: int = logging.DEBUG) -> None:
     """
-    Configures the root logger with the specified log level and formats, captures warnings, and excludes
-    specific loggers from propagating their messages to the root logger.
+    Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
+    loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
+    execution of the function in the script.
 
     Parameters
     ----------
@@ -47,6 +52,15 @@ def setup_logging(log_level: int = logging.DEBUG) -> None:
         logger = logging.getLogger(logger_name)
         # Disable log message propagation from these loggers to the root logger
         logger.propagate = False
+
+    # Get the calling stack frame (the previous frame in the call stack)
+    stack_frame = inspect.currentframe().f_back
+    # Extract the name of the script file (without the path) where the function is being executed
+    script_name = pathlib.Path(stack_frame.f_globals["__file__"]).name
+    # Extract the name of the function currently being executed
+    function_name = stack_frame.f_code.co_name
+    # Log a debug message indicating the execution of the function in the script
+    log.debug(f"Executing {function_name}() in {script_name}")
 
 
 def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> gpd.GeoDataFrame:

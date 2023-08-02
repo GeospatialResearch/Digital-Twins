@@ -9,7 +9,7 @@ from src.dynamic_boundary_conditions import main_rainfall, main_tide_slr, main_r
 from src.flood_model import bg_flood_model
 
 
-if __name__ == '__main__':
+def main():
     setup_logging(log_level=logging.DEBUG)
     selected_polygon_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     run.main(selected_polygon_gdf)
@@ -19,3 +19,7 @@ if __name__ == '__main__':
     main_tide_slr.main(selected_polygon_gdf)
     main_river.main(selected_polygon_gdf)
     bg_flood_model.main(selected_polygon_gdf)
+
+
+if __name__ == '__main__':
+    main()

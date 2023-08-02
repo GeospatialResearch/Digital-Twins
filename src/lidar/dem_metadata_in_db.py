@@ -188,7 +188,6 @@ def get_hydro_dem_data_and_resolution(
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG) -> None:
     setup_logging(log_level)
-    log.debug("Executing dem_metadata_in_db.main()")
     engine = setup_environment.get_database()
     catchment_file_path = create_temp_catchment_boundary_file(selected_polygon_gdf)
     instructions = read_and_fill_instructions(catchment_file_path)

@@ -49,7 +49,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: int = logging.DEBUG)
     try:
         # Set up logging with the specified log level
         setup_logging(log_level)
-        log.debug("Executing main_tide_slr.main()")
         # Connect to the database
         engine = setup_environment.get_database()
         # Get catchment area
