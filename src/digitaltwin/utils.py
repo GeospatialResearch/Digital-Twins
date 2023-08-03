@@ -44,6 +44,25 @@ class LogLevel(IntEnum):
     NOTSET = logging.NOTSET
 
 
+def log_execution_info() -> None:
+    """
+    Logs a debug message indicating the execution of the function in the script.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Obtain the stack frame of the calling function (two frames up in the call stack)
+    stack_frame = inspect.currentframe().f_back.f_back
+    # Extract the name of the script file (without the path) where the function is being executed
+    script_name = pathlib.Path(stack_frame.f_globals["__file__"]).name
+    # Extract the name of the function currently being executed
+    function_name = stack_frame.f_code.co_name
+    # Log a debug message indicating the execution of the function in the script
+    log.debug(f"Executing {function_name}() in {script_name}")
+
+
 def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
     Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
@@ -84,15 +103,8 @@ def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
         logger = logging.getLogger(logger_name)
         # Disable log message propagation from these loggers to the root logger
         logger.propagate = False
-
-    # Get the calling stack frame (the previous frame in the call stack)
-    stack_frame = inspect.currentframe().f_back
-    # Extract the name of the script file (without the path) where the function is being executed
-    script_name = pathlib.Path(stack_frame.f_globals["__file__"]).name
-    # Extract the name of the function currently being executed
-    function_name = stack_frame.f_code.co_name
-    # Log a debug message indicating the execution of the function in the script
-    log.debug(f"Executing {function_name}() in {script_name}")
+    # Log the execution of the function in the script
+    log_execution_info()
 
 
 def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> gpd.GeoDataFrame:
