@@ -34,7 +34,6 @@ stream_handler.setFormatter(formatter)
 
 log.addHandler(stream_handler)
 
-
 Base = declarative_base()
 
 
@@ -65,7 +64,9 @@ def bg_model_inputs(
     river = "RiverDis.txt"
     extents = "1575388.550,1575389.550,5197749.557,5197750.557"
     valid_bg_path = bg_model_path(bg_path)
-    with open(rf"{valid_bg_path}/BG_param.txt", "w+") as param_file:
+    param_file_path = valid_bg_path / "BG_param.txt"
+    outfile = output_file.as_posix()
+    with open(param_file_path, "w+") as param_file:
         param_file.write(f"topo = {dem_path}?{elev_var};\n"
                          f"gpudevice = {gpu_device};\n"
                          f"mask = {mask};\n"
@@ -76,8 +77,15 @@ def bg_model_inputs(
                          f"rain = {rainfall};\n"
                          f"river = {river},{extents};\n"
                          f"outvars = h, hmax, zb, zs, u, v;\n"
-                         f"outfile = {output_file};")
-    model_output_to_db(output_file, catchment_boundary)
+                         f"outfile = {outfile};\n")
+        # Check if any bndfile.txt files exist, and add lines accordingly
+        bndfiles = ['left_bnd.txt', 'right_bnd.txt', 'top_bnd.txt', 'bot_bnd.txt']
+        for bndfile in bndfiles:
+            bndfile_path = rf"{valid_bg_path}/{bndfile}"
+            if os.path.exists(bndfile_path):
+                position = bndfile.split('_')[0]
+                param_file.write(f"{position} = {bndfile},2;\n")
+    model_output_to_db(outfile, catchment_boundary)
     river_discharge_info(bg_path)
 
 
@@ -141,7 +149,7 @@ class BGDEM(Base):
 
 def run_model(
         bg_path,
-        output_dir,
+        output_dir: pathlib.Path,
         instructions,
         catchment_boundary,
         resolution,
@@ -155,10 +163,10 @@ def run_model(
 
     now = datetime.now()
     dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
-    output_file = pathlib.Path(rf"{output_dir}/output_{dt_string}.nc")
+    output_file = (output_dir / f"output_{dt_string}.nc")
 
     bg_model_inputs(
-        bg_path, dem_path, output_file.as_posix(), catchment_boundary, resolution, end_time, output_timestep, rain_input_type
+        bg_path, dem_path, output_file, catchment_boundary, resolution, end_time, output_timestep, rain_input_type
     )
     cwd = os.getcwd()
     os.chdir(bg_path)
@@ -210,8 +218,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
     end_time = 900.0
 
     # BG Flood is not capable of creating output directories, so we must ensure this is done before running the model.
-    data_dir = config.get_env_variable("DATA_DIR")
-    output_dir = rf"{data_dir}/model_output"
+    data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path)
+    output_dir = data_dir / "model_output"
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
 

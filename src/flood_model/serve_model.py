@@ -94,5 +94,6 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path):
 
 
 if __name__ == '__main__':
-    add_model_output_to_geoserver(pathlib.Path("U:\Research\FloodRiskResearch\DigitalTwin\stored_data\model_output\output_2023_05_05_12_28_03.nc"))
-
+    add_model_output_to_geoserver(
+        pathlib.Path(
+            r"U:\Research\FloodRiskResearch\DigitalTwin\stored_data\model_output\output_2023_05_05_12_28_03.nc"))

@@ -22,6 +22,7 @@ dependencies:
   - geoalchemy2
   - plotly
   - geocube
+  - pyarrow
   - flask
   - flask-cors
   - redis-py
