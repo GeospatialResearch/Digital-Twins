@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+@Description: This script executes the Digital Twin application.
+@Author: sli229
+"""
+
 from typing import Dict
 from types import ModuleType
 
