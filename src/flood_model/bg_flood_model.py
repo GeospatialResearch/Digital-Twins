@@ -163,18 +163,28 @@ def add_crs_to_latest_model_output() -> None:
     None
         This function does not return any value.
     """
-    # Get the path to the latest BG-Flood model output file
+    # Get the path to the latest BG-Flood model output file from the database
     latest_file = latest_model_output_from_db()
-    # Open the latest output file as a xarray dataset with coordinate decoding
+    # Create a temporary file path for saving modifications before replacing the current latest model output file
+    temp_file = latest_file.with_name(f"{latest_file.stem}_temp{latest_file.suffix}")
+
+    # Open the latest model output file as a xarray dataset
     with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
-        # Load the dataset into memory to enable modification
-        latest_output.load()
-        # Check if the dataset already has a CRS
+        # Check if the dataset lacks a Coordinate Reference System (CRS)
         if latest_output.rio.crs is None:
-            # If not, add the CRS information
+            # Add the Coordinate Reference System (CRS) information to the dataset
             latest_output.rio.write_crs("epsg:2193", inplace=True)
-    # Save the modified dataset back to the original file
-    latest_output.to_netcdf(latest_file)
+            # Set the spatial dimensions explicitly for proper interpretation
+            latest_output.rio.set_spatial_dims(x_dim="xx_P0", y_dim="yy_P0", inplace=True)
+            # Reproject the dataset to the specified CRS
+            latest_output = latest_output.rio.reproject("epsg:2193")
+            # Save the modified dataset to the temporary file
+            latest_output.to_netcdf(temp_file)
+
+    # Check if both the original and temporary files exist
+    if latest_file.exists() and temp_file.exists():
+        # Replace the original file with the modified temporary file
+        temp_file.replace(latest_file)
 
 
 def process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None:
