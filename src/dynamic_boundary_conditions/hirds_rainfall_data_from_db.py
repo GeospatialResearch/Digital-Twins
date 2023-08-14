@@ -148,7 +148,7 @@ def rainfall_data_from_db(
     rain_data_in_catchment = pd.DataFrame()
     # Iterate over each site ID in the catchment area
     for site_id in sites_id_in_catchment:
-        # Retrieve the rainfall data for each site
+        # Retrieve the rainfall data for the site
         rain_data = get_each_site_rainfall_data(engine, site_id, rcp, time_period, ari, duration, idf)
         # Concatenate the site's rainfall data to the overall catchment data
         rain_data_in_catchment = pd.concat([rain_data_in_catchment, rain_data], ignore_index=True)
