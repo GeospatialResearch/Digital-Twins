@@ -1,46 +1,43 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Get all rainfall data for sites within the catchment area from the database.
+@Description: Retrieve all rainfall data for sites within the catchment area from the database.
 @Author: pkh35, sli229
 """
 
-import logging
 from typing import Optional
 
 import geopandas as gpd
 import pandas as pd
+from sqlalchemy.engine import Engine
 
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import main_rainfall, thiessen_polygons, hirds_rainfall_data_to_db
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
+from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
 
 
 def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
     """
-    Used to filter the HIRDS rainfall data for a requested duration.
+    Filter the HIRDS rainfall data for a requested duration.
 
     Parameters
     ----------
     rain_data : pd.DataFrame
-        HIRDS rainfall data in Pandas Dataframe format.
+        HIRDS rainfall data in Pandas DataFrame format.
     duration : str
-        Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
+        Storm duration. Valid options are: '10m', '20m', '30m', '1h', '2h', '6h', '12h', '24h', '48h', '72h',
+        '96h', '120h', or 'all'.
+
+    Returns
+    -------
+    pd.DataFrame
+        Filtered rainfall data for the requested duration.
     """
     if duration != "all":
+        # Filter the rain_data DataFrame to include only the relevant columns for the requested duration
         rain_data = rain_data[["site_id", "category", "rcp", "time_period", "ari", "aep", duration]]
     return rain_data
 
 
-def get_each_site_rainfall_data(
-        engine,
+def get_one_site_rainfall_data(
+        engine: Engine,
         site_id: str,
         rcp: Optional[float],
         time_period: Optional[str],
@@ -51,47 +48,67 @@ def get_each_site_rainfall_data(
     Get the HIRDS rainfall data for the requested site from the database and return the required data in
     Pandas DataFrame format.
 
-
     Parameters
     ----------
-    engine
-        Engine used to connect to the database.
+    engine : Engine
+        The engine used to connect to the database.
     site_id : str
-        HIRDS rainfall site id.
+        HIRDS rainfall site ID.
     rcp : Optional[float]
-        There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
+        Representative Concentration Pathway (RCP) value. Valid options are 2.6, 4.5, 6.0, 8.5, or None
+        for historical data.
     time_period : Optional[str]
-        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
-        historical data.
+        Future time period. Valid options are "2031-2050", "2081-2100", or None for historical data.
     ari : float
-        Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+        Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     duration : str
-        Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
+        Storm duration. Valid options are: '10m', '20m', '30m', '1h', '2h', '6h', '12h', '24h', '48h', '72h',
+        '96h', '120h', or 'all'.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
+
+    Returns
+    -------
+    pd.DataFrame
+        HIRDS rainfall data for the requested site and parameters.
+
+    Raises
+    ------
+    ValueError
+        If rcp and time_period arguments are inconsistent.
     """
+    # Get the relevant rainfall data table name from the idf parameter
     rain_table_name = hirds_rainfall_data_to_db.db_rain_table_name(idf)
+    # Check for inconsistent rcp and time_period arguments
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
-        raise ValueError("Check the arguments of the 'rainfall_data_from_db' function. "
-                         "If rcp is None, time period should be None, and vice-versa.")
+        raise ValueError("Inconsistent arguments provided. "
+                         "For historical data, both 'rcp' and 'time_period' should be None. "
+                         "If 'rcp' is None, 'time_period' should also be None, and vice versa.")
     elif rcp is not None and time_period is not None:
-        query = f"""SELECT * FROM {rain_table_name}
-        WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};"""
+        # Query for specific rcp and time_period
+        query = f"""
+        SELECT *
+        FROM {rain_table_name}
+        WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};
+        """
         rain_data = pd.read_sql_query(query, engine)
     else:
-        query = f"""SELECT * FROM {rain_table_name}
-        WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};"""
+        # Query for historical data (rcp is None and time_period is None)
+        query = f"""
+        SELECT *
+        FROM {rain_table_name}
+        WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};
+        """
         rain_data = pd.read_sql_query(query, engine)
-        # filter for historical data
+        # Filter for historical data
         rain_data.query("category == 'hist'", inplace=True)
-    # filter for duration
+    # Filter for duration
     rain_data = filter_for_duration(rain_data, duration)
     return rain_data
 
 
 def rainfall_data_from_db(
-        engine,
+        engine: Engine,
         sites_in_catchment: gpd.GeoDataFrame,
         rcp: Optional[float],
         time_period: Optional[str],
@@ -99,56 +116,40 @@ def rainfall_data_from_db(
         idf: bool,
         duration: str = "all") -> pd.DataFrame:
     """
-    Get all the rainfall data for the sites within the catchment area and return the required data in
-    Pandas DataFrame format.
+    Get rainfall data for the sites within the catchment area and return it as a Pandas DataFrame.
 
     Parameters
     ----------
-    engine
-        Engine used to connect to the database.
+    engine : Engine
+        The engine used to connect to the database.
     sites_in_catchment : gpd.GeoDataFrame
-        Rainfall sites coverage areas (thiessen polygons) that are within the catchment area.
+        Rainfall sites coverage areas (Thiessen polygons) within the catchment area.
     rcp : Optional[float]
-        There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
-        RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or None for historical data.
+        Representative Concentration Pathway (RCP) value. Valid options are 2.6, 4.5, 6.0, 8.5, or None
+        for historical data.
     time_period : Optional[str]
-        Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
-        historical data.
+        Future time period. Valid options are "2031-2050", "2081-2100", or None for historical data.
     ari : float
-        Storm average recurrence interval (ARI), i.e. 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+        Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
-    duration : str
-        Storm duration, i.e. 10m, 20m, 30m, 1h, 2h, 6h, 12h, 24h, 48h, 72h, 96h, 120h, or 'all'.
-    """
-    sites_id_in_catchment = hirds_rainfall_data_to_db.get_sites_id_in_catchment(sites_in_catchment)
+    duration : str, optional
+        Storm duration. Valid options are: '10m', '20m', '30m', '1h', '2h', '6h', '12h', '24h', '48h', '72h',
+        '96h', '120h', or 'all'. Default is 'all'.
 
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame containing the rainfall data for the sites within the catchment area.
+    """
+    # Get the site IDs within the catchment area
+    sites_id_in_catchment = hirds_rainfall_data_to_db.get_sites_id_in_catchment(sites_in_catchment)
+    # Initialize an empty DataFrame to store the rainfall data
     rain_data_in_catchment = pd.DataFrame()
+    # Iterate over each site ID in the catchment area
     for site_id in sites_id_in_catchment:
-        rain_data = get_each_site_rainfall_data(engine, site_id, rcp, time_period, ari, duration, idf)
+        # Retrieve the rainfall data for the site
+        rain_data = get_one_site_rainfall_data(engine, site_id, rcp, time_period, ari, duration, idf)
+        # Concatenate the site's rainfall data to the overall catchment data
         rain_data_in_catchment = pd.concat([rain_data_in_catchment, rain_data], ignore_index=True)
     return rain_data_in_catchment
-
-
-def main():
-    # Catchment polygon
-    catchment_gdf = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    catchment_polygon = main_rainfall.catchment_area_geometry_info(catchment_gdf)
-    # Connect to the database
-    engine = setup_environment.get_database()
-    # Get all rainfall sites (thiessen polygons) coverage areas that are within the catchment area
-    sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_polygon)
-    # Requested scenario
-    rcp = 2.6
-    time_period = "2031-2050"
-    ari = 100
-    # For a requested scenario, get all rainfall data for sites within the catchment area from the database
-    # Set idf to False for rain depth data and to True for rain intensity data
-    rain_depth_in_catchment = rainfall_data_from_db(engine, sites_in_catchment, rcp, time_period, ari, idf=False)
-    print(rain_depth_in_catchment)
-    rain_intensity_in_catchment = rainfall_data_from_db(engine, sites_in_catchment, rcp, time_period, ari, idf=True)
-    print(rain_intensity_in_catchment)
-
-
-if __name__ == "__main__":
-    main()

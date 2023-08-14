@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Fetch rainfall sites data from the HIRDS website and store it to the database.
+@Description: Fetch rainfall sites data from the HIRDS website and store it in the database.
 @Author: pkh35, sli229
 """
+
+import logging
 
 import requests
 from requests.structures import CaseInsensitiveDict
 import pandas as pd
 import geopandas as gpd
-import logging
-from geoalchemy2 import Geometry
-from src.digitaltwin import setup_environment
-from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
+from sqlalchemy.engine import Engine
+
+from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
 def get_rainfall_sites_data() -> str:
-    """Get rainfall sites data from the HIRDS website using HTTP request."""
+    """
+    Get rainfall sites data from the HIRDS website.
+
+    Returns
+    -------
+    str
+        The rainfall sites data as a string.
+    """
     url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
@@ -40,44 +41,54 @@ def get_rainfall_sites_data() -> str:
     headers["Sec-Fetch-Site"] = "same-site"
     headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
         Chrome/96.0.4664.45 Safari/537.36"
+    # Send HTTP GET request to the specified URL with headers
     response = requests.get(url, headers=headers)
+    # Return the response content as a text string
     sites_data = response.text
     return sites_data
 
 
 def get_rainfall_sites_in_df() -> gpd.GeoDataFrame:
-    """Get rainfall sites data from the HIRDS website and transform to GeoDataFrame format."""
+    """
+    Get rainfall sites data from the HIRDS website and transform it into a GeoDataFrame.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the rainfall sites data.
+    """
+    # Retrieve rainfall sites data
     sites_data = get_rainfall_sites_data()
+    # Convert JSON data to DataFrame
     sites_df = pd.read_json(sites_data)
-    sites_geometry = gpd.points_from_xy(sites_df["longitude"], sites_df["latitude"], crs="EPSG:4326")
+    # Create geometry column from longitude and latitude
+    sites_geometry = gpd.points_from_xy(sites_df["longitude"], sites_df["latitude"], crs=4326)
+    # Create GeoDataFrame with sites data and geometry
     sites_with_geometry = gpd.GeoDataFrame(sites_df, geometry=sites_geometry)
     return sites_with_geometry
 
 
-def rainfall_sites_to_db(engine):
+def rainfall_sites_to_db(engine: Engine) -> None:
     """
-    Storing rainfall sites data from the HIRDS website in the database.
+    Store rainfall sites data from the HIRDS website in the database.
 
     Parameters
     ----------
-    engine
-        Engine used to connect to the database.
+    engine : Engine
+        The engine used to connect to the database.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
     """
-    if hirds_rainfall_data_to_db.check_table_exists(engine, "rainfall_sites"):
-        log.info("Rainfall sites data already exists in the database.")
+    table_name = "rainfall_sites"
+    # Check if the table already exists in the database
+    if tables.check_table_exists(engine, table_name):
+        log.info(f"Table '{table_name}' already exists in the database.")
     else:
+        # Get rainfall sites data
         sites = get_rainfall_sites_in_df()
-        sites.to_postgis('rainfall_sites', engine, if_exists='replace', index=False,
-                         dtype={'geometry': Geometry(geometry_type='POINT', srid=4326)})
-        log.info("Stored rainfall sites data in the database.")
-
-
-def main():
-    # Connect to the database
-    engine = setup_environment.get_database()
-    # Fetch rainfall sites data from the HIRDS website and store it to the database
-    rainfall_sites_to_db(engine)
-
-
-if __name__ == "__main__":
-    main()
+        # Store rainfall sites data in the database
+        sites.to_postgis(f'{table_name}', engine, if_exists='replace', index=False)
+        log.info(f"Stored '{table_name}' data in the database.")

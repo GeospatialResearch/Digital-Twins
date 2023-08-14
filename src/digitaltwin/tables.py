@@ -1,100 +1,200 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 10 13:29:55 2021.
-
-@author: pkh35, sli229
+@Description: This script contains SQLAlchemy models for various database tables and utility functions for
+              database operations.
+@Author: sli229
 """
+
 from datetime import datetime
+
 from geoalchemy2 import Geometry
-from sqlalchemy import Column, Integer, DateTime, Unicode, Date
-from sqlalchemy.dialects.postgresql import JSONB, JSON
+from sqlalchemy import inspect, Column, String, Integer, DateTime
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-import sqlalchemy
-import geoapis.vector
-import pandas as pd
-import logging
+from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
+class GeospatialLayers(Base):
+    """
+    Class representing the 'geospatial_layers' table.
 
-log.addHandler(stream_handler)
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each geospatial layer entry (primary key).
+    data_provider : str
+        Name of the data provider.
+    layer_id : int
+        Identifier for the layer.
+    table_name : str
+        Name of the table containing the data.
+    unique_column_name : str, optional
+        Name of the unique column in the table.
+    coverage_area : str, optional
+        Coverage area of the geospatial data. It can be either the whole country or NULL.
+    url : str
+        URL pointing to the geospatial layer.
+    """
+    __tablename__ = "geospatial_layers"
+    unique_id = Column(Integer, primary_key=True, autoincrement=True)
+    data_provider = Column(String, nullable=False)
+    layer_id = Column(Integer, nullable=False)
+    table_name = Column(String, nullable=False)
+    unique_column_name = Column(String, nullable=True)
+    coverage_area = Column(String, nullable=True)
+    url = Column(String, nullable=False)
 
 
-def region_geometry(key):
-    """get the regional polygons data from Stats NZ and create a complete NZ polygon"""
-    # fetch the required regional polygon data from StatsNZ
-    vector_fetcher = geoapis.vector.StatsNz(key, verbose=True, crs=2193)
-    response_data = vector_fetcher.run(105133)
-    response_data.columns = response_data.columns.str.lower()
-    # Move 'geometry' column to be the last column
-    geometry_column = response_data.pop("geometry")
-    response_data = pd.concat([response_data, geometry_column], axis=1)
-    # Dissolve regional polygons to create complete NZ polygon then explode
-    nz_polygon = response_data.dissolve(aggfunc="sum").explode(index_parts=True)
-    nz_polygon.insert(0, "regc2021_v1_00", "100")
-    nz_polygon.insert(1, "regc2021_v1_00_name", "New Zealand")
-    nz_polygon.insert(2, "regc2021_v1_00_name_ascii", "New Zealand")
-    # Combine regional polygons and complete NZ polygon
-    region_geometry_df = pd.concat(
-        [response_data, nz_polygon.iloc[[0]]], ignore_index=True
-    )
-    return region_geometry_df
+class UserLogInfo(Base):
+    """
+    Class representing the 'user_log_information' table.
 
-
-class User_log_info(Base):
-    """Class used to create user_log_information table."""
-
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each log entry (primary key).
+    source_table_list : List[str]
+        A list of tables (geospatial layers) associated with the log entry.
+    created_at : datetime
+        Timestamp indicating when the log entry was created.
+    geometry : Polygon
+        Geometric representation of the catchment area coverage.
+    """
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    source_list = Column(JSONB)
-    geometry = Column(Geometry("POLYGON"))
-    accessed_date = Column(DateTime, default=datetime.now())
+    source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="log created datetime")
+    geometry = Column(Geometry("POLYGON", srid=2193))
 
 
-class Apilink(Base):
-    """Class used to create apilinks table."""
+class HydroDEM(Base):
+    """
+    Class representing the 'hydrological_dem' table.
 
-    __tablename__ = "apilinks"
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each entry (primary key).
+    file_name : str
+        Name of the hydrological DEM file.
+    file_path : str
+        Path to the hydrological DEM file.
+    created_at : datetime
+        Timestamp indicating when the output was created.
+    geometry : Geometry
+        Geometric representation of the catchment area coverage.
+    """
+    __tablename__ = "hydrological_dem"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    data_provider = Column(Unicode)
-    source_name = Column(Unicode, unique=True)
-    layer = Column(Integer)
-    region_name = Column(Unicode)
-    source_api = Column(Unicode)
-    api_modified_date = Column(Date)
-    url = Column(Unicode)
-    access_date = Column(DateTime, default=datetime.now())
-    query_dictionary = Column(JSON)
-    geometry_col_name = Column(Unicode)
-    geometry = Column(Geometry)
+    file_name = Column(String, comment="name of the hydro-DEM file")
+    file_path = Column(String, comment="path to the hydro-DEM file")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
+    geometry = Column(Geometry("GEOMETRY", srid=2193))
 
 
-class dbsession:
-    """Class used to connect to postgreSQL"""
+class BGFloodModelOutput(Base):
+    """
+    Class representing the 'bg_flood_model_output' table.
 
-    def sessionCreate(self, table, engine):
-        # checkfirst=True to make sure the table doesn't exist
-        table.__table__.create(engine, checkfirst=True)
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each entry (primary key).
+    file_name : str
+        Name of the flood model output file.
+    file_path : str
+        Path to the flood model output file.
+    created_at : datetime
+        Timestamp indicating when the output was created.
+    geometry : Geometry
+        Geometric representation of the catchment area coverage.
+    """
+    __tablename__ = "bg_flood_model_output"
+    unique_id = Column(Integer, primary_key=True, autoincrement=True)
+    file_name = Column(String, comment="name of the flood model output file")
+    file_path = Column(String, comment="path to the flood model output file")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
+    geometry = Column(Geometry("GEOMETRY", srid=2193))
 
-    def runQuery(self, engine, query):
-        Session = sessionmaker(bind=engine)
-        session = Session()
+
+def create_table(engine: Engine, table: Base) -> None:
+    """
+    Create a table in the database if it doesn't already exist, using the provided engine.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    table : Base
+        Class representing the table to create.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    table.__table__.create(bind=engine, checkfirst=True)
+
+
+def check_table_exists(engine: Engine, table_name: str, schema: str = "public") -> bool:
+    """
+    Check if a table exists in the database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    table_name : str
+        The name of the table to check for existence.
+    schema : str, optional
+        The name of the schema where the table resides. Defaults to "public".
+
+    Returns
+    -------
+    bool
+        True if the table exists, False otherwise.
+    """
+    inspector = inspect(engine)
+    return inspector.has_table(table_name, schema=schema)
+
+
+def execute_query(engine: Engine, query) -> None:
+    """
+    Execute the given query on the provided engine using a session.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    query
+        The query to be executed.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+
+    Raises
+    ------
+    Exception
+        If an error occurs during the execution of the query.
+    """
+    with Session(engine) as session:
+        session.begin()
         try:
             session.add(query)
             session.commit()
         except Exception as error:
-            log.info(error)
             session.rollback()
-
-
-def table_exists(engine, name, schema="public"):
-    """Check whether table already exist in the database"""
-    check_exists = sqlalchemy.inspect(engine).has_table(name, schema)
-    return check_exists
+            raise error

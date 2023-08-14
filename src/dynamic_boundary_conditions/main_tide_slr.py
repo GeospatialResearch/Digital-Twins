@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-@Description:
+@Description: Main tide and sea level rise script used to fetch tide data, read and store sea level rise data in the
+              database, and generate the requested uniform boundary model input for BG-Flood etc.
 @Author: sli229
 """
 
 import logging
 import pathlib
 
-import sqlalchemy
 import geopandas as gpd
-from shapely.geometry import box
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
+
 from src.dynamic_boundary_conditions.tide_enum import ApproachType
 from src.dynamic_boundary_conditions import (
     tide_query_location,
@@ -23,77 +24,44 @@ from src.dynamic_boundary_conditions import (
 )
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
 
 
-def write_nz_bbox_to_file(engine, file_name: str = "nz_bbox.geojson"):
-    file_path = pathlib.Path.cwd() / file_name
-    if not file_path.is_file():
-        query = "SELECT * FROM region_geometry"
-        region_geom = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-        nz_geom = region_geom.query('shape_area == shape_area.max()').reset_index(drop=True)
-        min_x, min_y, max_x, max_y = nz_geom.total_bounds
-        bbox = box(min_x, min_y, max_x, max_y)
-        nz_bbox = gpd.GeoDataFrame(geometry=[bbox], crs=2193)
-        nz_bbox.to_file(file_name, driver="GeoJSON")
-
-
-def get_catchment_area(
-        catchment_area: gpd.GeoDataFrame,
-        to_crs: int = 2193) -> gpd.GeoDataFrame:
-    catchment_area = catchment_area.to_crs(to_crs)
-    return catchment_area
-
-
-def check_table_exists(engine, db_table_name: str) -> bool:
+def remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None:
     """
-    Check if table exists in the database.
+    Remove existing uniform boundary input files from the specified directory.
 
     Parameters
     ----------
-    engine
-        Engine used to connect to the database.
-    db_table_name : str
-        Database table name.
+    bg_flood_dir : pathlib.Path
+        BG-Flood model directory containing the uniform boundary input files.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
     """
-    insp = sqlalchemy.inspect(engine)
-    table_exists = insp.has_table(db_table_name, schema="public")
-    return table_exists
+    # Iterate through all boundary files in the directory
+    for boundary_file in bg_flood_dir.glob('*_bnd.txt'):
+        # Remove the file
+        boundary_file.unlink()
 
 
-def remove_existing_boundary_input(bg_flood_dir: pathlib.Path):
-    # iterate through all files in the directory
-    for file_path in bg_flood_dir.glob('*_bnd.txt'):
-        # remove the file
-        file_path.unlink()
-
-
-def main(selected_polygon_gdf: gpd.GeoDataFrame):
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
     try:
+        # Set up logging with the specified log level
+        setup_logging(log_level)
         # Connect to the database
         engine = setup_environment.get_database()
-        write_nz_bbox_to_file(engine)
         # Get catchment area
         catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
         # BG-Flood Model Directory
         bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-        # Remove existing tide model input files
-        remove_existing_boundary_input(bg_flood_dir)
+        # Remove any existing uniform boundary model inputs in the BG-Flood directory
+        remove_existing_boundary_inputs(bg_flood_dir)
 
-        # Store regional council clipped data in the database
-        tide_query_location.store_regional_council_clipped_to_db(engine, layer_id=111181)
-        # Get regional council clipped data that intersect with the catchment area from the database
-        regions_clipped = tide_query_location.get_regional_council_clipped_from_db(engine, catchment_area)
-        # Get the location (coordinates) to fetch tide data for
-        tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area, regions_clipped)
-
-        # Get tide data
+        # Get the locations used to fetch tide data
+        tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area)
+        # Fetch tide data from NIWA using the tide API
         tide_data_king = tide_data_from_niwa.get_tide_data(
             tide_query_loc=tide_query_loc,
             approach=ApproachType.KING_TIDE,
@@ -101,13 +69,12 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
             time_to_peak_mins=1440,
             interval_mins=10)
 
-        # Store sea level rise data to database
-        slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
-        sea_level_rise_data.store_slr_data_to_db(engine, slr_data_dir)
-        # Get closest sea level rise site data from database
-        slr_data = sea_level_rise_data.get_closest_slr_data(engine, tide_data_king)
+        # Store sea level rise data to the database
+        sea_level_rise_data.store_slr_data_to_db(engine)
+        # Get the closest sea level rise data from the database
+        slr_data = sea_level_rise_data.get_slr_data_from_db(engine, tide_data_king)
 
-        # Combine tide and sea level rise data
+        # Combine the tide and sea level rise (SLR) data
         tide_slr_data = tide_slr_combine.get_combined_tide_slr_data(
             tide_data=tide_data_king,
             slr_data=slr_data,
@@ -117,11 +84,16 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame):
             add_vlm=False,
             percentile=50)
 
-        # Generate the model input for BG-Flood
+        # Generate the uniform boundary model input
         tide_slr_model_input.generate_uniform_boundary_input(bg_flood_dir, tide_slr_data)
 
     except tide_query_location.NoTideDataException as error:
+        # Log an info message to indicate the absence of tide data
         log.info(error)
+
+    except RuntimeError as error:
+        # Log a warning message to indicate that a runtime error occurred while fetching tide data
+        log.warning(error)
 
 
 if __name__ == "__main__":

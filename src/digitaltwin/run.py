@@ -1,55 +1,32 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep 13 15:21:34 2021
-
-@author: pkh35
+@Description: This script automates the retrieval and storage of geospatial data from various providers using the
+              'geoapis' library. It populates the 'geospatial_layers' table in the database and stores user log
+              information for tracking and reference purposes.
+@Author: sli229
 """
-import json
-import pathlib
 
-from src import config
-from src.digitaltwin import insert_api_to_table
-from src.digitaltwin import setup_environment
+import geopandas as gpd
 
-
-def input_data(file):
-    """Read json instruction file to store record i.e. api details to the database."""
-    # load in the instructions to add building outlines api from LINZ
-    file_path = pathlib.Path().cwd() / pathlib.Path(file)
-    with open(file_path, "r") as file_pointer:
-        instructions = json.load(file_pointer)
-    instruction_node = instructions["instructions"]
-
-    return instruction_node
+from src.digitaltwin import setup_environment, instructions_records_to_db, data_to_db
+from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 
-def main():
-    # Read in the database - will fail if the database hasn't been setup.
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+    # Set up logging with the specified log level
+    setup_logging(log_level)
+    # Connect to the database
     engine = setup_environment.get_database()
-    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
-    # Create region_geometry table if it doesn't exist in the database
-    # No need to call region_geometry_table function if region_geometry
-    # table exist in the database
-    insert_api_to_table.region_geometry_table(engine, stats_nz_api_key)
-
-    record = input_data("src/digitaltwin/instructions_run.json")
-
-    # Substitute api key into link template
-    linz_api_key = config.get_env_variable("LINZ_API_KEY")
-    record["api"] = record["api"].format(api_key=linz_api_key)
-
-    # Call the function to insert record in apilinks table
-    insert_api_to_table.insert_records(
-        engine,
-        record["data_provider"],
-        record["source_name"],
-        record["api"],
-        record["region_name"],
-        record["geometry_col_name"],
-        record["url"],
-        record["layer"],
-    )
+    # Get catchment area
+    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
+    # Store 'instructions_run' records in the 'geospatial_layers' table in the database.
+    instructions_records_to_db.store_instructions_records_to_db(engine)
+    # Store geospatial layers data in the database
+    data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
+    # Store user log information in the database
+    data_to_db.user_log_info_to_db(engine, catchment_area)
 
 
 if __name__ == "__main__":
-    main()
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(sample_polygon)

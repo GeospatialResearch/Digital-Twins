@@ -1,180 +1,280 @@
 # -*- coding: utf-8 -*-
 """
-@Description:
+@Description: Get the locations used to fetch tide data from NIWA using the tide API.
 @Author: sli229
 """
 
-import logging
-
 from shapely.geometry import LineString, Point
 import geopandas as gpd
-import geoapis.vector
-
-from src import config
-from src.dynamic_boundary_conditions import main_tide_slr
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-log.addHandler(stream_handler)
+from sqlalchemy.engine import Engine
 
 
 class NoTideDataException(Exception):
+    """Exception raised when no tide data is to be used for the BG-Flood model."""
     pass
 
 
-def get_data_from_stats_nz(
-        layer_id: int,
-        crs: int = 2193,
-        bounding_polygon: gpd.GeoDataFrame = None,
-        verbose: bool = True) -> gpd.GeoDataFrame:
-    stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
-    vector_fetcher = geoapis.vector.StatsNz(
-        key=stats_nz_api_key,
-        bounding_polygon=bounding_polygon,
-        verbose=verbose,
-        crs=crs)
-    stats_data = vector_fetcher.run(layer_id)
-    return stats_data
+def get_regional_council_clipped_from_db(
+        engine: Engine,
+        catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """
+    Retrieve regional council clipped data from the database based on the catchment area.
 
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
 
-def get_regional_council_clipped(
-        layer_id: int = 111181,
-        crs: int = 2193,
-        bounding_polygon: gpd.GeoDataFrame = None,
-        verbose: bool = True) -> gpd.GeoDataFrame:
-    regional_clipped = get_data_from_stats_nz(layer_id, crs, bounding_polygon, verbose)
-    regional_clipped.columns = regional_clipped.columns.str.lower()
-    regional_clipped['geometry'] = regional_clipped.pop('geometry')
-    return regional_clipped
-
-
-def store_regional_council_clipped_to_db(
-        engine,
-        layer_id: int = 111181,
-        crs: int = 2193,
-        bounding_polygon: gpd.GeoDataFrame = None,
-        verbose: bool = True):
-    if main_tide_slr.check_table_exists(engine, "region_geometry_clipped"):
-        log.info("Table 'region_geometry_clipped' already exists in the database.")
-    else:
-        regional_clipped = get_regional_council_clipped(layer_id, crs, bounding_polygon, verbose)
-        regional_clipped.to_postgis("region_geometry_clipped", engine, index=False, if_exists="replace")
-        log.info(f"Added regional council clipped (StatsNZ {layer_id}) data to database.")
-
-
-def get_regional_council_clipped_from_db(engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the regional council clipped data for the catchment area.
+    """
+    # Extract the catchment polygon from the GeoDataFrame
     catchment_polygon = catchment_area["geometry"][0]
+    # Construct the query to retrieve the regional council clipped data
     query = f"""
     SELECT *
     FROM region_geometry_clipped AS rgc
-    WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193))"""
+    WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    """
+    # Execute the query and retrieve the result as a GeoDataFrame
     regions_clipped = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return regions_clipped
 
 
-def get_nz_coastline_from_db(engine, catchment_area: gpd.GeoDataFrame, distance_km: int) -> gpd.GeoDataFrame:
+def get_nz_coastline_from_db(
+        engine: Engine,
+        catchment_area: gpd.GeoDataFrame,
+        distance_km: int = 1) -> gpd.GeoDataFrame:
+    """
+    Retrieve the New Zealand coastline data within a specified distance of the catchment area from the database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+    distance_km : int, optional
+        Distance in kilometers used to buffer the catchment area for coastline retrieval. Default is 1 kilometer.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the New Zealand coastline data within the specified distance of the catchment area.
+    """
+    # Convert distance from kilometers to meters
     distance_m = distance_km * 1000
+    # Buffer the catchment area to create a buffered polygon
     catchment_area_buffered = catchment_area.buffer(distance=distance_m, join_style=2)
     catchment_area_buffered_polygon = catchment_area_buffered.iloc[0]
+    # Construct the query to retrieve the New Zealand coastline data within the buffered catchment area
     query = f"""
     SELECT *
     FROM "_50258-nz-coastlines" AS coast
-    WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{catchment_area_buffered_polygon}', 2193))"""
+    WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{catchment_area_buffered_polygon}', 2193));
+    """
+    # Execute the query and retrieve the result as a GeoDataFrame
     coastline = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return coastline
 
 
 def get_catchment_boundary_info(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    # Get the exterior boundary of the catchment polygon
-    boundary_lines = catchment_area["geometry"][0].exterior.coords
+    """
+    Get information about the boundary segments of the catchment area.
+
+    Parameters
+    ----------
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing information about the boundary segments of the catchment area.
+
+    Raises
+    ------
+    ValueError
+        If the position of a catchment boundary line cannot be identified.
+    """
+    # Retrieve the coordinates of the exterior boundary of the catchment area
+    boundary_coords = catchment_area["geometry"].iloc[0].exterior.coords
     # Create an empty list to store boundary segment properties
     boundary_segments = []
     # Loop through each boundary line segment
-    for i in range(len(boundary_lines) - 1):
+    for i in range(len(boundary_coords) - 1):
         # Get the start and end points of the current boundary segment
-        start_point = boundary_lines[i]
-        end_point = boundary_lines[i + 1]
+        start_point, end_point = boundary_coords[i], boundary_coords[i + 1]
         # Find the centroid of the current boundary segment
         centroid = Point((start_point[0] + end_point[0]) / 2, (start_point[1] + end_point[1]) / 2)
-        # Determine the position of the centroid relative to the catchment polygon
-        if centroid.x == min(boundary_lines)[0]:
+        # Determine the position of the centroid relative to the catchment area
+        if centroid.x == min(boundary_coords)[0]:
             position = 'left'
-        elif centroid.x == max(boundary_lines)[0]:
+        elif centroid.x == max(boundary_coords)[0]:
             position = 'right'
-        elif centroid.y == min(boundary_lines)[1]:
+        elif centroid.y == min(boundary_coords)[1]:
             position = 'bot'
-        elif centroid.y == max(boundary_lines)[1]:
+        elif centroid.y == max(boundary_coords)[1]:
             position = 'top'
         else:
             raise ValueError("Failed to identify catchment boundary line position.")
         # Create a LineString object for the current boundary segment
-        segment = LineString([start_point, end_point])
+        boundary_geom = LineString([start_point, end_point])
         # Add the boundary segment and its properties to the list
-        boundary_segments.append({'line_position': position, 'centroid': centroid, 'boundary': segment})
-    # Convert the list to a GeoDataFrame
+        boundary_segments.append({'line_position': position, 'boundary': boundary_geom})
+    # Convert the list of boundary segments to a GeoDataFrame
     boundary_info = gpd.GeoDataFrame(boundary_segments, geometry='boundary', crs=catchment_area.crs)
+    # Calculate and add the centroid of each boundary segment as a new column
+    boundary_info['centroid'] = boundary_info['boundary'].centroid
     return boundary_info
 
 
 def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """
+    Get the boundary lines of the catchment area.
+
+    Parameters
+    ----------
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the boundary lines of the catchment area.
+    """
+    # Get the boundary information of the catchment area
     boundary_info = get_catchment_boundary_info(catchment_area)
+    # Select the required columns and rename 'boundary' to 'geometry'
     boundary_lines = boundary_info[['line_position', 'boundary']].rename(columns={'boundary': 'geometry'})
+    # Set the 'geometry' column as the active geometry column
     boundary_lines = boundary_lines.set_geometry('geometry', crs=catchment_area.crs)
     return boundary_lines
 
 
 def get_catchment_boundary_centroids(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """
+    Get the centroids of the boundary lines of the catchment area.
+
+    Parameters
+    ----------
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the centroids of the boundary lines of the catchment area.
+    """
+    # Get the boundary information of the catchment area
     boundary_info = get_catchment_boundary_info(catchment_area)
+    # Select the required columns and rename 'centroid' to 'geometry'
     boundary_centroids = boundary_info[['line_position', 'centroid']].rename(columns={'centroid': 'geometry'})
+    # Set the 'geometry' column as the active geometry column
     boundary_centroids = boundary_centroids.set_geometry('geometry', crs=catchment_area.crs)
     return boundary_centroids
 
 
 def get_non_intersection_centroid_position(
         catchment_area: gpd.GeoDataFrame,
-        non_intersection: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        non_intersection_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """
+    Determine the positions of non-intersection centroid points relative to the boundary lines of the catchment area.
+
+    Parameters
+    ----------
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+    non_intersection_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the non-intersection area.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the positions of non-intersection centroid points relative to the catchment boundary
+        lines. The GeoDataFrame includes the 'position' column denoting the relative position and the 'geometry' column
+        representing the centroid points of the non-intersection areas.
+    """
+    # Get the boundary lines of the catchment area
     boundary_lines = get_catchment_boundary_lines(catchment_area)
-    non_intersection = non_intersection.explode(index_parts=False, ignore_index=True)
-    non_intersection['centroid'] = non_intersection.centroid
-    for index, row in non_intersection.iterrows():
+    # Explode the non-intersection area to ensure each geometry is a single part
+    non_intersections = non_intersection_area.explode(index_parts=False, ignore_index=True)
+    # Calculate the centroid for each non-intersection geometry
+    non_intersections['centroid'] = non_intersections.centroid
+    # Determine the position of each centroid relative to the boundary lines
+    for index, row in non_intersections.iterrows():
         centroid = row['centroid']
-        # Calculate the distance from the centroid to each line
+        # Calculate the distance from the centroid to each boundary line
         distances = {}
         for _, boundary_row in boundary_lines.iterrows():
             distances[boundary_row['line_position']] = centroid.distance(boundary_row['geometry'])
         # Find the name of the closest line based on the minimum distance
         closest_line = min(distances, key=distances.get)
-        non_intersection.at[index, 'position'] = closest_line
-    non_intersection = non_intersection[['position', 'centroid']].rename(columns={'centroid': 'geometry'})
-    non_intersection = non_intersection.set_geometry('geometry')
-    return non_intersection
+        # Assign the position of the centroid based on the closest line
+        non_intersections.at[index, 'position'] = closest_line
+    # Select the required columns and rename 'centroid' to 'geometry'
+    non_intersections = non_intersections[['position', 'centroid']].rename(columns={'centroid': 'geometry'})
+    # Set the 'geometry' column as the active geometry column
+    non_intersections = non_intersections.set_geometry('geometry')
+    return non_intersections
 
 
 def get_tide_query_locations(
-        engine,
+        engine: Engine,
         catchment_area: gpd.GeoDataFrame,
-        regions_clipped: gpd.GeoDataFrame,
         distance_km: int = 1) -> gpd.GeoDataFrame:
-    non_intersection = catchment_area.overlay(regions_clipped, how='difference')
-    if not non_intersection.empty:
-        tide_query_location = get_non_intersection_centroid_position(catchment_area, non_intersection)
+    """
+    Get the locations used to fetch tide data from NIWA using the tide API.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+    distance_km : int, optional
+        Distance in kilometers used to buffer the catchment area for coastline retrieval. Default is 1 kilometer.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the locations used to fetch tide data from NIWA using the tide API.
+
+    Raises
+    ------
+    NoTideDataException
+        If no coastline is found within the specified distance of the catchment area.
+    """
+    # Get the regional council clipped data for the catchment area
+    regions_clipped = get_regional_council_clipped_from_db(engine, catchment_area)
+    # Determine the non-intersection area within the catchment
+    non_intersection_area = catchment_area.overlay(regions_clipped, how='difference')
+    if not non_intersection_area.empty:
+        # Get the centroid positions of non-intersection areas relative to the catchment boundary lines
+        tide_query_location = get_non_intersection_centroid_position(catchment_area, non_intersection_area)
     else:
+        # Get the New Zealand coastline data within the specified distance of the catchment area
         coastline = get_nz_coastline_from_db(engine, catchment_area, distance_km)
         if not coastline.empty:
             coastline_geom = coastline['geometry'].iloc[0]
+            # Get the centroid positions of the catchment boundary lines
             boundary_centroids = get_catchment_boundary_centroids(catchment_area)
+            # Calculate the distance from each boundary centroid to the coastline
             boundary_centroids['dist_to_coast'] = boundary_centroids.distance(coastline_geom)
+            # Select the boundary centroid closest to the coastline
             tide_query_location = boundary_centroids.sort_values('dist_to_coast').head(1)
+            # Rename the 'line_position' column to 'position' for consistency
             tide_query_location = tide_query_location[['line_position', 'geometry']].rename(
                 columns={'line_position': 'position'})
         else:
+            # If no coastline is found, raise an exception
             raise NoTideDataException(
                 f"No relevant tide data could be found within {distance_km}km of the catchment area. "
                 f"As a result, tide data will not be used in the BG-Flood model.")
+    # Convert the CRS of the tide query locations to ensure compatibility with the tide API
     tide_query_location = tide_query_location.to_crs(4326).reset_index(drop=True)
     return tide_query_location
