@@ -30,7 +30,7 @@ def get_database() -> Engine:
 
     Raises
     ------
-    ConnectionAbortedError
+    OperationalError
         If the connection to the database fails.
     """
     try:
@@ -38,7 +38,7 @@ def get_database() -> Engine:
         log.debug("Connected to PostgreSQL database successfully!")
         return engine
     except OperationalError as e:
-        raise ConnectionAbortedError("Connection to database failed. Please check .env file.") from e
+        raise OperationalError("Connection to database failed. Please check .env file.") from e
 
 
 def get_connection_from_profile() -> Engine:
