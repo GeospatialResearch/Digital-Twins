@@ -71,10 +71,10 @@ def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
     None
         This function does not return any value.
     """
-    # Iterate through all files in the directory
-    for file_path in bg_flood_dir.glob('river[0-9]*.txt'):
+    # Iterate through all river input files in the directory
+    for river_input_file in bg_flood_dir.glob('river[0-9]*.txt'):
         # Remove the file
-        file_path.unlink()
+        river_input_file.unlink()
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
