@@ -41,9 +41,9 @@ def clean_fetched_vector_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
     gpd.GeoDataFrame
         The cleaned vector data as a GeoDataFrame.
     """
-    # Convert column names to lowercase
+    # Ensure consistent column naming convention by converting all column names to lowercase
     fetched_data.columns = fetched_data.columns.str.lower()
-    # Move 'geometry' column to the end
+    # Move the 'geometry' column to the end, ensuring spatial columns are located at the end of database tables
     fetched_data['geometry'] = fetched_data.pop('geometry')
     return fetched_data
 
