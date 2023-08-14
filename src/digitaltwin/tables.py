@@ -191,11 +191,10 @@ def execute_query(engine: Engine, query) -> None:
         If an error occurs during the execution of the query.
     """
     with Session(engine) as session:
+        session.begin()
         try:
             session.add(query)
             session.commit()
         except Exception as error:
             session.rollback()
             raise error
-        finally:
-            session.close()
