@@ -29,7 +29,7 @@ Base = declarative_base()
 def get_hydro_dem_metadata(
         instructions: Dict[str, Any],
         catchment_boundary: gpd.GeoDataFrame) -> Tuple[str, str, str]:
-    """Get the hydrological DEM metadat~a."""
+    """Get the hydrologically conditioned DEM metadata."""
     data_paths: Dict[str, Any] = instructions["instructions"]["data_paths"]
     result_dem_path = pathlib.Path(data_paths["local_cache"]) / data_paths["subfolder"] / data_paths["result_dem"]
     hydro_dem_name = result_dem_path.name
@@ -121,7 +121,7 @@ def get_catchment_hydro_dem_filepath(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
@@ -153,7 +153,7 @@ def get_hydro_dem_data_and_resolution(
     Parameters
     ----------
     engine : Engine
-        Engine used to connect to the database.
+        The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
