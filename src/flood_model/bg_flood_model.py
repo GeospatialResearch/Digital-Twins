@@ -12,6 +12,7 @@ import os
 import subprocess
 from datetime import datetime
 from typing import Tuple, Union, Optional, TextIO
+import json
 
 import geopandas as gpd
 import xarray as xr
@@ -24,6 +25,10 @@ from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, execute_query
 from src.flood_model.serve_model import add_model_output_to_geoserver
 from src.lidar import dem_metadata_in_db
+
+import sys
+sys.path.insert(0, r'../NewZeaLiDAR')
+from newzealidar import tables, utils
 
 log = logging.getLogger(__name__)
 
@@ -398,10 +403,16 @@ def run_bg_flood_model(
     # Get the valid BG-Flood Model directory
     bg_flood_dir = get_valid_bg_flood_dir()
     # Get the file path of the Hydro DEM for the catchment area
-    hydro_dem_path = dem_metadata_in_db.get_catchment_hydro_dem_filepath(engine, catchment_area)
+    index = utils.check_dem_exist_by_geometry(engine, catchment_area)
+    # hydro_dem_path = tables.get_data_by_id(engine, tables.DEM, index, geom_col='')['hydro_dem_path'].values[0]
+    df = tables.get_data_by_id(engine, tables.DEM, index, geom_col='')
+    hydro_dem_path = pathlib.Path(df['hydro_dem_path'].values[0])
     # Use the resolution of the Hydro DEM if it is not provided
     if resolution is None:
-        _, resolution = dem_metadata_in_db.get_hydro_dem_data_and_resolution(engine, catchment_area)
+        instructions_file = pathlib.Path(utils.get_env_variable("INSTRUCTIONS_FILE"))
+        with open(instructions_file, 'r') as f:
+            instructions = json.loads(f.read())
+            resolution = instructions['instructions']['output']['grid_params']['resolution']
 
     # Prepare inputs for the BG-Flood Model
     prepare_bg_flood_model_inputs(

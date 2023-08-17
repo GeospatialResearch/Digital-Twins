@@ -14,10 +14,14 @@ from src.digitaltwin import run
 from src.lidar import lidar_metadata_in_db, dem_metadata_in_db
 from src.dynamic_boundary_conditions import main_rainfall, main_tide_slr, main_river
 from src.flood_model import bg_flood_model
+import sys
+sys.path.insert(0, r'../NewZeaLiDAR')
+from newzealidar import datasets, process
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, modules_with_log_levels: Dict[ModuleType, LogLevel]) -> None:
     for module, log_level in modules_with_log_levels.items():
+        # xander: TODO: do we have to name the function name "main"? It looks strange call multiple main in main.
         module.main(selected_polygon_gdf, log_level=log_level)
 
 
@@ -25,11 +29,13 @@ if __name__ == '__main__':
     # Define a dictionary mapping each module to its log level
     module_to_log_level = {
         run: LogLevel.DEBUG,
-        lidar_metadata_in_db: LogLevel.DEBUG,
-        dem_metadata_in_db: LogLevel.DEBUG,
+        # xander remove # lidar_metadata_in_db: LogLevel.DEBUG,
+        # xander remove # dem_metadata_in_db: LogLevel.DEBUG,
+        datasets: LogLevel.DEBUG,
+        process: LogLevel.DEBUG,
         main_rainfall: LogLevel.DEBUG,
         main_tide_slr: LogLevel.DEBUG,
-        main_river: LogLevel.DEBUG,
+        # xander TODO: not working # main_river: LogLevel.DEBUG,
         bg_flood_model: LogLevel.DEBUG,
     }
 
