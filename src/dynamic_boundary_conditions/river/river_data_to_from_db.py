@@ -119,4 +119,6 @@ def get_rec1_data_from_db(
     rec1_data = gpd.GeoDataFrame.from_postgis(rec1_query, engine, geom_col="geometry")
     # Remove any duplicate records from the REC1 data
     rec1_data = rec1_data.drop_duplicates()
+    # Sort by the "objectid" column and reset the index
+    rec1_data = rec1_data.sort_values(by="objectid").reset_index(drop=True)
     return rec1_data

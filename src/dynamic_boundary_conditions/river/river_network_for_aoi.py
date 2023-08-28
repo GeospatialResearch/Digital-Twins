@@ -5,7 +5,7 @@ Additionally, it identifies intersections between the REC1 rivers and the catchm
 providing valuable information for further use.
 """
 
-from typing import Dict
+from typing import Dict, Tuple, List
 
 import geopandas as gpd
 from shapely.geometry import Point
@@ -14,7 +14,7 @@ import networkx as nx
 from src.dynamic_boundary_conditions.river import main_river
 
 
-def add_first_last_coords_to_rec1(rec1_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def add_first_and_last_coords_to_rec1(rec1_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Adds columns for the first and last coordinates of each LineString in the REC1 data for the catchment area.
 
@@ -61,13 +61,13 @@ def get_unique_nodes_dict(rec1_data_w_node_coords: gpd.GeoDataFrame) -> Dict[Poi
     # Find unique node coordinates
     unique_node_coords = [x for i, x in enumerate(rec1_node_coords) if x not in rec1_node_coords[:i]]
     # Create a dictionary containing the unique node coordinates
-    unique_nodes_dict = {coord_point: i for i, coord_point in enumerate(unique_node_coords)}
+    unique_nodes_dict = {coord_point: i + 1 for i, coord_point in enumerate(unique_node_coords)}
     return unique_nodes_dict
 
 
-def create_rec1_network_data(rec1_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def prepare_network_data_for_construction(rec1_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Creates river network data for the catchment area using the REC1 data.
+    Prepares the necessary data for constructing the river network for the catchment area using the REC1 data.
 
     Parameters
     ----------
@@ -77,50 +77,229 @@ def create_rec1_network_data(rec1_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the river network data for the catchment area derived from the REC1 data.
+        A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
     """
     # Add columns for the first and last coordinates of each LineString in the REC1 data
-    rec1_network_data = add_first_last_coords_to_rec1(rec1_data)
+    prepared_network_data = add_first_and_last_coords_to_rec1(rec1_data)
     # Generate a dictionary that contains the unique node coordinates in the REC1 data
-    unique_nodes_dict = get_unique_nodes_dict(rec1_network_data)
+    unique_nodes_dict = get_unique_nodes_dict(prepared_network_data)
     # Map the first coordinates of LineStrings to their corresponding node indices and assign to the "first_node" column
-    rec1_network_data["first_node"] = rec1_network_data["first_coord"].apply(lambda x: unique_nodes_dict.get(x, None))
+    prepared_network_data["first_node"] = prepared_network_data["first_coord"].apply(
+        lambda x: unique_nodes_dict.get(x, None))
     # Map the last coordinates of LineStrings to their corresponding node indices and assign to the "last_node" column
-    rec1_network_data["last_node"] = rec1_network_data["last_coord"].apply(lambda x: unique_nodes_dict.get(x, None))
-    return rec1_network_data
+    prepared_network_data["last_node"] = prepared_network_data["last_coord"].apply(
+        lambda x: unique_nodes_dict.get(x, None))
+    return prepared_network_data
 
 
-def build_rec1_network(rec1_network_data: gpd.GeoDataFrame) -> nx.Graph:
+def add_nodes_to_network(prepared_network_data: gpd.GeoDataFrame, rec1_network: nx.Graph) -> None:
     """
-    Builds a river network for the catchment area using the provided river network data.
+    Add nodes to the REC1 river network along with their attributes.
 
     Parameters
     ----------
-    rec1_network_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the river network data for the catchment area derived from the REC1 data.
+    prepared_network_data : gpd.GeoDataFrame
+        A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+    rec1_network : nx.Graph
+        The REC1 river network, a directed graph, to which nodes will be added.
 
     Returns
     -------
-    nx.Graph
-        A networkx Graph representing the river network for the catchment area.
+    None
+        This function does not return any value.
     """
-    # Create an empty undirected graph to represent the river network
-    rec1_network = nx.Graph()
-    # Iterate over each row in rec1_network_data
+    # Iterate over rows in the prepared network data
+    for _, row_edge in prepared_network_data.iterrows():
+        # Extract node and coordinate information
+        first_node, first_coord = row_edge["first_node"], row_edge["first_coord"]
+        last_node, last_coord = row_edge["last_node"], row_edge["last_coord"]
+        # Add nodes to the river network along with their attributes
+        rec1_network.add_node(first_node, geometry=first_coord)
+        rec1_network.add_node(last_node, geometry=last_coord)
+
+
+def add_initial_edges_to_network(prepared_network_data: gpd.GeoDataFrame, rec1_network: nx.Graph) -> None:
+    """
+    Add initial edges to the REC1 river network along with their attributes.
+
+    Parameters
+    ----------
+    prepared_network_data : gpd.GeoDataFrame
+        A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+    rec1_network : nx.Graph
+        The REC1 river network, a directed graph, to which initial edges will be added.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Iterate through each edge in the prepared network data
+    for _, current_edge in prepared_network_data.iterrows():
+        # Extract the area of the current edge
+        current_edge_area = current_edge["areakm2"]
+        # Find connected edges based on the first node of the current edge
+        connected_edges = prepared_network_data[prepared_network_data["last_node"] == current_edge["first_node"]]
+
+        # Check if there are any connected edges
+        if not connected_edges.empty:
+            # Iterate through connected edges to establish initial connections
+            for _, connected_edge in connected_edges.iterrows():
+                # Extract the area of the connected edge
+                connected_edge_area = connected_edge["areakm2"]
+
+                # Determine the direction of edge connection based on their areas
+                if current_edge_area < connected_edge_area:
+                    # Assign from and to nodes for the current edge and the connected edge
+                    current_from_node, current_to_node = current_edge[["last_node", "first_node"]]
+                    connected_from_node, connected_to_node = connected_edge[["last_node", "first_node"]]
+                else:
+                    # Assign from and to nodes for the current edge and the connected edge (reversed order)
+                    connected_from_node, connected_to_node = connected_edge[["first_node", "last_node"]]
+                    current_from_node, current_to_node = current_edge[["first_node", "last_node"]]
+
+                # Create a list of tuples containing edges to be added
+                edges = [
+                    (current_from_node, current_to_node, current_edge),
+                    (connected_from_node, connected_to_node, connected_edge)
+                ]
+
+                # Add the edges to the river network along with their attributes
+                for from_node, to_node, edge_attributes in edges:
+                    rec1_network.add_edge(
+                        from_node,
+                        to_node,
+                        objectid=edge_attributes["objectid"],
+                        nzreach=edge_attributes["nzreach"],
+                        areakm2=edge_attributes["areakm2"],
+                        strm_order=edge_attributes["strm_order"],
+                        geometry=edge_attributes["geometry"]
+                    )
+
+
+def add_remaining_edges_to_network(prepared_network_data: gpd.GeoDataFrame, rec1_network: nx.Graph) -> None:
+    """
+    Add remaining edges to the REC1 river network along with their attributes.
+
+    Parameters
+    ----------
+    prepared_network_data : gpd.GeoDataFrame
+        A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+    rec1_network : nx.Graph
+        The REC1 river network, a directed graph, to which remaining edges will be added.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Find the maximum value of "first_node" in the prepared network data
+    max_first_node = prepared_network_data["first_node"].max()
+    # Filter the prepared network data to include only edges where "last_node" is greater than the maximum "first_node"
+    filtered_data = prepared_network_data[prepared_network_data["last_node"] > max_first_node]
+
+    # Check for existing edges in the river network using the filtered data
+    edge_exists = filtered_data.apply(
+        lambda row:
+        rec1_network.has_edge(row["first_node"], row["last_node"]) or
+        rec1_network.has_edge(row["last_node"], row["first_node"]),
+        axis=1
+    )
+    # Select edges that do not already exist in the river network
+    edges_not_exist = filtered_data[~edge_exists]
+
+    # If there are edges that do not exist in the network, process them
+    if not edges_not_exist.empty:
+        # Group the edges by the "last_node" to process them in groups
+        grouped = edges_not_exist.groupby("last_node")
+        # Iterate through each group of edges
+        for _, group_data in grouped:
+            # Sort the group data by "areakm2" in ascending order
+            sorted_group_data = group_data.sort_values(by='areakm2').reset_index(drop=True)
+            # Iterate through each edge in the sorted group
+            for _, row_edge in sorted_group_data.iterrows():
+                # Add the edge to the rec1_network along with its attributes
+                rec1_network.add_edge(
+                    row_edge["first_node"],
+                    row_edge["last_node"],
+                    objectid=row_edge["objectid"],
+                    nzreach=row_edge["nzreach"],
+                    areakm2=row_edge["areakm2"],
+                    strm_order=row_edge["strm_order"],
+                    geometry=row_edge["geometry"]
+                )
+
+
+def add_edge_directions_to_network_data(
+        prepared_network_data: gpd.GeoDataFrame,
+        rec1_network: nx.Graph) -> gpd.GeoDataFrame:
+    """
+    Add edge directions to the river network data based on the provided REC1 river network.
+
+    Parameters
+    ----------
+    prepared_network_data : gpd.GeoDataFrame
+        A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+    rec1_network : nx.Graph
+        The REC1 river network, a directed graph, used to determine the edge directions.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the updated river network data with added edge directions.
+    """
+    # Create a copy of the prepared network data to avoid modifying the original data
+    rec1_network_data = prepared_network_data.copy()
+    # Initialize an empty list to store edge directions
+    directions: List[str] = []
+    # Iterate over rows in the network data
     for _, row in rec1_network_data.iterrows():
-        # Add nodes to the river network with their attributes
-        rec1_network.add_nodes_from([(row["first_node"], {"geom": row["first_coord"]})])
-        rec1_network.add_nodes_from([(row["last_node"], {"geom": row["last_coord"]})])
-        # Add an edge to the river network with its attributes
-        rec1_network.add_edge(
-            row["first_node"],
-            row["last_node"],
-            objectid=row["objectid"],
-            nzreach=row["nzreach"],
-            areakm2=row["areakm2"],
-            strm_order=row["strm_order"],
-            geometry=row["geometry"])
-    return rec1_network
+        # Check if there's an edge from first_node to last_node in REC1 network
+        if rec1_network.has_edge(row["first_node"], row["last_node"]):
+            # If there's an edge from first_node to last_node, the edge direction is 'to'
+            directions.append("to")
+        # Check if there's an edge from last_node to first_node in REC1 network
+        elif rec1_network.has_edge(row["last_node"], row["first_node"]):
+            # If there's an edge from last_node to first_node, the edge direction is 'from'
+            directions.append("from")
+        else:
+            # If no edge exists in either direction, the edge direction is 'unknown'
+            directions.append("unknown")
+    # Add the computed edge directions to the network data as a new column
+    rec1_network_data["node_direction"] = directions
+    # Return the updated network data with added edge directions
+    return rec1_network_data
+
+
+def build_rec1_river_network(rec1_data: gpd.GeoDataFrame) -> Tuple[nx.DiGraph, gpd.GeoDataFrame]:
+    """
+    Builds a river network for the catchment area using the REC1 data.
+
+    Parameters
+    ----------
+    rec1_data : gpd.GeoDataFrame
+        A GeoDataFrame containing the REC1 data for the catchment area.
+
+    Returns
+    -------
+    Tuple[nx.DiGraph, gpd.GeoDataFrame]
+        A tuple containing the constructed REC1 river network, represented as a directed graph (DiGraph),
+        along with its associated data in the form of a GeoDataFrame.
+    """
+    # Prepare network data for construction
+    prepared_network_data = prepare_network_data_for_construction(rec1_data)
+    # Initialize an empty directed graph to represent the REC1 river network
+    rec1_network = nx.DiGraph()
+    # Add nodes to the REC1 river network
+    add_nodes_to_network(prepared_network_data, rec1_network)
+    # Connect nodes in the REC1 river network with initial edges
+    add_initial_edges_to_network(prepared_network_data, rec1_network)
+    # Complete the network by adding necessary remaining edges
+    add_remaining_edges_to_network(prepared_network_data, rec1_network)
+    # Integrate edge directions into the network data based on the REC1 river network structure
+    rec1_network_data = add_edge_directions_to_network_data(prepared_network_data, rec1_network)
+    # Return the constructed REC1 river network and its associated data
+    return rec1_network, rec1_network_data
 
 
 def get_rec1_boundary_points_on_bbox(
