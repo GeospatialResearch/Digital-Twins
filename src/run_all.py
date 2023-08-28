@@ -21,7 +21,6 @@ from newzealidar import datasets, process
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, modules_with_log_levels: Dict[ModuleType, LogLevel]) -> None:
     for module, log_level in modules_with_log_levels.items():
-        # xander: TODO: do we have to name the function name "main"? It looks strange call multiple main in main.
         module.main(selected_polygon_gdf, log_level=log_level)
 
 
