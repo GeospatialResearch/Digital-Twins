@@ -29,13 +29,11 @@ if __name__ == '__main__':
     # Define a dictionary mapping each module to its log level
     module_to_log_level = {
         run: LogLevel.DEBUG,
-        # xander remove # lidar_metadata_in_db: LogLevel.DEBUG,
-        # xander remove # dem_metadata_in_db: LogLevel.DEBUG,
-        datasets: LogLevel.DEBUG,
+        datasets: LogLevel.DEBUG,  # only need to run it one time to initiate db.dataset table
         process: LogLevel.DEBUG,
         main_rainfall: LogLevel.DEBUG,
         main_tide_slr: LogLevel.DEBUG,
-        # xander TODO: not working # main_river: LogLevel.DEBUG,
+        main_river: LogLevel.DEBUG,
         bg_flood_model: LogLevel.DEBUG,
     }
 

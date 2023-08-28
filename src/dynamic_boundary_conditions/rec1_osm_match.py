@@ -15,7 +15,7 @@ import xarray as xr
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
-from src.lidar import dem_metadata_in_db
+from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 
 def match_rec1_river_and_osm_waterway(
@@ -155,7 +155,7 @@ def get_elevations_from_hydro_dem(
     # Create Point objects for each row using 'x' and 'y' coordinates, storing them in 'target_point' column
     elevation_values['target_point'] = elevation_values.apply(lambda row: Point(row['x'], row['y']), axis=1)
     # Remove unnecessary columns from the elevation data
-    elevation_values.drop(columns=['x', 'y', 'band', 'spatial_ref', 'source_class'], inplace=True)
+    elevation_values.drop(columns=['x', 'y', 'band', 'spatial_ref', 'data_source'], inplace=True)
     # Rename the 'z' column to 'elevation_value' for clarity and consistency
     elevation_values.rename(columns={'z': 'elevation'}, inplace=True)
     # Convert the elevation data to a GeoDataFrame with 'target_point' as the geometry column
@@ -237,7 +237,7 @@ def get_closest_osm_waterways_with_target_locations(
     closest_osm_waterways = find_closest_osm_waterways(
         rec1_network_data_on_bbox, osm_waterways_data_on_bbox, distance_m)
     # Retrieve the Hydro DEM data and resolution for the specified catchment area
-    hydro_dem, res_no = dem_metadata_in_db.get_hydro_dem_data_and_resolution(engine, catchment_area)
+    hydro_dem, res_no = get_dem_band_and_resolution_by_geometry(engine, catchment_area)
     # Initialize an empty GeoDataFrame to store the target locations
     closest_waterways_w_target_loc = gpd.GeoDataFrame()
     # Iterate over each row in the 'closest_osm_waterways' GeoDataFrame

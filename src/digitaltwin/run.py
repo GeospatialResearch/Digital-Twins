@@ -22,9 +22,9 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Store 'instructions_run' records in the 'geospatial_layers' table in the database.
     instructions_records_to_db.store_instructions_records_to_db(engine)
     # Store geospatial layers data in the database
-    # xander TODO: not working: data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
+    data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
     # Store user log information in the database
-    # xander TODO: not working: data_to_db.user_log_info_to_db(engine, catchment_area)
+    data_to_db.user_log_info_to_db(engine, catchment_area)
 
 
 if __name__ == "__main__":
