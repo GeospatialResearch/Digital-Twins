@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:lts-slim as build-stage
+FROM node:lts as build-stage
 
 WORKDIR /app
 # Install node_modules

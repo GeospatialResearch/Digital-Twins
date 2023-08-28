@@ -6,23 +6,24 @@ visualization.
 """
 
 import logging
-import pathlib
 import os
+import pathlib
 import subprocess
 from datetime import datetime
 from typing import Tuple, Union, Optional, TextIO
 
 import geopandas as gpd
 import xarray as xr
+from newzealidar.utils import get_dem_by_geometry
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, execute_query
-from src.flood_model.serve_model import add_model_output_to_geoserver
-from newzealidar.utils import get_dem_by_geometry
+from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
+from src.flood_model.flooded_buildings import find_flooded_buildings
+from src.flood_model.serve_model import add_model_output_to_geoserver, add_flooded_buildings_to_geoserver
 
 log = logging.getLogger(__name__)
 
@@ -450,6 +451,10 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     add_crs_to_latest_model_output()
     # Add the model output to GeoServer for visualization
     add_model_output_to_geoserver(model_output_path)
+    # Find buildings that are flooded to a depth greater than or equal to 0.1m
+    flooded_building_outlines = find_flooded_buildings(catchment_area, model_output_path, flood_depth_threshold=0.1)
+    # Add the building outlines to geoserver for visualisation
+    add_flooded_buildings_to_geoserver(flooded_building_outlines, model_output_path.name)
 
 
 if __name__ == "__main__":

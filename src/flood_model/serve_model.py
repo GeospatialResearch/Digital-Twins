@@ -3,8 +3,8 @@ import pathlib
 import shutil
 
 import rasterio as rio
-import xarray as xr
 import requests
+import xarray as xr
 
 from src.config import get_env_variable
 
@@ -25,6 +25,30 @@ def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
 
 
 def upload_gtiff_to_store(geoserver_url: str, gtiff_filepath: pathlib.Path, store_name: str, workspace_name: str):
+    # Copy file to geoserver data folder
+    geoserver_data_root = pathlib.Path("geoserver/geoserver_data")
+    geoserver_data_dest = pathlib.Path("data") / gtiff_filepath.name
+    shutil.copy(gtiff_filepath, geoserver_data_root / geoserver_data_dest)
+    # Send request to add data
+    data = f"""
+    <coverageStore>
+        <name>{store_name}</name>
+        <workspace>{workspace_name}</workspace>
+        <enabled>true</enabled>
+        <type>GeoTIFF</type>
+        <url>file:{geoserver_data_dest.as_posix()}</url>
+    </coverageStore>
+    """
+    response = requests.post(
+        f'{geoserver_url}/workspaces/{workspace_name}/coveragestores',
+        params={"configure": "all"},
+        headers={"Content-type": "text/xml"},
+        data=data,
+        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+    )
+    response.raise_for_status()
+
+def upload_geojson_to_store(geoserver_url: str, geojson_filepath: pathlib.Path, store_name: str, workspace_name: str)
     # Copy file to geoserver data folder
     geoserver_data_root = pathlib.Path("geoserver/geoserver_data")
     geoserver_data_dest = pathlib.Path("data") / gtiff_filepath.name
@@ -77,10 +101,14 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str
         raise requests.HTTPError(response.text, response=response)
 
 
-def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str):
+def get_geoserver_url():
     gs_host = get_env_variable("GEOSERVER_HOST")
     gs_port = get_env_variable("GEOSERVER_PORT")
-    gs_url = f"{gs_host}:{gs_port}/geoserver/rest"
+    return f"{gs_host}:{gs_port}/geoserver/rest"
+
+
+def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str):
+    gs_url = get_geoserver_url()
     layer_name = gtiff_filepath.stem
     with rio.open(gtiff_filepath) as gtiff:
         gtiff_crs = gtiff.crs.wkt
@@ -93,7 +121,18 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path):
     add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs")
 
 
-if __name__ == '__main__':
-    add_model_output_to_geoserver(
-        pathlib.Path(
-            r"U:\Research\FloodRiskResearch\DigitalTwin\stored_data\model_output\output_2023_05_05_12_28_03.nc"))
+def add_flooded_buildings_to_geoserver(flooded_buildings: gpd.GeoDataFrame, model_id: str):
+    """"""
+    layer_name = f"buildings_{model_id}"
+    buildings_crs = flooded_buildings.crs.wkt
+
+    # Save file to disk to be read my geoserver
+    temp_dir = pathlib.Path("tmp/geojson")
+    # Create temporary storage folder if it does not already exist
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    geojson_path = temp_dir / f"{layer_name}.geojson"
+    flooded_buildings.to_file("geojson_filepath", crs=buildings_crs)
+
+    gs_url = get_geoserver_url()
+    upload_geojson_to_store(gs_url, geojson_path, layer_name, workspace_name)
+    create_layer_from_store(gs_url, layer_name, buildings_crs, workspace_name)
