@@ -28,9 +28,7 @@ dependencies:
   - flask-cors
   - redis-py
   - pip:
-    - geofabrics
     - geovoronoi==0.4.0
-    - geoapis
     - celery==5.2.7
     - gunicorn==20.1.0
     - git+https://github.com/xandercai/NewZeaLiDAR

@@ -15,8 +15,6 @@ import xarray as xr
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
-import sys
-sys.path.insert(0, r'../NewZeaLiDAR')
 from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 
