@@ -155,7 +155,7 @@ def get_elevations_from_hydro_dem(
     # Create Point objects for each row using 'x' and 'y' coordinates, storing them in 'target_point' column
     elevation_values['target_point'] = elevation_values.apply(lambda row: Point(row['x'], row['y']), axis=1)
     # Remove unnecessary columns from the elevation data
-    elevation_values.drop(columns=['x', 'y', 'band', 'spatial_ref', 'data_source'], inplace=True)
+    elevation_values.drop(columns=['x', 'y', 'band', 'spatial_ref', 'data_source', 'lidar_source'], inplace=True)
     # Rename the 'z' column to 'elevation_value' for clarity and consistency
     elevation_values.rename(columns={'z': 'elevation'}, inplace=True)
     # Convert the elevation data to a GeoDataFrame with 'target_point' as the geometry column
