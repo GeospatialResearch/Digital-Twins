@@ -23,7 +23,7 @@ from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, execute_query
 from src.flood_model.serve_model import add_model_output_to_geoserver
-from src.lidar import dem_metadata_in_db
+from newzealidar.utils import get_dem_by_geometry
 
 log = logging.getLogger(__name__)
 
@@ -398,10 +398,9 @@ def run_bg_flood_model(
     # Get the valid BG-Flood Model directory
     bg_flood_dir = get_valid_bg_flood_dir()
     # Get the file path of the Hydro DEM for the catchment area
-    hydro_dem_path = dem_metadata_in_db.get_catchment_hydro_dem_filepath(engine, catchment_area)
-    # Use the resolution of the Hydro DEM if it is not provided
-    if resolution is None:
-        _, resolution = dem_metadata_in_db.get_hydro_dem_data_and_resolution(engine, catchment_area)
+    hydro_dem_path, _, _, dem_resolution = get_dem_by_geometry(engine, catchment_area)
+    # Use dem_resolution if input resolution is not provided
+    resolution = dem_resolution if resolution is None else resolution
 
     # Prepare inputs for the BG-Flood Model
     prepare_bg_flood_model_inputs(

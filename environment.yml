@@ -27,12 +27,10 @@ dependencies:
   - flask
   - flask-cors
   - redis-py
-  - dask==2022.12.1
   - pip:
-    - geofabrics==0.10.11
     - geovoronoi==0.4.0
-    - geoapis==0.3.2
     - celery==5.2.7
     - gunicorn==20.1.0
+    - git+https://github.com/xandercai/NewZeaLiDAR
 
 prefix: 
