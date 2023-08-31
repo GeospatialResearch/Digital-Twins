@@ -74,7 +74,7 @@ def get_nz_coastline_from_db(
     # Construct the query to retrieve the New Zealand coastline data within the buffered catchment area
     query = f"""
     SELECT *
-    FROM "_50258-nz-coastlines" AS coast
+    FROM nz_coastlines AS coast
     WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{catchment_area_buffered_polygon}', 2193));
     """
     # Execute the query and retrieve the result as a GeoDataFrame
