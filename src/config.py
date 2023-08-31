@@ -11,8 +11,8 @@ load_dotenv()
 
 def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: type = str) -> T:
     """
-     Reads an environment variable, with settings to allow defaults, empty values, and type casting
-     To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
+    Reads an environment variable, with settings to allow defaults, empty values, and type casting
+    To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
 
     Parameters
     ----------
@@ -23,10 +23,12 @@ def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False
     allow_empty : bool
         If False then a KeyError will be raised if the environment variable is empty.
     cast_to : Callable[[str], T]
-        The type to cast to eg. str, int, or bool
+        The type to cast to e.g. str, int, or bool
+
     Returns
     -------
     The environment variable, or default if it does not exist, as type T.
+
     Raises
     ------
     KeyError
@@ -52,9 +54,11 @@ def _cast_str(str_to_cast: str, cast_to: T) -> T:
         The string that is going to be casted to the type
     cast_to : Callable[[str], T]
         The type to cast to e.g. bool
+
     Returns
     -------
     The string casted to type T defined by cast_to.
+
     Raises
     ------
     ValueError if [cast_to] is not compatible with the value stored.
