@@ -15,15 +15,17 @@ from typing import Tuple, Union, Optional, TextIO
 import geopandas as gpd
 import xarray as xr
 from newzealidar.utils import get_dem_by_geometry
+from sqlalchemy import insert
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.tables import BGFloodModelOutput, create_table, execute_query
+from src.digitaltwin.tables import BGFloodModelOutput, create_table
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.flood_model.flooded_buildings import find_flooded_buildings
-from src.flood_model.serve_model import add_model_output_to_geoserver, add_flooded_buildings_to_geoserver
+from src.flood_model.flooded_buildings import store_flooded_buildings_in_database
+from src.flood_model.serve_model import add_model_output_to_geoserver
 
 log = logging.getLogger(__name__)
 
@@ -105,7 +107,7 @@ def get_model_output_metadata(
 def store_model_output_metadata_to_db(
         engine: Engine,
         model_output_path: pathlib.Path,
-        catchment_area: gpd.GeoDataFrame) -> None:
+        catchment_area: gpd.GeoDataFrame) -> int:
     """
     Store metadata related to the BG Flood model output in the database.
 
@@ -120,19 +122,22 @@ def store_model_output_metadata_to_db(
 
     Returns
     -------
-    None
-        This function does not return any value.
+    int
+        Returns the model id of the new flood_model produced
     """
     # Create the 'bg_flood_model_output' table in the database if it doesn't exist
     create_table(engine, BGFloodModelOutput)
     # Get the metadata related to the BG Flood model output
     output_name, output_path, geometry = get_model_output_metadata(model_output_path, catchment_area)
     # Create a new query object representing the BG-Flood model output metadata
-    query = BGFloodModelOutput(file_name=output_name, file_path=output_path, geometry=geometry)
-    # Execute the query to store the BG Flood model output metadata in the database
-    execute_query(engine, query)
+    query = insert(BGFloodModelOutput).values(file_name=output_name, file_path=output_path, geometry=geometry)
+    # Execute the query to store the BG Flood model output metadata in the database while retrieving id
+    with engine.begin() as conn:
+        result = conn.execute(query)
+    model_id = result.inserted_primary_key[0]
     # Log a message indicating the successful storage of BG-Flood model output metadata in the database
     log.info("BG-Flood model output metadata successfully stored in the database.")
+    return model_id
 
 
 def latest_model_output_from_db() -> pathlib.Path:
@@ -446,15 +451,17 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     )
 
     # Store metadata related to the BG Flood model output in the database
-    store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
+    model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
     # Add CRS to the latest BG-Flood model output
     add_crs_to_latest_model_output()
+    # Find buildings that are flooded to a depth greater than or equal to 0.1m
+    flooded_buildings = find_flooded_buildings(catchment_area, model_output_path, flood_depth_threshold=0.1)
+    store_flooded_buildings_in_database(engine, flooded_buildings, model_id)
     # Add the model output to GeoServer for visualization
     add_model_output_to_geoserver(model_output_path)
-    # Find buildings that are flooded to a depth greater than or equal to 0.1m
-    flooded_building_outlines = find_flooded_buildings(catchment_area, model_output_path, flood_depth_threshold=0.1)
+
     # Add the building outlines to geoserver for visualisation
-    add_flooded_buildings_to_geoserver(flooded_building_outlines, model_output_path.name)
+    # add_flooded_buildings_to_geoserver(flooded_building_outlines, model_output_path.name)
 
 
 if __name__ == "__main__":

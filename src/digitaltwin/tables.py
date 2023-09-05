@@ -6,12 +6,13 @@ This script contains SQLAlchemy models for various database tables and utility f
 from datetime import datetime
 
 from geoalchemy2 import Geometry
+from sqlalchemy import Boolean
 from sqlalchemy import inspect, Column, String, Integer, DateTime
-from sqlalchemy.schema import PrimaryKeyConstraint
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
+from sqlalchemy.schema import PrimaryKeyConstraint
 
 Base = declarative_base()
 
@@ -155,6 +156,14 @@ class BGFloodModelOutput(Base):
     file_path = Column(String, comment="path to the flood model output file")
     created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
     geometry = Column(Geometry("GEOMETRY", srid=2193))
+
+
+class BuildingFloodStatus(Base):
+    __tablename__ = "building_flood_status"
+    unique_id = Column(Integer, primary_key=True, autoincrement=True)
+    building_outline_id = Column(Integer, comment="The building outline id matching from nz_building_outlines table")
+    is_flooded = Column(Boolean, comment="If the building is flooded or not")
+    flood_model_id = Column(Integer)
 
 
 def create_table(engine: Engine, table: Base) -> None:

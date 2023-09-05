@@ -89,7 +89,7 @@ def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
     logging_format = "%(asctime)s | %(levelname)-8s | %(name)-60s %(lineno)4d | %(funcName)-50s | %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"
     # Create and configure the root logger with the specified log level and formats
-    logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format, force=True)
+    logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format)
     # Enable capturing Python warnings and redirect them to the logging system
     logging.captureWarnings(True)
     # Suppress (ignore) Python warnings from appearing in the console

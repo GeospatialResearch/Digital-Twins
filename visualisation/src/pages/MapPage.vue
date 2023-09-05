@@ -8,6 +8,8 @@
       :cesium-access-token="cesiumApiToken"
       :data-sources="dataSources"
       :scenarios="scenarios"
+      v-on:task-posted="onTaskPosted"
+      v-on:task-completed="onTaskCompleted"
     />
     <b-button variant="primary" @click="refreshModel">Click here after generating</b-button>
     <img id="legend" src="legend.png"/>
@@ -41,7 +43,7 @@ export default Vue.extend({
     }
   },
   created() {
-    this.loadDataSources();
+    this.initDataSources();
   },
   mounted() {
     // Limit scrolling on this page
@@ -52,37 +54,45 @@ export default Vue.extend({
     document.body.style.overflow = ""
   },
   methods: {
+    onTaskPosted(event: any) {
+      console.log(event)
+    },
+    onTaskCompleted(event: any) {
+      console.log(event)
+    },
     async refreshModel() {
-      const wms_details = await axios.get("http://localhost:5000/model/PLACEHOLDER_MODEL_ID")
-
-      this.scenarios = [
-        // {
-        //   name: "Without climate change",
-        //   // waterElevationAssetId: 1347528,
-        //   ionAssetIds: [floodRasterBaseline]
-        // },
-        {
-          name: "With climate change",
-          // waterElevationAssetId: 1347532,
-          // ionAssetIds: [floodRasterClimate]
-          imageryProviders: [
-            new Cesium.WebMapServiceImageryProvider({
-              url: wms_details.data.url,
-              layers: wms_details.data.layers,
-              parameters: {
-                transparent: true,
-                format: "image/png",
-              },
-            })
-          ]
-        }
-      ]
+      // const wms_details = await axios.get("http://localhost:5000/model/PLACEHOLDER_MODEL_ID")
+      //
+      // this.scenarios = [
+      //   // {
+      //   //   name: "Without climate change",
+      //   //   // waterElevationAssetId: 1347528,
+      //   //   ionAssetIds: [floodRasterBaseline]
+      //   // },
+      //   {
+      //     name: "With climate change",
+      //     // waterElevationAssetId: 1347532,
+      //     // ionAssetIds: [floodRasterClimate]
+      //     imageryProviders: [
+      //       new Cesium.WebMapServiceImageryProvider({
+      //         url: wms_details.data.url,
+      //         layers: wms_details.data.layers,
+      //         parameters: {
+      //           transparent: true,
+      //           format: "image/png",
+      //         },
+      //       })
+      //     ]
+      //   }
+      // ]
+      console.log("refreshModel()");
 
     },
-    async loadDataSources() {
-      const geoJsonDataSources = await this.loadGeoJson();
+    async initDataSources() {
+      const geoJsonDataSources = await this.loadGeoJson(9);
       this.dataSources = {
         geoJsonDataSources,
+        // name: "scenario 1"
         // terrainAssetId: 1347527
       };
 
@@ -90,11 +100,16 @@ export default Vue.extend({
       const floodRasterClimate = 1345829;
       this.refreshModel()
     },
-    async loadGeoJson(): Promise<Cesium.GeoJsonDataSource[]> {
+    async loadGeoJson(scenarioId: number): Promise<Cesium.GeoJsonDataSource[]> {
+      // const buildingStatusUrl = `http://localhost:8088/geoserver/digitaltwin/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=digitaltwin%3Abuilding_flood_status&outputFormat=application%2Fjson&srsName=EPSG:4326&viewparams=scenario:${scenarioId}&cql_filter=bbox(geometry,172.6601121,-43.3780373,172.6607974,-43.3784382,'EPSG:4326')`
+      const buildingStatusUrl = "buildings_baseline.geojson"
+      console.log("loading geojson")
       const floodBuildingDS = await Cesium.GeoJsonDataSource.load(
-        "buildings_baseline.geojson", {
-          strokeWidth: 3,
-        });
+      buildingStatusUrl, {
+        strokeWidth: 3,
+        fill: Cesium.Color.DARKRED,
+        stroke: Cesium.Color.RED
+      });
 
       const floodedStyle = new Cesium.PolygonGraphics({
         material: Cesium.Color.DARKRED,
@@ -104,15 +119,20 @@ export default Vue.extend({
         material: Cesium.Color.DARKGREEN,
         outlineColor: Cesium.Color.FORESTGREEN
       });
+      const unknownStyle = new Cesium.PolygonGraphics({
+        material: Cesium.Color.DARKGOLDENROD,
+        outlineColor: Cesium.Color.GOLDENROD
+      });
 
       const buildingEntities = floodBuildingDS.entities.values;
       for (const entity of buildingEntities) {
         const polyGraphics = new Cesium.PolygonGraphics({
-          extrudedHeight: 4,
-          // heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-          // zIndex: -1,
+          // extrudedHeight: 4
         });
-        if (entity.properties?.flooded.getValue()) {
+        const isFlooded = entity.properties?.is_flooded?.getValue();
+        if (isFlooded == null) {
+          polyGraphics.merge(unknownStyle);
+        } else if (isFlooded) {
           polyGraphics.merge(floodedStyle);
         } else {
           polyGraphics.merge(nonFloodedStyle);
@@ -124,7 +144,7 @@ export default Vue.extend({
       }
 
       return [floodBuildingDS];
-    }
+    },
   },
   computed: {
     scenarioNames(): Array<string> {

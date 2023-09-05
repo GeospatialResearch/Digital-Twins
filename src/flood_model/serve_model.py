@@ -48,7 +48,7 @@ def upload_gtiff_to_store(geoserver_url: str, gtiff_filepath: pathlib.Path, stor
     )
     response.raise_for_status()
 
-def upload_geojson_to_store(geoserver_url: str, geojson_filepath: pathlib.Path, store_name: str, workspace_name: str)
+def upload_geojson_to_store(geoserver_url: str, geojson_filepath: pathlib.Path, store_name: str, workspace_name: str):
     # Copy file to geoserver data folder
     geoserver_data_root = pathlib.Path("geoserver/geoserver_data")
     geoserver_data_dest = pathlib.Path("data") / gtiff_filepath.name
@@ -113,6 +113,7 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str):
     with rio.open(gtiff_filepath) as gtiff:
         gtiff_crs = gtiff.crs.wkt
     upload_gtiff_to_store(gs_url, gtiff_filepath, layer_name, workspace_name)
+    gtiff_filepath.unlink()
     create_layer_from_store(gs_url, layer_name, gtiff_crs, workspace_name)
 
 
@@ -121,18 +122,18 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path):
     add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs")
 
 
-def add_flooded_buildings_to_geoserver(flooded_buildings: gpd.GeoDataFrame, model_id: str):
-    """"""
-    layer_name = f"buildings_{model_id}"
-    buildings_crs = flooded_buildings.crs.wkt
-
-    # Save file to disk to be read my geoserver
-    temp_dir = pathlib.Path("tmp/geojson")
-    # Create temporary storage folder if it does not already exist
-    temp_dir.mkdir(parents=True, exist_ok=True)
-    geojson_path = temp_dir / f"{layer_name}.geojson"
-    flooded_buildings.to_file("geojson_filepath", crs=buildings_crs)
-
-    gs_url = get_geoserver_url()
-    upload_geojson_to_store(gs_url, geojson_path, layer_name, workspace_name)
-    create_layer_from_store(gs_url, layer_name, buildings_crs, workspace_name)
+# def add_flooded_buildings_to_geoserver(flooded_buildings: gpd.GeoDataFrame, model_id: str):
+#     """"""
+#     layer_name = f"buildings_{model_id}"
+#     buildings_crs = flooded_buildings.crs.wkt
+#
+#     # Save file to disk to be read my geoserver
+#     temp_dir = pathlib.Path("tmp/geojson")
+#     # Create temporary storage folder if it does not already exist
+#     temp_dir.mkdir(parents=True, exist_ok=True)
+#     geojson_path = temp_dir / f"{layer_name}.geojson"
+#     flooded_buildings.to_file("geojson_filepath", crs=buildings_crs)
+#
+#     gs_url = get_geoserver_url()
+#     upload_geojson_to_store(gs_url, geojson_path, layer_name, workspace_name)
+#     create_layer_from_store(gs_url, layer_name, buildings_crs, workspace_name)
