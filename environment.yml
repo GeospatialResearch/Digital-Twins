@@ -31,6 +31,6 @@ dependencies:
     - geovoronoi==0.4.0
     - celery==5.2.7
     - gunicorn==20.1.0
-    - git+https://github.com/xandercai/NewZeaLiDAR
+    - git+https://github.com/xandercai/NewZeaLiDAR/tree/v0.1
 
 prefix: 
