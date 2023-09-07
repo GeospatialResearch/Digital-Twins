@@ -18,6 +18,7 @@ from newzealidar.utils import get_dem_by_geometry
 from sqlalchemy import insert
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql import text
 
 from src import config
 from src.digitaltwin import setup_environment
@@ -152,14 +153,29 @@ def latest_model_output_from_db() -> pathlib.Path:
     # Get the database engine for establishing a connection
     engine = setup_environment.get_database()
     # Execute a query to get the latest model output record based on the 'created_at' column
-    row = engine.execute("SELECT * FROM bg_flood_model_output ORDER BY created_at DESC LIMIT 1;").fetchone()
+    query = "SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id".bindparams(
+        flood_model_id=flood_model_id)
+    row = engine.execute(query).fetchone()
     # Extract the file path from the retrieved record
     latest_output_path = pathlib.Path(row["file_path"])
     # Extract the file path from the retrieved record
     return latest_output_path
 
 
-def add_crs_to_latest_model_output() -> None:
+def model_output_from_db_by_id(model_id: int) -> pathlib.Path:
+    # Get the database engine for establishing a connection
+    engine = setup_environment.get_database()
+    # Execute a query to get the model output record based on the 'flood_model_id' column
+    query = text("SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
+        flood_model_id=model_id)
+    row = engine.execute(query).fetchone()
+    # Extract the file path from the retrieved record
+    latest_output_path = pathlib.Path(row["file_path"])
+    # Extract the file path from the retrieved record
+    return latest_output_path
+
+
+def add_crs_to_latest_model_output(flood_model_output_id: int) -> None:
     """
     Add Coordinate Reference System (CRS) to the latest BG-Flood model output.
 
@@ -169,12 +185,12 @@ def add_crs_to_latest_model_output() -> None:
         This function does not return any value.
     """
     # Get the path to the latest BG-Flood model output file from the database
-    latest_file = latest_model_output_from_db()
+    model_output_file = model_output_from_db_by_id(flood_model_output_id)
     # Create a temporary file path for saving modifications before replacing the current latest model output file
-    temp_file = latest_file.with_name(f"{latest_file.stem}_temp{latest_file.suffix}")
+    temp_file = model_output_file.with_name(f"{model_output_file.stem}_temp{model_output_file.suffix}")
 
     # Open the latest model output file as a xarray dataset
-    with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
+    with xr.open_dataset(model_output_file, decode_coords="all") as latest_output:
         # Check if the dataset lacks a Coordinate Reference System (CRS)
         if latest_output.rio.crs is None:
             # Add the Coordinate Reference System (CRS) information to the dataset
@@ -187,9 +203,10 @@ def add_crs_to_latest_model_output() -> None:
             latest_output.to_netcdf(temp_file)
 
     # Check if both the original and temporary files exist
-    if latest_file.exists() and temp_file.exists():
+    if model_output_file.exists() and temp_file.exists():
         # Replace the original file with the modified temporary file
-        temp_file.replace(latest_file)
+        temp_file.replace(model_output_file)
+    log.debug(f"Added CRS info to {model_output_file}")
 
 
 def process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None:
@@ -429,9 +446,10 @@ def run_bg_flood_model(
     subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
     # Change the current working directory back to the original directory (cwd)
     os.chdir(cwd)
+    log.info(f"Saved new flood model to {model_output_path}")
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> int:
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database
@@ -453,15 +471,14 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Store metadata related to the BG Flood model output in the database
     model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
     # Add CRS to the latest BG-Flood model output
-    add_crs_to_latest_model_output()
+    add_crs_to_latest_model_output(model_id)
     # Find buildings that are flooded to a depth greater than or equal to 0.1m
     flooded_buildings = find_flooded_buildings(catchment_area, model_output_path, flood_depth_threshold=0.1)
     store_flooded_buildings_in_database(engine, flooded_buildings, model_id)
     # Add the model output to GeoServer for visualization
     add_model_output_to_geoserver(model_output_path)
 
-    # Add the building outlines to geoserver for visualisation
-    # add_flooded_buildings_to_geoserver(flooded_building_outlines, model_output_path.name)
+    return model_id
 
 
 if __name__ == "__main__":

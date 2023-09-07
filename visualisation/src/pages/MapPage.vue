@@ -11,7 +11,6 @@
       v-on:task-posted="onTaskPosted"
       v-on:task-completed="onTaskCompleted"
     />
-    <b-button variant="primary" @click="refreshModel">Click here after generating</b-button>
     <img id="legend" src="legend.png"/>
   </div>
 </template>
@@ -21,8 +20,7 @@ import Vue from "vue";
 import * as Cesium from "cesium";
 import {MapViewer} from 'geo-visualisation-components/src/components';
 import titleMixin from "@/mixins/title";
-import {MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/dist/types/src/types";
-import axios from "axios";
+import {MapViewerDataSourceOptions, Scenario, bbox} from "geo-visualisation-components/dist/types/src/types";
 
 export default Vue.extend({
   name: "MapPage",
@@ -42,9 +40,6 @@ export default Vue.extend({
       cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
     }
   },
-  created() {
-    this.initDataSources();
-  },
   mounted() {
     // Limit scrolling on this page
     document.body.style.overflow = "hidden"
@@ -54,13 +49,19 @@ export default Vue.extend({
     document.body.style.overflow = ""
   },
   methods: {
-    onTaskPosted(event: any) {
-      console.log(event)
+    async onTaskPosted(event: any) {
+      console.log("onTaskPosted");
+      this.dataSources = {}
+      const bbox = event.bbox
+      const geoJsonDataSources = await this.loadGeoJson(bbox)
+      this.dataSources = {geoJsonDataSources}
     },
-    onTaskCompleted(event: any) {
-      console.log(event)
+    async onTaskCompleted(event: {bbox: bbox, floodModelId: number}) {
+      console.log("onTaskCompleted");
+      const geoJsonDataSources = await this.loadGeoJson(event.bbox, event.floodModelId)
+      this.dataSources = {geoJsonDataSources}
     },
-    async refreshModel() {
+    async fetchFloodRaster() {
       // const wms_details = await axios.get("http://localhost:5000/model/PLACEHOLDER_MODEL_ID")
       //
       // this.scenarios = [
@@ -88,27 +89,16 @@ export default Vue.extend({
       console.log("refreshModel()");
 
     },
-    async initDataSources() {
-      const geoJsonDataSources = await this.loadGeoJson(9);
-      this.dataSources = {
-        geoJsonDataSources,
-        // name: "scenario 1"
-        // terrainAssetId: 1347527
-      };
-
-      const floodRasterBaseline = 1345828;
-      const floodRasterClimate = 1345829;
-      this.refreshModel()
-    },
-    async loadGeoJson(scenarioId: number): Promise<Cesium.GeoJsonDataSource[]> {
-      // const buildingStatusUrl = `http://localhost:8088/geoserver/digitaltwin/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=digitaltwin%3Abuilding_flood_status&outputFormat=application%2Fjson&srsName=EPSG:4326&viewparams=scenario:${scenarioId}&cql_filter=bbox(geometry,172.6601121,-43.3780373,172.6607974,-43.3784382,'EPSG:4326')`
-      const buildingStatusUrl = "buildings_baseline.geojson"
+    async loadGeoJson(bbox: bbox, scenarioId = -1): Promise<Cesium.GeoJsonDataSource[]> {
+      const buildingStatusUrl = 'http://localhost:8088/geoserver/digitaltwin/ows?service=WFS&version=1.0.0'
+      + '&request=GetFeature&typeName=digitaltwin%3Abuilding_flood_status&outputFormat=application%2Fjson'
+      + `&srsName=EPSG:4326&viewparams=scenario:${scenarioId}`
+      + `&cql_filter=bbox(geometry,${bbox.lng1},${bbox.lat1},${bbox.lng2},${bbox.lat2},'EPSG:4326')`
+      console.log(buildingStatusUrl)
       console.log("loading geojson")
       const floodBuildingDS = await Cesium.GeoJsonDataSource.load(
       buildingStatusUrl, {
         strokeWidth: 3,
-        fill: Cesium.Color.DARKRED,
-        stroke: Cesium.Color.RED
       });
 
       const floodedStyle = new Cesium.PolygonGraphics({
@@ -127,7 +117,7 @@ export default Vue.extend({
       const buildingEntities = floodBuildingDS.entities.values;
       for (const entity of buildingEntities) {
         const polyGraphics = new Cesium.PolygonGraphics({
-          // extrudedHeight: 4
+          extrudedHeight: 4
         });
         const isFlooded = entity.properties?.is_flooded?.getValue();
         if (isFlooded == null) {

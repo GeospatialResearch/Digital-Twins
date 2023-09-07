@@ -5,7 +5,7 @@ import logging
 from http.client import OK, ACCEPTED, BAD_REQUEST
 
 import xarray
-from celery.result import AsyncResult
+from celery import result, states
 from flask import Flask, Response, jsonify, make_response, request
 from flask_cors import CORS
 from pyproj import Transformer
@@ -35,7 +35,7 @@ def health_check() -> Response:
 
 
 @app.route('/tasks/<task_id>', methods=["GET"])
-def get_status(task_id: str) -> Response:
+def get_status(task_id) -> Response:
     """
     Retrieves status of a particular Celery backend task.
     Supported methods: GET
@@ -50,10 +50,13 @@ def get_status(task_id: str) -> Response:
     Response
         JSON response containing taskStatus
     """
-    task_result = AsyncResult(task_id, app=tasks.app)
+    task_result = result.AsyncResult(task_id, app=tasks.app)
+    status = task_result.status
+    task_value = task_result.get() if status == states.SUCCESS else None
     return make_response(jsonify({
         "taskId": task_result.id,
-        "taskStatus": task_result.status,
+        "taskStatus": status,
+        "taskValue": task_value
     }), OK)
 
 
@@ -73,7 +76,7 @@ def remove_task(task_id) -> Response:
     Response
         ACCEPTED is the expected response
     """
-    task_result = AsyncResult(task_id, app=tasks.app)
+    task_result = result.AsyncResult(task_id, app=tasks.app)
     task_result.revoke()
     return make_response("Task removed", ACCEPTED)
 

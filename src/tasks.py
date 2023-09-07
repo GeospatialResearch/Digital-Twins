@@ -3,7 +3,7 @@ import logging
 import geopandas as gpd
 import shapely
 from celery import Celery, states, result
-from src.lidar import lidar_metadata_in_db, dem_metadata_in_db
+from newzealidar import process
 
 from src.digitaltwin import run
 from src.digitaltwin.utils import setup_logging
@@ -29,9 +29,8 @@ class OnFailureStateTask(app.Task):
 # noinspection PyUnnecessaryBackslash
 def create_model_for_area(selected_polygon_wkt: str) -> result.GroupResult:
     """Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks"""
-    return (initialise_db_with_region_geometries.si(selected_polygon_wkt) |
-            download_lidar_data.si(selected_polygon_wkt) |
-            dem_metadata.si(selected_polygon_wkt) |
+    return (add_base_data_to_db.si(selected_polygon_wkt) |
+            process_dem.si(selected_polygon_wkt) |
             generate_rainfall_inputs.si(selected_polygon_wkt) |
             generate_tide_inputs.si(selected_polygon_wkt) |
             generate_river_inputs.si(selected_polygon_wkt) |
@@ -40,22 +39,15 @@ def create_model_for_area(selected_polygon_wkt: str) -> result.GroupResult:
 
 
 @app.task(base=OnFailureStateTask)
-def initialise_db_with_region_geometries(selected_polygon_wkt: str):
-    log.error("HAHAHAHA initialise db")
+def add_base_data_to_db(selected_polygon_wkt: str):
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     run.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
-def download_lidar_data(selected_polygon_wkt: str):
+def process_dem(selected_polygon_wkt: str):
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    lidar_metadata_in_db.main(selected_polygon)
-
-
-@app.task(base=OnFailureStateTask)
-def dem_metadata(selected_polygon_wkt: str):
-    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    dem_metadata_in_db.main(selected_polygon)
+    process.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
@@ -79,7 +71,8 @@ def generate_river_inputs(selected_polygon_wkt: str):
 @app.task(base=OnFailureStateTask)
 def run_flood_model(selected_polygon_wkt: str):
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    bg_flood_model.main(selected_polygon)
+    flood_model_id = bg_flood_model.main(selected_polygon)
+    return flood_model_id
 
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
