@@ -1,9 +1,12 @@
 import logging
+from typing import List, Tuple
 
 import geopandas as gpd
 import shapely
 from celery import Celery, states, result
 from newzealidar import process
+from pyproj import Transformer
+import xarray
 
 from src.digitaltwin import run
 from src.digitaltwin.utils import setup_logging
@@ -32,8 +35,8 @@ def create_model_for_area(selected_polygon_wkt: str) -> result.GroupResult:
     return (add_base_data_to_db.si(selected_polygon_wkt) |
             process_dem.si(selected_polygon_wkt) |
             generate_rainfall_inputs.si(selected_polygon_wkt) |
-            generate_tide_inputs.si(selected_polygon_wkt) |
-            generate_river_inputs.si(selected_polygon_wkt) |
+            # generate_tide_inputs.si(selected_polygon_wkt) |
+            # generate_river_inputs.si(selected_polygon_wkt) |
             run_flood_model.si(selected_polygon_wkt)
             )()
 
@@ -78,3 +81,23 @@ def run_flood_model(selected_polygon_wkt: str):
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
     selected_polygon = gpd.GeoDataFrame(index=[0], crs="epsg:4326", geometry=[shapely.from_wkt(wkt)])
     return selected_polygon.to_crs(2193)
+
+
+@app.task(base=OnFailureStateTask)
+def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> Tuple[List[float], List[float]]:
+    model_file_path = bg_flood_model.model_output_from_db_by_id(model_id).as_posix()
+    with xarray.open_dataset(model_file_path) as ds:
+        transformer = Transformer.from_crs(4326, 2193)
+        y, x = transformer.transform(lat, lng)
+        da = ds["hmax_P0"].sel(x=x, y=y, method="nearest")
+
+    depths = da.values.tolist()
+    times = da.coords['time'].values.tolist()
+    return depths, times
+
+
+if __name__ == '__main__':
+    llat = -43.38205648955185
+    llng = 172.6487081332888
+    id = 82
+    get_depth_by_time_at_point(82, llat, llng)

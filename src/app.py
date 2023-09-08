@@ -4,16 +4,14 @@ The main web application that serves the Digital Twin to the web through a Rest 
 import logging
 from http.client import OK, ACCEPTED, BAD_REQUEST
 
-import xarray
 from celery import result, states
 from flask import Flask, Response, jsonify, make_response, request
 from flask_cors import CORS
-from pyproj import Transformer
 from shapely import box
 
 from src import tasks
 from src.config import get_env_variable
-from src.flood_model.bg_flood_model import latest_model_output_from_db
+from src.flood_model.bg_flood_model import model_output_from_db_by_id
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -81,7 +79,7 @@ def remove_task(task_id) -> Response:
     return make_response("Task removed", ACCEPTED)
 
 
-@app.route('/model/generate', methods=["POST"])
+@app.route('/models/generate', methods=["POST"])
 def generate_model() -> Response:
     """
     Generates a flood model for a given area.
@@ -119,10 +117,9 @@ def generate_model() -> Response:
     )
 
 
-@app.route('/model/<model_id>', methods=["GET"])
-def get_wfs_layer_latest_model(model_id):
-    # model_id not currently used, just showing for example
-    layer_name = latest_model_output_from_db().stem
+@app.route('/models/<model_id>', methods=["GET"])
+def get_wfs_layer_from_model(model_id: int):
+    layer_name = model_output_from_db_by_id(model_id).stem
     gs_host = get_env_variable("GEOSERVER_HOST")
     gs_port = get_env_variable("GEOSERVER_PORT")
     return make_response(jsonify({
@@ -158,8 +155,8 @@ def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -
     return box(xmin, ymin, xmax, ymax).wkt
 
 
-@app.route('/model/depth', methods=["GET"])
-def get_depth_at_point() -> Response:
+@app.route('/tasks/<task_id>/model/depth', methods=["GET"])
+def get_depth_at_point(task_id: str) -> Response:
     try:
         lat = request.args.get("lat", type=float)
         lng = request.args.get("lng", type=float)
@@ -170,19 +167,18 @@ def get_depth_at_point() -> Response:
     if not valid_coordinates(lat, lng):
         return make_response("Query parameters lat & lng must fall in the range -90 < lat <= 90, -180 < lng <= 180",
                              BAD_REQUEST)
+    model_task_result = result.AsyncResult(task_id, app=tasks.app)
+    status = model_task_result.status
+    if status != states.SUCCESS:
+        return make_response(f"Task {task_id} has status {status}, not {states.SUCCESS}", BAD_REQUEST)
 
-    ds = xarray.open_dataset(latest_model_output_from_db().as_posix())
-
-    transformer = Transformer.from_crs(4326, 2193)
-    y, x = transformer.transform(lat, lng)
-    da = ds["hmax_P0"].sel(xx_P0=x, yy_P0=y, method="nearest")
-
-    times = da.coords['time'].values.tolist()
-    depths = da.values.tolist()
+    model_id = model_task_result.get()
+    depth_task = tasks.get_depth_by_time_at_point.delay(model_id, lat, lng)
+    depths, times = depth_task.get()
 
     return make_response(jsonify({
-        "time": times,
-        "depth": depths
+        'depth': depths,
+        'time': times
     }), OK)
 
 

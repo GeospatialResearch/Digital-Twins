@@ -141,27 +141,6 @@ def store_model_output_metadata_to_db(
     return model_id
 
 
-def latest_model_output_from_db() -> pathlib.Path:
-    """
-    Retrieve the latest BG Flood model output file path from the database.
-
-    Returns
-    -------
-    pathlib.Path
-        The path to the latest BG Flood model output file.
-    """
-    # Get the database engine for establishing a connection
-    engine = setup_environment.get_database()
-    # Execute a query to get the latest model output record based on the 'created_at' column
-    query = "SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id".bindparams(
-        flood_model_id=flood_model_id)
-    row = engine.execute(query).fetchone()
-    # Extract the file path from the retrieved record
-    latest_output_path = pathlib.Path(row["file_path"])
-    # Extract the file path from the retrieved record
-    return latest_output_path
-
-
 def model_output_from_db_by_id(model_id: int) -> pathlib.Path:
     # Get the database engine for establishing a connection
     engine = setup_environment.get_database()
