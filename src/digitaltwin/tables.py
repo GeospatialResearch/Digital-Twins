@@ -72,33 +72,6 @@ class UserLogInfo(Base):
     geometry = Column(Geometry("POLYGON", srid=2193))
 
 
-class HydroDEM(Base):
-    """
-    Class representing the 'hydrological_dem' table.
-
-    Attributes
-    ----------
-    __tablename__ : str
-        Name of the database table.
-    unique_id : int
-        Unique identifier for each entry (primary key).
-    file_name : str
-        Name of the hydrological DEM file.
-    file_path : str
-        Path to the hydrological DEM file.
-    created_at : datetime
-        Timestamp indicating when the output was created.
-    geometry : Geometry
-        Geometric representation of the catchment area coverage.
-    """
-    __tablename__ = "hydrological_dem"
-    unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    file_name = Column(String, comment="name of the hydro-DEM file")
-    file_path = Column(String, comment="path to the hydro-DEM file")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
-    geometry = Column(Geometry("GEOMETRY", srid=2193))
-
-
 class BGFloodModelOutput(Base):
     """
     Class representing the 'bg_flood_model_output' table.
