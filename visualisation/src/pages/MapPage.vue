@@ -59,35 +59,23 @@ export default Vue.extend({
     async onTaskCompleted(event: {bbox: bbox, floodModelId: number}) {
       console.log("onTaskCompleted");
       const geoJsonDataSources = await this.loadGeoJson(event.bbox, event.floodModelId)
-      this.dataSources = {geoJsonDataSources}
+      const floodRasterProvider = await this.fetchFloodRaster(event.floodModelId)
+      this.dataSources = {
+        geoJsonDataSources,
+        imageryProviders: [floodRasterProvider]
+      }
     },
-    async fetchFloodRaster() {
-      // const wms_details = await axios.get("http://localhost:5000/model/PLACEHOLDER_MODEL_ID")
-      //
-      // this.scenarios = [
-      //   // {
-      //   //   name: "Without climate change",
-      //   //   // waterElevationAssetId: 1347528,
-      //   //   ionAssetIds: [floodRasterBaseline]
-      //   // },
-      //   {
-      //     name: "With climate change",
-      //     // waterElevationAssetId: 1347532,
-      //     // ionAssetIds: [floodRasterClimate]
-      //     imageryProviders: [
-      //       new Cesium.WebMapServiceImageryProvider({
-      //         url: wms_details.data.url,
-      //         layers: wms_details.data.layers,
-      //         parameters: {
-      //           transparent: true,
-      //           format: "image/png",
-      //         },
-      //       })
-      //     ]
-      //   }
-      // ]
-      console.log("refreshModel()");
-
+    async fetchFloodRaster(model_output_id: number): Promise<Cesium.WebMapServiceImageryProvider> {
+      const wmsOptions = {
+        url: 'http://localhost:8088/geoserver/dt-model-outputs/wms',
+        layers: `output_${model_output_id}`,
+        parameters: {
+          service: 'WMS',
+          format: 'image/png',
+          transparent: true
+        }
+      };
+      return new Cesium.WebMapServiceImageryProvider(wmsOptions);
     },
     async loadGeoJson(bbox: bbox, scenarioId = -1): Promise<Cesium.GeoJsonDataSource[]> {
       const buildingStatusUrl = 'http://localhost:8088/geoserver/digitaltwin/ows?service=WFS&version=1.0.0'

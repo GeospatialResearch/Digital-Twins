@@ -455,7 +455,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     flooded_buildings = find_flooded_buildings(catchment_area, model_output_path, flood_depth_threshold=0.1)
     store_flooded_buildings_in_database(engine, flooded_buildings, model_id)
     # Add the model output to GeoServer for visualization
-    add_model_output_to_geoserver(model_output_path)
+    add_model_output_to_geoserver(model_output_path, model_id)
 
     return model_id
 

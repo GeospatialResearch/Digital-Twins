@@ -107,9 +107,9 @@ def get_geoserver_url():
     return f"{gs_host}:{gs_port}/geoserver/rest"
 
 
-def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str):
+def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, model_id: int):
     gs_url = get_geoserver_url()
-    layer_name = gtiff_filepath.stem
+    layer_name = f"output_{model_id}"
     with rio.open(gtiff_filepath) as gtiff:
         gtiff_crs = gtiff.crs.wkt
     upload_gtiff_to_store(gs_url, gtiff_filepath, layer_name, workspace_name)
@@ -117,9 +117,9 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str):
     create_layer_from_store(gs_url, layer_name, gtiff_crs, workspace_name)
 
 
-def add_model_output_to_geoserver(model_output_path: pathlib.Path):
+def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int):
     gtiff_filepath = convert_nc_to_gtiff(model_output_path)
-    add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs")
+    add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs", model_id)
 
 
 # def add_flooded_buildings_to_geoserver(flooded_buildings: gpd.GeoDataFrame, model_id: str):
