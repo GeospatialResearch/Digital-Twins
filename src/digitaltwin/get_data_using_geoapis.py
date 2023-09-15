@@ -81,7 +81,7 @@ def fetch_vector_data_using_geoapis(
     """
     # Determine the appropriate vector fetcher based on the data provider
     if data_provider == "StatsNZ":
-        stats_nz_api_key = config.get_env_variable("StatsNZ_API_KEY")
+        stats_nz_api_key = config.get_env_variable("STATSNZ_API_KEY")
         vector_fetcher = StatsNz(key=stats_nz_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
     elif data_provider == "LINZ":
         linz_api_key = config.get_env_variable("LINZ_API_KEY")
