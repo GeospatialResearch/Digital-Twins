@@ -8,6 +8,7 @@ import pathlib
 
 import geopandas as gpd
 from shapely.geometry import LineString
+from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin import setup_environment
@@ -21,6 +22,7 @@ from src.dynamic_boundary_conditions.river import (
     hydrograph,
     river_model_input
 )
+from newzealidar.utils import get_dem_by_geometry
 
 
 def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -54,6 +56,33 @@ def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDat
     # Assign a unique identifier (boundary_line_no) starting from 1 to each boundary line segment
     boundary_lines.insert(0, 'boundary_line_no', boundary_lines.index + 1)
     return boundary_lines
+
+
+def get_extent_of_hydro_dem(engine: Engine, catchment_area: gpd.GeoDataFrame) -> LineString:
+    """
+    Get the extent of the Hydrologically Conditioned DEM.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    LineString
+        A LineString representing the extent of the Hydrologically Conditioned DEM.
+    """
+    # Retrieve DEM information by geometry
+    _, _, raw_extent_path, _ = get_dem_by_geometry(engine, catchment_area)
+    # Read the raw extent from the file
+    raw_extent = gpd.read_file(raw_extent_path)
+    # Create a GeoDataFrame containing the envelope of the raw extent
+    hydro_dem_area = gpd.GeoDataFrame(geometry=[raw_extent.unary_union.envelope], crs=raw_extent.crs)
+    # Get the exterior LineString from the GeoDataFrame
+    hydro_dem_extent = hydro_dem_area.exterior.iloc[0]
+    return hydro_dem_extent
 
 
 def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
@@ -90,13 +119,17 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
 
     # Store REC1 data to the database
     river_data_to_from_db.store_rec1_data_to_db(engine)
+    # Get the identifier for the river network associated with each run
+    river_network_id = river_network_for_aoi.get_next_river_network_id(engine)
     # Get REC1 data from the database for the catchment area
-    rec1_data = river_data_to_from_db.get_rec1_data_from_db(engine, catchment_area)
+    rec1_data_with_sdc = river_data_to_from_db.get_rec1_data_with_sdc_from_db(engine, catchment_area, river_network_id)
 
     # Create a river network for the catchment area using the REC1 data
-    _, rec1_network_data = river_network_for_aoi.build_rec1_river_network(rec1_data)
+    rec1_network, rec1_network_data = river_network_for_aoi.build_rec1_river_network(
+        engine, catchment_area, rec1_data_with_sdc, river_network_id)
     # Obtain the REC1 network data that corresponds to the points of intersection on the catchment area boundary
-    rec1_network_data_on_bbox = river_network_for_aoi.get_rec1_network_data_on_bbox(catchment_area, rec1_network_data)
+    rec1_network_data_on_bbox = river_network_for_aoi.get_rec1_network_data_on_bbox(
+        catchment_area, rec1_network_data, rec1_network)
 
     # Fetch OSM waterways data for the catchment area
     osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
