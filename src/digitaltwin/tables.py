@@ -7,6 +7,7 @@ from datetime import datetime
 
 from geoalchemy2 import Geometry
 from sqlalchemy import inspect, Column, String, Integer, DateTime
+from sqlalchemy.schema import PrimaryKeyConstraint
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -70,6 +71,35 @@ class UserLogInfo(Base):
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
     created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
+
+
+class RiverNetworkExclusions(Base):
+    """
+    Class representing the 'rec1_network_exclusions' table.
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    river_network_id : int
+        An identifier for the river network associated with each new run.
+    objectid : int
+        An identifier for the REC1 river object matching from the 'rec1_data' table.
+    exclusion_cause : str
+        Cause of exclusion, i.e., the reason why the REC1 river geometry was excluded.
+    geometry : LineString
+        Geometric representation of the excluded REC1 river features in the form of LINESTRING.
+    """
+    __tablename__ = "rec1_network_exclusions"
+    river_network_id = Column(Integer, primary_key=True,
+                              comment="An identifier for the river network associated with each run")
+    objectid = Column(Integer, primary_key=True,
+                      comment="An identifier for the REC1 river object matching from the 'rec1_data' table")
+    exclusion_cause = Column(String, comment="Cause of exclusion")
+    geometry = Column(Geometry("LINESTRING", srid=2193))
+    __table_args__ = (
+        PrimaryKeyConstraint('river_network_id', 'objectid', name='network_exclusions_pk'),
+    )
 
 
 class BGFloodModelOutput(Base):

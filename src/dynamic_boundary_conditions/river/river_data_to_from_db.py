@@ -12,7 +12,8 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 
 from src import config
-from src.digitaltwin import tables
+from src.digitaltwin.tables import check_table_exists
+from src.dynamic_boundary_conditions.river_network_for_aoi import add_rec1_network_exclusions_to_db
 
 log = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ def store_rec1_data_to_db(engine: Engine) -> None:
     # Define the table name for storing the REC1 data
     table_name = "rec1_data"
     # Check if the table already exists in the database
-    if tables.check_table_exists(engine, table_name):
+    if check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
         # Get REC1 data from the NZ REC1 dataset
@@ -75,11 +76,9 @@ def store_rec1_data_to_db(engine: Engine) -> None:
         log.info(f"Stored '{table_name}' data in the database.")
 
 
-def get_rec1_data_from_db(
-        engine: Engine,
-        catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Retrieve REC1 data from the database for the specified catchment area.
+    Retrieve sea-draining catchment data from the database that intersects with the given catchment area.
 
     Parameters
     ----------
@@ -91,18 +90,48 @@ def get_rec1_data_from_db(
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the retrieved REC1 data for the specified catchment area.
+        A GeoDataFrame containing sea-draining catchment data that intersects with the given catchment area.
     """
     # Extract the geometry of the catchment area
     catchment_polygon = catchment_area["geometry"][0]
     # Query to retrieve sea-draining catchments that intersect with the catchment polygon
     sea_drain_query = f"""
-    SELECT *
-    FROM sea_draining_catchments AS sdc
-    WHERE ST_Intersects(sdc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
-    """
-    # Create a GeoDataFrame from the sea-draining catchment data retrieved from the database
+        SELECT *
+        FROM sea_draining_catchments AS sdc
+        WHERE ST_Intersects(sdc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+        """
+    # Execute the query and create a GeoDataFrame from the result
     sdc_data = gpd.GeoDataFrame.from_postgis(sea_drain_query, engine, geom_col="geometry")
+    return sdc_data
+
+
+def get_rec1_data_with_sdc_from_db(
+        engine: Engine,
+        catchment_area: gpd.GeoDataFrame,
+        river_network_id: int) -> gpd.GeoDataFrame:
+    """
+    Retrieve REC1 data from the database for the specified catchment area with an additional column that identifies
+    the associated sea-draining catchment for each REC1 geometry.
+    Simultaneously, identify the REC1 geometries that do not fully reside within sea-draining catchments and
+    proceed to add these excluded REC1 geometries to the appropriate database table.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+    river_network_id : int
+        An identifier for the river network associated with the current run.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the retrieved REC1 data for the specified catchment area with an additional column
+        that identifies the associated sea-draining catchment for each REC1 geometry.
+    """
+    # Get sea-draining catchment data from the database
+    sdc_data = get_sdc_data_from_db(engine, catchment_area)
     # Unify the sea-draining catchment polygons into a single polygon
     sdc_polygon = sdc_data.unary_union
     # Create a GeoDataFrame representing the unified sea-draining catchment area
@@ -117,8 +146,20 @@ def get_rec1_data_from_db(
     """
     # Execute the query and retrieve the REC1 data from the database
     rec1_data = gpd.GeoDataFrame.from_postgis(rec1_query, engine, geom_col="geometry")
-    # Remove any duplicate records from the REC1 data
-    rec1_data = rec1_data.drop_duplicates()
-    # Sort by the "objectid" column and reset the index
-    rec1_data = rec1_data.sort_values(by="objectid").reset_index(drop=True)
-    return rec1_data
+    # Determine the sea-draining catchment for each REC1 geometry (using the 'within' predicate)
+    rec1_data_join_sdc = (
+        gpd.sjoin(rec1_data, sdc_data[["catch_id", "geometry"]], how="left", predicate="within")
+        .drop(columns=['index_right'])
+    )
+    # Get rows where REC1 geometries are fully contained within sea-draining catchments
+    rec1_data_with_sdc = rec1_data_join_sdc[~rec1_data_join_sdc['catch_id'].isna()]
+    # Remove any duplicate records and sort by the 'objectid' column
+    rec1_data_with_sdc = rec1_data_with_sdc.drop_duplicates().sort_values(by="objectid").reset_index(drop=True)
+    # Convert the 'catch_id' column to integers
+    rec1_data_with_sdc['catch_id'] = rec1_data_with_sdc['catch_id'].astype(int)
+    # Get the object IDs of REC1 geometries that are not fully contained within sea-draining catchments
+    rec1_network_exclusions = rec1_data_join_sdc[rec1_data_join_sdc['catch_id'].isna()].reset_index(drop=True)
+    # Add excluded REC1 geometries in the River Network to the relevant database table
+    add_rec1_network_exclusions_to_db(engine, river_network_id, rec1_network_exclusions,
+                                      exclusion_cause="crossing multiple sea-draining catchments")
+    return rec1_data_with_sdc
