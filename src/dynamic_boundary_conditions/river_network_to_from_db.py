@@ -77,14 +77,14 @@ def get_network_output_metadata(
     return network_path, network_data_path, catchment_geom
 
 
-def store_rec1_network_metadata_to_db(
+def store_rec1_network_to_db(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
         rec1_network_id: int,
         rec1_network: nx.Graph,
         rec1_network_data: gpd.GeoDataFrame) -> None:
     """
-    Store the metadata of the REC1 river network and its associated data in the database.
+    Store both the REC1 river network and its associated data in files, and their metadata in the database.
 
     Parameters
     ----------
