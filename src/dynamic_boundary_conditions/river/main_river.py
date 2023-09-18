@@ -120,13 +120,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
 
     # Store REC1 data to the database
     river_data_to_from_db.store_rec1_data_to_db(engine)
-
-    # Create a river network for the catchment area
-    rec1_network_id = river_network_for_aoi.get_next_rec1_network_id(engine)
-    rec1_network, rec1_network_data = river_network_for_aoi.build_rec1_river_network(
-        engine, catchment_area, rec1_network_id)
-    river_network_to_from_db.store_rec1_network_metadata_to_db(
-        engine, catchment_area, rec1_network_id, rec1_network, rec1_network_data)
+    # Get the REC1 river network for the catchment area
+    rec1_network, rec1_network_data = river_network_for_aoi.get_rec1_river_network(engine, catchment_area)
 
     # Obtain the REC1 network data that corresponds to the points of intersection on the catchment area boundary
     rec1_network_data_on_bbox = river_network_for_aoi.get_rec1_network_data_on_bbox(
