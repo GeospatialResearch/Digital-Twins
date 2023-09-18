@@ -164,3 +164,52 @@ def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.Ge
     # Fetch the query result as a GeoPandas DataFrame
     existing_network = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return existing_network
+
+
+def get_existing_network(engine: Engine, existing_network: gpd.GeoDataFrame) -> Tuple[nx.Graph, gpd.GeoDataFrame]:
+    """
+    Retrieve the existing REC1 river network and its associated data.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    existing_network:
+        A GeoDataFrame containing the metadata for the existing REC1 river network.
+
+    Returns
+    -------
+    Tuple[nx.Graph, gpd.GeoDataFrame]
+        A tuple containing the existing REC1 river network as a directed graph (DiGraph) and its associated data
+        as a GeoDataFrame.
+    """
+    # Extract metadata for the existing REC1 river network
+    existing_network_series = existing_network.iloc[0]
+    # Extract the REC1 river network ID from the provided metadata
+    rec1_network_id = existing_network_series["rec1_network_id"]
+    # Construct a query to retrieve exclusion data for the existing REC1 river network
+    query = f"""
+            SELECT *
+            FROM rec1_network_exclusions
+            WHERE rec1_network_id = {rec1_network_id};
+            """
+    # Query the database to retrieve exclusion data for the existing REC1 river network
+    rec1_network_exclusions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+    # Group exclusion data by the cause of exclusion
+    grouped_data = rec1_network_exclusions.groupby('exclusion_cause')
+    # Iterate through grouped exclusion data, where each group represents a cause of exclusion
+    for exclusion_cause, data in grouped_data:
+        # Convert the excluded REC1 river segment object IDs to a list
+        excluded_ids = data["objectid"].tolist()
+        # Log a warning message indicating the reason and IDs of the excluded REC1 river segments
+        log.warning(f"Excluded REC1 from river network because '{exclusion_cause}': "
+                    f"{', '.join(map(str, excluded_ids))}")
+    # Load the REC1 river network graph
+    with open(existing_network_series["network_path"], "rb") as file:
+        rec1_network = pickle.load(file)
+    # Load the REC1 river network data containing geometry information
+    rec1_network_data = gpd.read_file(existing_network_series["network_data_path"])
+    # Set the data type of the 'first_coord' and 'last_coord' columns to geometry
+    rec1_network_data['first_coord'] = rec1_network_data['first_coord'].apply(shapely.wkt.loads).astype('geometry')
+    rec1_network_data['last_coord'] = rec1_network_data['last_coord'].apply(shapely.wkt.loads).astype('geometry')
+    return rec1_network, rec1_network_data
