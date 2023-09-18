@@ -136,7 +136,7 @@ def store_rec1_network_to_db(
 
 def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Retrieve existing REC1 river network metadata for the specified catchment area.
+    Retrieve the existing REC1 river network metadata for the specified catchment area from the database.
 
     Parameters
     ----------
@@ -148,7 +148,7 @@ def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.Ge
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing existing REC1 river network metadata for the specified catchment area.
+        A GeoDataFrame containing the existing REC1 river network metadata for the specified catchment area.
     """
     # Create the REC1 Network Output table in the database if it doesn't exist
     create_table(engine, RiverNetworkOutput)
