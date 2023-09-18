@@ -12,6 +12,7 @@ import pickle
 import numpy as np
 import geopandas as gpd
 from shapely.geometry import Point
+from shapely import wkt
 from sqlalchemy import select, func
 from sqlalchemy.engine import Engine
 import networkx as nx
@@ -574,8 +575,6 @@ def build_rec1_river_network(
     # Identify nodes with neither incoming nor outgoing edges and remove them from the network
     isolated_nodes = [node for node in rec1_network.nodes() if not rec1_network.degree(node)]
     rec1_network.remove_nodes_from(isolated_nodes)
-    # Remove unnecessary columns
-    rec1_network_data = rec1_network_data.drop(columns=["first_coord", "last_coord"])
     # Return the constructed REC1 river network and its associated data
     return rec1_network, rec1_network_data
 
@@ -608,6 +607,9 @@ def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame):
         with open(existing_network_series["network_path"], "rb") as file:
             rec1_network = pickle.load(file)
         rec1_network_data = gpd.read_file(existing_network_series["network_data_path"])
+        # Set the data type of the 'first_coord' and 'last_coord' columns to geometry
+        rec1_network_data['first_coord'] = rec1_network_data['first_coord'].apply(wkt.loads).astype('geometry')
+        rec1_network_data['last_coord'] = rec1_network_data['last_coord'].apply(wkt.loads).astype('geometry')
     return rec1_network, rec1_network_data
 
 

@@ -109,6 +109,10 @@ def store_rec1_network_metadata_to_db(
     # Save the REC1 river network to the specified file
     with open(network_path, 'wb') as file:
         pickle.dump(rec1_network, file)
+
+    # Convert the 'first_coord' and 'last_coord' columns to string format to facilitate exporting
+    rec1_network_data['first_coord'] = rec1_network_data['first_coord'].astype(str)
+    rec1_network_data['last_coord'] = rec1_network_data['last_coord'].astype(str)
     # Save the REC1 river network data to the specified file
     rec1_network_data.to_file(str(network_data_path), driver="GeoJSON")
 
