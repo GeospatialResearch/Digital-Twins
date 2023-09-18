@@ -7,7 +7,6 @@ providing valuable information for further use.
 
 import logging
 from typing import Dict, Tuple
-import pickle
 
 import numpy as np
 import geopandas as gpd
@@ -15,17 +14,17 @@ from shapely.geometry import Point
 from sqlalchemy import select, func
 from sqlalchemy.engine import Engine
 import networkx as nx
-from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
-from src.digitaltwin.tables import RiverNetworkExclusions, check_table_exists, create_table
-from src.dynamic_boundary_conditions.river import main_river
+from src.digitaltwin.tables import check_table_exists, create_table, RiverNetworkExclusions
+from src.dynamic_boundary_conditions.river import main_river, river_data_to_from_db
+from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 log = logging.getLogger(__name__)
 
 
-def get_next_river_network_id(engine: Engine) -> int:
+def get_next_rec1_network_id(engine: Engine) -> int:
     """
-    Get the next available River Network ID from the River Network Exclusions table.
+    Get the next available REC1 River Network ID from the River Network Exclusions table.
 
     Parameters
     ----------
@@ -41,16 +40,16 @@ def get_next_river_network_id(engine: Engine) -> int:
     if not check_table_exists(engine, RiverNetworkExclusions.__tablename__):
         create_table(engine, RiverNetworkExclusions)
     # Build a query to find the next available river network ID
-    query = select([func.coalesce(func.max(RiverNetworkExclusions.river_network_id), 0) + 1])
+    query = select([func.coalesce(func.max(RiverNetworkExclusions.rec1_network_id), 0) + 1])
     # Execute the query
     with engine.connect() as connection:
-        river_network_id = connection.execute(query).scalar()
-    return river_network_id
+        rec1_network_id = connection.execute(query).scalar()
+    return rec1_network_id
 
 
 def add_rec1_network_exclusions_to_db(
         engine: Engine,
-        river_network_id: int,
+        rec1_network_id: int,
         rec1_network_exclusions: gpd.GeoDataFrame,
         exclusion_cause: str) -> None:
     """
@@ -60,7 +59,7 @@ def add_rec1_network_exclusions_to_db(
     ----------
     engine : Engine
         The engine used to connect to the database.
-    river_network_id : int
+    rec1_network_id : int
         An identifier for the river network associated with the current run.
     rec1_network_exclusions : gpd.GeoDataFrame
         A GeoDataFrame containing the REC1 geometries that are excluded from the river network for the current run.
@@ -78,8 +77,8 @@ def add_rec1_network_exclusions_to_db(
         # Select the necessary columns and reset the index
         rec1_network_exclusions = (
             rec1_network_exclusions[["objectid", "exclusion_cause", "geometry"]].reset_index(drop=True))
-        # Insert 'river_network_id' to associate it with the river network of the current run
-        rec1_network_exclusions.insert(0, "river_network_id", river_network_id)
+        # Insert 'rec1_network_id' to associate it with the river network of the current run
+        rec1_network_exclusions.insert(0, "rec1_network_id", rec1_network_id)
         # Record excluded REC1 geometries in the relevant table in the database
         rec1_network_exclusions.to_postgis(RiverNetworkExclusions.__tablename__, engine, if_exists="append")
         # Convert the excluded REC1 river segment object IDs to a list
@@ -417,7 +416,7 @@ def add_absent_edges_to_network(
 
 def add_edge_directions_to_network_data(
         engine: Engine,
-        river_network_id: int,
+        rec1_network_id: int,
         rec1_network: nx.Graph,
         prepared_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
@@ -429,7 +428,7 @@ def add_edge_directions_to_network_data(
     ----------
     engine : Engine
         The engine used to connect to the database.
-    river_network_id : int
+    rec1_network_id : int
         An identifier for the river network associated with the current run.
     rec1_network : nx.Graph
         The REC1 river network, a directed graph, used to determine the edge directions.
@@ -465,7 +464,7 @@ def add_edge_directions_to_network_data(
     # Identify edges that were not added to the network
     rec1_network_exclusions = network_data[network_data["node_direction"].isna()].reset_index(drop=True)
     # Add excluded REC1 geometries in the River Network to the relevant database table
-    add_rec1_network_exclusions_to_db(engine, river_network_id, rec1_network_exclusions,
+    add_rec1_network_exclusions_to_db(engine, rec1_network_id, rec1_network_exclusions,
                                       exclusion_cause="unable to determine edge direction")
     # Return the updated network data with added edge directions
     return rec1_network_data
@@ -473,7 +472,7 @@ def add_edge_directions_to_network_data(
 
 def remove_unconnected_edges_from_network(
         engine: Engine,
-        river_network_id: int,
+        rec1_network_id: int,
         rec1_network: nx.Graph,
         rec1_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
@@ -483,13 +482,13 @@ def remove_unconnected_edges_from_network(
     ----------
     engine : Engine
         The engine used to connect to the database.
-    river_network_id : int
+    rec1_network_id : int
         An identifier for the river network associated with the current run.
     rec1_network : nx.Graph
         The REC1 river network, a directed graph, used to identify edges that are connected to the end nodes of their
         respective sea-draining catchments.
     rec1_network_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the river network data with added edge directions.
+        A GeoDataFrame containing the REC1 river network data with added edge directions.
 
     Returns
     -------
@@ -528,7 +527,7 @@ def remove_unconnected_edges_from_network(
         rec1_network_data[rec1_network_data["objectid"].isin(rec1_edges_to_remove)].reset_index(drop=True)
     )
     # Add excluded REC1 geometries in the River Network to the relevant database table
-    add_rec1_network_exclusions_to_db(engine, river_network_id, rec1_network_exclusions,
+    add_rec1_network_exclusions_to_db(engine, rec1_network_id, rec1_network_exclusions,
                                       exclusion_cause="unconnected to its respective sea-draining catchment end node")
     return rec1_network_data_update
 
@@ -536,8 +535,7 @@ def remove_unconnected_edges_from_network(
 def build_rec1_river_network(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
-        rec1_data_with_sdc: gpd.GeoDataFrame,
-        river_network_id: int) -> Tuple[nx.DiGraph, gpd.GeoDataFrame]:
+        rec1_network_id: int) -> Tuple[nx.DiGraph, gpd.GeoDataFrame]:
     """
     Builds a river network for the catchment area using the REC1 data.
 
@@ -547,10 +545,7 @@ def build_rec1_river_network(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    rec1_data_with_sdc : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 data for the catchment area with an additional column that identifies
-        the associated sea-draining catchment for each REC1 geometry.
-    river_network_id : int
+    rec1_network_id : int
         An identifier for the river network associated with the current run.
 
     Returns
@@ -559,6 +554,8 @@ def build_rec1_river_network(
         A tuple containing the constructed REC1 river network, represented as a directed graph (DiGraph),
         along with its associated data in the form of a GeoDataFrame.
     """
+    # Get REC1 data from the database for the catchment area
+    rec1_data_with_sdc = river_data_to_from_db.get_rec1_data_with_sdc_from_db(engine, catchment_area, rec1_network_id)
     # Prepare network data for construction
     prepared_network_data = prepare_network_data_for_construction(catchment_area, rec1_data_with_sdc)
     # Initialize an empty directed graph to represent the REC1 river network
@@ -570,9 +567,9 @@ def build_rec1_river_network(
     # Complete the network by adding necessary remaining edges
     add_absent_edges_to_network(engine, catchment_area, rec1_network, prepared_network_data)
     # Integrate edge directions into the network data based on the REC1 river network structure
-    network_data = add_edge_directions_to_network_data(engine, river_network_id, rec1_network, prepared_network_data)
+    network_data = add_edge_directions_to_network_data(engine, rec1_network_id, rec1_network, prepared_network_data)
     # Identify and remove unconnected edges from the network
-    rec1_network_data = remove_unconnected_edges_from_network(engine, river_network_id, rec1_network, network_data)
+    rec1_network_data = remove_unconnected_edges_from_network(engine, rec1_network_id, rec1_network, network_data)
     # Identify nodes with neither incoming nor outgoing edges and remove them from the network
     isolated_nodes = [node for node in rec1_network.nodes() if not rec1_network.degree(node)]
     rec1_network.remove_nodes_from(isolated_nodes)
