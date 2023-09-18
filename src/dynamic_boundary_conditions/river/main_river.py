@@ -17,7 +17,7 @@ from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.river import (
     river_data_to_from_db,
     river_network_for_aoi,
-    river_network_to_db,
+    river_network_to_from_db,
     osm_waterways,
     rec1_osm_match,
     hydrograph,
@@ -125,7 +125,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     rec1_network_id = river_network_for_aoi.get_next_rec1_network_id(engine)
     rec1_network, rec1_network_data = river_network_for_aoi.build_rec1_river_network(
         engine, catchment_area, rec1_network_id)
-    river_network_to_db.store_rec1_network_metadata_to_db(
+    river_network_to_from_db.store_rec1_network_metadata_to_db(
         engine, catchment_area, rec1_network_id, rec1_network, rec1_network_data)
 
     # Obtain the REC1 network data that corresponds to the points of intersection on the catchment area boundary
