@@ -81,7 +81,7 @@ class RiverNetworkExclusions(Base):
     ----------
     __tablename__ : str
         Name of the database table.
-    river_network_id : int
+    rec1_network_id : int
         An identifier for the river network associated with each new run.
     objectid : int
         An identifier for the REC1 river object matching from the 'rec1_data' table.
@@ -91,15 +91,43 @@ class RiverNetworkExclusions(Base):
         Geometric representation of the excluded REC1 river features in the form of LINESTRING.
     """
     __tablename__ = "rec1_network_exclusions"
-    river_network_id = Column(Integer, primary_key=True,
-                              comment="An identifier for the river network associated with each run")
+    rec1_network_id = Column(Integer, primary_key=True,
+                             comment="An identifier for the river network associated with each run")
     objectid = Column(Integer, primary_key=True,
                       comment="An identifier for the REC1 river object matching from the 'rec1_data' table")
     exclusion_cause = Column(String, comment="Cause of exclusion")
     geometry = Column(Geometry("LINESTRING", srid=2193))
     __table_args__ = (
-        PrimaryKeyConstraint('river_network_id', 'objectid', name='network_exclusions_pk'),
+        PrimaryKeyConstraint('rec1_network_id', 'objectid', name='network_exclusions_pk'),
     )
+
+
+class RiverNetworkOutput(Base):
+    """
+    Class representing the 'rec1_network_output' table.
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    rec1_network_id : int
+        An identifier for the river network associated with each new run (primary key).
+    network_path : str
+        Path to the REC1 river network file.
+    network_data_path : str
+        Path to the REC1 river network data file.
+    created_at : datetime
+        Timestamp indicating when the output was created.
+    geometry : Geometry
+        Geometric representation of the catchment area coverage.
+    """
+    __tablename__ = "rec1_network_output"
+    rec1_network_id = Column(Integer, primary_key=True,
+                             comment="An identifier for the river network associated with each run")
+    network_path = Column(String, comment="path to the rec1 river network file")
+    network_data_path = Column(String, comment="path to the rec1 river network data file")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
+    geometry = Column(Geometry("GEOMETRY", srid=2193))
 
 
 class BGFloodModelOutput(Base):

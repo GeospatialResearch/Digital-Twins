@@ -17,6 +17,7 @@ from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.river import (
     river_data_to_from_db,
     river_network_for_aoi,
+    river_network_to_db,
     osm_waterways,
     rec1_osm_match,
     hydrograph,
@@ -119,14 +120,14 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
 
     # Store REC1 data to the database
     river_data_to_from_db.store_rec1_data_to_db(engine)
-    # Get the identifier for the river network associated with each run
-    river_network_id = river_network_for_aoi.get_next_river_network_id(engine)
-    # Get REC1 data from the database for the catchment area
-    rec1_data_with_sdc = river_data_to_from_db.get_rec1_data_with_sdc_from_db(engine, catchment_area, river_network_id)
 
-    # Create a river network for the catchment area using the REC1 data
+    # Create a river network for the catchment area
+    rec1_network_id = river_network_for_aoi.get_next_rec1_network_id(engine)
     rec1_network, rec1_network_data = river_network_for_aoi.build_rec1_river_network(
-        engine, catchment_area, rec1_data_with_sdc, river_network_id)
+        engine, catchment_area, rec1_network_id)
+    river_network_to_db.store_rec1_network_metadata_to_db(
+        engine, catchment_area, rec1_network_id, rec1_network, rec1_network_data)
+
     # Obtain the REC1 network data that corresponds to the points of intersection on the catchment area boundary
     rec1_network_data_on_bbox = river_network_for_aoi.get_rec1_network_data_on_bbox(
         catchment_area, rec1_network_data, rec1_network)
