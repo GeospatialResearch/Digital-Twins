@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Store the metadata of the REC1 river network and its associated data in the database, and
-              retrieve existing REC1 river network metadata for the specified catchment area.
+@Description: Store both the REC1 river network and its associated data in files, and their metadata in the database.
+              Retrieve the existing REC1 river network and its associated data.
 @Author: sli229
 """
 
