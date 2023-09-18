@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Store the metadata of the REC1 river network and its associated data in the database.
+@Description: Store the metadata of the REC1 river network and its associated data in the database, and
+              retrieve existing REC1 river network metadata for the specified catchment area.
 @Author: sli229
 """
 
@@ -109,7 +110,6 @@ def store_rec1_network_metadata_to_db(
     with open(network_path, 'wb') as file:
         pickle.dump(rec1_network, file)
     # Save the REC1 river network data to the specified file
-    rec1_network_data = rec1_network_data.drop(columns=["first_coord", "last_coord"])
     rec1_network_data.to_file(str(network_data_path), driver="GeoJSON")
 
     # Create the REC1 Network Output table in the database if it doesn't exist
