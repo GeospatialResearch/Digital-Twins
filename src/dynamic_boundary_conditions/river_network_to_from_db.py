@@ -134,7 +134,7 @@ def store_rec1_network_to_db(
     log.info("REC1 river network metadata successfully stored in the database.")
 
 
-def get_existing_network_metadata(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Retrieve existing REC1 river network metadata for the specified catchment area.
 

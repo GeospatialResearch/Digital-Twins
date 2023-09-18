@@ -582,7 +582,7 @@ def build_rec1_river_network(
 def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame):
     # Get the identifier for the river network associated with each run
     rec1_network_id = get_next_rec1_network_id(engine)
-    existing_network = river_network_to_from_db.get_existing_network_metadata(engine, catchment_area)
+    existing_network = river_network_to_from_db.get_existing_network_metadata_from_db(engine, catchment_area)
 
     if existing_network.empty:
         rec1_network, rec1_network_data = build_rec1_river_network(engine, catchment_area, rec1_network_id)
