@@ -589,27 +589,7 @@ def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame):
         river_network_to_from_db.store_rec1_network_to_db(
             engine, catchment_area, rec1_network_id, rec1_network, rec1_network_data)
     else:
-        existing_network_series = existing_network.iloc[0]
-        rec1_network_id = existing_network_series["rec1_network_id"]
-        query = f"""
-        SELECT *
-        FROM rec1_network_exclusions
-        WHERE rec1_network_id = {rec1_network_id};
-        """
-        rec1_network_exclusions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-        grouped_data = rec1_network_exclusions.groupby('exclusion_cause')
-        for exclusion_cause, data in grouped_data:
-            # Convert the excluded REC1 river segment object IDs to a list
-            excluded_ids = data["objectid"].tolist()
-            # Log a warning message indicating the reason and IDs of the excluded REC1 river segments
-            log.warning(f"Excluded REC1 from river network because '{exclusion_cause}': "
-                        f"{', '.join(map(str, excluded_ids))}")
-        with open(existing_network_series["network_path"], "rb") as file:
-            rec1_network = pickle.load(file)
-        rec1_network_data = gpd.read_file(existing_network_series["network_data_path"])
-        # Set the data type of the 'first_coord' and 'last_coord' columns to geometry
-        rec1_network_data['first_coord'] = rec1_network_data['first_coord'].apply(wkt.loads).astype('geometry')
-        rec1_network_data['last_coord'] = rec1_network_data['last_coord'].apply(wkt.loads).astype('geometry')
+        rec1_network, rec1_network_data = river_network_to_from_db.get_existing_network(engine, existing_network)
     return rec1_network, rec1_network_data
 
 
