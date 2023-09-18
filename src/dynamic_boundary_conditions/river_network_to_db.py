@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Store the metadata of the REC1 river network and its associated data into the database
+@Description: Store the metadata of the REC1 river network and its associated data in the database.
 @Author: sli229
 """
 
@@ -11,6 +11,7 @@ from datetime import datetime
 import pickle
 
 import geopandas as gpd
+import shapely.wkt
 from sqlalchemy.engine import Engine
 import networkx as nx
 
@@ -82,6 +83,7 @@ def store_rec1_network_metadata_to_db(
         rec1_network: nx.Graph,
         rec1_network_data: gpd.GeoDataFrame) -> None:
     """
+    Store the metadata of the REC1 river network and its associated data in the database.
 
     Parameters
     ----------
@@ -101,7 +103,7 @@ def store_rec1_network_metadata_to_db(
     None
         This function does not return any value.
     """
-    # Get new file paths for storing both the REC1 Network and its associated data.
+    # Get new file paths for storing both the REC1 Network and its associated data
     network_path, network_data_path = get_new_network_output_paths()
     # Save the REC1 river network to the specified file
     with open(network_path, 'wb') as file:
@@ -110,18 +112,50 @@ def store_rec1_network_metadata_to_db(
     rec1_network_data = rec1_network_data.drop(columns=["first_coord", "last_coord"])
     rec1_network_data.to_file(str(network_data_path), driver="GeoJSON")
 
-    # Create the REC1 Network output table in the database if it doesn't exist
+    # Create the REC1 Network Output table in the database if it doesn't exist
     create_table(engine, RiverNetworkOutput)
-    # Get metadata related to the REC1 Network output
+    # Get metadata related to the REC1 Network Output
     network_path, network_data_path, geometry = get_network_output_metadata(
         network_path, network_data_path, catchment_area)
-    # Create a new query object representing the REC1 network output metadata
+    # Create a new query object representing the REC1 Network Output metadata
     query = RiverNetworkOutput(
         rec1_network_id=rec1_network_id,
         network_path=network_path,
         network_data_path=network_data_path,
         geometry=geometry)
-    # Execute the query to store the REC1 Network output metadata in the database
+    # Execute the query to store the REC1 Network Output metadata in the database
     execute_query(engine, query)
     # Log a message indicating the successful storage of REC1 network output metadata in the database
     log.info("REC1 river network metadata successfully stored in the database.")
+
+
+def get_existing_network_output(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """
+    Retrieve existing REC1 river network metadata for the specified catchment area.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing existing REC1 river network metadata for the specified catchment area.
+    """
+    # Create the REC1 Network Output table in the database if it doesn't exist
+    create_table(engine, RiverNetworkOutput)
+    # Extract the catchment polygon from the catchment area and convert it to Well-Known Text (WKT) format
+    catchment_polygon = catchment_area["geometry"].iloc[0]
+    catchment_polygon_wkt = shapely.wkt.dumps(catchment_polygon, rounding_precision=6)
+    # Query the REC1 Network Output table to find existing REC1 river network metadata for the catchment area
+    query = f"""
+    SELECT *
+    FROM rec1_network_output
+    WHERE ST_Contains(geometry, ST_GeomFromText('{catchment_polygon_wkt}', 2193));
+    """
+    # Fetch the query result as a GeoPandas DataFrame
+    existing_network = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+    return existing_network
