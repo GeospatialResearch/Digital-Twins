@@ -586,7 +586,7 @@ def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame):
 
     if existing_network.empty:
         rec1_network, rec1_network_data = build_rec1_river_network(engine, catchment_area, rec1_network_id)
-        river_network_to_from_db.store_rec1_network_metadata_to_db(
+        river_network_to_from_db.store_rec1_network_to_db(
             engine, catchment_area, rec1_network_id, rec1_network, rec1_network_data)
     else:
         existing_network_series = existing_network.iloc[0]
