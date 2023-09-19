@@ -3,6 +3,7 @@ on:
   push:
     branches:
     - master
+    - autodoc
 jobs:
   build:
     runs-on: ubuntu-latest
