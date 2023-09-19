@@ -189,10 +189,10 @@ def get_existing_network(engine: Engine, existing_network: gpd.GeoDataFrame) -> 
     rec1_network_id = existing_network_series["rec1_network_id"]
     # Construct a query to retrieve exclusion data for the existing REC1 river network
     query = f"""
-            SELECT *
-            FROM rec1_network_exclusions
-            WHERE rec1_network_id = {rec1_network_id};
-            """
+    SELECT *
+    FROM rec1_network_exclusions
+    WHERE rec1_network_id = {rec1_network_id};
+    """
     # Query the database to retrieve exclusion data for the existing REC1 river network
     rec1_network_exclusions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     # Group exclusion data by the cause of exclusion
