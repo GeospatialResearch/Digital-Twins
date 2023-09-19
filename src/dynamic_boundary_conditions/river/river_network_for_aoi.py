@@ -579,16 +579,36 @@ def build_rec1_river_network(
     return rec1_network, rec1_network_data
 
 
-def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame):
-    # Get the identifier for the river network associated with each run
+def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Tuple[nx.Graph, gpd.GeoDataFrame]:
+    """
+    Retrieve or create REC1 river network for the specified catchment area.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+
+    Returns
+    -------
+    Tuple[nx.Graph, gpd.GeoDataFrame]
+        A tuple containing the REC1 river network as a directed graph (DiGraph) and its associated data
+        as a GeoDataFrame.
+    """
+    # Obtain the identifier for the REC1 river network associated with each run
     rec1_network_id = get_next_rec1_network_id(engine)
+    # Retrieve existing REC1 river network metadata for the specified catchment area from the database
     existing_network = river_network_to_from_db.get_existing_network_metadata_from_db(engine, catchment_area)
 
     if existing_network.empty:
+        # If no existing REC1 river network metadata is found, build the REC1 river network
         rec1_network, rec1_network_data = build_rec1_river_network(engine, catchment_area, rec1_network_id)
+        # Store the newly created REC1 river network in the database
         river_network_to_from_db.store_rec1_network_to_db(
             engine, catchment_area, rec1_network_id, rec1_network, rec1_network_data)
     else:
+        # If existing REC1 river network metadata is found, retrieve the network and its associated data
         rec1_network, rec1_network_data = river_network_to_from_db.get_existing_network(engine, existing_network)
     return rec1_network, rec1_network_data
 
