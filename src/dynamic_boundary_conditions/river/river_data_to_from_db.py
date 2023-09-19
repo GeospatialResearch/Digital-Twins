@@ -18,7 +18,7 @@ from src.dynamic_boundary_conditions.river_network_to_from_db import add_network
 log = logging.getLogger(__name__)
 
 
-def get_rec1_data_from_niwa() -> gpd.GeoDataFrame:
+def get_niwa_rec1_data() -> gpd.GeoDataFrame:
     """
     Reads REC1 data from the NIWA REC1 dataset and returns a GeoDataFrame.
 
@@ -70,7 +70,7 @@ def store_rec1_data_to_db(engine: Engine) -> None:
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
         # Get REC1 data from the NZ REC1 dataset
-        rec1_nz = get_rec1_data_from_niwa()
+        rec1_nz = get_niwa_rec1_data()
         # Store the REC1 data to the database table
         rec1_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info(f"Stored '{table_name}' data in the database.")
