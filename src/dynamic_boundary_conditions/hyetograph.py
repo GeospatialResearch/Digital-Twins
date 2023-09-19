@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Get hyetograph data and generate interactive hyetograph plots for sites located within the catchment area.
-@Author: sli229
+Get hyetograph data and generate interactive hyetograph plots for sites located within the catchment area.
 """
 
 from typing import Union

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script fetches geospatial data from various providers using the 'geoapis' library and stores it in
-              the database. It also saves user log information in the database.
-@Author: sli229
+This script fetches geospatial data from various providers using the 'geoapis' library and stores it in the database.
+It also saves user log information in the database.
 """
 
 import logging

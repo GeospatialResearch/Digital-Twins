@@ -1,0 +1,139 @@
+:py:mod:`src.dynamic_boundary_conditions.rec1_osm_match`
+========================================================
+
+.. py:module:: src.dynamic_boundary_conditions.rec1_osm_match
+
+.. autoapi-nested-parse::
+
+   This script facilitates the matching of REC1 rivers with OpenStreetMap (OSM) waterways by finding the closest
+   OSM waterway to each REC1 river. It also determines the target points used for the river input in the BG-Flood model.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rec1_osm_match.match_rec1_river_and_osm_waterway
+   src.dynamic_boundary_conditions.rec1_osm_match.find_closest_osm_waterways
+   src.dynamic_boundary_conditions.rec1_osm_match.get_elevations_from_hydro_dem
+   src.dynamic_boundary_conditions.rec1_osm_match.get_target_location_from_hydro_dem
+   src.dynamic_boundary_conditions.rec1_osm_match.get_closest_osm_waterways_with_target_locations
+   src.dynamic_boundary_conditions.rec1_osm_match.get_matched_data_with_target_locations
+
+
+
+.. py:function:: match_rec1_river_and_osm_waterway(rec1_network_data_on_bbox: geopandas.GeoDataFrame, osm_waterways_data_on_bbox: geopandas.GeoDataFrame, distance_m: int = 300) -> geopandas.GeoDataFrame
+
+   Matches REC1 network data with OSM waterways data based on their spatial proximity within a specified distance
+   threshold.
+
+   :param rec1_network_data_on_bbox: A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.
+   :type rec1_network_data_on_bbox: gpd.GeoDataFrame
+   :param osm_waterways_data_on_bbox: A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.
+   :type osm_waterways_data_on_bbox: gpd.GeoDataFrame
+   :param distance_m: Distance threshold in meters for spatial proximity matching. The default value is 300 meters.
+   :type distance_m: int, optional
+
+   :returns: A GeoDataFrame containing the matched REC1 network data and OSM waterways data, including spatial proximity
+             information.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: find_closest_osm_waterways(rec1_network_data_on_bbox: geopandas.GeoDataFrame, osm_waterways_data_on_bbox: geopandas.GeoDataFrame, distance_m: int = 300) -> geopandas.GeoDataFrame
+
+   Finds the closest OSM waterway to each REC1 river within the specified distance threshold.
+
+   :param rec1_network_data_on_bbox: A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.
+   :type rec1_network_data_on_bbox: gpd.GeoDataFrame
+   :param osm_waterways_data_on_bbox: A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.
+   :type osm_waterways_data_on_bbox: gpd.GeoDataFrame
+   :param distance_m: Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.
+   :type distance_m: int, optional
+
+   :returns: A GeoDataFrame containing the closest OSM waterway to each REC1 river.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_elevations_from_hydro_dem(single_closest_osm_waterway: geopandas.GeoDataFrame, hydro_dem: xarray.Dataset, hydro_dem_resolution: Union[int, float]) -> geopandas.GeoDataFrame
+
+   Extracts the nearest elevation values from the Hydrologically Conditioned DEM (Hydro DEM) for the area
+   surrounding the closest OpenStreetMap (OSM) waterway, along with their corresponding coordinates.
+
+   :param single_closest_osm_waterway: A GeoDataFrame representing a single row of the closest OSM waterways.
+   :type single_closest_osm_waterway: gpd.GeoDataFrame
+   :param hydro_dem: Hydrologically Conditioned DEM (Hydro DEM) for the catchment area.
+   :type hydro_dem: xr.Dataset
+   :param hydro_dem_resolution: Resolution of the Hydrologically Conditioned DEM (Hydro DEM).
+   :type hydro_dem_resolution: Union[int, float]
+
+   :returns: A GeoDataFrame containing the nearest elevation values extracted from the Hydrologically Conditioned DEM
+             (Hydro DEM) for the area surrounding the closest OSM waterway, along with their corresponding coordinates.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_target_location_from_hydro_dem(single_closest_osm_waterway: geopandas.GeoDataFrame, hydro_dem: xarray.Dataset, hydro_dem_resolution: Union[int, float]) -> geopandas.GeoDataFrame
+
+   Get the target location with the minimum elevation from the Hydrologically Conditioned DEM (Hydro DEM)
+   to the closest OpenStreetMap (OSM) waterway. This location is crucial for the river input in the BG-Flood model,
+   as it enables precise identification of where to add the river as a vertical discharge.
+
+   :param single_closest_osm_waterway: A GeoDataFrame representing a single row of the closest OSM waterways.
+   :type single_closest_osm_waterway: gpd.GeoDataFrame
+   :param hydro_dem: Hydrologically Conditioned DEM (Hydro DEM) for the catchment area.
+   :type hydro_dem: xr.Dataset
+   :param hydro_dem_resolution: Resolution of the Hydrologically Conditioned DEM (Hydro DEM).
+   :type hydro_dem_resolution: Union[int, float]
+
+   :returns: A GeoDataFrame containing the target location (Point) with the minimum elevation from the Hydrologically
+             Conditioned DEM (Hydro DEM) to the closest OSM waterway.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_closest_osm_waterways_with_target_locations(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, rec1_network_data_on_bbox: geopandas.GeoDataFrame, osm_waterways_data_on_bbox: geopandas.GeoDataFrame, distance_m: int = 300) -> geopandas.GeoDataFrame
+
+   Get the closest OpenStreetMap (OSM) waterway to each REC1 river within the specified distance threshold,
+   along with the identified target locations used for the river input in the BG-Flood model.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec1_network_data_on_bbox: A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.
+   :type rec1_network_data_on_bbox: gpd.GeoDataFrame
+   :param osm_waterways_data_on_bbox: A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.
+   :type osm_waterways_data_on_bbox: gpd.GeoDataFrame
+   :param distance_m: Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.
+   :type distance_m: int, optional
+
+   :returns: A GeoDataFrame containing the closest OSM waterway to each REC1 river, along with the identified
+             target locations used for the river input in the BG-Flood model.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_matched_data_with_target_locations(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, rec1_network_data_on_bbox: geopandas.GeoDataFrame, osm_waterways_data_on_bbox: geopandas.GeoDataFrame, distance_m: int = 300) -> geopandas.GeoDataFrame
+
+   Get the matched data between REC1 rivers and OSM waterways within the specified distance threshold,
+   along with the identified target locations used for the river input in the BG-Flood model.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec1_network_data_on_bbox: A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.
+   :type rec1_network_data_on_bbox: gpd.GeoDataFrame
+   :param osm_waterways_data_on_bbox: A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.
+   :type osm_waterways_data_on_bbox: gpd.GeoDataFrame
+   :param distance_m: Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.
+   :type distance_m: int, optional
+
+   :returns: A GeoDataFrame containing the matched data between REC1 rivers and OSM waterways, along with the identified
+             target locations used for the river input in the BG-Flood model.
+   :rtype: gpd.GeoDataFrame
+
+

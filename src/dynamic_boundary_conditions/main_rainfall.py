@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Main rainfall script used to fetch and store rainfall data in the database, and
-              to generate the requested rainfall model input for BG-Flood etc.
-@Author: pkh35, sli229
+Main rainfall script used to fetch and store rainfall data in the database, and to generate the requested
+rainfall model input for BG-Flood etc.
 """
 
 import pathlib

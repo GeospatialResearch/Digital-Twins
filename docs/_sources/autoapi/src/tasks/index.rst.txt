@@ -1,0 +1,76 @@
+:py:mod:`src.tasks`
+===================
+
+.. py:module:: src.tasks
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   src.tasks.OnFailureStateTask
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.tasks.create_model_for_area
+   src.tasks.initialise_db_with_region_geometries
+   src.tasks.generate_rainfall_inputs
+   src.tasks.run_flood_model
+   src.tasks.wkt_to_gdf
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.tasks.message_broker_url
+   src.tasks.app
+
+
+.. py:data:: message_broker_url
+
+   
+
+.. py:data:: app
+
+   
+
+.. py:class:: OnFailureStateTask
+
+
+   Bases: :py:obj:`app`
+
+   Task that switches state to FAILURE if an exception occurs
+
+   .. py:method:: on_failure(_exc, _task_id, _args, _kwargs, _einfo)
+
+
+
+.. py:function:: create_model_for_area(selected_polygon_wkt: str) -> celery.result.GroupResult
+
+   Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks
+
+
+.. py:function:: initialise_db_with_region_geometries()
+
+
+.. py:function:: generate_rainfall_inputs(selected_polygon_wkt: str)
+
+
+.. py:function:: run_flood_model(selected_polygon_wkt: str)
+
+
+.. py:function:: wkt_to_gdf(wkt: str) -> geopandas.GeoDataFrame
+
+

@@ -1,0 +1,105 @@
+:py:mod:`src.dynamic_boundary_conditions.river_network_for_aoi`
+===============================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river_network_for_aoi
+
+.. autoapi-nested-parse::
+
+   This script processes REC1 data to construct a river network for the defined catchment area.
+   Additionally, it identifies intersections between the REC1 rivers and the catchment area boundary,
+   providing valuable information for further use.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river_network_for_aoi.add_first_last_coords_to_rec1
+   src.dynamic_boundary_conditions.river_network_for_aoi.get_unique_nodes_dict
+   src.dynamic_boundary_conditions.river_network_for_aoi.create_rec1_network_data
+   src.dynamic_boundary_conditions.river_network_for_aoi.build_rec1_network
+   src.dynamic_boundary_conditions.river_network_for_aoi.get_rec1_boundary_points_on_bbox
+   src.dynamic_boundary_conditions.river_network_for_aoi.get_rec1_network_data_on_bbox
+
+
+
+.. py:function:: add_first_last_coords_to_rec1(rec1_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Adds columns for the first and last coordinates of each LineString in the REC1 data for the catchment area.
+
+   :param rec1_data: A GeoDataFrame containing the REC1 data for the catchment area.
+   :type rec1_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the REC1 data for the catchment area with additional columns for the
+             first and last coordinates of each LineString.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_unique_nodes_dict(rec1_data_w_node_coords: geopandas.GeoDataFrame) -> Dict[shapely.geometry.Point, int]
+
+   Generates a dictionary that contains the unique node coordinates in the REC1 data for the catchment area.
+
+   :param rec1_data_w_node_coords: A GeoDataFrame containing the REC1 data for the catchment area with additional columns for the
+                                   first and last coordinates of each LineString.
+   :type rec1_data_w_node_coords: gpd.GeoDataFrame
+
+   :returns: A dictionary that contains the unique node coordinates (Point objects) in the REC1 data for the catchment area.
+   :rtype: Dict[Point, int]
+
+
+.. py:function:: create_rec1_network_data(rec1_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Creates river network data for the catchment area using the REC1 data.
+
+   :param rec1_data: A GeoDataFrame containing the REC1 data for the catchment area.
+   :type rec1_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the river network data for the catchment area derived from the REC1 data.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: build_rec1_network(rec1_network_data: geopandas.GeoDataFrame) -> networkx.Graph
+
+   Builds a river network for the catchment area using the provided river network data.
+
+   :param rec1_network_data: A GeoDataFrame containing the river network data for the catchment area derived from the REC1 data.
+   :type rec1_network_data: gpd.GeoDataFrame
+
+   :returns: A networkx Graph representing the river network for the catchment area.
+   :rtype: nx.Graph
+
+
+.. py:function:: get_rec1_boundary_points_on_bbox(catchment_area: geopandas.GeoDataFrame, rec1_network_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Get the boundary points where the REC1 rivers intersect with the catchment area boundary.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec1_network_data: A GeoDataFrame containing the REC1 network data.
+   :type rec1_network_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the boundary points where the REC1 rivers intersect with the catchment area boundary.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_rec1_network_data_on_bbox(catchment_area: geopandas.GeoDataFrame, rec1_network_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Get the REC1 network data that intersects with the catchment area boundary and identifies the corresponding points
+   of intersection on the boundary.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec1_network_data: A GeoDataFrame containing the REC1 network data.
+   :type rec1_network_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary,
+             along with the corresponding points of intersection on the boundary.
+   :rtype: gpd.GeoDataFrame
+
+

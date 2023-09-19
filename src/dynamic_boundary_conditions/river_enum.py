@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Enum(s) used in the river module.
-@Author: sli229
+Enum(s) used in the river module.
 """
 
 from enum import StrEnum

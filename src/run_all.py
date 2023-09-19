@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script executes the Digital Twin application.
-@Author: sli229
+This script runs each module in the Digital Twin using a Sample Polygon.
 """
 
 from typing import Dict

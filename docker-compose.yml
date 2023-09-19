@@ -34,7 +34,7 @@ services:
       - message_broker
       - geoserver
 
-# Celery worker removed temporarily because BG_flood has not yet been configured for docker.
+  # Celery worker removed temporarily because BG_flood has not yet been configured for docker.
 
   geoserver:
     # Serves geospatial web data through interactions with files and database
@@ -56,7 +56,7 @@ services:
       timeout: 10s
       retries: 3
 
-# WWW removed temporarily because build is failing and more work is needed.
+  # WWW removed temporarily because build is failing and more work is needed.
 
   message_broker:
     # Communicates between backend and workers to assign tasks and store state

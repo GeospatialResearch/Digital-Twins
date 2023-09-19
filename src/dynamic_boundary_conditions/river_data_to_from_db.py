@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script handles the reading of REC1 data from the NIWA REC1 dataset,
-              storing the data in the database, and retrieving the REC1 data from the database.
-@Author: sli229
+This script handles the reading of REC1 data from the NIWA REC1 dataset,
+storing the data in the database, and retrieving the REC1 data from the database.
 """
 
 import logging

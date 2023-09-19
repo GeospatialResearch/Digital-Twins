@@ -1,0 +1,73 @@
+:py:mod:`src.dynamic_boundary_conditions.river_data_to_from_db`
+===============================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river_data_to_from_db
+
+.. autoapi-nested-parse::
+
+   This script handles the reading of REC1 data from the NIWA REC1 dataset,
+   storing the data in the database, and retrieving the REC1 data from the database.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river_data_to_from_db.get_rec1_data_from_niwa
+   src.dynamic_boundary_conditions.river_data_to_from_db.store_rec1_data_to_db
+   src.dynamic_boundary_conditions.river_data_to_from_db.get_rec1_data_from_db
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river_data_to_from_db.log
+
+
+.. py:data:: log
+
+   
+
+.. py:function:: get_rec1_data_from_niwa() -> geopandas.GeoDataFrame
+
+   Reads REC1 data from the NIWA REC1 dataset and returns a GeoDataFrame.
+
+   :returns: A GeoDataFrame containing the REC1 data from the NZ REC1 dataset.
+   :rtype: gpd.GeoDataFrame
+
+   :raises FileNotFoundError: If the REC1 data directory does not exist or if there are no Shapefiles in the specified directory.
+
+
+.. py:function:: store_rec1_data_to_db(engine: sqlalchemy.engine.Engine) -> None
+
+   Store REC1 data to the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: get_rec1_data_from_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Retrieve REC1 data from the database for the specified catchment area.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the retrieved REC1 data for the specified catchment area.
+   :rtype: gpd.GeoDataFrame
+
+

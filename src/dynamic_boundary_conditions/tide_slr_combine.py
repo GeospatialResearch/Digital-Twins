@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Generates combined tide and sea level rise (SLR) data for a specific projection year,
-              taking into account the provided confidence level, SSP scenario, inclusion of Vertical Land Motion (VLM),
-              percentile, and more.
-@Author: sli229
+Generates combined tide and sea level rise (SLR) data for a specific projection year, taking into account the provided
+confidence level, SSP scenario, inclusion of Vertical Land Motion (VLM), percentile, and more.
 """
 
 import re

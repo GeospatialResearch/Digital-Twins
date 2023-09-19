@@ -1,0 +1,37 @@
+:py:mod:`src`
+=============
+
+.. py:module:: src
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   digitaltwin/index.rst
+   dynamic_boundary_conditions/index.rst
+   flood_model/index.rst
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   app/index.rst
+   config/index.rst
+   run_all/index.rst
+   tasks/index.rst
+
+
+Package Contents
+----------------
+
+.. py:data:: __version__
+   :value: '0.1.0'
+
+   
+

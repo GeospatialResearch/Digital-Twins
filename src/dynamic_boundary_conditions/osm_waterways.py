@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script fetches OpenStreetMap (OSM) waterways data for the defined catchment area.
-              Additionally, it identifies intersections between the OSM waterways and the catchment area boundary,
-              providing valuable information for further use.
-@Author: sli229
+This script fetches OpenStreetMap (OSM) waterways data for the defined catchment area.
+Additionally, it identifies intersections between the OSM waterways and the catchment area boundary,
+providing valuable information for further use.
 """
 
 import pathlib

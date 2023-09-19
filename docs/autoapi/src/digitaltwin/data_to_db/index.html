@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.digitaltwin.data_to_db &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="src.digitaltwin.get_data_using_geoapis" href="../get_data_using_geoapis/index.html" />
+    <link rel="prev" title="src.digitaltwin" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Digital Twin for Flood Resilience in Aotearoa New Zealand
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dynamic_boundary_conditions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin.data_to_db</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/src/digitaltwin/data_to_db/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.digitaltwin.data_to_db">
+<span id="src-digitaltwin-data-to-db"></span><h1><a class="reference internal" href="#module-src.digitaltwin.data_to_db" title="src.digitaltwin.data_to_db"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin.data_to_db</span></code></a><a class="headerlink" href="#module-src.digitaltwin.data_to_db" title="Link to this heading"></a></h1>
+<p>This script fetches geospatial data from various providers using the ‘geoapis’ library and stores it in the database.
+It also saves user log information in the database.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.get_nz_geospatial_layers" title="src.digitaltwin.data_to_db.get_nz_geospatial_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nz_geospatial_layers</span></code></a>(→ pandas.DataFrame)</p></td>
+<td><p>Retrieve geospatial layers from the database that have a coverage area of New Zealand.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.get_non_nz_geospatial_layers" title="src.digitaltwin.data_to_db.get_non_nz_geospatial_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_non_nz_geospatial_layers</span></code></a>(→ pandas.DataFrame)</p></td>
+<td><p>Retrieve geospatial layers from the database that do not have a coverage area of New Zealand.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.get_geospatial_layer_info" title="src.digitaltwin.data_to_db.get_geospatial_layer_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geospatial_layer_info</span></code></a>(→ Tuple[str, int, str, str])</p></td>
+<td><p>Extracts geospatial layer information from a single layer entry.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.get_vector_data_id_not_in_db" title="src.digitaltwin.data_to_db.get_vector_data_id_not_in_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_vector_data_id_not_in_db</span></code></a>(→ Set[int])</p></td>
+<td><p>Get the IDs from the fetched vector_data that are not present in the specified database table</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.nz_geospatial_layers_data_to_db" title="src.digitaltwin.data_to_db.nz_geospatial_layers_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nz_geospatial_layers_data_to_db</span></code></a>(→ None)</p></td>
+<td><p>Fetches New Zealand geospatial layers data using 'geoapis' and stores it into the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.get_non_intersection_area_from_db" title="src.digitaltwin.data_to_db.get_non_intersection_area_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_non_intersection_area_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get the non-intersecting area from the catchment area and user log information table in the database</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.process_new_non_nz_geospatial_layers" title="src.digitaltwin.data_to_db.process_new_non_nz_geospatial_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_new_non_nz_geospatial_layers</span></code></a>(→ None)</p></td>
+<td><p>Fetches new non-NZ geospatial layers data using 'geoapis' and stores it into the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.process_existing_non_nz_geospatial_layers" title="src.digitaltwin.data_to_db.process_existing_non_nz_geospatial_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_existing_non_nz_geospatial_layers</span></code></a>(→ None)</p></td>
+<td><p>Fetches existing non-NZ geospatial layers data using 'geoapis' and stores it into the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.non_nz_geospatial_layers_data_to_db" title="src.digitaltwin.data_to_db.non_nz_geospatial_layers_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">non_nz_geospatial_layers_data_to_db</span></code></a>(→ None)</p></td>
+<td><p>Fetches non-NZ geospatial layers data using 'geoapis' and stores it into the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.store_geospatial_layers_data_to_db" title="src.digitaltwin.data_to_db.store_geospatial_layers_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_geospatial_layers_data_to_db</span></code></a>(→ None)</p></td>
+<td><p>Fetches geospatial layers data using 'geoapis' and stores it into the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.user_log_info_to_db" title="src.digitaltwin.data_to_db.user_log_info_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">user_log_info_to_db</span></code></a>(→ None)</p></td>
+<td><p>Store user log information to the database.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.data_to_db.log" title="src.digitaltwin.data_to_db.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.log">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.NoNonIntersectionError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">NoNonIntersectionError</span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.NoNonIntersectionError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception raised when no non-intersecting area is found.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.get_nz_geospatial_layers">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">get_nz_geospatial_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.get_nz_geospatial_layers" title="Link to this definition"></a></dt>
+<dd><p>Retrieve geospatial layers from the database that have a coverage area of New Zealand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Data frame containing geospatial layers that have a coverage area of New Zealand.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.get_non_nz_geospatial_layers">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">get_non_nz_geospatial_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.get_non_nz_geospatial_layers" title="Link to this definition"></a></dt>
+<dd><p>Retrieve geospatial layers from the database that do not have a coverage area of New Zealand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Data frame containing geospatial layers that do not have a coverage area of New Zealand.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.get_geospatial_layer_info">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">get_geospatial_layer_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.get_geospatial_layer_info" title="Link to this definition"></a></dt>
+<dd><p>Extracts geospatial layer information from a single layer entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>layer_row</strong> (<em>pd.Series</em>) – A geospatial layer row that represents a single geospatial layer along with its associated information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the values for data_provider, layer_id, table_name, and unique_column_name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[str, int, str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.get_vector_data_id_not_in_db">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">get_vector_data_id_not_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_column_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.get_vector_data_id_not_in_db" title="Link to this definition"></a></dt>
+<dd><p>Get the IDs from the fetched vector_data that are not present in the specified database table
+for the area of interest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>vector_data</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame containing the fetched vector data.</p></li>
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table in the database.</p></li>
+<li><p><strong>unique_column_name</strong> (<em>str</em>) – The name of the unique column in the table.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the area of interest.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The set of IDs from the fetched vector_data that are not present in the specified table in the database.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.nz_geospatial_layers_data_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">nz_geospatial_layers_data_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.nz_geospatial_layers_data_to_db" title="Link to this definition"></a></dt>
+<dd><p>Fetches New Zealand geospatial layers data using ‘geoapis’ and stores it into the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.get_non_intersection_area_from_db">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">get_non_intersection_area_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.get_non_intersection_area_from_db" title="Link to this definition"></a></dt>
+<dd><p>Get the non-intersecting area from the catchment area and user log information table in the database
+for the specified table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table in the database.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The non-intersecting area, or the original catchment area if no intersections are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#src.digitaltwin.data_to_db.NoNonIntersectionError" title="src.digitaltwin.data_to_db.NoNonIntersectionError"><strong>NoNonIntersectionError</strong></a> – If the non-intersecting area is empty, it suggests that the catchment area is already fully covered.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.process_new_non_nz_geospatial_layers">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">process_new_non_nz_geospatial_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.process_new_non_nz_geospatial_layers" title="Link to this definition"></a></dt>
+<dd><p>Fetches new non-NZ geospatial layers data using ‘geoapis’ and stores it into the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>data_provider</strong> (<em>str</em>) – The data provider of the geospatial layer.</p></li>
+<li><p><strong>layer_id</strong> (<em>int</em>) – The ID of the geospatial layer.</p></li>
+<li><p><strong>table_name</strong> (<em>str</em>) – The database table name of the geospatial layer.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the area of interest.</p></li>
+<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.process_existing_non_nz_geospatial_layers">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">process_existing_non_nz_geospatial_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_column_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.process_existing_non_nz_geospatial_layers" title="Link to this definition"></a></dt>
+<dd><p>Fetches existing non-NZ geospatial layers data using ‘geoapis’ and stores it into the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>data_provider</strong> (<em>str</em>) – The data provider of the geospatial layer.</p></li>
+<li><p><strong>layer_id</strong> (<em>int</em>) – The ID of the geospatial layer.</p></li>
+<li><p><strong>table_name</strong> (<em>str</em>) – The database table name of the geospatial layer.</p></li>
+<li><p><strong>unique_column_name</strong> (<em>str</em>) – The unique column name used for record identification in the database table.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the area of interest.</p></li>
+<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.non_nz_geospatial_layers_data_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">non_nz_geospatial_layers_data_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.non_nz_geospatial_layers_data_to_db" title="Link to this definition"></a></dt>
+<dd><p>Fetches non-NZ geospatial layers data using ‘geoapis’ and stores it into the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.store_geospatial_layers_data_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">store_geospatial_layers_data_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.store_geospatial_layers_data_to_db" title="Link to this definition"></a></dt>
+<dd><p>Fetches geospatial layers data using ‘geoapis’ and stores it into the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.data_to_db.user_log_info_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.data_to_db.</span></span><span class="sig-name descname"><span class="pre">user_log_info_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.data_to_db.user_log_info_to_db" title="Link to this definition"></a></dt>
+<dd><p>Store user log information to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="src.digitaltwin" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../get_data_using_geoapis/index.html" class="btn btn-neutral float-right" title="src.digitaltwin.get_data_using_geoapis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

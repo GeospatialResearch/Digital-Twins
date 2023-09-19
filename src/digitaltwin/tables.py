@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script contains SQLAlchemy models for various database tables and utility functions for
-              database operations.
-@Author: sli229
+This script contains SQLAlchemy models for various database tables and utility functions for database operations.
 """
 
 from datetime import datetime

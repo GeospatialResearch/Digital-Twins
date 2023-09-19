@@ -1,0 +1,21 @@
+:py:mod:`src.digitaltwin`
+=========================
+
+.. py:module:: src.digitaltwin
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   data_to_db/index.rst
+   get_data_using_geoapis/index.rst
+   instructions_records_to_db/index.rst
+   run/index.rst
+   setup_environment/index.rst
+   tables/index.rst
+   utils/index.rst
+
+

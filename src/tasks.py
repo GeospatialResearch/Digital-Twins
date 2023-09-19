@@ -5,7 +5,7 @@ from celery import Celery, states, result
 from src.digitaltwin import run
 from src.dynamic_boundary_conditions import main_rainfall
 from src.flood_model import bg_flood_model
-from src.lidar import lidar_metadata_in_db
+
 from .config import get_env_variable
 
 message_broker_url = f"redis://{get_env_variable('MESSAGE_BROKER_HOST')}:6379/0"
@@ -33,12 +33,6 @@ def create_model_for_area(selected_polygon_wkt: str) -> result.GroupResult:
 @app.task(base=OnFailureStateTask)
 def initialise_db_with_region_geometries():
     run.main()
-
-
-@app.task(base=OnFailureStateTask)
-def download_lidar_data(selected_polygon_wkt: str):
-    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    lidar_metadata_in_db.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)

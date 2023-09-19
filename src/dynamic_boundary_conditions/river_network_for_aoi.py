@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script processes REC1 data to construct a river network for the defined catchment area.
-              Additionally, it identifies intersections between the REC1 rivers and the catchment area boundary,
-              providing valuable information for further use.
-@Author: sli229
+This script processes REC1 data to construct a river network for the defined catchment area.
+Additionally, it identifies intersections between the REC1 rivers and the catchment area boundary,
+providing valuable information for further use.
 """
 
 from typing import Dict

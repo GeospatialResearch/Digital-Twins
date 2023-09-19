@@ -1,0 +1,83 @@
+:py:mod:`src.digitaltwin.setup_environment`
+===========================================
+
+.. py:module:: src.digitaltwin.setup_environment
+
+.. autoapi-nested-parse::
+
+   This script provides functions to set up the database connection using SQLAlchemy and environment
+                 variables, as well as to create an SQLAlchemy engine for database operations.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.setup_environment.get_database
+   src.digitaltwin.setup_environment.get_connection_from_profile
+   src.digitaltwin.setup_environment.get_engine
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.setup_environment.log
+   src.digitaltwin.setup_environment.Base
+
+
+.. py:data:: log
+
+   
+
+.. py:data:: Base
+
+   
+
+.. py:function:: get_database() -> sqlalchemy.engine.Engine
+
+   Set up the database connection. Exit the program if connection fails.
+
+   :returns: The engine used to connect to the database.
+   :rtype: Engine
+
+   :raises OperationalError: If the connection to the database fails.
+
+
+.. py:function:: get_connection_from_profile() -> sqlalchemy.engine.Engine
+
+   Sets up database connection from configuration.
+
+   :returns: The engine used to connect to the database.
+   :rtype: Engine
+
+   :raises ValueError: If one or more connection credentials are missing in the .env file.
+
+
+.. py:function:: get_engine(host: str, port: str, db: str, username: str, password: str) -> sqlalchemy.engine.Engine
+
+   Get SQLAlchemy engine using credentials.
+
+   :param host: Hostname of the database server.
+   :type host: str
+   :param port: Port number.
+   :type port: str
+   :param db: Database name.
+   :type db: str
+   :param username: Username.
+   :type username: str
+   :param password: Password for the database.
+   :type password: str
+
+   :returns: The engine used to connect to the database.
+   :rtype: Engine
+
+

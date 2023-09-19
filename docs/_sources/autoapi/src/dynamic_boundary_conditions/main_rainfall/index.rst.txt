@@ -1,0 +1,52 @@
+:py:mod:`src.dynamic_boundary_conditions.main_rainfall`
+=======================================================
+
+.. py:module:: src.dynamic_boundary_conditions.main_rainfall
+
+.. autoapi-nested-parse::
+
+   Main rainfall script used to fetch and store rainfall data in the database, and to generate the requested
+   rainfall model input for BG-Flood etc.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.main_rainfall.remove_existing_rain_inputs
+   src.dynamic_boundary_conditions.main_rainfall.main
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.main_rainfall.sample_polygon
+
+
+.. py:function:: remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None
+
+   Remove existing rain input files from the specified directory.
+
+   :param bg_flood_dir: BG-Flood model directory containing the rain input files.
+   :type bg_flood_dir: pathlib.Path
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
+
+
+.. py:data:: sample_polygon
+
+   
+

@@ -1,0 +1,40 @@
+:py:mod:`src.digitaltwin.run`
+=============================
+
+.. py:module:: src.digitaltwin.run
+
+.. autoapi-nested-parse::
+
+   This script automates the retrieval and storage of geospatial data from various providers using the 'geoapis' library.
+   It populates the 'geospatial_layers' table in the database and stores user log information for tracking and reference.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.run.main
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.run.sample_polygon
+
+
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
+
+
+.. py:data:: sample_polygon
+
+   
+
