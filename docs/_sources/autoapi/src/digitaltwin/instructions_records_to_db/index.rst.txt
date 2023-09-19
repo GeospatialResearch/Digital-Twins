@@ -1,0 +1,118 @@
+:py:mod:`src.digitaltwin.instructions_records_to_db`
+====================================================
+
+.. py:module:: src.digitaltwin.instructions_records_to_db
+
+.. autoapi-nested-parse::
+
+   This script processes 'instructions_run' records, validates URLs and instruction fields, and stores them in the
+   'geospatial_layers' table of the database.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.instructions_records_to_db.validate_url_reachability
+   src.digitaltwin.instructions_records_to_db.validate_instruction_fields
+   src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file
+   src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers
+   src.digitaltwin.instructions_records_to_db.get_non_existing_records
+   src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.instructions_records_to_db.log
+
+
+.. py:data:: log
+
+   
+
+.. py:function:: validate_url_reachability(section: str, url: str) -> None
+
+   Validate the URL by checking its format and reachability.
+
+   :param section: The section identifier of the instruction.
+   :type section: str
+   :param url: The URL to validate.
+   :type url: str
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+   :raises ValueError: - If the URL is invalid.
+       - If the URL is unreachable.
+
+
+.. py:function:: validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None
+
+   Validate the fields of an instruction.
+   Each instruction should provide either 'coverage_area' or 'unique_column_name', but not both.
+
+   :param section: The section identifier of the instruction.
+   :type section: str
+   :param instruction: The instruction details.
+   :type instruction: Dict[str, Union[str, int]]
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+   :raises ValueError: - If both 'coverage_area' and 'unique_column_name' are provided.
+       - If both 'coverage_area' and 'unique_column_name' are not provided.
+
+
+.. py:function:: read_and_check_instructions_file() -> pandas.DataFrame
+
+   Read and check the instructions_run file, validating URLs and instruction fields.
+
+   :returns: The processed instructions DataFrame.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: get_existing_geospatial_layers(engine: sqlalchemy.engine.Engine) -> pandas.DataFrame
+
+   Retrieve existing geospatial layers from the 'geospatial_layers' table.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+
+   :returns: Data frame containing the existing geospatial layers.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: get_non_existing_records(instructions_df: pandas.DataFrame, existing_layers_df: pandas.DataFrame) -> pandas.DataFrame
+
+   Get 'instructions_run' records that are not available in the database.
+
+   :param instructions_df: Data frame containing the 'instructions_run' records.
+   :type instructions_df: pd.DataFrame
+   :param existing_layers_df: Data frame containing the existing 'instructions_run' records from the database.
+   :type existing_layers_df: pd.DataFrame
+
+   :returns: Data frame containing the 'instructions_run' records that are not available in the database.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: store_instructions_records_to_db(engine: sqlalchemy.engine.Engine) -> None
+
+   Store 'instructions_run' records in the 'geospatial_layers' table in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+

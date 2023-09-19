@@ -1,0 +1,170 @@
+:py:mod:`src.digitaltwin.utils`
+===============================
+
+.. py:module:: src.digitaltwin.utils
+
+.. autoapi-nested-parse::
+
+   This script provides utility functions for logging configuration and geospatial data manipulation.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.utils.LogLevel
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.utils.log_execution_info
+   src.digitaltwin.utils.setup_logging
+   src.digitaltwin.utils.get_catchment_area
+   src.digitaltwin.utils.get_nz_boundary
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.digitaltwin.utils.log
+
+
+.. py:data:: log
+
+   
+
+.. py:class:: LogLevel
+
+
+   Bases: :py:obj:`enum.IntEnum`
+
+   Enum class representing different logging levels mapped to their corresponding numeric values from the
+   logging library.
+
+   .. attribute:: CRITICAL
+
+      The critical logging level. Corresponds to logging.CRITICAL (50).
+
+      :type: int
+
+   .. attribute:: ERROR
+
+      The error logging level. Corresponds to logging.ERROR (40).
+
+      :type: int
+
+   .. attribute:: WARNING
+
+      The warning logging level. Corresponds to logging.WARNING (30).
+
+      :type: int
+
+   .. attribute:: INFO
+
+      The info logging level. Corresponds to logging.INFO (20).
+
+      :type: int
+
+   .. attribute:: DEBUG
+
+      The debug logging level. Corresponds to logging.DEBUG (10).
+
+      :type: int
+
+   .. attribute:: NOTSET
+
+      The not-set logging level. Corresponds to logging.NOTSET (0).
+
+      :type: int
+
+   .. py:attribute:: CRITICAL
+
+      
+
+   .. py:attribute:: ERROR
+
+      
+
+   .. py:attribute:: WARNING
+
+      
+
+   .. py:attribute:: INFO
+
+      
+
+   .. py:attribute:: DEBUG
+
+      
+
+   .. py:attribute:: NOTSET
+
+      
+
+
+.. py:function:: log_execution_info() -> None
+
+   Logs a debug message indicating the execution of the function in the script.
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None
+
+   Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
+   loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
+   execution of the function in the script.
+
+   :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+                     The available logging levels and their corresponding numeric values are:
+                     - LogLevel.CRITICAL (50)
+                     - LogLevel.ERROR (40)
+                     - LogLevel.WARNING (30)
+                     - LogLevel.INFO (20)
+                     - LogLevel.DEBUG (10)
+                     - LogLevel.NOTSET (0)
+   :type log_level: int, optional
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: get_catchment_area(catchment_area: geopandas.GeoDataFrame, to_crs: int = 2193) -> geopandas.GeoDataFrame
+
+   Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.
+
+   :param catchment_area: The GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param to_crs: Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
+   :type to_crs: int, optional
+
+   :returns: The catchment area GeoDataFrame with the transformed CRS.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_nz_boundary(engine: sqlalchemy.engine.Engine, to_crs: int = 2193) -> geopandas.GeoDataFrame
+
+   Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param to_crs: Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.
+   :type to_crs: int, optional
+
+   :returns: A GeoDataFrame representing the boundary of New Zealand in the specified CRS.
+   :rtype: gpd.GeoDataFrame
+
+

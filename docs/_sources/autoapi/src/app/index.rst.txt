@@ -1,0 +1,69 @@
+:py:mod:`src.app`
+=================
+
+.. py:module:: src.app
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.app.health_check
+   src.app.get_status
+   src.app.remove_task
+   src.app.generate_model
+   src.app.get_wfs_layer_latest_model
+   src.app.create_wkt_from_coords
+   src.app.get_depth_at_point
+   src.app.valid_coordinates
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.app.app
+   src.app.gunicorn_logger
+
+
+.. py:data:: app
+
+   
+
+.. py:function:: health_check() -> flask.Response
+
+   Ping this endpoint to check that the server is up and running
+
+
+.. py:function:: get_status(task_id) -> flask.Response
+
+
+.. py:function:: remove_task(task_id) -> flask.Response
+
+
+.. py:function:: generate_model() -> flask.Response
+
+
+.. py:function:: get_wfs_layer_latest_model(model_id)
+
+
+.. py:function:: create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str
+
+
+.. py:function:: get_depth_at_point() -> flask.Response
+
+
+.. py:function:: valid_coordinates(latitude: float, longitude: float) -> bool
+
+
+.. py:data:: gunicorn_logger
+
+   
+

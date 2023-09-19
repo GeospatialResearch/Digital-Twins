@@ -1,0 +1,39 @@
+:py:mod:`src.run_all`
+=====================
+
+.. py:module:: src.run_all
+
+.. autoapi-nested-parse::
+
+   This script runs each module in the Digital Twin using a Sample Polygon.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.run_all.main
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.run_all.module_to_log_level
+
+
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, modules_with_log_levels: Dict[types.ModuleType, src.digitaltwin.utils.LogLevel]) -> None
+
+
+.. py:data:: module_to_log_level
+
+   
+

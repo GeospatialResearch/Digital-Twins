@@ -1,0 +1,51 @@
+:py:mod:`src.flood_model.serve_model`
+=====================================
+
+.. py:module:: src.flood_model.serve_model
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.flood_model.serve_model.convert_nc_to_gtiff
+   src.flood_model.serve_model.upload_gtiff_to_store
+   src.flood_model.serve_model.create_layer_from_store
+   src.flood_model.serve_model.add_gtiff_to_geoserver
+   src.flood_model.serve_model.add_model_output_to_geoserver
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.flood_model.serve_model.GEOSERVER_REST_URL
+
+
+.. py:data:: GEOSERVER_REST_URL
+   :value: 'http://localhost:8088/geoserver/rest/'
+
+   
+
+.. py:function:: convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path
+
+
+.. py:function:: upload_gtiff_to_store(geoserver_url: str, gtiff_filepath: pathlib.Path, store_name: str, workspace_name: str)
+
+
+.. py:function:: create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str, workspace_name: str)
+
+
+.. py:function:: add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str)
+
+
+.. py:function:: add_model_output_to_geoserver(model_output_path: pathlib.Path)
+
+

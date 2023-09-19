@@ -1,0 +1,228 @@
+:py:mod:`src.flood_model.bg_flood_model`
+========================================
+
+.. py:module:: src.flood_model.bg_flood_model
+
+.. autoapi-nested-parse::
+
+   This script handles the processing of input files for the BG-Flood Model, executes the flood model,
+   stores the resulting model output metadata in the database, and incorporates the model output into GeoServer for
+   visualization.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.flood_model.bg_flood_model.get_valid_bg_flood_dir
+   src.flood_model.bg_flood_model.get_new_model_output_path
+   src.flood_model.bg_flood_model.get_model_output_metadata
+   src.flood_model.bg_flood_model.store_model_output_metadata_to_db
+   src.flood_model.bg_flood_model.latest_model_output_from_db
+   src.flood_model.bg_flood_model.add_crs_to_latest_model_output
+   src.flood_model.bg_flood_model.process_rain_input_files
+   src.flood_model.bg_flood_model.process_boundary_input_files
+   src.flood_model.bg_flood_model.process_river_input_files
+   src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs
+   src.flood_model.bg_flood_model.run_bg_flood_model
+   src.flood_model.bg_flood_model.main
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.flood_model.bg_flood_model.log
+   src.flood_model.bg_flood_model.Base
+   src.flood_model.bg_flood_model.sample_polygon
+
+
+.. py:data:: log
+
+   
+
+.. py:data:: Base
+
+   
+
+.. py:function:: get_valid_bg_flood_dir() -> pathlib.Path
+
+   Get the valid BG-Flood Model directory.
+
+   :returns: The valid BG-Flood Model directory.
+   :rtype: pathlib.Path
+
+   :raises FileNotFoundError: If the BG-Flood Model directory is not found or is not a valid directory.
+
+
+.. py:function:: get_new_model_output_path() -> pathlib.Path
+
+   Get a new file path for saving the BG Flood model output with the current timestamp included in the filename.
+
+   :returns: The path to the BG Flood model output file.
+   :rtype: pathlib.Path
+
+
+.. py:function:: get_model_output_metadata(model_output_path: pathlib.Path, catchment_area: geopandas.GeoDataFrame) -> Tuple[str, str, str]
+
+   Get metadata related to the BG Flood model output.
+
+   :param model_output_path: The path to the BG Flood model output file.
+   :type model_output_path: pathlib.Path
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A tuple containing three elements: the name of the BG Flood model output file, its absolute path as a string,
+             and the Well-Known Text (WKT) representation of the catchment area's geometry.
+   :rtype: Tuple[str, str, str]
+
+
+.. py:function:: store_model_output_metadata_to_db(engine: sqlalchemy.engine.Engine, model_output_path: pathlib.Path, catchment_area: geopandas.GeoDataFrame) -> None
+
+   Store metadata related to the BG Flood model output in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param model_output_path: The path to the BG Flood model output file.
+   :type model_output_path: pathlib.Path
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: latest_model_output_from_db() -> pathlib.Path
+
+   Retrieve the latest BG Flood model output file path from the database.
+
+   :returns: The path to the latest BG Flood model output file.
+   :rtype: pathlib.Path
+
+
+.. py:function:: add_crs_to_latest_model_output() -> None
+
+   Add Coordinate Reference System (CRS) to the latest BG-Flood model output.
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None
+
+   Process rain input files and write their parameter values to the BG-Flood parameter file.
+
+   :param bg_flood_dir: The BG-Flood model directory containing the rain input files.
+   :type bg_flood_dir: pathlib.Path
+   :param param_file: The file object representing the parameter file where the parameter values will be written.
+   :type param_file: TextIO
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: process_boundary_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None
+
+   Process uniform boundary input files and write their parameter values to the BG-Flood parameter file.
+
+   :param bg_flood_dir: The BG-Flood model directory containing the uniform boundary input files.
+   :type bg_flood_dir: pathlib.Path
+   :param param_file: The file object representing the parameter file where the parameter values will be written.
+   :type param_file: TextIO
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: process_river_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None
+
+   Process river input files, rename them, and write their parameter values to the BG-Flood parameter file.
+
+   :param bg_flood_dir: The BG-Flood model directory containing the river input files.
+   :type bg_flood_dir: pathlib.Path
+   :param param_file: The file object representing the parameter file where the parameter values will be written.
+   :type param_file: TextIO
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: prepare_bg_flood_model_inputs(bg_flood_dir: pathlib.Path, model_output_path: pathlib.Path, hydro_dem_path: pathlib.Path, resolution: Union[int, float], output_timestep: Union[int, float] = 0, end_time: Union[int, float] = 0, mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0) -> None
+
+   Prepare inputs for the BG-Flood Model.
+
+   :param bg_flood_dir: The BG-Flood Model directory.
+   :type bg_flood_dir: pathlib.Path
+   :param model_output_path: The new file path for saving the BG Flood model output with the current timestamp included in the filename.
+   :type model_output_path: pathlib.Path
+   :param hydro_dem_path: The file path of the Hydrologically conditioned DEM (Hydro DEM) for the specified catchment area.
+   :type hydro_dem_path: pathlib.Path,
+   :param resolution: The grid resolution in meters for metric grids, representing the size of each grid cell.
+   :type resolution: Union[int, float]
+   :param output_timestep: Time step between model outputs in seconds. Default value is 0.0 (no output generated).
+   :type output_timestep: Union[int, float], optional
+   :param end_time: Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
+   :type end_time: Union[int, float], optional
+   :param mask: The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
+                the specified value. Default value is 9999.0 (no areas are masked).
+   :type mask: Union[int, float], optional
+   :param gpu_device: Specify the GPU device to be used. Default value is 0 (the first available GPU).
+                      Set the value to -1 to use the CPU. For other GPUs, use values 2 and above.
+   :type gpu_device: int, optional
+   :param small_nc: Specify whether the output should be saved as short integers to reduce the size of the output file.
+                    Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
+                    Default value is 0.
+   :type small_nc: int, optional
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: run_bg_flood_model(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, model_output_path: pathlib.Path, output_timestep: Union[int, float] = 0, end_time: Union[int, float] = 0, resolution: Optional[Union[int, float]] = None, mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0) -> None
+
+   Run the BG-Flood Model for the specified catchment area.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param model_output_path: The new file path for saving the BG Flood model output with the current timestamp included in the filename.
+   :type model_output_path: pathlib.Path
+   :param output_timestep: Time step between model outputs in seconds. Default value is 0.0 (no output generated).
+   :type output_timestep: Union[int, float], optional
+   :param end_time: Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
+   :type end_time: Union[int, float], optional
+   :param resolution: The grid resolution in meters for metric grids, representing the size of each grid cell.
+                      If not provided (default is None), the resolution of the Hydrologically conditioned DEM will be used as
+                      the grid resolution.
+   :type resolution: Optional[Union[int, float]], optional
+   :param mask: The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
+                the specified value. Default value is 9999.0 (no areas are masked).
+   :type mask: Union[int, float], optional
+   :param gpu_device: Specify the GPU device to be used. Default value is 0 (the first available GPU).
+                      Set the value to -1 to use the CPU. For other GPUs, use values 2 and above.
+   :type gpu_device: int, optional
+   :param small_nc: Specify whether the output should be saved as short integers to reduce the size of the output file.
+                    Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
+                    Default value is 0.
+   :type small_nc: int, optional
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
+
+
+.. py:data:: sample_polygon
+
+   
+

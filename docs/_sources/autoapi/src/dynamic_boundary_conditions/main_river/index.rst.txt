@@ -1,0 +1,64 @@
+:py:mod:`src.dynamic_boundary_conditions.main_river`
+====================================================
+
+.. py:module:: src.dynamic_boundary_conditions.main_river
+
+.. autoapi-nested-parse::
+
+   Main river script used to read and store REC1 data in the database, fetch OSM waterways data, create a river network,
+   and generate the requested river model inputs for BG-Flood etc.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.main_river.get_catchment_boundary_lines
+   src.dynamic_boundary_conditions.main_river.remove_existing_river_inputs
+   src.dynamic_boundary_conditions.main_river.main
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.main_river.sample_polygon
+
+
+.. py:function:: get_catchment_boundary_lines(catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Get the boundary lines of the catchment area.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the boundary lines of the catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None
+
+   Remove existing river input files from the specified directory.
+
+   :param bg_flood_dir: The BG-Flood model directory containing the river input files.
+   :type bg_flood_dir: pathlib.Path
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
+
+
+.. py:data:: sample_polygon
+
+   
+

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.rec1_osm_match &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.river_data_to_from_db" href="../river_data_to_from_db/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.rainfall_sites" href="../rainfall_sites/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Digital Twin for Flood Resilience in Aotearoa New Zealand
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rec1_osm_match</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/src/dynamic_boundary_conditions/rec1_osm_match/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.rec1_osm_match">
+<span id="src-dynamic-boundary-conditions-rec1-osm-match"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rec1_osm_match" title="src.dynamic_boundary_conditions.rec1_osm_match"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rec1_osm_match</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rec1_osm_match" title="Link to this heading"></a></h1>
+<p>This script facilitates the matching of REC1 rivers with OpenStreetMap (OSM) waterways by finding the closest
+OSM waterway to each REC1 river. It also determines the target points used for the river input in the BG-Flood model.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rec1_osm_match.match_rec1_river_and_osm_waterway" title="src.dynamic_boundary_conditions.rec1_osm_match.match_rec1_river_and_osm_waterway"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match_rec1_river_and_osm_waterway</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Matches REC1 network data with OSM waterways data based on their spatial proximity within a specified distance</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rec1_osm_match.find_closest_osm_waterways" title="src.dynamic_boundary_conditions.rec1_osm_match.find_closest_osm_waterways"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_closest_osm_waterways</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Finds the closest OSM waterway to each REC1 river within the specified distance threshold.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rec1_osm_match.get_elevations_from_hydro_dem" title="src.dynamic_boundary_conditions.rec1_osm_match.get_elevations_from_hydro_dem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_elevations_from_hydro_dem</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Extracts the nearest elevation values from the Hydrologically Conditioned DEM (Hydro DEM) for the area</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rec1_osm_match.get_target_location_from_hydro_dem" title="src.dynamic_boundary_conditions.rec1_osm_match.get_target_location_from_hydro_dem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_target_location_from_hydro_dem</span></code></a>(...)</p></td>
+<td><p>Get the target location with the minimum elevation from the Hydrologically Conditioned DEM (Hydro DEM)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rec1_osm_match.get_closest_osm_waterways_with_target_locations" title="src.dynamic_boundary_conditions.rec1_osm_match.get_closest_osm_waterways_with_target_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_closest_osm_waterways_with_target_locations</span></code></a>(...)</p></td>
+<td><p>Get the closest OpenStreetMap (OSM) waterway to each REC1 river within the specified distance threshold,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rec1_osm_match.get_matched_data_with_target_locations" title="src.dynamic_boundary_conditions.rec1_osm_match.get_matched_data_with_target_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_matched_data_with_target_locations</span></code></a>(...)</p></td>
+<td><p>Get the matched data between REC1 rivers and OSM waterways within the specified distance threshold,</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rec1_osm_match.match_rec1_river_and_osm_waterway">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rec1_osm_match.</span></span><span class="sig-name descname"><span class="pre">match_rec1_river_and_osm_waterway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec1_network_data_on_bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">osm_waterways_data_on_bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rec1_osm_match.match_rec1_river_and_osm_waterway" title="Link to this definition"></a></dt>
+<dd><p>Matches REC1 network data with OSM waterways data based on their spatial proximity within a specified distance
+threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec1_network_data_on_bbox</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.</p></li>
+<li><p><strong>osm_waterways_data_on_bbox</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.</p></li>
+<li><p><strong>distance_m</strong> (<em>int</em><em>, </em><em>optional</em>) – Distance threshold in meters for spatial proximity matching. The default value is 300 meters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the matched REC1 network data and OSM waterways data, including spatial proximity
+information.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rec1_osm_match.find_closest_osm_waterways">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rec1_osm_match.</span></span><span class="sig-name descname"><span class="pre">find_closest_osm_waterways</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec1_network_data_on_bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">osm_waterways_data_on_bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rec1_osm_match.find_closest_osm_waterways" title="Link to this definition"></a></dt>
+<dd><p>Finds the closest OSM waterway to each REC1 river within the specified distance threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec1_network_data_on_bbox</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.</p></li>
+<li><p><strong>osm_waterways_data_on_bbox</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.</p></li>
+<li><p><strong>distance_m</strong> (<em>int</em><em>, </em><em>optional</em>) – Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the closest OSM waterway to each REC1 river.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rec1_osm_match.get_elevations_from_hydro_dem">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rec1_osm_match.</span></span><span class="sig-name descname"><span class="pre">get_elevations_from_hydro_dem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single_closest_osm_waterway</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hydro_dem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">xarray.Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hydro_dem_resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rec1_osm_match.get_elevations_from_hydro_dem" title="Link to this definition"></a></dt>
+<dd><p>Extracts the nearest elevation values from the Hydrologically Conditioned DEM (Hydro DEM) for the area
+surrounding the closest OpenStreetMap (OSM) waterway, along with their corresponding coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>single_closest_osm_waterway</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing a single row of the closest OSM waterways.</p></li>
+<li><p><strong>hydro_dem</strong> (<em>xr.Dataset</em>) – Hydrologically Conditioned DEM (Hydro DEM) for the catchment area.</p></li>
+<li><p><strong>hydro_dem_resolution</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Resolution of the Hydrologically Conditioned DEM (Hydro DEM).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the nearest elevation values extracted from the Hydrologically Conditioned DEM
+(Hydro DEM) for the area surrounding the closest OSM waterway, along with their corresponding coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rec1_osm_match.get_target_location_from_hydro_dem">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rec1_osm_match.</span></span><span class="sig-name descname"><span class="pre">get_target_location_from_hydro_dem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single_closest_osm_waterway</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hydro_dem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">xarray.Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hydro_dem_resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rec1_osm_match.get_target_location_from_hydro_dem" title="Link to this definition"></a></dt>
+<dd><p>Get the target location with the minimum elevation from the Hydrologically Conditioned DEM (Hydro DEM)
+to the closest OpenStreetMap (OSM) waterway. This location is crucial for the river input in the BG-Flood model,
+as it enables precise identification of where to add the river as a vertical discharge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>single_closest_osm_waterway</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing a single row of the closest OSM waterways.</p></li>
+<li><p><strong>hydro_dem</strong> (<em>xr.Dataset</em>) – Hydrologically Conditioned DEM (Hydro DEM) for the catchment area.</p></li>
+<li><p><strong>hydro_dem_resolution</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Resolution of the Hydrologically Conditioned DEM (Hydro DEM).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the target location (Point) with the minimum elevation from the Hydrologically
+Conditioned DEM (Hydro DEM) to the closest OSM waterway.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rec1_osm_match.get_closest_osm_waterways_with_target_locations">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rec1_osm_match.</span></span><span class="sig-name descname"><span class="pre">get_closest_osm_waterways_with_target_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec1_network_data_on_bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">osm_waterways_data_on_bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rec1_osm_match.get_closest_osm_waterways_with_target_locations" title="Link to this definition"></a></dt>
+<dd><p>Get the closest OpenStreetMap (OSM) waterway to each REC1 river within the specified distance threshold,
+along with the identified target locations used for the river input in the BG-Flood model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>rec1_network_data_on_bbox</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.</p></li>
+<li><p><strong>osm_waterways_data_on_bbox</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.</p></li>
+<li><p><strong>distance_m</strong> (<em>int</em><em>, </em><em>optional</em>) – Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the closest OSM waterway to each REC1 river, along with the identified
+target locations used for the river input in the BG-Flood model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rec1_osm_match.get_matched_data_with_target_locations">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rec1_osm_match.</span></span><span class="sig-name descname"><span class="pre">get_matched_data_with_target_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec1_network_data_on_bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">osm_waterways_data_on_bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rec1_osm_match.get_matched_data_with_target_locations" title="Link to this definition"></a></dt>
+<dd><p>Get the matched data between REC1 rivers and OSM waterways within the specified distance threshold,
+along with the identified target locations used for the river input in the BG-Flood model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>rec1_network_data_on_bbox</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.</p></li>
+<li><p><strong>osm_waterways_data_on_bbox</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.</p></li>
+<li><p><strong>distance_m</strong> (<em>int</em><em>, </em><em>optional</em>) – Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the matched data between REC1 rivers and OSM waterways, along with the identified
+target locations used for the river input in the BG-Flood model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../rainfall_sites/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.rainfall_sites" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../river_data_to_from_db/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.river_data_to_from_db" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

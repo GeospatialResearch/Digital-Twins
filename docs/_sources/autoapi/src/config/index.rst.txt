@@ -1,0 +1,68 @@
+:py:mod:`src.config`
+====================
+
+.. py:module:: src.config
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.config.get_env_variable
+   src.config._cast_str
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.config.T
+
+
+.. py:data:: T
+
+   
+
+.. py:function:: get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: type = str) -> T
+
+    Reads an environment variable, with settings to allow defaults, empty values, and type casting
+    To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
+
+   :param var_name: The name of the environment variable to retrieve.
+   :type var_name: str
+   :param default: Default return value if the environment variable does not exist. Doesn't override empty string vars.
+   :type default: T = None
+   :param allow_empty: If False then a KeyError will be raised if the environment variable is empty.
+   :type allow_empty: bool
+   :param cast_to: The type to cast to eg. str, int, or bool
+   :type cast_to: Callable[[str], T]
+
+   :rtype: The environment variable, or default if it does not exist, as type T.
+
+   :raises KeyError: If allow_empty is False and the environment variable is empty string or None
+   :raises ValueError: If cast_to is not compatible with the value stored.
+
+
+.. py:function:: _cast_str(str_to_cast: str, cast_to: T) -> T
+
+   Takes a string and casts it to necessary primitive builtin types. Tested with int, float, and bool.
+   For bools, this detects if the value is in the case-insensitive sets {"True", "T", "1"} or {"False", "F", "0"}
+   and raises a ValueError if not. For example _cast_str("False", bool) -> False
+
+   :param str_to_cast: The string that is going to be casted to the type
+   :type str_to_cast: str
+   :param cast_to: The type to cast to e.g. bool
+   :type cast_to: Callable[[str], T]
+
+   :rtype: The string casted to type T defined by cast_to.
+
+   :raises ValueError if [cast_to] is not compatible with the value stored.:
+
+
