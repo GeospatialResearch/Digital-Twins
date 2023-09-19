@@ -7,7 +7,7 @@ Welcome to Digital Twin for Flood Resilience in Aotearoa New Zealand's documenta
 =====================================================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
 

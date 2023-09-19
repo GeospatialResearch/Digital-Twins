@@ -12,9 +12,9 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../src'))
 
-from src import __version__
+from __init__ import __version__
 
 
 # -- Project information -----------------------------------------------------
@@ -37,14 +37,7 @@ extensions = [
     'autoapi.extension',
 ]
 # -- Extension configuration -------------------------------------------------
-autoapi_dirs = ["../src"]
-autoapi_options = [
-    "members",
-    "show-inheritance",
-    "show-module-summary",
-    "special-members",
-    "imported-members",
-]
+autoapi_dirs = ["../src/"]
 
 
 # Add any paths that contain templates here, relative to this directory.
