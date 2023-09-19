@@ -13,6 +13,7 @@ def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False
     """
      Reads an environment variable, with settings to allow defaults, empty values, and type casting
      To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
+
     Parameters
     ----------
     var_name : str
@@ -44,6 +45,7 @@ def _cast_str(str_to_cast: str, cast_to: T) -> T:
     Takes a string and casts it to necessary primitive builtin types. Tested with int, float, and bool.
     For bools, this detects if the value is in the case-insensitive sets {"True", "T", "1"} or {"False", "F", "0"}
     and raises a ValueError if not. For example _cast_str("False", bool) -> False
+
     Parameters
     ----------
     str_to_cast : str

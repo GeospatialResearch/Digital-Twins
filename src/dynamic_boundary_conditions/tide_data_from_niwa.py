@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Fetch tide data from NIWA using the Tide API based on the specified approach, datum, and etc.
-@Author: sli229
+Fetch tide data from NIWA using the Tide API based on the specified approach, datum, and etc.
 """
 
 from datetime import date, timedelta

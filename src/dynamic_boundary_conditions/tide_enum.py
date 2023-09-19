@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Enum(s) used in the tide_slr module.
-@Author: sli229
+Enum(s) used in the tide_slr module.
 """
 
 from enum import StrEnum

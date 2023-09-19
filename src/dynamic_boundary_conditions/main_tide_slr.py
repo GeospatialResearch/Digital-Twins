@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Main tide and sea level rise script used to fetch tide data, read and store sea level rise data in the
-              database, and generate the requested uniform boundary model input for BG-Flood etc.
-@Author: sli229
+Main tide and sea level rise script used to fetch tide data, read and store sea level rise data in the database,
+and generate the requested uniform boundary model input for BG-Flood etc.
 """
 
 import logging

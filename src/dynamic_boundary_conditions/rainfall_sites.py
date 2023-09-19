@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Fetch rainfall sites data from the HIRDS website and store it in the database.
-@Author: pkh35, sli229
+Fetch rainfall sites data from the HIRDS website and store it in the database.
 """
 
 import logging

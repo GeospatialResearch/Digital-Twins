@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Store the rainfall data for all the sites within the catchment area in the database.
-@Author: pkh35, sli229
+Store the rainfall data for all the sites within the catchment area in the database.
 """
 
 import logging

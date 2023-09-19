@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script obtains river flow scenario data, whether Mean Annual Flood (MAF) or Average Recurrence
-              Interval (ARI)-based, and generates corresponding hydrograph data for the requested scenarios.
-@Author: sli229
+This script obtains river flow scenario data, whether Mean Annual Flood (MAF) or
+Average Recurrence Interval (ARI)-based, and generates corresponding hydrograph data for the requested scenarios.
 """
 
 from typing import List, Union, Optional

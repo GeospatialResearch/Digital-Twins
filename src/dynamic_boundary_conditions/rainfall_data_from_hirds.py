@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Fetch rainfall data from the HIRDS website.
-@Author: pkh35, sli229
+Fetch rainfall data from the HIRDS website.
 """
 
 import re

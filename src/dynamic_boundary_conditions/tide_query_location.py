@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Get the locations used to fetch tide data from NIWA using the tide API.
-@Author: sli229
+Get the locations used to fetch tide data from NIWA using the tide API.
+sli229
 """
 
 from shapely.geometry import LineString, Point

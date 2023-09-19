@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script facilitates the matching of REC1 rivers with OpenStreetMap (OSM) waterways by finding the
-              closest OSM waterway to each REC1 river. It also determines the target points used for the river input
-              in the BG-Flood model.
-@Author: sli229
+This script facilitates the matching of REC1 rivers with OpenStreetMap (OSM) waterways by finding the closest
+OSM waterway to each REC1 river. It also determines the target points used for the river input in the BG-Flood model.
 """
 
 from typing import Union

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script handles the processing of input files for the BG-Flood Model, executes the flood model,
-              stores the resulting model output metadata in the database, and incorporates the model output into
-              GeoServer for visualization.
-@Author: pkh35, sli229
+This script handles the processing of input files for the BG-Flood Model, executes the flood model,
+stores the resulting model output metadata in the database, and incorporates the model output into GeoServer for
+visualization.
 """
 
 import logging

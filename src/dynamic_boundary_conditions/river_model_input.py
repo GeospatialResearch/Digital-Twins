@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Generate the requested river model inputs for BG-Flood.
-@Author: sli229
+Generate the requested river model inputs for BG-Flood.
 """
 
 import logging

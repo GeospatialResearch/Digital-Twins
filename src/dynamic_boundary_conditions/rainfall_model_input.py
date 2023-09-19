@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Generate the requested rainfall model input for BG-Flood, which can be either
-              spatially uniform rain input ('rain_forcing.txt' text file) or
-              spatially varying rain input ('rain_forcing.nc' NetCDF file).
-@Author: sli229
+Generate the requested rainfall model input for BG-Flood, which can be either
+spatially uniform rain input ('rain_forcing.txt' text file) or
+spatially varying rain input ('rain_forcing.nc' NetCDF file).
 """
 
 import logging

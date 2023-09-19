@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Generates the requested water level uniform boundary model input for BG-Flood.
-@Author: sli229
+Generates the requested water level uniform boundary model input for BG-Flood.
 """
 
 import logging

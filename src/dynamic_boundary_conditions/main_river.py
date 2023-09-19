@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Main river script used to read and store REC1 data in the database, fetch OSM waterways data,
-              create a river network, and generate the requested river model inputs for BG-Flood etc.
-@Author: sli229
+Main river script used to read and store REC1 data in the database, fetch OSM waterways data, create a river network,
+and generate the requested river model inputs for BG-Flood etc.
 """
 
 import pathlib

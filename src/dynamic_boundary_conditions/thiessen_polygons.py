@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Calculate the area covered by each rainfall site throughout New Zealand and store it in the database.
-              Retrieve the coverage areas (Thiessen polygons) for all rainfall sites located within the catchment area.
-@Author: pkh35, sli229
+Calculate the area covered by each rainfall site throughout New Zealand and store it in the database.
+Retrieve the coverage areas (Thiessen polygons) for all rainfall sites located within the catchment area.
 """
 
 import logging

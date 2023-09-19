@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: This script provides utility functions for logging configuration and geospatial data manipulation.
-@Author: sli229
+This script provides utility functions for logging configuration and geospatial data manipulation.
 """
 
 import logging

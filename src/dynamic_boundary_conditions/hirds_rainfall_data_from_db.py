@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Retrieve all rainfall data for sites within the catchment area from the database.
-@Author: pkh35, sli229
+Retrieve all rainfall data for sites within the catchment area from the database.
 """
 
 from typing import Optional
