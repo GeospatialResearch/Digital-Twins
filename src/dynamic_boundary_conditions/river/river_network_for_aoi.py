@@ -7,12 +7,10 @@ providing valuable information for further use.
 
 import logging
 from typing import Dict, Tuple
-import pickle
 
 import numpy as np
 import geopandas as gpd
 from shapely.geometry import Point
-from shapely import wkt
 from sqlalchemy import select, func
 from sqlalchemy.engine import Engine
 import networkx as nx
