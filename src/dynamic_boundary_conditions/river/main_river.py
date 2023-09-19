@@ -17,7 +17,6 @@ from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.river import (
     river_data_to_from_db,
     river_network_for_aoi,
-    river_network_to_from_db,
     osm_waterways,
     rec1_osm_match,
     hydrograph,
