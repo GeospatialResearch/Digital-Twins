@@ -13,7 +13,7 @@ from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin.tables import check_table_exists
-from src.dynamic_boundary_conditions.river_network_for_aoi import add_rec1_network_exclusions_to_db
+from src.dynamic_boundary_conditions.river_network_to_from_db import add_network_exclusions_to_db
 
 log = logging.getLogger(__name__)
 
@@ -160,6 +160,6 @@ def get_rec1_data_with_sdc_from_db(
     # Get the object IDs of REC1 geometries that are not fully contained within sea-draining catchments
     rec1_network_exclusions = rec1_data_join_sdc[rec1_data_join_sdc['catch_id'].isna()].reset_index(drop=True)
     # Add excluded REC1 geometries in the River Network to the relevant database table
-    add_rec1_network_exclusions_to_db(engine, river_network_id, rec1_network_exclusions,
-                                      exclusion_cause="crossing multiple sea-draining catchments")
+    add_network_exclusions_to_db(engine, river_network_id, rec1_network_exclusions,
+                                 exclusion_cause="crossing multiple sea-draining catchments")
     return rec1_data_with_sdc
