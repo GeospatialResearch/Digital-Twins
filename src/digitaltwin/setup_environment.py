@@ -37,7 +37,7 @@ def get_database() -> Engine:
         log.debug("Connected to PostgreSQL database successfully!")
         return engine
     except OperationalError as e:
-        raise OperationalError("Connection to database failed. Please check .env file.") from e
+        raise OperationalError("Database connection failed. Please check database running and check .env file.") from e
 
 
 def get_connection_from_profile() -> Engine:
