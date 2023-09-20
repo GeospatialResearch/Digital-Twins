@@ -121,15 +121,14 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     river_data_to_from_db.store_rec1_data_to_db(engine)
     # Get the REC1 river network for the catchment area
     rec1_network, rec1_network_data = river_network_for_aoi.get_rec1_river_network(engine, catchment_area)
-
-    # Obtain the REC1 network data that corresponds to the points of intersection on the catchment area boundary
-    rec1_network_data_on_bbox = river_network_for_aoi.get_rec1_network_data_on_bbox(
-        catchment_area, rec1_network_data, rec1_network)
-
     # Fetch OSM waterways data for the catchment area
     osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
+
+    # Obtain the REC1 network data that corresponds to the points of intersection on the catchment area boundary
+    rec1_network_data_on_bbox = rec1_osm_match.get_rec1_network_data_on_bbox(
+        catchment_area, rec1_network_data, rec1_network)
     # Obtain the OSM waterways data that corresponds to the points of intersection on the catchment area boundary
-    osm_waterways_data_on_bbox = osm_waterways.get_osm_waterways_data_on_bbox(catchment_area, osm_waterways_data)
+    osm_waterways_data_on_bbox = rec1_osm_match.get_osm_waterways_data_on_bbox(catchment_area, osm_waterways_data)
 
     # Find the closest OSM waterway to each REC1 river and determine the target points used for the model input
     matched_data = rec1_osm_match.get_matched_data_with_target_locations(

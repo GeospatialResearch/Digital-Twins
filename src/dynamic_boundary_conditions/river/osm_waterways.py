@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 This script fetches OpenStreetMap (OSM) waterways data for the defined catchment area.
-Additionally, it identifies intersections between the OSM waterways and the catchment area boundary,
-providing valuable information for further use.
 """
 
 import pathlib
@@ -12,7 +10,6 @@ from OSMPythonTools.cachingStrategy import CachingStrategy, JSON
 from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
 from src import config
-from src.dynamic_boundary_conditions.river import main_river
 
 
 def configure_osm_cache() -> None:
@@ -105,84 +102,3 @@ def get_osm_waterways_data(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame
     # Reset the index of the resulting GeoDataFrame
     osm_waterways_data = osm_waterways_data.reset_index(drop=True)
     return osm_waterways_data
-
-
-def get_osm_boundary_points_on_bbox(
-        catchment_area: gpd.GeoDataFrame,
-        osm_waterways_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    """
-    Get the boundary points where the OSM waterways intersect with the catchment area boundary.
-
-    Parameters
-    ----------
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
-    osm_waterways_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the OSM waterways data.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the boundary points where the OSM waterways intersect with the
-        catchment area boundary.
-    """
-    # Get the exterior boundary of the catchment area
-    catchment_boundary = catchment_area.exterior.iloc[0]
-    # Filter OSM waterways data to obtain only the features intersecting with the catchment area boundary
-    osm_on_bbox = osm_waterways_data[osm_waterways_data.intersects(catchment_boundary)].reset_index(drop=True)
-    # Initialize an empty list to store OSM boundary points
-    osm_bound_points = []
-    # Iterate over each row in the 'osm_bound_points' GeoDataFrame
-    for _, row in osm_on_bbox.iterrows():
-        # Get the geometry for the current row
-        geometry = row["geometry"]
-        # Find the intersection between the catchment area boundary and OSM geometry
-        boundary_point = catchment_boundary.intersection(geometry)
-        # Append the boundary point to the list
-        osm_bound_points.append(boundary_point)
-    # Create a new column to store OSM boundary points
-    osm_on_bbox["osm_boundary_point"] = gpd.GeoSeries(osm_bound_points, crs=osm_on_bbox.crs)
-    # Calculate the centroid of OSM boundary points and assign it to a new column
-    osm_on_bbox["osm_boundary_point_centre"] = osm_on_bbox["osm_boundary_point"].centroid
-    # Set the geometry of the GeoDataFrame to OSM boundary point centroids
-    osm_bound_points_on_bbox = osm_on_bbox.set_geometry("osm_boundary_point_centre")
-    # Rename the 'geometry' column to 'osm_waterway_line' for better clarity
-    osm_bound_points_on_bbox.rename(columns={'geometry': 'osm_waterway_line'}, inplace=True)
-    return osm_bound_points_on_bbox
-
-
-def get_osm_waterways_data_on_bbox(
-        catchment_area: gpd.GeoDataFrame,
-        osm_waterways_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    """
-    Get the OSM waterways data that intersects with the catchment area boundary and identifies the corresponding points
-    of intersection on the boundary.
-
-    Parameters
-    ----------
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
-    osm_waterways_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the OSM waterways data.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary,
-        along with the corresponding points of intersection on the boundary.
-    """
-    # Get the line segments representing the catchment area boundary
-    catchment_boundary_lines = main_river.get_catchment_boundary_lines(catchment_area)
-    # Get the boundary points where the OSM waterways intersect with the catchment area boundary
-    osm_bound_points = get_osm_boundary_points_on_bbox(catchment_area, osm_waterways_data)
-    # Perform a spatial join between the OSM boundary points and catchment boundary lines
-    osm_waterways_data_on_bbox = gpd.sjoin(
-        osm_bound_points, catchment_boundary_lines, how='left', predicate='intersects')
-    # Remove unnecessary column
-    osm_waterways_data_on_bbox.drop(columns=['index_right'], inplace=True)
-    # Merge the catchment boundary lines with the OSM waterways data based on boundary line number
-    osm_waterways_data_on_bbox = osm_waterways_data_on_bbox.merge(
-        catchment_boundary_lines, on='boundary_line_no', how='left').sort_index()
-    # Rename the geometry column to 'boundary_line' for better clarity
-    osm_waterways_data_on_bbox.rename(columns={'geometry': 'boundary_line'}, inplace=True)
-    return osm_waterways_data_on_bbox
