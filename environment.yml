@@ -15,8 +15,6 @@ dependencies:
   - rasterio==1.3.6 # Needs to be explicit as wheel fails to build if insalled as a dependency of geofabrics
   - python-pdal==3.2.2 # Not on PyPI so needs to be added here and not through pip geofabrics
   - pytest
-  - psycopg2==2.9.3 # Try remove in future
-  - bs4 # Try remove in future
   - validators  # Try remove in future
   - sqlalchemy<2 # To migrate some db connection code needs to change
   - geoalchemy2
@@ -29,6 +27,7 @@ dependencies:
   - redis-py
   - pip:
     - geovoronoi==0.4.0
+    - geoapis
     - celery==5.2.7
     - gunicorn==20.1.0
     - git+https://github.com/xandercai/NewZeaLiDAR.git@v0.1
