@@ -153,9 +153,9 @@ def nz_geospatial_layers_data_to_db(
     ----------
     engine : Engine
         The engine used to connect to the database.
-    crs : int, optional
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -259,9 +259,9 @@ def process_new_non_nz_geospatial_layers(
         The database table name of the geospatial layer.
     area_of_interest : gpd.GeoDataFrame
         The GeoDataFrame representing the area of interest.
-    crs : int, optional
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -306,9 +306,9 @@ def process_existing_non_nz_geospatial_layers(
         The unique column name used for record identification in the database table.
     area_of_interest : gpd.GeoDataFrame
         The GeoDataFrame representing the area of interest.
-    crs : int, optional
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -351,9 +351,9 @@ def non_nz_geospatial_layers_data_to_db(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         The GeoDataFrame representing the catchment area.
-    crs : int, optional
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -401,9 +401,9 @@ def store_geospatial_layers_data_to_db(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         The GeoDataFrame representing the catchment area.
-    crs : int, optional
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
