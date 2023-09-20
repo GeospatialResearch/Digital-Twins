@@ -13,8 +13,8 @@ import pandas as pd
 import xarray as xr
 from geocube.api.core import make_geocube
 
-from src.dynamic_boundary_conditions.rainfall_enum import RainInputType
-from src.dynamic_boundary_conditions import main_rainfall, hyetograph
+from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType
+from src.dynamic_boundary_conditions.rainfall import main_rainfall, hyetograph
 
 log = logging.getLogger(__name__)
 

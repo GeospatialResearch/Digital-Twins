@@ -11,7 +11,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 import networkx as nx
 
-from src.dynamic_boundary_conditions import main_river
+from src.dynamic_boundary_conditions.river import main_river
 
 
 def add_first_last_coords_to_rec1(rec1_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:

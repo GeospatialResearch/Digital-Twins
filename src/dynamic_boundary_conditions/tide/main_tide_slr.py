@@ -13,8 +13,8 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
-from src.dynamic_boundary_conditions.tide_enum import ApproachType
-from src.dynamic_boundary_conditions import (
+from src.dynamic_boundary_conditions.tide.tide_enum import ApproachType
+from src.dynamic_boundary_conditions.tide import (
     tide_query_location,
     tide_data_from_niwa,
     sea_level_rise_data,

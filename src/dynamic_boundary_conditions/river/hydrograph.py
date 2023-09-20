@@ -9,7 +9,7 @@ import re
 
 import geopandas as gpd
 
-from src.dynamic_boundary_conditions.river_enum import BoundType
+from src.dynamic_boundary_conditions.river.river_enum import BoundType
 
 
 def clean_river_flow_data(matched_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:

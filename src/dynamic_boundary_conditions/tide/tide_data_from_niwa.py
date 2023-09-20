@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from src import config
-from src.dynamic_boundary_conditions.tide_enum import DatumType, ApproachType
+from src.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
 
 # URLs for retrieving tide data from the NIWA Tide API in JSON and CSV formats, respectively
 TIDE_API_URL_DATA = 'https://api.niwa.co.nz/tides/data'

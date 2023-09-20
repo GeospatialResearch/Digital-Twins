@@ -8,7 +8,7 @@ import pathlib
 
 import geopandas as gpd
 
-from src.dynamic_boundary_conditions import main_river
+from src.dynamic_boundary_conditions.river import main_river
 
 log = logging.getLogger(__name__)
 

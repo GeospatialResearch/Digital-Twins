@@ -11,8 +11,8 @@ import geopandas as gpd
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area, get_nz_boundary
-from src.dynamic_boundary_conditions.rainfall_enum import RainInputType, HyetoMethod
-from src.dynamic_boundary_conditions import (
+from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
+from src.dynamic_boundary_conditions.rainfall import (
     rainfall_sites,
     thiessen_polygons,
     hirds_rainfall_data_to_db,

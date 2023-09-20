@@ -9,7 +9,7 @@ import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions import hirds_rainfall_data_to_db
+from src.dynamic_boundary_conditions.rainfall import hirds_rainfall_data_to_db
 
 
 def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:

@@ -12,8 +12,8 @@ from shapely.geometry import LineString
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.dynamic_boundary_conditions.river_enum import BoundType
-from src.dynamic_boundary_conditions import (
+from src.dynamic_boundary_conditions.river.river_enum import BoundType
+from src.dynamic_boundary_conditions.river import (
     river_data_to_from_db,
     river_network_for_aoi,
     osm_waterways,

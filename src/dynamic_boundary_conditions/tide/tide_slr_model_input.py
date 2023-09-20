@@ -8,7 +8,7 @@ import pathlib
 
 import pandas as pd
 
-from src.dynamic_boundary_conditions import main_tide_slr
+from src.dynamic_boundary_conditions.tide import main_tide_slr
 
 log = logging.getLogger(__name__)
 

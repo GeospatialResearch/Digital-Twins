@@ -12,7 +12,7 @@ from OSMPythonTools.cachingStrategy import CachingStrategy, JSON
 from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
 from src import config
-from src.dynamic_boundary_conditions import main_river
+from src.dynamic_boundary_conditions.river import main_river
 
 
 def configure_osm_cache() -> None:
