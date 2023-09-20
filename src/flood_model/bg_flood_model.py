@@ -397,9 +397,11 @@ def run_bg_flood_model(
     # Get the valid BG-Flood Model directory
     bg_flood_dir = get_valid_bg_flood_dir()
     # Get the file path of the Hydro DEM for the catchment area
-    hydro_dem_path, _, _, dem_resolution = get_dem_by_geometry(engine, catchment_area)
+    hydro_dem_path_str, _, _, dem_resolution = get_dem_by_geometry(engine, catchment_area)
     # Use dem_resolution if input resolution is not provided
     resolution = dem_resolution if resolution is None else resolution
+
+    hydro_dem_path = pathlib.Path(hydro_dem_path_str)
 
     # Prepare inputs for the BG-Flood Model
     prepare_bg_flood_model_inputs(
