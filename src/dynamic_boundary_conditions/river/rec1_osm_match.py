@@ -14,7 +14,7 @@ from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 import networkx as nx
 
-from src.dynamic_boundary_conditions import main_river
+from src.dynamic_boundary_conditions.river import main_river
 from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 
