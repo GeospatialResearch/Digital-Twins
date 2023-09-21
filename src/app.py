@@ -157,6 +157,22 @@ def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -
 
 @app.route('/tasks/<task_id>/model/depth', methods=["GET"])
 def get_depth_at_point(task_id: str) -> Response:
+    """
+    Finds the depths and times at a particular point for a given completed model output task.
+    Supported methods: GET
+    Required query param values: "lat": float, "lng": float
+
+    Parameters
+    ----------
+    task_id : str
+        The id of the completed task for generating a flood model.
+
+    Returns
+    -------
+    Response
+        Returns JSON response in the form {"depth": Arrau<number>,  "time": Array<number>} representing the values
+        for the given point.
+    """
     try:
         lat = request.args.get("lat", type=float)
         lng = request.args.get("lng", type=float)

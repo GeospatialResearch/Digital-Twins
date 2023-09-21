@@ -1,3 +1,7 @@
+"""
+Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
+Allows the frontend to send tasks and retrieve status later.
+"""
 import logging
 from typing import List, Tuple
 
@@ -10,12 +14,14 @@ import xarray
 
 from src.digitaltwin import run
 from src.digitaltwin.utils import setup_logging
-from src.dynamic_boundary_conditions import main_rainfall, main_river, main_tide_slr
+from src.dynamic_boundary_conditions.rainfall import main_rainfall
+from src.dynamic_boundary_conditions.river import main_river
+from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.flood_model import bg_flood_model
 from .config import get_env_variable
 
+# Setup celery backend task management
 message_broker_url = f"redis://{get_env_variable('MESSAGE_BROKER_HOST')}:6379/0"
-
 app = Celery("tasks", backend=message_broker_url, broker=message_broker_url)
 
 setup_logging()
@@ -31,7 +37,19 @@ class OnFailureStateTask(app.Task):
 
 # noinspection PyUnnecessaryBackslash
 def create_model_for_area(selected_polygon_wkt: str) -> result.GroupResult:
-    """Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks"""
+    """
+    Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The polygon defining the selected area to run the model for. Defined in WKT form.
+
+    Returns
+    -------
+    result.GroupResult
+        The task result for the long-running group of tasks. The task ID represents the final task in the group.
+    """
     return (add_base_data_to_db.si(selected_polygon_wkt) |
             process_dem.si(selected_polygon_wkt) |
             generate_rainfall_inputs.si(selected_polygon_wkt) |
@@ -42,49 +60,158 @@ def create_model_for_area(selected_polygon_wkt: str) -> result.GroupResult:
 
 
 @app.task(base=OnFailureStateTask)
-def add_base_data_to_db(selected_polygon_wkt: str):
+def add_base_data_to_db(selected_polygon_wkt: str) -> None:
+    """
+    Task to ensure static base data for the given area is added to the database
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The polygon defining the selected area to add base data for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
+    """
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     run.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
 def process_dem(selected_polygon_wkt: str):
+    """
+    Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The polygon defining the selected area to process the DEM for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
+    """
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     process.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
 def generate_rainfall_inputs(selected_polygon_wkt: str):
+    """
+    Task to ensure rainfall input data for the given area is added to the database and model input files are created.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The polygon defining the selected area to add rainfall data for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
+    """
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_rainfall.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
 def generate_tide_inputs(selected_polygon_wkt: str):
+    """
+    Task to ensure tide input data for the given area is added to the database and model input files are created.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The polygon defining the selected area to add tide data for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
+    """
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_tide_slr.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
 def generate_river_inputs(selected_polygon_wkt: str):
+    """
+    Task to ensure river input data for the given area is added to the database and model input files are created.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The polygon defining the selected area to add river data for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
+    """
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_river.main(selected_polygon)
 
 
 @app.task(base=OnFailureStateTask)
-def run_flood_model(selected_polygon_wkt: str):
+def run_flood_model(selected_polygon_wkt: str) -> int:
+    """
+    Task to run flood model using input data from previous tasks.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The polygon defining the selected area to run the flood model for. Defined in WKT form.
+
+    Returns
+    -------
+    int
+        The database ID of the flood model that has been run.
+    """
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     flood_model_id = bg_flood_model.main(selected_polygon)
     return flood_model_id
 
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
+    """
+    Transforms a WKT string polygon into a GeoDataFrame
+
+    Parameters
+    ----------
+    wkt : str
+        The WKT form of the polygon to be transformed. In WGS84 CRS (epsg:4326).
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        The GeoDataFrame form of the polygon after being transformed.
+    """
     selected_polygon = gpd.GeoDataFrame(index=[0], crs="epsg:4326", geometry=[shapely.from_wkt(wkt)])
     return selected_polygon.to_crs(2193)
 
 
 @app.task(base=OnFailureStateTask)
 def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> Tuple[List[float], List[float]]:
+    """
+    Task to query a point in a flood model output and return the list of depths and times.
+
+    Parameters
+    ----------
+    model_id : int
+        The database id of the model output to query.
+    lat : float
+        The latitude of the point to query.
+    lng : float
+        The longitude of the point to query.
+
+
+    Returns
+    -------
+    Tuple[List[float], List[float]]
+        Tuple of depths list and times list for the pixel in the output nearest to the point.
+    """
     model_file_path = bg_flood_model.model_output_from_db_by_id(model_id).as_posix()
     with xarray.open_dataset(model_file_path) as ds:
         transformer = Transformer.from_crs(4326, 2193)
