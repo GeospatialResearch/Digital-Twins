@@ -301,17 +301,17 @@ def prepare_bg_flood_model_inputs(
         The file path of the Hydrologically conditioned DEM (Hydro DEM) for the specified catchment area.
     resolution : Union[int, float]
         The grid resolution in meters for metric grids, representing the size of each grid cell.
-    output_timestep : Union[int, float], optional
+    output_timestep : Union[int, float] = 0
         Time step between model outputs in seconds. Default value is 0.0 (no output generated).
-    end_time : Union[int, float], optional
+    end_time : Union[int, float] = 0
         Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
-    mask : Union[int, float], optional
+    mask : Union[int, float] = 9999
         The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
         the specified value. Default value is 9999.0 (no areas are masked).
-    gpu_device : int, optional
+    gpu_device : int = 0
         Specify the GPU device to be used. Default value is 0 (the first available GPU).
         Set the value to -1 to use the CPU. For other GPUs, use values 2 and above.
-    small_nc : int, optional
+    small_nc : int = 0
         Specify whether the output should be saved as short integers to reduce the size of the output file.
         Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
         Default value is 0.
@@ -370,21 +370,21 @@ def run_bg_flood_model(
         A GeoDataFrame representing the catchment area.
     model_output_path : pathlib.Path
         The new file path for saving the BG Flood model output with the current timestamp included in the filename.
-    output_timestep : Union[int, float], optional
+    output_timestep : Union[int, float] = 0
         Time step between model outputs in seconds. Default value is 0.0 (no output generated).
-    end_time : Union[int, float], optional
+    end_time : Union[int, float] = 0
         Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
-    resolution : Optional[Union[int, float]], optional
+    resolution : Optional[Union[int, float]] = None
         The grid resolution in meters for metric grids, representing the size of each grid cell.
         If not provided (default is None), the resolution of the Hydrologically conditioned DEM will be used as
         the grid resolution.
-    mask : Union[int, float], optional
+    mask : Union[int, float] = 9999
         The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
         the specified value. Default value is 9999.0 (no areas are masked).
-    gpu_device : int, optional
+    gpu_device : int = 0
         Specify the GPU device to be used. Default value is 0 (the first available GPU).
         Set the value to -1 to use the CPU. For other GPUs, use values 2 and above.
-    small_nc : int, optional
+    small_nc : int = 0
         Specify whether the output should be saved as short integers to reduce the size of the output file.
         Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
         Default value is 0.
