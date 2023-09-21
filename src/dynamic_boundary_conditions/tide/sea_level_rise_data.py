@@ -100,7 +100,6 @@ def get_closest_slr_data(engine: Engine, single_query_loc: pd.Series) -> gpd.Geo
     ----------
     engine : Engine
         The engine used to connect to the database.
-
     single_query_loc : pd.Series
         Pandas Series containing the location coordinate and additional information used for retrieval.
 
@@ -147,7 +146,6 @@ def get_slr_data_from_db(engine: Engine, tide_data: gpd.GeoDataFrame) -> gpd.Geo
     ----------
     engine : Engine
         The engine used to connect to the database.
-
     tide_data : gpd.GeoDataFrame
         A GeoDataFrame containing tide data with added time information (seconds, minutes, hours) and location details.
 

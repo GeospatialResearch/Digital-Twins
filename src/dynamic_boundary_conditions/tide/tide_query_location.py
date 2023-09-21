@@ -58,7 +58,7 @@ def get_nz_coastline_from_db(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    distance_km : int, optional
+    distance_km : int = 1
         Distance in kilometers used to buffer the catchment area for coastline retrieval. Default is 1 kilometer.
 
     Returns
@@ -236,7 +236,7 @@ def get_tide_query_locations(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    distance_km : int, optional
+    distance_km : int = 1
         Distance in kilometers used to buffer the catchment area for coastline retrieval. Default is 1 kilometer.
 
     Returns

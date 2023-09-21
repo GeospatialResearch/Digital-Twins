@@ -118,7 +118,7 @@ def get_slr_scenario_data(
 def get_interpolated_slr_scenario_data(
         slr_scenario_data: gpd.GeoDataFrame,
         increment_year: int = 1,
-        interp_method: str = 'linear') -> gpd.GeoDataFrame:
+        interp_method: str = "linear") -> gpd.GeoDataFrame:
     """
     Interpolates sea level rise scenario data based on the specified year interval and interpolation method.
 
@@ -126,9 +126,9 @@ def get_interpolated_slr_scenario_data(
     ----------
     slr_scenario_data : gpd.GeoDataFrame
         A GeoDataFrame containing the sea level rise scenario data.
-    increment_year : int, optional
-        Year interval used for interpolation. Defaults to 1 year.
-    interp_method : str, optional
+    increment_year : int = 1
+        The year interval used for interpolation. Defaults to 1 year.
+    interp_method : str = "linear"
         Temporal interpolation method to be used. Defaults to 'linear'.
         Available methods: 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous',
         'next'. Refer to 'scipy.interpolate.interp1d()' for more details.
@@ -267,7 +267,7 @@ def get_combined_tide_slr_data(
         add_vlm: bool,
         percentile: int,
         increment_year: int = 1,
-        interp_method: str = 'linear') -> pd.DataFrame:
+        interp_method: str = "linear") -> pd.DataFrame:
     """
     Generates the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
     confidence_level, ssp_scenario, add_vlm, percentile, and more.
@@ -288,9 +288,9 @@ def get_combined_tide_slr_data(
         Indicates whether Vertical Land Motion (VLM) should be included in the sea level rise data.
     percentile : int
         The desired percentile for the sea level rise data.
-    increment_year : int, optional
-        Year interval used for interpolating the sea level rise data. Defaults to 1 year.
-    interp_method : str, optional
+    increment_year : int = 1
+        The year interval used for interpolating the sea level rise data. Defaults to 1 year.
+    interp_method : str = "linear"
         Temporal interpolation method used for interpolating the sea level rise data. Defaults to 'linear'.
         Available methods: 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous',
         'next'. Refer to 'scipy.interpolate.interp1d()' for more details.
