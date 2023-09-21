@@ -13,7 +13,7 @@ from sqlalchemy.engine import Engine
 import networkx as nx
 
 from src.dynamic_boundary_conditions.river import main_river, river_data_to_from_db
-from src.dynamic_boundary_conditions.river_network_to_from_db import (
+from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
     get_next_network_id,
     add_network_exclusions_to_db,
     store_rec1_network_to_db,

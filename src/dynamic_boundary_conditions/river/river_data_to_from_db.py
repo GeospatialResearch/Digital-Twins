@@ -13,7 +13,7 @@ from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin.tables import check_table_exists
-from src.dynamic_boundary_conditions.river_network_to_from_db import add_network_exclusions_to_db
+from src.dynamic_boundary_conditions.river.river_network_to_from_db import add_network_exclusions_to_db
 
 log = logging.getLogger(__name__)
 
