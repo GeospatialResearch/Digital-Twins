@@ -172,7 +172,7 @@ def store_rec1_network_to_db(
     rec1_network_id : int
         An identifier for the river network associated with the current run.
     rec1_network : nx.Graph
-        The constructed REC1 river network, represented as a directed graph (DiGraph)
+        The constructed REC1 river network, represented as a directed graph (DiGraph).
     rec1_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the REC1 river network data.
 
