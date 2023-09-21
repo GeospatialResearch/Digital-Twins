@@ -132,7 +132,7 @@ def rainfall_data_from_db(
         Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
-    duration : str, optional
+    duration : str = "all"
         Storm duration. Valid options are: '10m', '20m', '30m', '1h', '2h', '6h', '12h', '24h', '48h', '72h',
         '96h', '120h', or 'all'. Default is 'all'.
 

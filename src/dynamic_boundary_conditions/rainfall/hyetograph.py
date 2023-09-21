@@ -420,7 +420,7 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: int) -> None:
     ----------
     hyetograph_data : pd.DataFrame
         Hyetograph intensities data for sites within the catchment area.
-    ari : float
+    ari : int
         Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
 
     Returns
