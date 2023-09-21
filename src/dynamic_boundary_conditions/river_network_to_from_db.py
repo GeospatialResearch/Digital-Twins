@@ -251,7 +251,7 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     ----------
     engine : Engine
         The engine used to connect to the database.
-    existing_network_meta:
+    existing_network_meta : gpd.GeoDataFrame
         A GeoDataFrame containing the metadata for the existing REC1 river network.
 
     Returns

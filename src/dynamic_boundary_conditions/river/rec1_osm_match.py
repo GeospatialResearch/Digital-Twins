@@ -124,7 +124,6 @@ def get_rec1_network_data_on_bbox(
     return rec1_network_data_on_bbox
 
 
-
 def get_osm_boundary_points_on_bbox(
         catchment_area: gpd.GeoDataFrame,
         osm_waterways_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -220,7 +219,7 @@ def match_rec1_river_and_osm_waterway(
         A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.
     osm_waterways_data_on_bbox : gpd.GeoDataFrame
         A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.
-    distance_m : int, optional
+    distance_m : int = 300
         Distance threshold in meters for spatial proximity matching. The default value is 300 meters.
 
     Returns
@@ -273,7 +272,7 @@ def find_closest_osm_waterways(
         A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.
     osm_waterways_data_on_bbox : gpd.GeoDataFrame
         A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.
-    distance_m : int, optional
+    distance_m : int = 300
         Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.
 
     Returns
@@ -412,7 +411,7 @@ def get_closest_osm_waterways_with_target_locations(
         A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.
     osm_waterways_data_on_bbox : gpd.GeoDataFrame
         A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.
-    distance_m : int, optional
+    distance_m : int = 300
         Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.
 
     Returns
@@ -466,7 +465,7 @@ def get_matched_data_with_target_locations(
         A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary.
     osm_waterways_data_on_bbox : gpd.GeoDataFrame
         A GeoDataFrame containing the OSM waterways data that intersects with the catchment area boundary.
-    distance_m : int, optional
+    distance_m : int = 300
         Distance threshold in meters for determining the closest OSM waterway. The default value is 300 meters.
 
     Returns

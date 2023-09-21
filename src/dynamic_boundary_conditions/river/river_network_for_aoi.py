@@ -286,7 +286,7 @@ def add_absent_edges_to_network(
     ----------
     engine : Engine
         The engine used to connect to the database.
-    catchment_area : GeoDataFrame
+    catchment_area : gpd.GeoDataFrame,
         A GeoDataFrame representing the catchment area.
     rec1_network : nx.Graph
         The REC1 river network, a directed graph, to which absent edges will be added.

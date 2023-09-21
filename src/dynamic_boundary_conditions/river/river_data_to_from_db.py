@@ -96,10 +96,10 @@ def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gp
     catchment_polygon = catchment_area["geometry"][0]
     # Query to retrieve sea-draining catchments that intersect with the catchment polygon
     sea_drain_query = f"""
-        SELECT *
-        FROM sea_draining_catchments AS sdc
-        WHERE ST_Intersects(sdc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
-        """
+    SELECT *
+    FROM sea_draining_catchments AS sdc
+    WHERE ST_Intersects(sdc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    """
     # Execute the query and create a GeoDataFrame from the result
     sdc_data = gpd.GeoDataFrame.from_postgis(sea_drain_query, engine, geom_col="geometry")
     return sdc_data

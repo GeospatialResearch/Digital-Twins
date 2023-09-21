@@ -21,7 +21,7 @@ def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.
     ----------
     bg_flood_dir : pathlib.Path
         The BG-Flood model directory.
-    hydrograph_data : pd.DataFrame
+    hydrograph_data : gpd.GeoDataFrame
         A GeoDataFrame containing the hydrograph data for the requested river flow scenario.
 
     Returns

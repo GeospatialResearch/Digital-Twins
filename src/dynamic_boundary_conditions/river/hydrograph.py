@@ -82,12 +82,12 @@ def get_river_flow_scenario_data(
     matched_data : gpd.GeoDataFrame
         A GeoDataFrame containing the matched data between REC1 rivers and OSM waterways,
         along with the identified target locations used for the river input in the BG-Flood model.
-    maf : bool, optional
+    maf : bool = True
         Set to True to obtain MAF-based scenario data or False to obtain ARI-based scenario data.
-    ari : int, optional
+    ari : Optional[int] = None
         The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
         Mandatory when 'maf' is set to False, and should be set to None when 'maf' is set to True.
-    bound : BoundType, optional
+    bound : BoundType = BoundType.MIDDLE
         Set the type of bound (estimate) for the river flow scenario data.
         Valid options include: 'BoundType.LOWER', 'BoundType.MIDDLE', or 'BoundType.UPPER'.
 
@@ -157,12 +157,12 @@ def get_hydrograph_data(
         Duration of the river flow in minutes.
     time_to_peak_mins : Union[int, float]
         The time in minutes when flow is at its greatest (reaches maximum).
-    maf : bool, optional
+    maf : bool = True
         Set to True to obtain MAF-based scenario data or False to obtain ARI-based scenario data.
-    ari : int, optional
+    ari : Optional[int] = None
         The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
         Mandatory when 'maf' is set to False, and should be set to None when 'maf' is set to True.
-    bound : BoundType, optional
+    bound : BoundType = BoundType.MIDDLE
         Set the type of bound (estimate) for the river flow scenario data.
         Valid options include: 'BoundType.LOWER', 'BoundType.MIDDLE', or 'BoundType.UPPER'.
 
