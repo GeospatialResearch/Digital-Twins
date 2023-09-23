@@ -107,15 +107,15 @@ def add_nodes_intersection_type(
     # Calculate if the first and last coordinates/nodes intersect with the catchment_area
     rec1_data_with_nodes['first_intersects'] = rec1_data_with_nodes['first_coord'].intersects(catchment_polygon)
     rec1_data_with_nodes['last_intersects'] = rec1_data_with_nodes['last_coord'].intersects(catchment_polygon)
-    # Define conditions and corresponding values for 'intersection_type' column
+    # Define conditions and corresponding values for 'node_intersect_aoi' column
     conditions = [
         (rec1_data_with_nodes['first_intersects'] & rec1_data_with_nodes['last_intersects']),
         (rec1_data_with_nodes['first_intersects']),
         (rec1_data_with_nodes['last_intersects'])
     ]
     values = ['both_nodes', 'first_node', 'last_node']
-    # Create 'intersection_type' column based on conditions
-    rec1_data_with_nodes['intersect_catchment'] = np.select(conditions, values, default=None)
+    # Create 'node_intersect_aoi' column based on conditions
+    rec1_data_with_nodes['node_intersect_aoi'] = np.select(conditions, values, default=None)
     # Remove unnecessary column
     rec1_data_with_nodes = rec1_data_with_nodes.drop(columns=['first_intersects', 'last_intersects'])
     return rec1_data_with_nodes
@@ -142,7 +142,7 @@ def prepare_network_data_for_construction(
     """
     # Add columns for the first and last coordinates/nodes of each LineString in the REC1 data
     rec1_data_with_nodes = add_nodes_to_rec1(rec1_data_with_sdc)
-    # Calculate and add an 'intersection_type' column for the nodes
+    # Calculate and add a 'node_intersect_aoi' column for the nodes
     prepared_network_data = add_nodes_intersection_type(catchment_area, rec1_data_with_nodes)
     # Group the data by sea-draining catchments (identified by 'catch_id')
     grouped_data = prepared_network_data.groupby("catch_id")
@@ -254,23 +254,19 @@ def identify_absent_edges_to_add(rec1_network: nx.Graph, prepared_network_data: 
     gpd.GeoDataFrame
         A GeoDataFrame containing edges that are absent from the REC1 river network and require addition.
     """
-    # Find the maximum value of "first_node" in the prepared network data
-    max_first_node = prepared_network_data["first_node"].max()
-    # Filter the prepared network data to include only edges where "last_node" is greater than the maximum "first_node"
-    filtered_data = prepared_network_data[prepared_network_data["last_node"] > max_first_node]
-    # Check for existing edges in the river network using the filtered data
-    edge_exists = filtered_data.apply(
+    # Check for existing edges in the river network
+    edge_exists = prepared_network_data.apply(
         lambda row:
         rec1_network.has_edge(row["first_node"], row["last_node"]) or
         rec1_network.has_edge(row["last_node"], row["first_node"]),
         axis=1
     )
     # Select edges that are absent in the REC1 river network
-    absent_edges = filtered_data[~edge_exists].reset_index(drop=True)
-    # Filter edges that have both the largest catchment area and intersect the catchment_area
+    absent_edges = prepared_network_data[~edge_exists].reset_index(drop=True)
+    # Filter edges that have both the largest catchment area and both nodes intersect the catchment_area
     absent_edges_to_add = absent_edges[absent_edges["is_largest_area"]]
-    absent_edges_to_add = absent_edges_to_add[~absent_edges_to_add['intersect_catchment'].isna()]
-    return absent_edges_to_add
+    absent_edges_to_add = absent_edges_to_add[~absent_edges_to_add['node_intersect_aoi'].isna()]
+    return absent_edges_to_add.reset_index(drop=True)
 
 
 def add_absent_edges_to_network(
@@ -301,31 +297,31 @@ def add_absent_edges_to_network(
     # Identify edges that are absent from the REC1 river network and require addition
     absent_edges_to_add = identify_absent_edges_to_add(rec1_network, prepared_network_data)
 
-    # Determine the direction of absent edges
+    # Check if there are any absent edges to add
     if not absent_edges_to_add.empty:
         # Obtain the hydro DEM and its spatial extent
         hydro_dem, _ = get_dem_band_and_resolution_by_geometry(engine, catchment_area)
         hydro_dem_extent = main_river.get_extent_of_hydro_dem(engine, catchment_area)
+        # Get the boundary point of each absent edge that intersects with the hydro DEM extent
+        absent_edges_to_add['boundary_point'] = absent_edges_to_add['geometry'].intersection(hydro_dem_extent)
 
-        # Iterate through the selected intersection edges
+        # Iterate through each absent edge
         for _, absent_edge in absent_edges_to_add.iterrows():
             # Get how the nodes of each edge intersect with the catchment area
-            intersect_catchment = absent_edge['intersect_catchment']
+            node_intersect_aoi = absent_edge['node_intersect_aoi']
 
-            if intersect_catchment == "both_nodes":
-                # When both nodes of the edge intersect the catchment area
-                # Use the coordinates of both nodes as the edge's start and end points
-                first_coord, last_coord = absent_edge["first_coord"], absent_edge["last_coord"]
-            elif intersect_catchment == "first_node":
-                # When only the first node of the edge intersects with the catchment area
-                # Use the boundary point on the Hydro DEM extent as the edge's end point
-                boundary_point = hydro_dem_extent.intersection(absent_edge['geometry'])
-                first_coord, last_coord = absent_edge["first_coord"], boundary_point
+            if node_intersect_aoi == "first_node":
+                # When only the first node of the edge intersects with the catchment area,
+                # use the boundary point on the Hydro DEM extent as the edge's end point
+                first_coord, last_coord = absent_edge["first_coord"], absent_edge['boundary_point']
+            elif node_intersect_aoi == "last_node":
+                # When only the last node of the edge intersects with the catchment area,
+                # use the boundary point on the Hydro DEM extent as the edge's start point
+                first_coord, last_coord = absent_edge['boundary_point'], absent_edge["last_coord"]
             else:
-                # When only the last node of the edge intersects with the catchment area
-                # Use the boundary point on the Hydro DEM extent as the edge's start point
-                boundary_point = hydro_dem_extent.intersection(absent_edge['geometry'])
-                first_coord, last_coord = boundary_point, absent_edge["last_coord"]
+                # When both nodes of the edge intersect the catchment area,
+                # use the coordinates of both nodes as the edge's start and end points
+                first_coord, last_coord = absent_edge["first_coord"], absent_edge["last_coord"]
 
             # Retrieve elevation values for the edge's start and end points from the hydro DEM
             first_coord_z_val = hydro_dem.sel(x=first_coord.x, y=first_coord.y, method="nearest")['z'].values.item()
