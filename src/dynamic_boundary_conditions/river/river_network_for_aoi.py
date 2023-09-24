@@ -398,7 +398,7 @@ def add_edge_directions_to_network_data(
     rec1_network_exclusions = network_data[network_data["node_direction"].isna()].reset_index(drop=True)
     # Add excluded REC1 geometries in the River Network to the relevant database table
     add_network_exclusions_to_db(engine, rec1_network_id, rec1_network_exclusions,
-                                 exclusion_cause="unable to determine edge direction")
+                                 exclusion_cause="undetermined edge direction")
     # Return the updated network data with added edge directions
     return rec1_network_data
 
