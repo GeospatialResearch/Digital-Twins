@@ -14,6 +14,7 @@ from datetime import datetime
 import pickle
 
 import geopandas as gpd
+import numpy as np
 import shapely.wkt
 from sqlalchemy import select, func
 from sqlalchemy.engine import Engine
@@ -289,4 +290,6 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     # Set the data type of the 'first_coord' and 'last_coord' columns to geometry
     rec1_network_data['first_coord'] = rec1_network_data['first_coord'].apply(shapely.wkt.loads).astype('geometry')
     rec1_network_data['last_coord'] = rec1_network_data['last_coord'].apply(shapely.wkt.loads).astype('geometry')
+    # Replace NaN values with None in the 'node_intersect_aoi' column
+    rec1_network_data['node_intersect_aoi'] = rec1_network_data['node_intersect_aoi'].replace(np.nan, None)
     return rec1_network, rec1_network_data
