@@ -41,7 +41,7 @@ def get_niwa_rec1_data() -> gpd.GeoDataFrame:
     if not any(rec1_data_dir.glob("*.shp")):
         raise FileNotFoundError(f"REC1 data files not found: {rec1_data_dir}")
     # Find the path of the first file in `rec1_data_dir` that ends with .shp
-    rec1_file_path = next(rec1_data_dir.glob('*.shp'))
+    rec1_file_path = next(rec1_data_dir.glob("*.shp"))
     # Read the Shapefile into a GeoDataFrame
     rec1_nz = gpd.read_file(rec1_file_path)
     # Convert column names to lowercase for consistency
@@ -149,16 +149,16 @@ def get_rec1_data_with_sdc_from_db(
     # Determine the sea-draining catchment for each REC1 geometry (using the 'within' predicate)
     rec1_data_join_sdc = (
         gpd.sjoin(rec1_data, sdc_data[["catch_id", "geometry"]], how="left", predicate="within")
-        .drop(columns=['index_right'])
+        .drop(columns=["index_right"])
     )
     # Get rows where REC1 geometries are fully contained within sea-draining catchments
-    rec1_data_with_sdc = rec1_data_join_sdc[~rec1_data_join_sdc['catch_id'].isna()]
+    rec1_data_with_sdc = rec1_data_join_sdc[~rec1_data_join_sdc["catch_id"].isna()]
     # Remove any duplicate records and sort by the 'objectid' column
     rec1_data_with_sdc = rec1_data_with_sdc.drop_duplicates().sort_values(by="objectid").reset_index(drop=True)
     # Convert the 'catch_id' column to integers
-    rec1_data_with_sdc['catch_id'] = rec1_data_with_sdc['catch_id'].astype(int)
+    rec1_data_with_sdc["catch_id"] = rec1_data_with_sdc["catch_id"].astype(int)
     # Get the object IDs of REC1 geometries that are not fully contained within sea-draining catchments
-    rec1_network_exclusions = rec1_data_join_sdc[rec1_data_join_sdc['catch_id'].isna()].reset_index(drop=True)
+    rec1_network_exclusions = rec1_data_join_sdc[rec1_data_join_sdc["catch_id"].isna()].reset_index(drop=True)
     # Add excluded REC1 geometries in the River Network to the relevant database table
     add_network_exclusions_to_db(engine, river_network_id, rec1_network_exclusions,
                                  exclusion_cause="crossing multiple sea-draining catchments")

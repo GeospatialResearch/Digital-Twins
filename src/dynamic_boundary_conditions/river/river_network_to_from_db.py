@@ -185,13 +185,13 @@ def store_rec1_network_to_db(
     # Get new file paths for storing both the REC1 Network and its associated data
     network_path, network_data_path = get_new_network_output_paths()
     # Save the REC1 river network to the specified file
-    with open(network_path, 'wb') as file:
+    with open(network_path, "wb") as file:
         pickle.dump(rec1_network, file)
 
     # Convert the 'first_coord' and 'last_coord' columns to string format to facilitate exporting
     network_data = rec1_network_data.copy()
-    network_data['first_coord'] = network_data['first_coord'].astype(str)
-    network_data['last_coord'] = network_data['last_coord'].astype(str)
+    network_data["first_coord"] = network_data["first_coord"].astype(str)
+    network_data["last_coord"] = network_data["last_coord"].astype(str)
     # Save the REC1 river network data to the specified file
     network_data.to_file(str(network_data_path), driver="GeoJSON")
 
@@ -274,7 +274,7 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     # Query the database to retrieve exclusion data for the existing REC1 river network
     rec1_network_exclusions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     # Group exclusion data by the cause of exclusion
-    grouped_data = rec1_network_exclusions.groupby('exclusion_cause')
+    grouped_data = rec1_network_exclusions.groupby("exclusion_cause")
     # Iterate through grouped exclusion data, where each group represents a cause of exclusion
     for exclusion_cause, data in grouped_data:
         # Convert the excluded REC1 river segment object IDs to a list
@@ -288,8 +288,8 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     # Load the REC1 river network data containing geometry information
     rec1_network_data = gpd.read_file(existing_network_series["network_data_path"])
     # Set the data type of the 'first_coord' and 'last_coord' columns to geometry
-    rec1_network_data['first_coord'] = rec1_network_data['first_coord'].apply(shapely.wkt.loads).astype('geometry')
-    rec1_network_data['last_coord'] = rec1_network_data['last_coord'].apply(shapely.wkt.loads).astype('geometry')
+    rec1_network_data["first_coord"] = rec1_network_data["first_coord"].apply(shapely.wkt.loads).astype("geometry")
+    rec1_network_data["last_coord"] = rec1_network_data["last_coord"].apply(shapely.wkt.loads).astype("geometry")
     # Replace NaN values with None in the 'node_intersect_aoi' column
-    rec1_network_data['node_intersect_aoi'] = rec1_network_data['node_intersect_aoi'].replace(np.nan, None)
+    rec1_network_data["node_intersect_aoi"] = rec1_network_data["node_intersect_aoi"].replace(np.nan, None)
     return rec1_network, rec1_network_data

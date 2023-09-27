@@ -143,8 +143,8 @@ def determine_multi_intersect_inflow_index(multi_intersect_row: pd.Series) -> in
         cannot be determined.
     """
     # Extract the 'node_direction' and 'node_intersect_aoi' attributes from the input Series
-    node_direction = multi_intersect_row['node_direction']
-    node_intersect_aoi = multi_intersect_row['node_intersect_aoi']
+    node_direction = multi_intersect_row["node_direction"]
+    node_intersect_aoi = multi_intersect_row["node_intersect_aoi"]
     # Define a dictionary to map conditions to inflow_index values
     condition_mapping = {
         ("to", "both_nodes"): 1,
@@ -160,7 +160,7 @@ def determine_multi_intersect_inflow_index(multi_intersect_row: pd.Series) -> in
     inflow_index = condition_mapping.get((node_direction, node_intersect_aoi), None)
     # If none of the conditions are met, raise a ValueError with an informative message
     if inflow_index is None:
-        objectid = multi_intersect_row['objectid']
+        objectid = multi_intersect_row["objectid"]
         raise ValueError(f"Unable to determine the inflow index for REC1 river segment {objectid}.")
     return inflow_index
 
@@ -189,22 +189,21 @@ def categorize_exploded_multi_intersect(multi_intersect: gpd.GeoDataFrame) -> Di
     # Iterate through each REC1 river segment
     for _, row in multi_intersect.iterrows():
         # Extract the 'objectid' and list of exploded boundary points
-        objectid, boundary_points = row['objectid'], row['rec1_boundary_point_explode']
+        objectid, boundary_points = row["objectid"], row["rec1_boundary_point_explode"]
         # Determines the index that represents the position of the first inflow boundary point
         inflow_index = determine_multi_intersect_inflow_index(row)
 
         # Initialize a dictionary to categorize boundary points as 'inflow' or 'outflow'
-        categorized_points = {'outflow': [], 'inflow': []}
+        categorized_points = dict(outflow=[], inflow=[])
         # Iterate through the list of exploded boundary points and categorize each one
         for index, point in enumerate(boundary_points):
             # Determine the category based on their order along the river segment and inflow index
-            category = 'inflow' if index % 2 == inflow_index else 'outflow'
+            category = "inflow" if index % 2 == inflow_index else "outflow"
             # Append the current 'point' to the appropriate category
             categorized_points[category].append(point)
 
         # Associate the categorized points with the 'objectid' and store them in the main dictionary
         categorized_multi_intersect[objectid] = categorized_points
-
     return categorized_multi_intersect
 
 
@@ -236,7 +235,7 @@ def get_multi_intersect_inflows(rec1_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
     # Merge the inflow points DataFrame with the original MultiPoint GeoDataFrame
     multi_point_inflows = multi_intersect.merge(inflow_points_df, on="objectid", how="left")
     # Convert the 'rec1_inflow_point' column to a geometry data type
-    multi_point_inflows['rec1_inflow_point'] = multi_point_inflows['rec1_inflow_point'].astype('geometry')
+    multi_point_inflows["rec1_inflow_point"] = multi_point_inflows["rec1_inflow_point"].astype("geometry")
     # Set the geometry column and coordinate reference system (CRS) for the GeoDataFrame
     multi_point_inflows = multi_point_inflows.set_geometry("rec1_inflow_point", crs=multi_point_inflows.crs)
     # Drop the temporary column used for exploding MultiPoint geometries
@@ -342,24 +341,24 @@ def align_rec1_with_osm(
         OpenStreetMap (OSM) waterways within a specified distance threshold.
     """
     # Select relevant columns from REC1 data
-    rec1_columns = ['objectid', rec1_inflows_on_bbox.geometry.name]
+    rec1_columns = ["objectid", rec1_inflows_on_bbox.geometry.name]
     rec1_on_bbox = rec1_inflows_on_bbox[rec1_columns]
     # Select relevant columns from OSM data
-    osm_columns = ['id', osm_waterways_on_bbox.geometry.name]
+    osm_columns = ["id", osm_waterways_on_bbox.geometry.name]
     osm_on_bbox = osm_waterways_on_bbox[osm_columns]
     # Perform a spatial join to find the nearest OSM waterway features within a specified distance
     aligned_rec1_osm = gpd.sjoin_nearest(
-        rec1_on_bbox, osm_on_bbox, how='inner', distance_col="distances", max_distance=distance_m)
+        rec1_on_bbox, osm_on_bbox, how="inner", distance_col="distances", max_distance=distance_m)
     # Sort the aligned data by distance
-    aligned_rec1_osm = aligned_rec1_osm.sort_values(by='distances')
+    aligned_rec1_osm = aligned_rec1_osm.sort_values(by="distances")
     # Remove duplicate OSM waterway features and keep the closest ones
-    aligned_rec1_osm = aligned_rec1_osm.drop_duplicates(subset='id', keep='first')
+    aligned_rec1_osm = aligned_rec1_osm.drop_duplicates(subset="id", keep="first")
     # Select relevant columns and merge with OSM waterway data
-    aligned_rec1_osm = aligned_rec1_osm[['objectid', 'index_right']]
-    aligned_rec1_osm = aligned_rec1_osm.merge(osm_on_bbox, left_on='index_right', right_index=True, how='left')
+    aligned_rec1_osm = aligned_rec1_osm[["objectid", "index_right"]]
+    aligned_rec1_osm = aligned_rec1_osm.merge(osm_on_bbox, left_on="index_right", right_index=True, how="left")
     # Clean up the resulting GeoDataFrame
-    aligned_rec1_osm = aligned_rec1_osm.drop(columns=['index_right']).reset_index(drop=True)
-    aligned_rec1_osm = gpd.GeoDataFrame(aligned_rec1_osm, geometry='osm_boundary_point')
+    aligned_rec1_osm = aligned_rec1_osm.drop(columns=["index_right"]).reset_index(drop=True)
+    aligned_rec1_osm = gpd.GeoDataFrame(aligned_rec1_osm, geometry="osm_boundary_point")
     return aligned_rec1_osm
 
 
@@ -395,18 +394,18 @@ def get_rec1_entry_data(
     # Align REC1 river inflow boundary points with OSM waterway boundary points within the specified distance
     aligned_rec1_osm = align_rec1_with_osm(rec1_inflows_on_bbox, osm_waterways_on_bbox, distance_m)
     # Extract and rename relevant columns
-    rec1_entry_points = aligned_rec1_osm[['objectid', 'osm_boundary_point']].rename_geometry("rec1_entry_point")
+    rec1_entry_points = aligned_rec1_osm[["objectid", "osm_boundary_point"]].rename_geometry("rec1_entry_point")
     # Combine REC1 entry points with REC1 inflow data
-    rec1_entry_point_data = rec1_entry_points.merge(rec1_inflows_on_bbox, on='objectid', how='left')
+    rec1_entry_point_data = rec1_entry_points.merge(rec1_inflows_on_bbox, on="objectid", how="left")
     # Move the 'rec1_entry_point' column to the last position
-    column_to_move = 'rec1_entry_point'
+    column_to_move = "rec1_entry_point"
     entry_point_column = rec1_entry_point_data.pop(column_to_move)
     rec1_entry_point_data[column_to_move] = entry_point_column
     # Get the boundary lines of the Hydrologically Conditioned DEM
     dem_boundary_lines = main_river.get_hydro_dem_boundary_lines(engine, catchment_area)
     # Perform a spatial join between the REC1 entry points and Hydro DEM boundary lines
-    rec1_entry_data = gpd.sjoin(rec1_entry_point_data, dem_boundary_lines, how='left', predicate='intersects')
+    rec1_entry_data = gpd.sjoin(rec1_entry_point_data, dem_boundary_lines, how="left", predicate="intersects")
     # Combine with Hydro DEM boundary lines data and remove unnecessary column
-    rec1_entry_data = rec1_entry_data.merge(dem_boundary_lines, on='dem_boundary_line_no', how='left')
-    rec1_entry_data = rec1_entry_data.drop(columns=['index_right'])
+    rec1_entry_data = rec1_entry_data.merge(dem_boundary_lines, on="dem_boundary_line_no", how="left")
+    rec1_entry_data = rec1_entry_data.drop(columns=["index_right"])
     return rec1_entry_data
