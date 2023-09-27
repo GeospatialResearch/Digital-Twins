@@ -363,14 +363,13 @@ def align_rec1_with_osm(
     return aligned_rec1_osm
 
 
-def locate_rec1_entry_points_by_osm(
+def get_rec1_entry_data(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
         rec1_network_data: gpd.GeoDataFrame,
         distance_m: int = 300) -> gpd.GeoDataFrame:
     """
-    Obtain the entry points of REC1 rivers that are aligned with OpenStreetMap (OSM) waterways,
-    where water flows into the catchment area.
+    Obtain REC1 river entry data, aligned with OpenStreetMap (OSM) waterways, where water flows into the catchment area.
 
     Parameters
     -----------
@@ -386,7 +385,7 @@ def locate_rec1_entry_points_by_osm(
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the entry points of REC1 rivers that are aligned with OpenStreetMap (OSM) waterways,
+        A GeoDataFrame containing REC1 river entry data, aligned with OpenStreetMap (OSM) waterways,
         where water flows into the catchment area.
     """
     # Obtain REC1 river network segments where water flows into the catchment area
@@ -396,6 +395,18 @@ def locate_rec1_entry_points_by_osm(
     # Align REC1 river inflow boundary points with OSM waterway boundary points within the specified distance
     aligned_rec1_osm = align_rec1_with_osm(rec1_inflows_on_bbox, osm_waterways_on_bbox, distance_m)
     # Extract and rename relevant columns
-    rec1_entry_points = aligned_rec1_osm[['objectid', 'osm_boundary_point']]
-    rec1_entry_points = rec1_entry_points.rename_geometry("rec1_entry_point")
-    return rec1_entry_points
+    rec1_entry_points = aligned_rec1_osm[['objectid', 'osm_boundary_point']].rename_geometry("rec1_entry_point")
+    # Combine REC1 entry points with REC1 inflow data
+    rec1_entry_point_data = rec1_entry_points.merge(rec1_inflows_on_bbox, on='objectid', how='left')
+    # Move the 'rec1_entry_point' column to the last position
+    column_to_move = 'rec1_entry_point'
+    entry_point_column = rec1_entry_point_data.pop(column_to_move)
+    rec1_entry_point_data[column_to_move] = entry_point_column
+    # Get the boundary lines of the Hydrologically Conditioned DEM
+    dem_boundary_lines = main_river.get_hydro_dem_boundary_lines(engine, catchment_area)
+    # Perform a spatial join between the REC1 entry points and Hydro DEM boundary lines
+    rec1_entry_data = gpd.sjoin(rec1_entry_point_data, dem_boundary_lines, how='left', predicate='intersects')
+    # Combine with Hydro DEM boundary lines data and remove unnecessary column
+    rec1_entry_data = rec1_entry_data.merge(dem_boundary_lines, on='dem_boundary_line_no', how='left')
+    rec1_entry_data = rec1_entry_data.drop(columns=['index_right'])
+    return rec1_entry_data
