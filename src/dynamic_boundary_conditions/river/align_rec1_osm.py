@@ -369,7 +369,8 @@ def locate_rec1_entry_points_by_osm(
         rec1_network_data: gpd.GeoDataFrame,
         distance_m: int = 300) -> gpd.GeoDataFrame:
     """
-    Obtain the entry points of REC1 rivers where water flows into the catchment area.
+    Obtain the entry points of REC1 rivers that are aligned with OpenStreetMap (OSM) waterways,
+    where water flows into the catchment area.
 
     Parameters
     -----------
@@ -385,7 +386,8 @@ def locate_rec1_entry_points_by_osm(
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the entry points of REC1 rivers where water flows into the catchment area.
+        A GeoDataFrame containing the entry points of REC1 rivers that are aligned with OpenStreetMap (OSM) waterways,
+        where water flows into the catchment area.
     """
     # Obtain REC1 river network segments where water flows into the catchment area
     rec1_inflows_on_bbox = get_rec1_inflows_on_bbox(engine, catchment_area, rec1_network_data)

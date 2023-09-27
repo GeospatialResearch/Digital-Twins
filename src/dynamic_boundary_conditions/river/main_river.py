@@ -71,21 +71,21 @@ def get_hydro_dem_boundary_lines(engine: Engine, catchment_area: gpd.GeoDataFram
     # Obtain the spatial extent of the hydro DEM
     hydro_dem_extent = get_hydro_dem_extent(engine, catchment_area)
     # Create a list of LineString segments from the exterior boundary coordinates
-    boundary_lines_list = [
+    dem_boundary_lines_list = [
         LineString([hydro_dem_extent.coords[i], hydro_dem_extent.coords[i + 1]])
         for i in range(len(hydro_dem_extent.coords) - 1)
     ]
     # Generate numbers from 1 up to the total number of boundary lines
-    boundary_line_numbers = range(1, len(boundary_lines_list) + 1)
+    dem_boundary_line_numbers = range(1, len(dem_boundary_lines_list) + 1)
     # Create a GeoDataFrame containing the boundary line numbers and LineString geometries
-    boundary_lines = gpd.GeoDataFrame(
-        data={
-            'boundary_line_no': boundary_line_numbers,
-            'geometry': boundary_lines_list
-        },
+    dem_boundary_lines = gpd.GeoDataFrame(
+        data={'dem_boundary_line_no': dem_boundary_line_numbers},
+        geometry=dem_boundary_lines_list,
         crs=catchment_area.crs
     )
-    return boundary_lines
+    # Rename the geometry column to 'dem_boundary_line'
+    dem_boundary_lines = dem_boundary_lines.rename_geometry('dem_boundary_line')
+    return dem_boundary_lines
 
 
 def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
