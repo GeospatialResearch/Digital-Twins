@@ -250,8 +250,8 @@ def get_rec1_inflows_on_bbox(
         catchment_area: gpd.GeoDataFrame,
         rec1_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Obtain REC1 river network segments where water flows into the specified catchment area,
-    along with their corresponding inflow boundary points.
+    Obtain REC1 river segments that are inflows into the specified catchment area, along with their corresponding
+    inflow boundary points.
 
     Parameters
     -----------
@@ -265,8 +265,8 @@ def get_rec1_inflows_on_bbox(
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing REC1 river network segments where water flows into the catchment area,
-        along with their corresponding inflow boundary points.
+        A GeoDataFrame containing REC1 river segments that are inflows into the catchment area, along with their
+        corresponding inflow boundary points.
     """
     # Get REC1 river network segments that intersect with the catchment area boundary
     rec1_on_bbox = get_rec1_network_data_on_bbox(engine, catchment_area, rec1_network_data)
@@ -320,7 +320,7 @@ def align_rec1_with_osm(
         osm_waterways_on_bbox: gpd.GeoDataFrame,
         distance_m: int = 300) -> gpd.GeoDataFrame:
     """
-    Aligns the boundary points of REC1 river inflows with the boundary points of OpenStreetMap (OSM) waterways
+    Aligns the boundary points of REC1 river inflow segments with the boundary points of OpenStreetMap (OSM) waterways
     within a specified distance threshold.
 
     Parameters
@@ -337,7 +337,7 @@ def align_rec1_with_osm(
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 river inflow boundary points aligned with the boundary points of
+        A GeoDataFrame containing the boundary points of REC1 river inflow segments aligned with the boundary points of
         OpenStreetMap (OSM) waterways within a specified distance threshold.
     """
     # Select relevant columns from REC1 data
@@ -356,19 +356,23 @@ def align_rec1_with_osm(
     # Select relevant columns and merge with OSM waterway data
     aligned_rec1_osm = aligned_rec1_osm[["objectid", "index_right"]]
     aligned_rec1_osm = aligned_rec1_osm.merge(osm_on_bbox, left_on="index_right", right_index=True, how="left")
-    # Clean up the resulting GeoDataFrame
+    # Drop the 'index_right' column to clean up the DataFrame
     aligned_rec1_osm = aligned_rec1_osm.drop(columns=["index_right"]).reset_index(drop=True)
+    # Create a GeoDataFrame using the 'osm_boundary_point' column as the geometry
     aligned_rec1_osm = gpd.GeoDataFrame(aligned_rec1_osm, geometry="osm_boundary_point")
+    # Rename the geometry column to 'rec1_entry_point' for clarity
+    aligned_rec1_osm = aligned_rec1_osm.rename_geometry("rec1_entry_point")
     return aligned_rec1_osm
 
 
-def get_rec1_entry_data(
+def get_rec1_inflows_aligned_to_osm(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
         rec1_network_data: gpd.GeoDataFrame,
         distance_m: int = 300) -> gpd.GeoDataFrame:
     """
-    Obtain REC1 river entry data, aligned with OpenStreetMap (OSM) waterways, where water flows into the catchment area.
+    Obtain data for REC1 river inflow segments whose boundary points align with the boundary points of
+    OpenStreetMap (OSM) waterways within a specified distance threshold.
 
     Parameters
     -----------
@@ -384,8 +388,8 @@ def get_rec1_entry_data(
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing REC1 river entry data, aligned with OpenStreetMap (OSM) waterways,
-        where water flows into the catchment area.
+        A GeoDataFrame containing data for REC1 river inflow segments whose boundary points align with the
+        boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold.
     """
     # Obtain REC1 river network segments where water flows into the catchment area
     rec1_inflows_on_bbox = get_rec1_inflows_on_bbox(engine, catchment_area, rec1_network_data)
@@ -393,19 +397,12 @@ def get_rec1_entry_data(
     osm_waterways_on_bbox = get_osm_waterways_on_bbox(engine, catchment_area)
     # Align REC1 river inflow boundary points with OSM waterway boundary points within the specified distance
     aligned_rec1_osm = align_rec1_with_osm(rec1_inflows_on_bbox, osm_waterways_on_bbox, distance_m)
-    # Extract and rename relevant columns
-    rec1_entry_points = aligned_rec1_osm[["objectid", "osm_boundary_point"]].rename_geometry("rec1_entry_point")
-    # Combine REC1 entry points with REC1 inflow data
-    rec1_entry_point_data = rec1_entry_points.merge(rec1_inflows_on_bbox, on="objectid", how="left")
+    # Extract relevant columns
+    rec1_entry_points = aligned_rec1_osm[["objectid", "rec1_entry_point"]]
+    # Combine REC1 entry points with REC1 inflows data
+    aligned_rec1_inflows = rec1_entry_points.merge(rec1_inflows_on_bbox, on="objectid", how="left")
     # Move the 'rec1_entry_point' column to the last position
     column_to_move = "rec1_entry_point"
-    entry_point_column = rec1_entry_point_data.pop(column_to_move)
-    rec1_entry_point_data[column_to_move] = entry_point_column
-    # Get the boundary lines of the Hydrologically Conditioned DEM
-    dem_boundary_lines = main_river.get_hydro_dem_boundary_lines(engine, catchment_area)
-    # Perform a spatial join between the REC1 entry points and Hydro DEM boundary lines
-    rec1_entry_data = gpd.sjoin(rec1_entry_point_data, dem_boundary_lines, how="left", predicate="intersects")
-    # Combine with Hydro DEM boundary lines data and remove unnecessary column
-    rec1_entry_data = rec1_entry_data.merge(dem_boundary_lines, on="dem_boundary_line_no", how="left")
-    rec1_entry_data = rec1_entry_data.drop(columns=["index_right"])
-    return rec1_entry_data
+    entry_point_column = aligned_rec1_inflows.pop(column_to_move)
+    aligned_rec1_inflows[column_to_move] = entry_point_column
+    return aligned_rec1_inflows
