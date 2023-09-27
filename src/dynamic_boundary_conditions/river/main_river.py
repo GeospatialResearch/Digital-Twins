@@ -25,39 +25,6 @@ from src.dynamic_boundary_conditions.river import (
 from newzealidar.utils import get_dem_by_geometry
 
 
-def get_catchment_boundary_lines(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    """
-    Get the boundary lines of the catchment area.
-
-    Parameters
-    ----------
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the boundary lines of the catchment area.
-    """
-    # Extract the catchment polygon from the GeoDataFrame
-    catchment_polygon = catchment_area["geometry"].iloc[0]
-    # Create an empty list to store the individual boundary line segments
-    boundary_lines_list = []
-    # Extract the exterior (outer boundary) of the polygon
-    exterior = catchment_polygon.exterior
-    # Iterate over the coordinates of the exterior boundary
-    for i in range(len(exterior.coords) - 1):
-        # Create a LineString using two consecutive coordinates
-        line_segment = LineString([exterior.coords[i], exterior.coords[i + 1]])
-        # Append the line segment to the list of boundary lines
-        boundary_lines_list.append(line_segment)
-    # Create a GeoDataFrame from the list of boundary lines and reset the index
-    boundary_lines = gpd.GeoDataFrame(geometry=boundary_lines_list, crs=catchment_area.crs).reset_index(drop=True)
-    # Assign a unique identifier (boundary_line_no) starting from 1 to each boundary line segment
-    boundary_lines.insert(0, 'boundary_line_no', boundary_lines.index + 1)
-    return boundary_lines
-
-
 def get_extent_of_hydro_dem(engine: Engine, catchment_area: gpd.GeoDataFrame) -> LineString:
     """
     Get the extent of the Hydrologically Conditioned DEM.
