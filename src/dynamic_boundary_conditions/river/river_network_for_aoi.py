@@ -105,19 +105,19 @@ def add_nodes_intersection_type(
     # Extract the catchment polygon from the GeoDataFrame
     catchment_polygon = catchment_area["geometry"][0]
     # Calculate if the first and last coordinates/nodes intersect with the catchment_area
-    rec1_data_with_nodes['first_intersects'] = rec1_data_with_nodes['first_coord'].intersects(catchment_polygon)
-    rec1_data_with_nodes['last_intersects'] = rec1_data_with_nodes['last_coord'].intersects(catchment_polygon)
+    rec1_data_with_nodes["first_intersects"] = rec1_data_with_nodes["first_coord"].intersects(catchment_polygon)
+    rec1_data_with_nodes["last_intersects"] = rec1_data_with_nodes["last_coord"].intersects(catchment_polygon)
     # Define conditions and corresponding values for 'node_intersect_aoi' column
     conditions = [
-        (rec1_data_with_nodes['first_intersects'] & rec1_data_with_nodes['last_intersects']),
-        (rec1_data_with_nodes['first_intersects']),
-        (rec1_data_with_nodes['last_intersects'])
+        (rec1_data_with_nodes["first_intersects"] & rec1_data_with_nodes["last_intersects"]),
+        (rec1_data_with_nodes["first_intersects"]),
+        (rec1_data_with_nodes["last_intersects"])
     ]
-    values = ['both_nodes', 'first_node', 'last_node']
+    values = ["both_nodes", "first_node", "last_node"]
     # Create 'node_intersect_aoi' column based on conditions
-    rec1_data_with_nodes['node_intersect_aoi'] = np.select(conditions, values, default=None)
+    rec1_data_with_nodes["node_intersect_aoi"] = np.select(conditions, values, default=None)
     # Remove unnecessary column
-    rec1_data_with_nodes = rec1_data_with_nodes.drop(columns=['first_intersects', 'last_intersects'])
+    rec1_data_with_nodes = rec1_data_with_nodes.drop(columns=["first_intersects", "last_intersects"])
     return rec1_data_with_nodes
 
 
@@ -147,7 +147,7 @@ def prepare_network_data_for_construction(
     # Group the data by sea-draining catchments (identified by 'catch_id')
     grouped_data = prepared_network_data.groupby("catch_id")
     # Determine the river segment in each sea-draining catchment with the largest area
-    prepared_network_data['is_largest_area'] = grouped_data['areakm2'].transform(lambda x: x == x.max())
+    prepared_network_data["is_largest_area"] = grouped_data["areakm2"].transform(lambda x: x == x.max())
     return prepared_network_data
 
 
@@ -265,7 +265,7 @@ def identify_absent_edges_to_add(rec1_network: nx.Graph, prepared_network_data: 
     absent_edges = prepared_network_data[~edge_exists].reset_index(drop=True)
     # Filter edges that have both the largest catchment area and both nodes intersect the catchment_area
     absent_edges_to_add = absent_edges[absent_edges["is_largest_area"]]
-    absent_edges_to_add = absent_edges_to_add[~absent_edges_to_add['node_intersect_aoi'].isna()]
+    absent_edges_to_add = absent_edges_to_add[~absent_edges_to_add["node_intersect_aoi"].isna()]
     return absent_edges_to_add.reset_index(drop=True)
 
 
@@ -303,21 +303,21 @@ def add_absent_edges_to_network(
         hydro_dem, _ = get_dem_band_and_resolution_by_geometry(engine, catchment_area)
         hydro_dem_extent = main_river.get_hydro_dem_extent(engine, catchment_area)
         # Get the boundary point of each absent edge that intersects with the hydro DEM extent
-        absent_edges_to_add['boundary_point'] = absent_edges_to_add['geometry'].intersection(hydro_dem_extent)
+        absent_edges_to_add["boundary_point"] = absent_edges_to_add["geometry"].intersection(hydro_dem_extent)
 
         # Iterate through each absent edge
         for _, absent_edge in absent_edges_to_add.iterrows():
             # Get how the nodes of each edge intersect with the catchment area
-            node_intersect_aoi = absent_edge['node_intersect_aoi']
+            node_intersect_aoi = absent_edge["node_intersect_aoi"]
 
             if node_intersect_aoi == "first_node":
                 # When only the first node of the edge intersects with the catchment area,
                 # use the boundary point on the Hydro DEM extent as the edge's end point
-                first_coord, last_coord = absent_edge["first_coord"], absent_edge['boundary_point']
+                first_coord, last_coord = absent_edge["first_coord"], absent_edge["boundary_point"]
             elif node_intersect_aoi == "last_node":
                 # When only the last node of the edge intersects with the catchment area,
                 # use the boundary point on the Hydro DEM extent as the edge's start point
-                first_coord, last_coord = absent_edge['boundary_point'], absent_edge["last_coord"]
+                first_coord, last_coord = absent_edge["boundary_point"], absent_edge["last_coord"]
             else:
                 # When both nodes of the edge intersect the catchment area,
                 # use the coordinates of both nodes as the edge's start and end points

@@ -24,7 +24,7 @@ def configure_osm_cache() -> None:
     # Get the data directory from the environment variable
     data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path)
     # Define the OSM cache directory
-    osm_cache_dir = data_dir / 'osm_cache'
+    osm_cache_dir = data_dir / "osm_cache"
     # Change the directory for storing the OSM cache files
     CachingStrategy.use(JSON, cacheDir=osm_cache_dir)
 
@@ -57,11 +57,7 @@ def fetch_osm_waterways(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     # Execute the Overpass query to retrieve waterway elements
     waterways = Overpass().query(query, timeout=600)
     # Initialize an empty dictionary to store element information
-    element_dict = {
-        "id": [],
-        "waterway": [],
-        "geometry": []
-    }
+    element_dict = dict(id=[], waterway=[], geometry=[])
     # Iterate over the retrieved waterway elements
     for element in waterways.elements():
         # Extract and store the ID, waterway type, and geometry of each element
@@ -98,7 +94,7 @@ def get_osm_waterways_data(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame
     osm_waterways = osm_waterways[osm_waterways["geometry"].type == "LineString"]
     # Keep only the waterways that have the waterway types "river" or "stream"
     osm_waterways_data = osm_waterways.loc[
-        (osm_waterways['waterway'] == 'river') | (osm_waterways['waterway'] == 'stream')]
+        (osm_waterways["waterway"] == "river") | (osm_waterways["waterway"] == "stream")]
     # Reset the index of the resulting GeoDataFrame
     osm_waterways_data = osm_waterways_data.reset_index(drop=True)
     return osm_waterways_data
