@@ -25,7 +25,7 @@ from src.dynamic_boundary_conditions.river import (
 from newzealidar.utils import get_dem_by_geometry
 
 
-def get_extent_of_hydro_dem(engine: Engine, catchment_area: gpd.GeoDataFrame) -> LineString:
+def get_hydro_dem_extent(engine: Engine, catchment_area: gpd.GeoDataFrame) -> LineString:
     """
     Get the extent of the Hydrologically Conditioned DEM.
 
@@ -69,7 +69,7 @@ def get_hydro_dem_boundary_lines(engine: Engine, catchment_area: gpd.GeoDataFram
         A GeoDataFrame containing the boundary lines of the Hydrologically Conditioned DEM.
     """
     # Obtain the spatial extent of the hydro DEM
-    hydro_dem_extent = get_extent_of_hydro_dem(engine, catchment_area)
+    hydro_dem_extent = get_hydro_dem_extent(engine, catchment_area)
     # Create a list of LineString segments from the exterior boundary coordinates
     boundary_lines_list = [
         LineString([hydro_dem_extent.coords[i], hydro_dem_extent.coords[i + 1]])
