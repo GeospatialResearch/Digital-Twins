@@ -4,17 +4,14 @@ This script facilitates the matching of REC1 rivers with OpenStreetMap (OSM) wat
 OSM waterway to each REC1 river. It also determines the target points used for the river input in the BG-Flood model.
 """
 
-from typing import Dict, List, Union
+from typing import Dict, List
 
 import geopandas as gpd
 import pandas as pd
-import numpy as np
-import xarray as xr
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
 from src.dynamic_boundary_conditions.river import main_river, osm_waterways
-from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 
 def get_rec1_network_data_on_bbox(
@@ -366,107 +363,37 @@ def align_rec1_with_osm(
     return aligned_rec1_osm
 
 
-# def identify_inflow_points_around_aoi(
-#         engine: Engine,
-#         catchment_area: gpd.GeoDataFrame,
-#         rec1_network_data: gpd.GeoDataFrame,
-#         distance_m: int = 300):
-#     """
-#     Parameters
-#     -----------
-#     engine : Engine
-#         The engine used to connect to the database.
-#     catchment_area : gpd.GeoDataFrame
-#         A GeoDataFrame representing the catchment area.
-#     rec1_network_data : gpd.GeoDataFrame
-#         A GeoDataFrame containing the REC1 river network data.
-#     distance_m : int = 300
-#         Distance threshold in meters for spatial proximity matching. The default value is 300 meters.
-#     """
-#     rec1_inflows_on_bbox = get_rec1_inflows_on_bbox(engine, catchment_area, rec1_network_data)
-#     osm_waterways_on_bbox = get_osm_waterways_on_bbox(engine, catchment_area)
-#     aligned_rec1_osm = align_rec1_with_osm(rec1_inflows_on_bbox, osm_waterways_on_bbox, distance_m=distance_m)
-#     # Get the line segments representing the catchment area boundary
-#     catchment_boundary_lines = main_river.get_catchment_boundary_lines(catchment_area)
-#     # Perform a spatial join between the REC1 boundary points and catchment boundary lines
-#     test = gpd.sjoin(rec1_bound_points, catchment_boundary_lines, how='left', predicate='intersects')
-#
-#     # Retrieve the Hydro DEM data and resolution for the specified catchment area
-#     hydro_dem, res_no = get_dem_band_and_resolution_by_geometry(engine, catchment_area)
-#     # Initialize an empty GeoDataFrame to store the target locations
-#     aligned_rec1_osm_w_target_loc = gpd.GeoDataFrame()
-#     # Iterate over each row in the 'closest_osm_waterways' GeoDataFrame
-#     for i in range(len(aligned_rec1_osm)):
-#         # Extract the current row for processing
-#         single_aligned_rec1_osm = aligned_rec1_osm.iloc[i:i + 1].reset_index(drop=True)
-#         # Obtain the target location with the minimum elevation from the Hydro DEM to the closest OSM waterway
-#         min_elevation_location = get_target_location_from_hydro_dem(single_aligned_rec1_osm, hydro_dem, res_no)
-#         # Merge the target location data with the current OSM waterway data
-#         single_w_target_loc = single_aligned_rec1_osm.merge(
-#             min_elevation_location, how='left', left_index=True, right_index=True)
-#         # Append the merged data to the overall GeoDataFrame
-#         aligned_rec1_osm_w_target_loc = pd.concat([aligned_rec1_osm_w_target_loc, single_w_target_loc])
-#     # Add the Hydro DEM resolution information to the resulting GeoDataFrame
-#     aligned_rec1_osm_w_target_loc['dem_resolution'] = res_no
-#     # Set the geometry column and reset the index
-#     aligned_rec1_osm_w_target_loc = aligned_rec1_osm_w_target_loc.set_geometry('target_point').reset_index(drop=True)
-#     return aligned_rec1_osm_w_target_loc
-#
-#
-# def get_target_location_from_hydro_dem(
-#         single_closest_osm_waterway: gpd.GeoDataFrame,
-#         hydro_dem: xr.Dataset,
-#         hydro_dem_resolution: Union[int, float]) -> gpd.GeoDataFrame:
-#     # Obtain the nearest elevation values from the Hydro DEM to the closest OSM waterway
-#     elevation_values = get_elevations_from_hydro_dem(single_closest_osm_waterway, hydro_dem, hydro_dem_resolution)
-#     # Derive the midpoint by determining the centroid of all target points
-#     midpoint_coord = elevation_values['target_point'].unary_union.centroid
-#     # Calculate the distances between each target point and the midpoint
-#     elevation_values['distance'] = elevation_values['target_point'].distance(midpoint_coord)
-#     # Find the minimum elevation value
-#     min_elevation_value = elevation_values['elevation'].min()
-#     # Extract the rows with the minimum elevation value
-#     min_elevation_rows = elevation_values[elevation_values['elevation'] == min_elevation_value]
-#     # Select the closest point to the midpoint based on the minimum distance
-#     min_elevation_location = min_elevation_rows.sort_values('distance').head(1)
-#     # Remove unnecessary columns and reset the index
-#     min_elevation_location = min_elevation_location.drop(columns=['distance']).reset_index(drop=True)
-#     return min_elevation_location
-#
-#
-# def get_elevations_from_hydro_dem(
-#         single_closest_osm_waterway: gpd.GeoDataFrame,
-#         hydro_dem: xr.Dataset,
-#         hydro_dem_resolution: Union[int, float]) -> gpd.GeoDataFrame:
-#     # Buffer the boundary line using the Hydro DEM resolution
-#     single_closest_osm_waterway['boundary_line_buffered'] = (
-#         single_closest_osm_waterway['boundary_line'].buffer(distance=hydro_dem_resolution, cap_style=2))
-#     # Clip the Hydro DEM using the buffered boundary line
-#     clipped_hydro_dem = hydro_dem.rio.clip(single_closest_osm_waterway['boundary_line_buffered'])
-#     # Get the x and y coordinates of the OSM boundary point center
-#     osm_boundary_point_centre = single_closest_osm_waterway['osm_boundary_point_centre'].iloc[0]
-#     osm_bound_point_x, osm_bound_point_y = osm_boundary_point_centre.x, osm_boundary_point_centre.y
-#     # Find the indices of the closest x and y coordinates in the clipped Hydro DEM
-#     midpoint_x_index = int(np.argmin(abs(clipped_hydro_dem['x'].values - osm_bound_point_x)))
-#     midpoint_y_index = int(np.argmin(abs(clipped_hydro_dem['y'].values - osm_bound_point_y)))
-#     # Define the starting and ending indices for the x coordinates in the clipped Hydro DEM
-#     start_x_index = max(0, midpoint_x_index - 2)
-#     end_x_index = min(midpoint_x_index + 3, len(clipped_hydro_dem['x']))
-#     # Define the starting and ending indices for the y coordinates in the clipped Hydro DEM
-#     start_y_index = max(0, midpoint_y_index - 2)
-#     end_y_index = min(midpoint_y_index + 3, len(clipped_hydro_dem['y']))
-#     # Extract the x and y coordinates within the defined range from the clipped Hydro DEM
-#     x_range = clipped_hydro_dem['x'].values[slice(start_x_index, end_x_index)]
-#     y_range = clipped_hydro_dem['y'].values[slice(start_y_index, end_y_index)]
-#     # Extract elevation values for the specified x and y coordinates from the clipped Hydro DEM
-#     elevation_values = clipped_hydro_dem.sel(x=x_range, y=y_range).to_dataframe().reset_index()
-#     # Create Point objects for each row using 'x' and 'y' coordinates, storing them in 'target_point' column
-#     elevation_values['target_point'] = elevation_values.apply(lambda row: Point(row['x'], row['y']), axis=1)
-#     # Remove unnecessary columns from the elevation data
-#     elevation_values.drop(columns=['x', 'y', 'band', 'spatial_ref', 'data_source', 'lidar_source'], inplace=True)
-#     # Rename the 'z' column to 'elevation_value' for clarity and consistency
-#     elevation_values.rename(columns={'z': 'elevation'}, inplace=True)
-#     # Convert the elevation data to a GeoDataFrame with 'target_point' as the geometry column
-#     elevation_values = gpd.GeoDataFrame(elevation_values, geometry='target_point', crs=single_closest_osm_waterway.crs)
-#     return elevation_values
-#
+def locate_rec1_entry_points_by_osm(
+        engine: Engine,
+        catchment_area: gpd.GeoDataFrame,
+        rec1_network_data: gpd.GeoDataFrame,
+        distance_m: int = 300) -> gpd.GeoDataFrame:
+    """
+    Obtain the entry points of REC1 rivers where water flows into the catchment area.
+
+    Parameters
+    -----------
+    engine : Engine
+        The engine used to connect to the database.
+    catchment_area : gpd.GeoDataFrame
+        A GeoDataFrame representing the catchment area.
+    rec1_network_data : gpd.GeoDataFrame
+        A GeoDataFrame containing the REC1 river network data.
+    distance_m : int = 300
+        Distance threshold in meters for spatial proximity matching. The default value is 300 meters.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the entry points of REC1 rivers where water flows into the catchment area.
+    """
+    # Obtain REC1 river network segments where water flows into the catchment area
+    rec1_inflows_on_bbox = get_rec1_inflows_on_bbox(engine, catchment_area, rec1_network_data)
+    # Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment area boundary
+    osm_waterways_on_bbox = get_osm_waterways_on_bbox(engine, catchment_area)
+    # Align REC1 river inflow boundary points with OSM waterway boundary points within the specified distance
+    aligned_rec1_osm = align_rec1_with_osm(rec1_inflows_on_bbox, osm_waterways_on_bbox, distance_m)
+    # Extract and rename relevant columns
+    rec1_entry_points = aligned_rec1_osm[['objectid', 'osm_boundary_point']]
+    rec1_entry_points = rec1_entry_points.rename_geometry("rec1_entry_point")
+    return rec1_entry_points

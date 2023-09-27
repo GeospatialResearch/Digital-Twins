@@ -125,10 +125,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Get the REC1 river network for the catchment area
     rec1_network, rec1_network_data = river_network_for_aoi.get_rec1_river_network(engine, catchment_area)
 
-    rec1_inflows_on_bbox = align_rec1_osm.get_rec1_inflows_on_bbox(engine, catchment_area, rec1_network_data)
-    osm_waterways_on_bbox = align_rec1_osm.get_osm_waterways_on_bbox(engine, catchment_area)
-    aligned_rec1_osm = align_rec1_osm.align_rec1_with_osm(rec1_inflows_on_bbox, osm_waterways_on_bbox)
-
+    rec1_entry_points = align_rec1_osm.locate_rec1_entry_points_by_osm(engine, catchment_area, rec1_network_data)
 
     # # Obtain the OSM waterways data that corresponds to the points of intersection on the catchment area boundary
     # osm_waterways_data_on_bbox = rec1_osm_match.get_osm_waterways_data_on_bbox(catchment_area, osm_waterways_data)
