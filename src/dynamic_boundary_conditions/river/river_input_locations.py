@@ -37,8 +37,9 @@ def get_elevations_near_rec1_entry_point(
     """
     # Clip the Hydro DEM using the buffered DEM boundary line
     clipped_hydro_dem = hydro_dem.rio.clip([rec1_inflows_row['dem_boundary_line_buffered']])
-    # Get the x and y coordinates of the REC1 entry point
-    entry_point_x, entry_point_y = rec1_inflows_row["rec1_entry_point"].x, rec1_inflows_row["rec1_entry_point"].y
+    # Get the x and y coordinates of the aligned REC1 entry point
+    aligned_rec1_entry_point = rec1_inflows_row["aligned_rec1_entry_point"]
+    entry_point_x, entry_point_y = aligned_rec1_entry_point.x, aligned_rec1_entry_point.y
     # Find the indices of the REC1 entry point x and y coordinates in the clipped Hydro DEM
     entry_point_x_index = int(np.argmin(abs(clipped_hydro_dem['x'].values - entry_point_x)))
     entry_point_y_index = int(np.argmin(abs(clipped_hydro_dem['y'].values - entry_point_y)))
