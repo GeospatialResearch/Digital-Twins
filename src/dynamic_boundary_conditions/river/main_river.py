@@ -17,7 +17,7 @@ from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.river import (
     river_data_to_from_db,
     river_network_for_aoi,
-    river_input_locations,
+    river_inflows,
     hydrograph,
     river_model_input
 )
@@ -124,19 +124,12 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Get the REC1 river network for the catchment area
     rec1_network, rec1_network_data = river_network_for_aoi.get_rec1_river_network(engine, catchment_area)
 
-    rec1_inflows_w_input_points = river_input_locations.get_rec1_inflows_with_input_points(
+    rec1_inflows_data = river_inflows.get_rec1_inflows_with_input_points(
         engine, catchment_area, rec1_network_data, distance_m=300)
 
-    # # Obtain the OSM waterways data that corresponds to the points of intersection on the catchment area boundary
-    # osm_waterways_data_on_bbox = rec1_osm_match.get_osm_waterways_data_on_bbox(catchment_area, osm_waterways_data)
-    #
-    # # Find the closest OSM waterway to each REC1 river and determine the target points used for the model input
-    # matched_data = rec1_osm_match.get_matched_data_with_target_locations(
-    #     engine, catchment_area, rec1_network_data_on_bbox, osm_waterways_data_on_bbox, distance_m=300)
-    #
     # # Generate hydrograph data for the requested river flow scenario
     # hydrograph_data = hydrograph.get_hydrograph_data(
-    #     matched_data,
+    #     rec1_inflows_data,
     #     flow_length_mins=2880,
     #     time_to_peak_mins=1440,
     #     maf=True,
