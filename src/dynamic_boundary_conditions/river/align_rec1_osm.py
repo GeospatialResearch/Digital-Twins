@@ -360,8 +360,8 @@ def align_rec1_with_osm(
     aligned_rec1_osm = aligned_rec1_osm.drop(columns=["index_right"]).reset_index(drop=True)
     # Create a GeoDataFrame using the 'osm_boundary_point' column as the geometry
     aligned_rec1_osm = gpd.GeoDataFrame(aligned_rec1_osm, geometry="osm_boundary_point")
-    # Rename the geometry column to 'rec1_entry_point' for clarity
-    aligned_rec1_osm = aligned_rec1_osm.rename_geometry("rec1_entry_point")
+    # Rename the geometry column to 'aligned_rec1_entry_point' for clarity
+    aligned_rec1_osm = aligned_rec1_osm.rename_geometry("aligned_rec1_entry_point")
     return aligned_rec1_osm
 
 
@@ -398,11 +398,11 @@ def get_rec1_inflows_aligned_to_osm(
     # Align REC1 river inflow boundary points with OSM waterway boundary points within the specified distance
     aligned_rec1_osm = align_rec1_with_osm(rec1_inflows_on_bbox, osm_waterways_on_bbox, distance_m)
     # Extract relevant columns
-    rec1_entry_points = aligned_rec1_osm[["objectid", "rec1_entry_point"]]
-    # Combine REC1 entry points with REC1 inflows data
-    aligned_rec1_inflows = rec1_entry_points.merge(rec1_inflows_on_bbox, on="objectid", how="left")
-    # Move the 'rec1_entry_point' column to the last position
-    column_to_move = "rec1_entry_point"
-    entry_point_column = aligned_rec1_inflows.pop(column_to_move)
-    aligned_rec1_inflows[column_to_move] = entry_point_column
+    aligned_rec1_entry_points = aligned_rec1_osm[["objectid", "aligned_rec1_entry_point"]]
+    # Combine aligned REC1 entry points with REC1 inflows data
+    aligned_rec1_inflows = aligned_rec1_entry_points.merge(rec1_inflows_on_bbox, on="objectid", how="left")
+    # Move the 'aligned_rec1_entry_point' column to the last position
+    aligned_rec1_inflows["aligned_rec1_entry_point"] = aligned_rec1_inflows.pop("aligned_rec1_entry_point")
+    # Drop unnecessary column
+    aligned_rec1_inflows.drop(columns=["rec1_inflow_point"], inplace=True)
     return aligned_rec1_inflows
