@@ -122,7 +122,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Store REC1 data to the database
     river_data_to_from_db.store_rec1_data_to_db(engine)
     # Get the REC1 river network for the catchment area
-    rec1_network, rec1_network_data = river_network_for_aoi.get_rec1_river_network(engine, catchment_area)
+    _, rec1_network_data = river_network_for_aoi.get_rec1_river_network(engine, catchment_area)
 
     # Obtain REC1 river inflow data along with the corresponding river input points used in the BG-Flood model
     rec1_inflows_data = river_inflows.get_rec1_inflows_with_input_points(
