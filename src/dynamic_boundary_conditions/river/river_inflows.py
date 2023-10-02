@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-This script identifies the REC1 river input points intended for use in the BG-Flood model.
+This script identifies the REC1 river inflow input points intended for use in the BG-Flood model.
+
+This script handles the task of obtaining data for REC1 river inflow segments whose boundary points align with the
+boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold, along with their corresponding
+river input points used in the BG-Flood model.
 """
 
 import geopandas as gpd
@@ -111,7 +115,7 @@ def get_rec1_inflows_with_input_points(
     """
     Obtain data for REC1 river inflow segments whose boundary points align with the boundary points of
     OpenStreetMap (OSM) waterways within a specified distance threshold, along with their corresponding
-    river input points used in the BG-Flood model.
+    river input points used for the BG-Flood model.
 
     Parameters
     -----------
@@ -129,7 +133,7 @@ def get_rec1_inflows_with_input_points(
     gpd.GeoDataFrame
         A GeoDataFrame containing data for REC1 river inflow segments whose boundary points align with the
         boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
-        along with their corresponding river input points used in the BG-Flood model.
+        along with their corresponding river input points used for the BG-Flood model.
     """
     # Obtain data for REC1 river inflow segments whose boundary points align with the boundary points of OSM waterways
     # within a specified distance threshold
