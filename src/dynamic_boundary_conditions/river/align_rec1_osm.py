@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This script facilitates the matching of REC1 rivers with OpenStreetMap (OSM) waterways by finding the closest
-OSM waterway to each REC1 river. It also determines the target points used for the river input in the BG-Flood model.
+This script handles the task of obtaining data for REC1 river inflow segments whose boundary points align with the
+boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold.
 """
 
 from typing import Dict, List

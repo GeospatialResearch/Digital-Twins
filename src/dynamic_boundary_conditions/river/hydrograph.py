@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script obtains river flow scenario data, whether Mean Annual Flood (MAF) or
+This script handles the task of obtaining REC1 river inflow scenario data, whether it's Mean Annual Flood (MAF) or
 Average Recurrence Interval (ARI)-based, and generates corresponding hydrograph data for the requested scenarios.
 """
 

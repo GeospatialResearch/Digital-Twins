@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This script handles the reading of REC1 data from the NIWA REC1 dataset,
-storing the data in the database, and retrieving the REC1 data from the database.
+This script handles the following tasks: reading REC1 data from the NIWA REC1 dataset, storing REC1 data within the
+database, and retrieving REC1 data enriched with sea-draining catchment information from the database.
 """
 
 import logging

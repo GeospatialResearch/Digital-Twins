@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Store both the REC1 river network and its associated data in files, and their metadata in the database.
-              Retrieve the existing REC1 river network and its associated data.
-              Manages the addition of REC1 geometries that have been excluded from the river network in the database and
-              retrieves them from the database for an existing REC1 river network.
-@Author: sli229
+This script handles the following tasks: storing both the REC1 river network and its associated data in files along with
+their metadata in the database, retrieving the existing REC1 river network and its associated data from the database,
+and managing the addition of REC1 geometries that have been excluded from the river network in the database,
+as well as retrieving them for an existing REC1 river network.
 """
 
 import pathlib

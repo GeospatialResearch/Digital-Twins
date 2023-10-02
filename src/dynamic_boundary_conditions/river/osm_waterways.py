@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script fetches OpenStreetMap (OSM) waterways data for the defined catchment area.
+This script handles the fetching of OpenStreetMap (OSM) waterways data for the defined catchment area.
 """
 
 import pathlib
