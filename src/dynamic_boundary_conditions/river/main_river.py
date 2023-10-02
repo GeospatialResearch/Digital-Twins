@@ -137,8 +137,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
         ari=None,
         bound=BoundType.MIDDLE)
 
-    # # Generate river model inputs for BG-Flood
-    # river_model_input.generate_river_model_input(bg_flood_dir, hydrograph_data)
+    # Generate river model inputs for BG-Flood
+    river_model_input.generate_river_model_input(bg_flood_dir, hydrograph_data)
 
 
 if __name__ == "__main__":
