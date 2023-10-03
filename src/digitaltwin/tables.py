@@ -3,7 +3,7 @@
 This script contains SQLAlchemy models for various database tables and utility functions for database operations.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
 from sqlalchemy import inspect, Column, String, Integer, DateTime
@@ -69,7 +69,7 @@ class UserLogInfo(Base):
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="log created datetime")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
 
 
@@ -127,7 +127,7 @@ class RiverNetworkOutput(Base):
                              comment="An identifier for the river network associated with each run")
     network_path = Column(String, comment="path to the rec1 river network file")
     network_data_path = Column(String, comment="path to the rec1 river network data file")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="output created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
 
 
@@ -154,7 +154,7 @@ class BGFloodModelOutput(Base):
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     file_name = Column(String, comment="name of the flood model output file")
     file_path = Column(String, comment="path to the flood model output file")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="output created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
 
 
