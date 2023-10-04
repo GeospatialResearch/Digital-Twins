@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Main river script used to read and store REC1 data in the database, fetch OSM waterways data, create a river network,
-and generate the requested river model inputs for BG-Flood etc.
+Main river script used to read and store REC1 data in the database, fetch OSM waterways data, create a river network
+and its associated data, and generate the requested river model input for BG-Flood etc.
 """
 
 import pathlib
@@ -135,7 +135,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
         time_to_peak_mins=1440,
         maf=True,
         ari=None,
-        bound=BoundType.MIDDLE)
+        bound=BoundType.MIDDLE
+    )
 
     # Generate river model inputs for BG-Flood
     river_model_input.generate_river_model_input(bg_flood_dir, hydrograph_data)
