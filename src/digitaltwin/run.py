@@ -11,6 +11,30 @@ from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+    """
+    Connects to various data providers to fetch geospatial data for the selected polygon, i.e., the catchment area.
+    Subsequently, it populates the 'geospatial_layers' table in the database and stores user log information for
+    tracking and reference.
+
+    Parameters
+    ----------
+    selected_polygon_gdf : gpd.GeoDataFrame
+        A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+    log_level : LogLevel = LogLevel.DEBUG
+        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+        The available logging levels and their corresponding numeric values are:
+        - LogLevel.CRITICAL (50)
+        - LogLevel.ERROR (40)
+        - LogLevel.WARNING (30)
+        - LogLevel.INFO (20)
+        - LogLevel.DEBUG (10)
+        - LogLevel.NOTSET (0)
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database
@@ -27,4 +51,4 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    main(sample_polygon)
+    main(sample_polygon, log_level=LogLevel.DEBUG)

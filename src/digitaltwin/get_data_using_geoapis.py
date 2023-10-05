@@ -33,12 +33,12 @@ def clean_fetched_vector_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
     Parameters
     ----------
     fetched_data : gpd.GeoDataFrame
-        The fetched vector data as a GeoDataFrame.
+        A GeoDataFrame containing the fetched vector data.
 
     Returns
     -------
     gpd.GeoDataFrame
-        The cleaned vector data as a GeoDataFrame.
+        A GeoDataFrame containing the cleaned vector data.
     """
     # Ensure consistent column naming convention by converting all column names to lowercase
     fetched_data.columns = fetched_data.columns.str.lower()
@@ -72,7 +72,7 @@ def fetch_vector_data_using_geoapis(
     Returns
     --------
     gpd.GeoDataFrame
-        The fetched vector data as a GeoDataFrame.
+        A GeoDataFrame containing the fetched vector data.
 
     Raises
     -------

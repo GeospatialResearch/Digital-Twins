@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This script provides functions to set up the database connection using SQLAlchemy and environment
-              variables, as well as to create an SQLAlchemy engine for database operations.
+This script provides functions to set up the database connection using SQLAlchemy and environment variables,
+as well as to create an SQLAlchemy engine for database operations.
 """
 
 import logging

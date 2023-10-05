@@ -113,14 +113,14 @@ def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> 
     Parameters
     ----------
     catchment_area : gpd.GeoDataFrame
-        The GeoDataFrame representing the catchment area.
+        A GeoDataFrame representing the catchment area.
     to_crs : int = 2193
         Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
 
     Returns
     -------
     gpd.GeoDataFrame
-        The catchment area GeoDataFrame with the transformed CRS.
+        A GeoDataFrame representing the catchment area with the transformed CRS.
     """
     return catchment_area.to_crs(to_crs)
 
