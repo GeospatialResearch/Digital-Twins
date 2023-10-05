@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Main rainfall script used to fetch and store rainfall data in the database, and to generate the requested
-rainfall model input for BG-Flood etc.
+rainfall model input for BG-Flood, etc.
 """
 
 import pathlib
@@ -43,6 +43,28 @@ def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+    """
+    Fetch and store rainfall data in the database, and generate the requested rainfall model input for BG-Flood, etc.
+
+    Parameters
+    ----------
+    selected_polygon_gdf : gpd.GeoDataFrame
+        A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+    log_level : LogLevel = LogLevel.DEBUG
+        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+        The available logging levels and their corresponding numeric values are:
+        - LogLevel.CRITICAL (50)
+        - LogLevel.ERROR (40)
+        - LogLevel.WARNING (30)
+        - LogLevel.INFO (20)
+        - LogLevel.DEBUG (10)
+        - LogLevel.NOTSET (0)
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database
@@ -65,16 +87,14 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_area)
 
-    # Store rainfall data of all the sites within the catchment area in the database
-    # Set idf to False for rain depth data and to True for rain intensity data
+    # Store rainfall depth data of all the sites within the catchment area in the database
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=False)
 
     # Requested scenario
     rcp = 2.6
     time_period = "2031-2050"
     ari = 100
-    # For a requested scenario, get all rainfall data for sites within the catchment area from the database
-    # Set idf to False for rain depth data and to True for rain intensity data
+    # For a requested scenario, get all rainfall depth data for sites within the catchment area from the database
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
         engine, sites_in_catchment, rcp, time_period, ari, idf=False)
 
@@ -86,8 +106,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
         increment_mins=10,
         interp_method="cubic",
         hyeto_method=HyetoMethod.ALT_BLOCK)
-    # Create interactive hyetograph plots for sites within the catchment area
-    # hyetograph.hyetograph(hyetograph_data, ari)
 
     # Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area
     sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_area)
@@ -98,4 +116,4 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    main(sample_polygon)
+    main(sample_polygon, log_level=LogLevel.DEBUG)

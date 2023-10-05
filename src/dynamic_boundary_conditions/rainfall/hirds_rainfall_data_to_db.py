@@ -142,7 +142,7 @@ def add_each_site_rainfall_data(engine: Engine, sites_id_list: List[str], idf: b
         add_rainfall_data_to_db(engine, site_id, idf)
 
 
-def rainfall_data_to_db(engine: Engine, sites_in_catchment: gpd.GeoDataFrame, idf: bool) -> None:
+def rainfall_data_to_db(engine: Engine, sites_in_catchment: gpd.GeoDataFrame, idf: bool = False) -> None:
     """
     Store rainfall data of all the sites within the catchment area in the database.
 
@@ -152,7 +152,7 @@ def rainfall_data_to_db(engine: Engine, sites_in_catchment: gpd.GeoDataFrame, id
         The engine used to connect to the database.
     sites_in_catchment : gpd.GeoDataFrame
         Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
-    idf : bool
+    idf : bool = False
         Set to False for rainfall depth data, and True for rainfall intensity data.
 
     Returns
