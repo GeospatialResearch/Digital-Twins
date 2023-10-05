@@ -10,7 +10,9 @@ from src.digitaltwin import setup_environment, instructions_records_to_db, data_
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+def main(
+        selected_polygon_gdf: gpd.GeoDataFrame,
+        log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
     Connects to various data providers to fetch geospatial data for the selected polygon, i.e., the catchment area.
     Subsequently, it populates the 'geospatial_layers' table in the database and stores user log information for
