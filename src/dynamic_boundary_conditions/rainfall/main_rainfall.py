@@ -44,7 +44,7 @@ def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
-    Fetch and store rainfall data in the database, and generate the requested rainfall model input for BG-Flood, etc.
+    Generate the requested rainfall model input for BG-Flood.
 
     Parameters
     ----------
@@ -116,4 +116,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    main(sample_polygon, log_level=LogLevel.DEBUG)
+    main(
+        selected_polygon_gdf=sample_polygon,
+        log_level=LogLevel.DEBUG
+    )
