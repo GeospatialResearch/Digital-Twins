@@ -5,6 +5,7 @@ rainfall model input for BG-Flood, etc.
 """
 
 import pathlib
+from typing import Optional, Union
 
 import geopandas as gpd
 
@@ -42,14 +43,42 @@ def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
         rain_input_file.unlink()
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+def main(
+        selected_polygon_gdf: gpd.GeoDataFrame,
+        rcp: Optional[float],
+        time_period: Optional[str],
+        ari: float,
+        storm_length_mins: int,
+        time_to_peak_mins: Union[int, float],
+        increment_mins: int,
+        hyeto_method: HyetoMethod,
+        input_type: RainInputType,
+        log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
-    Generate the requested rainfall model input for BG-Flood.
+    Fetch and store rainfall data in the database, and generate the requested rainfall model input for BG-Flood.
 
     Parameters
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+    rcp : Optional[float]
+        Representative Concentration Pathway (RCP) value. Valid options are 2.6, 4.5, 6.0, 8.5, or None
+        for historical data.
+    time_period : Optional[str]
+        Future time period. Valid options are "2031-2050", "2081-2100", or None for historical data.
+    ari : float
+        Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+    storm_length_mins : int
+        Storm duration in minutes.
+    time_to_peak_mins : Union[int, float]
+        The time in minutes when rainfall is at its greatest (reaches maximum).
+    increment_mins : int
+        Time interval in minutes.
+    hyeto_method : HyetoMethod
+        Hyetograph method to be used.
+    input_type: RainInputType
+        The type of rainfall model input to be generated. Valid options are 'uniform' or 'varying',
+        representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
         The available logging levels and their corresponding numeric values are:
@@ -90,10 +119,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Store rainfall depth data of all the sites within the catchment area in the database
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=False)
 
-    # Requested scenario
-    rcp = 2.6
-    time_period = "2031-2050"
-    ari = 100
     # For a requested scenario, get all rainfall depth data for sites within the catchment area from the database
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
         engine, sites_in_catchment, rcp, time_period, ari, idf=False)
@@ -101,22 +126,29 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Get hyetograph data for all sites within the catchment area
     hyetograph_data = hyetograph.get_hyetograph_data(
         rain_depth_in_catchment=rain_depth_in_catchment,
-        storm_length_mins=2880,
-        time_to_peak_mins=1440,
-        increment_mins=10,
+        storm_length_mins=storm_length_mins,
+        time_to_peak_mins=time_to_peak_mins,
+        increment_mins=increment_mins,
         interp_method="cubic",
-        hyeto_method=HyetoMethod.ALT_BLOCK)
+        hyeto_method=hyeto_method)
 
     # Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area
     sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_area)
     # Generate the requested rainfall model input for BG-Flood
-    rainfall_model_input.generate_rain_model_input(
-        hyetograph_data, sites_coverage, bg_flood_dir, input_type=RainInputType.UNIFORM)
+    rainfall_model_input.generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_dir, input_type=input_type)
 
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     main(
         selected_polygon_gdf=sample_polygon,
+        rcp=2.6,
+        time_period="2031-2050",
+        ari=100,
+        storm_length_mins=2880,
+        time_to_peak_mins=1440,
+        increment_mins=10,
+        hyeto_method=HyetoMethod.ALT_BLOCK,
+        input_type=RainInputType.UNIFORM,
         log_level=LogLevel.DEBUG
     )
