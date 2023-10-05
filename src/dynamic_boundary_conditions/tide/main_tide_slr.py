@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Main tide and sea level rise script used to fetch tide data, read and store sea level rise data in the database,
-and generate the requested uniform boundary model input for BG-Flood etc.
+and generate the requested tide uniform boundary model input for BG-Flood etc.
 """
 
 import logging
@@ -46,6 +46,28 @@ def remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None:
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+    """
+    Generate the requested tide uniform boundary model input for BG-Flood.
+
+    Parameters
+    ----------
+    selected_polygon_gdf : gpd.GeoDataFrame
+        A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+    log_level : LogLevel = LogLevel.DEBUG
+        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+        The available logging levels and their corresponding numeric values are:
+        - LogLevel.CRITICAL (50)
+        - LogLevel.ERROR (40)
+        - LogLevel.WARNING (30)
+        - LogLevel.INFO (20)
+        - LogLevel.DEBUG (10)
+        - LogLevel.NOTSET (0)
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
     try:
         # Set up logging with the specified log level
         setup_logging(log_level)
@@ -97,4 +119,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    main(sample_polygon)
+    main(
+        selected_polygon_gdf=sample_polygon,
+        log_level=LogLevel.DEBUG
+    )

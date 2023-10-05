@@ -317,7 +317,7 @@ def fetch_tide_data_from_niwa(
     Parameters
     ----------
     tide_query_loc : gpd.GeoDataFrame
-        GeoPandas dataframe containing the query coordinates and their positions.
+        A GeoDataFrame containing the query coordinates and their positions.
     datum : DatumType = DatumType.LAT
         Datum used for fetching tide data from NIWA. Default value is LAT.
         Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.
@@ -649,7 +649,7 @@ def get_tide_data(
     Parameters
     ----------
     tide_query_loc : gpd.GeoDataFrame
-        GeoPandas dataframe containing the query coordinates and their positions.
+        A GeoDataFrame containing the query coordinates and their positions.
     time_to_peak_mins : Union[int, float]
         The time in minutes when the tide is at its greatest (reaches maximum).
     approach : ApproachType = ApproachType.KING_TIDE
