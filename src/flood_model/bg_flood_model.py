@@ -15,13 +15,13 @@ import geopandas as gpd
 import xarray as xr
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
+from newzealidar.utils import get_dem_by_geometry
 
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, execute_query
 from src.flood_model.serve_model import add_model_output_to_geoserver
-from newzealidar.utils import get_dem_by_geometry
 
 log = logging.getLogger(__name__)
 

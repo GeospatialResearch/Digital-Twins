@@ -11,6 +11,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 import networkx as nx
+from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 from src.dynamic_boundary_conditions.river import main_river, river_data_to_from_db
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
@@ -20,7 +21,6 @@ from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
     get_existing_network_metadata_from_db,
     get_existing_network
 )
-from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 log = logging.getLogger(__name__)
 

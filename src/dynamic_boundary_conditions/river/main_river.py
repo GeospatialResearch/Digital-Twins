@@ -10,6 +10,7 @@ from typing import Union, Optional
 import geopandas as gpd
 from shapely.geometry import LineString
 from sqlalchemy.engine import Engine
+from newzealidar.utils import get_dem_by_geometry
 
 from src import config
 from src.digitaltwin import setup_environment
@@ -22,7 +23,6 @@ from src.dynamic_boundary_conditions.river import (
     hydrograph,
     river_model_input
 )
-from newzealidar.utils import get_dem_by_geometry
 
 
 def get_hydro_dem_extent(engine: Engine, catchment_area: gpd.GeoDataFrame) -> LineString:

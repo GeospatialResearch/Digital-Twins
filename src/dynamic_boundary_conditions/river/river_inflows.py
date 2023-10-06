@@ -10,9 +10,9 @@ import numpy as np
 import xarray as xr
 from sqlalchemy.engine import Engine
 import pyproj
+from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 from src.dynamic_boundary_conditions.river import main_river, align_rec1_osm
-from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 
 def get_elevations_near_rec1_entry_point(
