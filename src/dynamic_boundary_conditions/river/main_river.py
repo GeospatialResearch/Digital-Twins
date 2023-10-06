@@ -5,6 +5,7 @@ and its associated data, and generate the requested river model input for BG-Flo
 """
 
 import pathlib
+from typing import Union, Optional
 
 import geopandas as gpd
 from shapely.geometry import LineString
@@ -107,14 +108,34 @@ def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
         river_input_file.unlink()
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+def main(
+        selected_polygon_gdf: gpd.GeoDataFrame,
+        flow_length_mins: int,
+        time_to_peak_mins: Union[int, float],
+        maf: bool = True,
+        ari: Optional[int] = None,
+        bound: BoundType = BoundType.MIDDLE,
+        log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
-    Generate the requested river model input for BG-Flood.
+    Read and store REC1 data in the database, fetch OSM waterways data, create a river network and its associated data,
+    and generate the requested river model input for BG-Flood.
 
     Parameters
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+    flow_length_mins : int
+        Duration of the river flow in minutes.
+    time_to_peak_mins : Union[int, float]
+        The time in minutes when flow is at its greatest (reaches maximum).
+    maf : bool = True
+        Set to True to obtain MAF-based scenario data or False to obtain ARI-based scenario data.
+    ari : Optional[int] = None
+        The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
+        Mandatory when 'maf' is set to False, and should be set to None when 'maf' is set to True.
+    bound : BoundType = BoundType.MIDDLE
+        Set the type of bound (estimate) for the REC1 river inflow scenario data.
+        Valid options include: 'BoundType.LOWER', 'BoundType.MIDDLE', or 'BoundType.UPPER'.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
         The available logging levels and their corresponding numeric values are:
@@ -153,11 +174,11 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     # Generate hydrograph data for the requested REC1 river inflow scenario
     hydrograph_data = hydrograph.get_hydrograph_data(
         rec1_inflows_data,
-        flow_length_mins=2880,
-        time_to_peak_mins=1440,
-        maf=True,
-        ari=None,
-        bound=BoundType.MIDDLE
+        flow_length_mins=flow_length_mins,
+        time_to_peak_mins=time_to_peak_mins,
+        maf=maf,
+        ari=ari,
+        bound=bound
     )
 
     # Generate river model inputs for BG-Flood
@@ -168,5 +189,10 @@ if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     main(
         selected_polygon_gdf=sample_polygon,
+        flow_length_mins=2880,
+        time_to_peak_mins=1440,
+        maf=True,
+        ari=None,
+        bound=BoundType.MIDDLE,
         log_level=LogLevel.DEBUG
     )
