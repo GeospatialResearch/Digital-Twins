@@ -3,8 +3,9 @@
 This script runs each module in the Digital Twin using a Sample Polygon.
 """
 
+from enum import Enum
 from types import ModuleType
-from typing import Dict
+from typing import Dict, Union
 
 import geopandas as gpd
 from newzealidar import datasets, process
@@ -12,12 +13,16 @@ from newzealidar import datasets, process
 from src.digitaltwin import run
 from src.digitaltwin.utils import LogLevel
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
+from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions.river import main_river
+from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.flood_model import bg_flood_model
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, modules_with_log_levels: Dict[ModuleType, LogLevel]) -> None:
+def main(
+        selected_polygon_gdf: gpd.GeoDataFrame,
+        modules_to_parameters: Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]) -> None:
     """
     Runs each module in the Digital Twin using the selected polygon, i.e., the catchment area.
 
@@ -25,7 +30,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, modules_with_log_levels: Dict[M
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
-    modules_with_log_levels: Dict[ModuleType, LogLevel]
+    modules_to_parameters : Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]
         The log level to set for each module's root logger.
         The available logging levels and their corresponding numeric values are:
         - LogLevel.CRITICAL (50)
@@ -40,24 +45,58 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, modules_with_log_levels: Dict[M
     None
         This function does not return any value.
     """
-    for module, log_level in modules_with_log_levels.items():
-        module.main(selected_polygon_gdf, log_level=log_level)
+    for module, parameters in modules_to_parameters.items():
+        module.main(selected_polygon_gdf, **parameters)
+
+
+DEFAULT_MODULES_TO_PARAMETERS = {
+    run: {
+        "log_level": LogLevel.DEBUG
+    },
+    datasets: {
+        "log_level": LogLevel.DEBUG  # only need to run it one time to initiate db.dataset table
+    },
+    process: {
+        "log_level": LogLevel.DEBUG
+    },
+    main_rainfall: {
+        "rcp": 2.6,
+        "time_period": "2031-2050",
+        "ari": 100,
+        "storm_length_mins": 2880,
+        "time_to_peak_mins": 1440,
+        "increment_mins": 10,
+        "hyeto_method": HyetoMethod.ALT_BLOCK,
+        "input_type": RainInputType.UNIFORM,
+        "log_level": LogLevel.DEBUG
+    },
+    main_tide_slr: {
+        "tide_length_mins": 2880,
+        "time_to_peak_mins": 1440,
+        "interval_mins": 10,
+        "proj_year": 2030,
+        "confidence_level": "low",
+        "ssp_scenario": "SSP1-2.6",
+        "add_vlm": False,
+        "percentile": 50,
+        "log_level": LogLevel.DEBUG
+    },
+    main_river: {
+        "flow_length_mins": 2880,
+        "time_to_peak_mins": 1440,
+        "maf": True,
+        "ari": None,
+        "bound": BoundType.MIDDLE,
+        "log_level": LogLevel.DEBUG
+    },
+    bg_flood_model: {
+        "output_timestep": 100,
+        "end_time": 900,
+        "log_level": LogLevel.DEBUG
+    }
+}
 
 
 if __name__ == '__main__':
-    # Define a dictionary mapping each module to its log level
-    module_to_log_level = {
-        run: LogLevel.DEBUG,
-        # datasets: LogLevel.DEBUG,  # only need to run it one time to initiate db.dataset table
-        process: LogLevel.DEBUG,
-        main_rainfall: LogLevel.DEBUG,
-        main_tide_slr: LogLevel.DEBUG,
-        main_river: LogLevel.DEBUG,
-        bg_flood_model: LogLevel.DEBUG,
-    }
-
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    main(
-        selected_polygon_gdf=sample_polygon,
-        modules_with_log_levels=module_to_log_level
-    )
+    main(sample_polygon, DEFAULT_MODULES_TO_PARAMETERS)
