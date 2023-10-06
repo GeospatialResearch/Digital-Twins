@@ -424,7 +424,11 @@ def run_bg_flood_model(
     os.chdir(cwd)
 
 
-def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.DEBUG) -> None:
+def main(
+        selected_polygon_gdf: gpd.GeoDataFrame,
+        output_timestep: Union[int, float] = 0,
+        end_time: Union[int, float] = 0,
+        log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
     Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer
     for visualization.
@@ -433,6 +437,10 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+    output_timestep : Union[int, float] = 0
+        Time step between model outputs in seconds. Default value is 0.0 (no output generated).
+    end_time : Union[int, float] = 0
+        Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
         The available logging levels and their corresponding numeric values are:
@@ -462,8 +470,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame, log_level: LogLevel = LogLevel.
         engine=engine,
         catchment_area=catchment_area,
         model_output_path=model_output_path,
-        output_timestep=100,  # Saving the outputs after each `outputtimestep` seconds
-        end_time=900  # Saving the outputs till `endtime` number of seconds
+        output_timestep=output_timestep,  # Saving the outputs after each `outputtimestep` seconds
+        end_time=end_time  # Saving the outputs till `endtime` number of seconds
     )
 
     # Store metadata related to the BG Flood model output in the database
@@ -478,5 +486,7 @@ if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     main(
         selected_polygon_gdf=sample_polygon,
+        output_timestep=100,
+        end_time=900,
         log_level=LogLevel.DEBUG
     )
