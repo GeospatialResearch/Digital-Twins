@@ -24,14 +24,16 @@ def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         modules_to_parameters: Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]) -> None:
     """
-    Runs each module in the Digital Twin using the selected polygon, i.e., the catchment area.
+    Runs each module in the Digital Twin using the selected polygon and the defined parameters for each module's
+    main function.
 
     Parameters
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
     modules_to_parameters : Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]
-        The log level to set for each module's root logger.
+        A dictionary that associates each module with the parameters necessary for its main function, including the
+        option to set the log level for each module's root logger.
         The available logging levels and their corresponding numeric values are:
         - LogLevel.CRITICAL (50)
         - LogLevel.ERROR (40)
@@ -45,7 +47,9 @@ def main(
     None
         This function does not return any value.
     """
+    # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
+        # Call the main function of each module with the selected polygon and specified parameters
         module.main(selected_polygon_gdf, **parameters)
 
 
