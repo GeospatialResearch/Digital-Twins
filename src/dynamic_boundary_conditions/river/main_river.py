@@ -27,7 +27,7 @@ from src.dynamic_boundary_conditions.river import (
 )
 
 
-def get_hydro_dem_extent(
+def retrieve_hydro_dem_info(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame) -> Tuple[xr.Dataset, LineString, Union[int, float]]:
     """
@@ -75,7 +75,7 @@ def get_hydro_dem_boundary_lines(engine: Engine, catchment_area: gpd.GeoDataFram
         A GeoDataFrame containing the boundary lines of the Hydrologically Conditioned DEM.
     """
     # Obtain the spatial extent of the hydro DEM
-    _, hydro_dem_extent, _ = get_hydro_dem_extent(engine, catchment_area)
+    _, hydro_dem_extent, _ = retrieve_hydro_dem_info(engine, catchment_area)
     # Create a list of LineString segments from the exterior boundary coordinates
     dem_boundary_lines_list = [
         LineString([hydro_dem_extent.coords[i], hydro_dem_extent.coords[i + 1]])

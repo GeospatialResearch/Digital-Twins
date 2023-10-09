@@ -300,7 +300,7 @@ def add_absent_edges_to_network(
     # Check if there are any absent edges to add
     if not absent_edges_to_add.empty:
         # Obtain the hydro DEM and its spatial extent
-        hydro_dem, hydro_dem_extent, _ = main_river.get_hydro_dem_extent(engine, catchment_area)
+        hydro_dem, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
         # Get the boundary point of each absent edge that intersects with the hydro DEM extent
         absent_edges_to_add["boundary_point"] = absent_edges_to_add["geometry"].intersection(hydro_dem_extent)
 

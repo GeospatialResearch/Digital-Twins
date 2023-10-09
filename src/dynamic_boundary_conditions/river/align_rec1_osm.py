@@ -38,7 +38,7 @@ def get_rec1_network_data_on_bbox(
         along with the corresponding intersection points on the boundary.
     """
     # Obtain the spatial extent of the hydro DEM
-    _, hydro_dem_extent, _ = main_river.get_hydro_dem_extent(engine, catchment_area)
+    _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
     # Select features that intersect with the hydro DEM extent
     rec1_on_bbox = rec1_network_data[rec1_network_data.intersects(hydro_dem_extent)].reset_index(drop=True)
     # Determine the points of intersection along the boundary
@@ -303,7 +303,7 @@ def get_osm_waterways_on_bbox(
     # Fetch OSM waterway data for the catchment area
     osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
     # Obtain the spatial extent of the hydro DEM
-    _, hydro_dem_extent, _ = main_river.get_hydro_dem_extent(engine, catchment_area)
+    _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
     # Select features that intersect with the hydro DEM extent
     osm_waterways_on_bbox = osm_waterways_data[osm_waterways_data.intersects(hydro_dem_extent)].reset_index(drop=True)
     # Determine the points of intersection along the boundary
