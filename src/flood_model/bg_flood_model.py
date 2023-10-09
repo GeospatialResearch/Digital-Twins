@@ -397,10 +397,9 @@ def run_bg_flood_model(
     bg_flood_dir = get_valid_bg_flood_dir()
     # Get the file path of the Hydro DEM for the catchment area
     hydro_dem_path_str, _, _, dem_resolution = get_dem_by_geometry(engine, catchment_area)
+    hydro_dem_path = pathlib.Path(hydro_dem_path_str)
     # Use dem_resolution if input resolution is not provided
     resolution = dem_resolution if resolution is None else resolution
-
-    hydro_dem_path = pathlib.Path(hydro_dem_path_str)
 
     # Prepare inputs for the BG-Flood Model
     prepare_bg_flood_model_inputs(
@@ -428,6 +427,10 @@ def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         output_timestep: Union[int, float] = 0,
         end_time: Union[int, float] = 0,
+        resolution: Optional[Union[int, float]] = None,
+        mask: Union[int, float] = 9999,
+        gpu_device: int = 0,
+        small_nc: int = 0,
         log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
     Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer
@@ -441,6 +444,20 @@ def main(
         Time step between model outputs in seconds. Default value is 0.0 (no output generated).
     end_time : Union[int, float] = 0
         Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
+    resolution : Optional[Union[int, float]] = None
+        The grid resolution in meters for metric grids, representing the size of each grid cell.
+        If not provided (default is None), the resolution of the Hydrologically conditioned DEM will be used as
+        the grid resolution.
+    mask : Union[int, float] = 9999
+        The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
+        the specified value. Default value is 9999.0 (no areas are masked).
+    gpu_device : int = 0
+        Specify the GPU device to be used. Default value is 0 (the first available GPU).
+        Set the value to -1 to use the CPU. For other GPUs, use values 2 and above.
+    small_nc : int = 0
+        Specify whether the output should be saved as short integers to reduce the size of the output file.
+        Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
+        Default value is 0.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
         The available logging levels and their corresponding numeric values are:
@@ -471,7 +488,11 @@ def main(
         catchment_area=catchment_area,
         model_output_path=model_output_path,
         output_timestep=output_timestep,  # Saving the outputs after each `outputtimestep` seconds
-        end_time=end_time  # Saving the outputs till `endtime` number of seconds
+        end_time=end_time,  # Saving the outputs till `endtime` number of seconds
+        resolution=resolution,
+        mask=mask,
+        gpu_device=gpu_device,
+        small_nc=small_nc
     )
 
     # Store metadata related to the BG Flood model output in the database
@@ -488,5 +509,9 @@ if __name__ == "__main__":
         selected_polygon_gdf=sample_polygon,
         output_timestep=100,
         end_time=900,
+        resolution=None,
+        mask=9999,
+        gpu_device=0,
+        small_nc=0,
         log_level=LogLevel.DEBUG
     )
