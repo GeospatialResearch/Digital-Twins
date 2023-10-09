@@ -5,12 +5,14 @@ and its associated data, and generate the requested river model input for BG-Flo
 """
 
 import pathlib
-from typing import Union, Optional
+from typing import Union, Optional, Tuple
 
 import geopandas as gpd
-from shapely.geometry import LineString
+import pyproj
+import xarray as xr
+from shapely.geometry import LineString, box
 from sqlalchemy.engine import Engine
-from newzealidar.utils import get_dem_by_geometry
+from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 from src import config
 from src.digitaltwin import setup_environment
@@ -25,9 +27,12 @@ from src.dynamic_boundary_conditions.river import (
 )
 
 
-def get_hydro_dem_extent(engine: Engine, catchment_area: gpd.GeoDataFrame) -> LineString:
+def get_hydro_dem_extent(
+        engine: Engine,
+        catchment_area: gpd.GeoDataFrame) -> Tuple[xr.Dataset, LineString, Union[int, float]]:
     """
-    Get the extent of the Hydrologically Conditioned DEM.
+    Retrieves the Hydrologically Conditioned DEM (Hydro DEM) data, along with its spatial extent and resolution,
+    for the specified catchment area.
 
     Parameters
     ----------
@@ -38,18 +43,19 @@ def get_hydro_dem_extent(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Li
 
     Returns
     -------
-    LineString
-        A LineString representing the extent of the Hydrologically Conditioned DEM.
+    Tuple[xr.Dataset, LineString, Union[int, float]]
+        A tuple containing the Hydro DEM data as a xarray Dataset, the spatial extent of the Hydro DEM as a LineString,
+        and the resolution of the Hydro DEM as either an integer or a float.
     """
-    # Retrieve DEM information by geometry
-    _, _, raw_extent_path, _ = get_dem_by_geometry(engine, catchment_area)
-    # Read the raw extent from the file
-    raw_extent = gpd.read_file(raw_extent_path)
-    # Create a GeoDataFrame containing the envelope of the raw extent
-    hydro_dem_area = gpd.GeoDataFrame(geometry=[raw_extent.unary_union.envelope], crs=raw_extent.crs)
+    # Retrieve the Hydro DEM data and resolution for the specified catchment area
+    hydro_dem, res_no = get_dem_band_and_resolution_by_geometry(engine, catchment_area)
+    # Extract the Coordinate Reference System (CRS) information from the 'hydro_dem' dataset
+    hydro_dem_crs = pyproj.CRS(hydro_dem.spatial_ref.crs_wkt)
+    # Get the bounding box (spatial extent) of the Hydro DEM and convert it to a GeoDataFrame
+    hydro_dem_area = gpd.GeoDataFrame(geometry=[box(*hydro_dem.rio.bounds())], crs=hydro_dem_crs)
     # Get the exterior LineString from the GeoDataFrame
     hydro_dem_extent = hydro_dem_area.exterior.iloc[0]
-    return hydro_dem_extent
+    return hydro_dem, hydro_dem_extent, res_no
 
 
 def get_hydro_dem_boundary_lines(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -69,7 +75,7 @@ def get_hydro_dem_boundary_lines(engine: Engine, catchment_area: gpd.GeoDataFram
         A GeoDataFrame containing the boundary lines of the Hydrologically Conditioned DEM.
     """
     # Obtain the spatial extent of the hydro DEM
-    hydro_dem_extent = get_hydro_dem_extent(engine, catchment_area)
+    _, hydro_dem_extent, _ = get_hydro_dem_extent(engine, catchment_area)
     # Create a list of LineString segments from the exterior boundary coordinates
     dem_boundary_lines_list = [
         LineString([hydro_dem_extent.coords[i], hydro_dem_extent.coords[i + 1]])
