@@ -11,7 +11,6 @@ import geopandas as gpd
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 import networkx as nx
-from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 from src.dynamic_boundary_conditions.river import main_river, river_data_to_from_db
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
