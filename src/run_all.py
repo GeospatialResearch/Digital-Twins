@@ -57,9 +57,9 @@ DEFAULT_MODULES_TO_PARAMETERS = {
     run: {
         "log_level": LogLevel.DEBUG
     },
-    datasets: {
-        "log_level": LogLevel.DEBUG  # only need to run it one time to initiate db.dataset table
-    },
+    # datasets: {
+    #     "log_level": LogLevel.DEBUG  # only need to run it one time to initiate db.dataset table
+    # },
     process: {
         "log_level": LogLevel.DEBUG
     },
