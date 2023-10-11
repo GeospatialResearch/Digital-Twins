@@ -155,13 +155,15 @@ def get_slr_data_from_db(engine: Engine, tide_data: gpd.GeoDataFrame) -> gpd.Geo
         A GeoDataFrame containing the closest sea level rise data for all locations in the tide data.
     """
     # Select unique query locations from the tide data
-    slr_query_loc = tide_data[['position', 'geometry']].drop_duplicates()
+    tide_data_loc = tide_data[['position', 'geometry']].drop_duplicates()
     # Initialize an empty GeoDataFrame to store the closest sea level rise data for all locations
     slr_data = gpd.GeoDataFrame()
     # Iterate over each query location
-    for _, row in slr_query_loc.iterrows():
+    for _, row in tide_data_loc.iterrows():
         # Retrieve the closest sea level rise data from the database for the current query location
         query_loc_data = get_closest_slr_data(engine, row)
+        # Add a column to the retrieved data to store the geometry of the tide data location
+        query_loc_data["tide_data_loc"] = row["geometry"]
         # Concatenate the closest sea level rise data for the query location with the overall sea level rise data
         slr_data = pd.concat([slr_data, query_loc_data])
     # Reset the index of the closest sea level rise data
