@@ -228,15 +228,15 @@ def add_slr_to_tide(
         raise ValueError(f"Invalid value '{proj_year}' for proj_year. Must be one of {valid_proj_year}.")
 
     # Select only the necessary columns for further processing
-    tide_df = tide_df[['year', 'seconds', 'tide_metres', 'position']]
-    # Group the tide data by year and position
-    grouped = tide_df.groupby(['year', 'position'])
+    tide_df = tide_df[['year', 'seconds', 'tide_metres', 'position', 'geometry']]
+    # Group the tide data by year, position, and geometry
+    grouped = tide_df.groupby(['year', 'position', tide_df['geometry'].to_wkt()])
     # Create an empty DataFrame to store the tide data with added sea level rise data
     tide_slr_data = gpd.GeoDataFrame()
     # Iterate over each group and add sea level rise to the tide data
     for group_name, group_data in grouped:
         # Extract the current year and position from the group_name
-        current_year, position = group_name
+        current_year, position, _ = group_name
         # Create a filter to select rows in the slr_interp_scenario DataFrame with matching current year and position
         current_filt = (slr_interp_scenario['year'] == current_year) & (slr_interp_scenario['position'] == position)
         # Create a filter to select rows in the slr_interp_scenario DataFrame with matching projection year and position
