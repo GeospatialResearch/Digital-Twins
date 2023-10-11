@@ -611,8 +611,6 @@ def add_time_information(
                       f"'total_days': {total_days} (equivalent to {tide_length_mins} minutes)."
             raise ValueError(message)
 
-    # Get the time values in minutes to add to the tide data
-    time_mins = get_time_mins_to_add(tide_data, tide_length_mins, time_to_peak_mins, interval_mins)
     # Group the tide data by position and geometry
     grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
     # Create a new GeoDataFrame to store tide data with time information
@@ -621,6 +619,8 @@ def add_time_information(
     for _, group_data in grouped:
         # Sort the group data by datetime
         group_data = group_data.sort_values(by='datetime_nz')
+        # Get the time values in minutes to add to the tide data
+        time_mins = get_time_mins_to_add(group_data, tide_length_mins, time_to_peak_mins, interval_mins)
         # Add the time information columns
         group_data['mins'] = time_mins
         group_data['hours'] = group_data['mins'] / 60
