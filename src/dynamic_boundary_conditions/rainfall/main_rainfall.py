@@ -75,7 +75,7 @@ def main(
     increment_mins : int
         Time interval in minutes.
     hyeto_method : HyetoMethod
-        Hyetograph method to be used.
+        Hyetograph method to be used. Valid options are HyetoMethod.ALT_BLOCK or HyetoMethod.CHICAGO.
     input_type: RainInputType
         The type of rainfall model input to be generated. Valid options are 'uniform' or 'varying',
         representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).

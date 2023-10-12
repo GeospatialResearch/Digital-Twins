@@ -114,13 +114,16 @@ def main(
     proj_year : int
         The projection year for which the combined tide and sea level rise data should be generated.
     confidence_level : str
-        The desired confidence level for the sea level rise data.
+        The desired confidence level for the sea level rise data. Valid values are 'low' or 'medium'.
     ssp_scenario : str
         The desired Shared Socioeconomic Pathways (SSP) scenario for the sea level rise data.
+        Valid options for both low and medium confidence are: 'SSP1-2.6', 'SSP2-4.5', or 'SSP5-8.5'.
+        Additional options for medium confidence are: 'SSP1-1.9' or 'SSP3-7.0'.
     add_vlm : bool
         Indicates whether Vertical Land Motion (VLM) should be included in the sea level rise data.
+        Set to True if VLM should be included, False otherwise.
     percentile : int
-        The desired percentile for the sea level rise data.
+        The desired percentile for the sea level rise data. Valid values are 17, 50, or 83.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
         The available logging levels and their corresponding numeric values are:
