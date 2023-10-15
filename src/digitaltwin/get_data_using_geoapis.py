@@ -33,12 +33,12 @@ def clean_fetched_vector_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
     Parameters
     ----------
     fetched_data : gpd.GeoDataFrame
-        The fetched vector data as a GeoDataFrame.
+        A GeoDataFrame containing the fetched vector data.
 
     Returns
     -------
     gpd.GeoDataFrame
-        The cleaned vector data as a GeoDataFrame.
+        A GeoDataFrame containing the cleaned vector data.
     """
     # Ensure consistent column naming convention by converting all column names to lowercase
     fetched_data.columns = fetched_data.columns.str.lower()
@@ -62,17 +62,17 @@ def fetch_vector_data_using_geoapis(
         The data provider to use. Supported values: "StatsNZ", "LINZ", "LRIS", "MFE".
     layer_id : int
         The ID of the layer to fetch.
-    crs : int, optional
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
-    bounding_polygon : gpd.GeoDataFrame, optional
+    bounding_polygon : Optional[gpd.GeoDataFrame] = None
         Bounding polygon for data fetching. Default is all of New Zealand.
 
     Returns
     --------
     gpd.GeoDataFrame
-        The fetched vector data as a GeoDataFrame.
+        A GeoDataFrame containing the fetched vector data.
 
     Raises
     -------

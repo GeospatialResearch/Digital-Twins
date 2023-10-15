@@ -6,11 +6,11 @@ This script processes REC1 data to construct a river network for the defined cat
 import logging
 from typing import Dict, Tuple
 
-import numpy as np
 import geopandas as gpd
+import networkx as nx
+import numpy as np
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
-import networkx as nx
 
 from src.dynamic_boundary_conditions.river import main_river, river_data_to_from_db
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
@@ -20,8 +20,6 @@ from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
     get_existing_network_metadata_from_db,
     get_existing_network
 )
-from src.digitaltwin.tables import check_table_exists, create_table, RiverNetworkExclusions
-from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 log = logging.getLogger(__name__)
 
@@ -106,19 +104,19 @@ def add_nodes_intersection_type(
     # Extract the catchment polygon from the GeoDataFrame
     catchment_polygon = catchment_area["geometry"][0]
     # Calculate if the first and last coordinates/nodes intersect with the catchment_area
-    rec1_data_with_nodes['first_intersects'] = rec1_data_with_nodes['first_coord'].intersects(catchment_polygon)
-    rec1_data_with_nodes['last_intersects'] = rec1_data_with_nodes['last_coord'].intersects(catchment_polygon)
-    # Define conditions and corresponding values for 'intersection_type' column
+    rec1_data_with_nodes["first_intersects"] = rec1_data_with_nodes["first_coord"].intersects(catchment_polygon)
+    rec1_data_with_nodes["last_intersects"] = rec1_data_with_nodes["last_coord"].intersects(catchment_polygon)
+    # Define conditions and corresponding values for 'node_intersect_aoi' column
     conditions = [
-        (rec1_data_with_nodes['first_intersects'] & rec1_data_with_nodes['last_intersects']),
-        (rec1_data_with_nodes['first_intersects']),
-        (rec1_data_with_nodes['last_intersects'])
+        (rec1_data_with_nodes["first_intersects"] & rec1_data_with_nodes["last_intersects"]),
+        (rec1_data_with_nodes["first_intersects"]),
+        (rec1_data_with_nodes["last_intersects"])
     ]
-    values = ['both_nodes', 'first_node', 'last_node']
-    # Create 'intersection_type' column based on conditions
-    rec1_data_with_nodes['intersect_catchment'] = np.select(conditions, values, default=None)
+    values = ["both_nodes", "first_node", "last_node"]
+    # Create 'node_intersect_aoi' column based on conditions
+    rec1_data_with_nodes["node_intersect_aoi"] = np.select(conditions, values, default=None)
     # Remove unnecessary column
-    rec1_data_with_nodes = rec1_data_with_nodes.drop(columns=['first_intersects', 'last_intersects'])
+    rec1_data_with_nodes = rec1_data_with_nodes.drop(columns=["first_intersects", "last_intersects"])
     return rec1_data_with_nodes
 
 
@@ -143,12 +141,12 @@ def prepare_network_data_for_construction(
     """
     # Add columns for the first and last coordinates/nodes of each LineString in the REC1 data
     rec1_data_with_nodes = add_nodes_to_rec1(rec1_data_with_sdc)
-    # Calculate and add an 'intersection_type' column for the nodes
+    # Calculate and add a 'node_intersect_aoi' column for the nodes
     prepared_network_data = add_nodes_intersection_type(catchment_area, rec1_data_with_nodes)
     # Group the data by sea-draining catchments (identified by 'catch_id')
     grouped_data = prepared_network_data.groupby("catch_id")
     # Determine the river segment in each sea-draining catchment with the largest area
-    prepared_network_data['is_largest_area'] = grouped_data['areakm2'].transform(lambda x: x == x.max())
+    prepared_network_data["is_largest_area"] = grouped_data["areakm2"].transform(lambda x: x == x.max())
     return prepared_network_data
 
 
@@ -255,23 +253,19 @@ def identify_absent_edges_to_add(rec1_network: nx.Graph, prepared_network_data: 
     gpd.GeoDataFrame
         A GeoDataFrame containing edges that are absent from the REC1 river network and require addition.
     """
-    # Find the maximum value of "first_node" in the prepared network data
-    max_first_node = prepared_network_data["first_node"].max()
-    # Filter the prepared network data to include only edges where "last_node" is greater than the maximum "first_node"
-    filtered_data = prepared_network_data[prepared_network_data["last_node"] > max_first_node]
-    # Check for existing edges in the river network using the filtered data
-    edge_exists = filtered_data.apply(
+    # Check for existing edges in the river network
+    edge_exists = prepared_network_data.apply(
         lambda row:
         rec1_network.has_edge(row["first_node"], row["last_node"]) or
         rec1_network.has_edge(row["last_node"], row["first_node"]),
         axis=1
     )
     # Select edges that are absent in the REC1 river network
-    absent_edges = filtered_data[~edge_exists].reset_index(drop=True)
-    # Filter edges that have both the largest catchment area and intersect the catchment_area
+    absent_edges = prepared_network_data[~edge_exists].reset_index(drop=True)
+    # Filter edges that have both the largest catchment area and both nodes intersect the catchment_area
     absent_edges_to_add = absent_edges[absent_edges["is_largest_area"]]
-    absent_edges_to_add = absent_edges_to_add[~absent_edges_to_add['intersect_catchment'].isna()]
-    return absent_edges_to_add
+    absent_edges_to_add = absent_edges_to_add[~absent_edges_to_add["node_intersect_aoi"].isna()]
+    return absent_edges_to_add.reset_index(drop=True)
 
 
 def add_absent_edges_to_network(
@@ -287,7 +281,7 @@ def add_absent_edges_to_network(
     ----------
     engine : Engine
         The engine used to connect to the database.
-    catchment_area : GeoDataFrame
+    catchment_area : gpd.GeoDataFrame,
         A GeoDataFrame representing the catchment area.
     rec1_network : nx.Graph
         The REC1 river network, a directed graph, to which absent edges will be added.
@@ -302,31 +296,30 @@ def add_absent_edges_to_network(
     # Identify edges that are absent from the REC1 river network and require addition
     absent_edges_to_add = identify_absent_edges_to_add(rec1_network, prepared_network_data)
 
-    # Determine the direction of absent edges
+    # Check if there are any absent edges to add
     if not absent_edges_to_add.empty:
         # Obtain the hydro DEM and its spatial extent
-        hydro_dem, _ = get_dem_band_and_resolution_by_geometry(engine, catchment_area)
-        hydro_dem_extent = main_river.get_extent_of_hydro_dem(engine, catchment_area)
+        hydro_dem, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+        # Get the boundary point of each absent edge that intersects with the hydro DEM extent
+        absent_edges_to_add["boundary_point"] = absent_edges_to_add["geometry"].intersection(hydro_dem_extent)
 
-        # Iterate through the selected intersection edges
+        # Iterate through each absent edge
         for _, absent_edge in absent_edges_to_add.iterrows():
             # Get how the nodes of each edge intersect with the catchment area
-            intersect_catchment = absent_edge['intersect_catchment']
+            node_intersect_aoi = absent_edge["node_intersect_aoi"]
 
-            if intersect_catchment == "both_nodes":
-                # When both nodes of the edge intersect the catchment area
-                # Use the coordinates of both nodes as the edge's start and end points
-                first_coord, last_coord = absent_edge["first_coord"], absent_edge["last_coord"]
-            elif intersect_catchment == "first_node":
-                # When only the first node of the edge intersects with the catchment area
-                # Use the boundary point on the Hydro DEM extent as the edge's end point
-                boundary_point = hydro_dem_extent.intersection(absent_edge['geometry'])
-                first_coord, last_coord = absent_edge["first_coord"], boundary_point
+            if node_intersect_aoi == "first_node":
+                # When only the first node of the edge intersects with the catchment area,
+                # use the boundary point on the Hydro DEM extent as the edge's end point
+                first_coord, last_coord = absent_edge["first_coord"], absent_edge["boundary_point"]
+            elif node_intersect_aoi == "last_node":
+                # When only the last node of the edge intersects with the catchment area,
+                # use the boundary point on the Hydro DEM extent as the edge's start point
+                first_coord, last_coord = absent_edge["boundary_point"], absent_edge["last_coord"]
             else:
-                # When only the last node of the edge intersects with the catchment area
-                # Use the boundary point on the Hydro DEM extent as the edge's start point
-                boundary_point = hydro_dem_extent.intersection(absent_edge['geometry'])
-                first_coord, last_coord = boundary_point, absent_edge["last_coord"]
+                # When both nodes of the edge intersect the catchment area,
+                # use the coordinates of both nodes as the edge's start and end points
+                first_coord, last_coord = absent_edge["first_coord"], absent_edge["last_coord"]
 
             # Retrieve elevation values for the edge's start and end points from the hydro DEM
             first_coord_z_val = hydro_dem.sel(x=first_coord.x, y=first_coord.y, method="nearest")['z'].values.item()
@@ -403,7 +396,7 @@ def add_edge_directions_to_network_data(
     rec1_network_exclusions = network_data[network_data["node_direction"].isna()].reset_index(drop=True)
     # Add excluded REC1 geometries in the River Network to the relevant database table
     add_network_exclusions_to_db(engine, rec1_network_id, rec1_network_exclusions,
-                                 exclusion_cause="unable to determine edge direction")
+                                 exclusion_cause="undetermined edge direction")
     # Return the updated network data with added edge directions
     return rec1_network_data
 
@@ -546,109 +539,3 @@ def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame) -> 
         # If existing REC1 river network metadata is found, retrieve the network and its associated data
         rec1_network, rec1_network_data = get_existing_network(engine, existing_network_meta)
     return rec1_network, rec1_network_data
-
-
-def get_rec1_boundary_points_on_bbox(
-        catchment_area: gpd.GeoDataFrame,
-        rec1_network_data: gpd.GeoDataFrame,
-        rec1_network: nx.Graph) -> gpd.GeoDataFrame:
-    """
-    Get the boundary points where the REC1 rivers intersect with the catchment area boundary.
-
-    Parameters
-    -----------
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
-    rec1_network_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 network data.
-    rec1_network : nx.Graph
-        The REC1 river network, a directed graph.
-
-    Returns
-    --------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the boundary points where the REC1 rivers intersect with the catchment area boundary.
-    """
-    # Get the exterior boundary of the catchment area
-    catchment_boundary = catchment_area.exterior.iloc[0]
-    # Filter REC1 network data to obtain only the features intersecting with the catchment area boundary
-    rec1_on_bbox = rec1_network_data[rec1_network_data.intersects(catchment_boundary)].reset_index(drop=True)
-    # Initialize an empty list to store REC1 boundary points
-    rec1_bound_points = []
-    # Iterate over each row in the 'rec1_on_bbox' GeoDataFrame
-    for _, row in rec1_on_bbox.iterrows():
-        # Get the geometry for the current row
-        geometry = row["geometry"]
-        # Find the intersection between the catchment area boundary and REC1 geometry
-        boundary_point = catchment_boundary.intersection(geometry)
-        # Append the boundary point to the list
-        rec1_bound_points.append(boundary_point)
-    # Create a new column to store REC1 boundary points
-    rec1_on_bbox["rec1_boundary_point"] = gpd.GeoSeries(rec1_bound_points, crs=rec1_on_bbox.crs)
-    # Set the geometry of the GeoDataFrame to REC1 boundary point centroids
-    rec1_bound_points_on_bbox = rec1_on_bbox.set_geometry("rec1_boundary_point")
-    # Rename the 'geometry' column to 'rec1_river_line' for better clarity
-    rec1_bound_points_on_bbox.rename(columns={'geometry': 'rec1_river_line'}, inplace=True)
-    # rec1_bound_points_on_bbox = rec1_bound_points_on_bbox.drop(index=6) # what to do for this scenario (removed id 230484)??
-
-    node_dict = {}
-    for _, row in rec1_bound_points_on_bbox.iterrows():
-        if row['node_direction'] == 'to':
-            node_dict[row['objectid']] = row['first_node']
-        else:
-            node_dict[row['objectid']] = row['last_node']
-
-    nodes_to_remove = []
-    for object_id, node_number in node_dict.items():
-        descendants = nx.descendants(rec1_network, node_number)
-        downstream_nodes = [descendant for descendant in descendants if descendant in node_dict.values()]
-        if downstream_nodes:
-            nodes_to_remove.append(object_id)
-
-    for object_id in nodes_to_remove:
-        node_dict.pop(object_id)
-
-    # Return the filtered GeoDataFrame based on remaining node_dict keys
-    rec1_bound_points_on_bbox = rec1_bound_points_on_bbox[rec1_bound_points_on_bbox['objectid'].isin(node_dict.keys())]
-
-    return rec1_bound_points_on_bbox
-
-
-def get_rec1_network_data_on_bbox(
-        catchment_area: gpd.GeoDataFrame,
-        rec1_network_data: gpd.GeoDataFrame,
-        rec1_network: nx.Graph) -> gpd.GeoDataFrame:
-    """
-    Get the REC1 network data that intersects with the catchment area boundary and identifies the corresponding points
-    of intersection on the boundary.
-
-    Parameters
-    -----------
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
-    rec1_network_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 network data.
-    rec1_network : nx.Graph
-        The REC1 river network, a directed graph.
-
-    Returns
-    --------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 network data that intersects with the catchment area boundary,
-        along with the corresponding points of intersection on the boundary.
-    """
-    # Get the line segments representing the catchment area boundary
-    catchment_boundary_lines = main_river.get_catchment_boundary_lines(catchment_area)
-    # Get the boundary points where the REC1 rivers intersect with the catchment area boundary
-    rec1_bound_points = get_rec1_boundary_points_on_bbox(catchment_area, rec1_network_data, rec1_network)
-    # Perform a spatial join between the REC1 boundary points and catchment boundary lines
-    rec1_network_data_on_bbox = gpd.sjoin(
-        rec1_bound_points, catchment_boundary_lines, how='left', predicate='intersects')
-    # Remove unnecessary column
-    rec1_network_data_on_bbox.drop(columns=['index_right'], inplace=True)
-    # Merge the catchment boundary lines with the REC1 network data based on boundary line number
-    rec1_network_data_on_bbox = rec1_network_data_on_bbox.merge(
-        catchment_boundary_lines, on='boundary_line_no', how='left').sort_index()
-    # Rename the geometry column to 'boundary_line' for better clarity
-    rec1_network_data_on_bbox.rename(columns={'geometry': 'boundary_line'}, inplace=True)
-    return rec1_network_data_on_bbox

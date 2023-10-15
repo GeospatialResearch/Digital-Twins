@@ -113,13 +113,13 @@ def get_vector_data_id_not_in_db(
     engine : Engine
         The engine used to connect to the database.
     vector_data : gpd.GeoDataFrame
-        The GeoDataFrame containing the fetched vector data.
+        A GeoDataFrame containing the fetched vector data.
     table_name : str
         The name of the table in the database.
     unique_column_name : str
         The name of the unique column in the table.
     area_of_interest : gpd.GeoDataFrame
-        The GeoDataFrame representing the area of interest.
+        A GeoDataFrame representing the area of interest.
 
     Returns
     -------
@@ -153,9 +153,9 @@ def nz_geospatial_layers_data_to_db(
     ----------
     engine : Engine
         The engine used to connect to the database.
-    crs : int, optional
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -194,7 +194,7 @@ def get_non_intersection_area_from_db(
     engine : Engine
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
-        The GeoDataFrame representing the catchment area.
+        A GeoDataFrame representing the catchment area.
     table_name : str
         The name of the table in the database.
 
@@ -258,10 +258,10 @@ def process_new_non_nz_geospatial_layers(
     table_name : str
         The database table name of the geospatial layer.
     area_of_interest : gpd.GeoDataFrame
-        The GeoDataFrame representing the area of interest.
-    crs : int, optional
+        A GeoDataFrame representing the area of interest.
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -305,10 +305,10 @@ def process_existing_non_nz_geospatial_layers(
     unique_column_name : str
         The unique column name used for record identification in the database table.
     area_of_interest : gpd.GeoDataFrame
-        The GeoDataFrame representing the area of interest.
-    crs : int, optional
+        A GeoDataFrame representing the area of interest.
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -350,10 +350,10 @@ def non_nz_geospatial_layers_data_to_db(
     engine : Engine
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
-        The GeoDataFrame representing the catchment area.
-    crs : int, optional
+        A GeoDataFrame representing the catchment area.
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -400,10 +400,10 @@ def store_geospatial_layers_data_to_db(
     engine : Engine
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
-        The GeoDataFrame representing the catchment area.
-    crs : int, optional
+        A GeoDataFrame representing the catchment area.
+    crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
-    verbose : bool, optional
+    verbose : bool = False
         Whether to print messages. Default is False.
 
     Returns
@@ -426,7 +426,7 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
     engine : Engine
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
-        The GeoDataFrame representing the catchment area.
+        A GeoDataFrame representing the catchment area.
 
     Returns
     -------

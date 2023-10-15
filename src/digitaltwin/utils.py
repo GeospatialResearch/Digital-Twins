@@ -70,7 +70,7 @@ def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
 
     Parameters
     ----------
-    log_level : int, optional
+    log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
         The available logging levels and their corresponding numeric values are:
         - LogLevel.CRITICAL (50)
@@ -86,7 +86,7 @@ def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
         This function does not return any value.
     """
     # Define the logging format and date format
-    logging_format = "%(asctime)s | %(levelname)-8s | %(name)-60s %(lineno)4d | %(funcName)-50s | %(message)s"
+    logging_format = "%(asctime)s | %(levelname)-8s | %(name)-75s %(lineno)4d | %(funcName)-50s | %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"
     # Create and configure the root logger with the specified log level and formats
     logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format)
@@ -95,7 +95,7 @@ def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
     # Suppress (ignore) Python warnings from appearing in the console
     warnings.simplefilter("ignore")
     # List of loggers to prevent messages from reaching the root logger
-    loggers_to_exclude = ["urllib3", "fiona", "botocore", "pyproj", "asyncio", "rasterio"]
+    loggers_to_exclude = ["urllib3", "fiona", "botocore", "pyproj", "asyncio", "rasterio", "scrapy", "distributed"]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:
         # Get the logger instance for each name in the list
@@ -113,14 +113,14 @@ def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> 
     Parameters
     ----------
     catchment_area : gpd.GeoDataFrame
-        The GeoDataFrame representing the catchment area.
-    to_crs : int, optional
+        A GeoDataFrame representing the catchment area.
+    to_crs : int = 2193
         Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
 
     Returns
     -------
     gpd.GeoDataFrame
-        The catchment area GeoDataFrame with the transformed CRS.
+        A GeoDataFrame representing the catchment area with the transformed CRS.
     """
     return catchment_area.to_crs(to_crs)
 
@@ -133,7 +133,7 @@ def get_nz_boundary(engine: Engine, to_crs: int = 2193) -> gpd.GeoDataFrame:
     ----------
     engine : Engine
         The engine used to connect to the database.
-    to_crs : int, optional
+    to_crs : int = 2193
         Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.
 
     Returns

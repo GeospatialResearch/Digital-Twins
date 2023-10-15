@@ -112,7 +112,7 @@ def rainfall_data_from_db(
         rcp: Optional[float],
         time_period: Optional[str],
         ari: float,
-        idf: bool,
+        idf: bool = False,
         duration: str = "all") -> pd.DataFrame:
     """
     Get rainfall data for the sites within the catchment area and return it as a Pandas DataFrame.
@@ -130,9 +130,9 @@ def rainfall_data_from_db(
         Future time period. Valid options are "2031-2050", "2081-2100", or None for historical data.
     ari : float
         Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
-    idf : bool
+    idf : bool = False
         Set to False for rainfall depth data, and True for rainfall intensity data.
-    duration : str, optional
+    duration : str = "all"
         Storm duration. Valid options are: '10m', '20m', '30m', '1h', '2h', '6h', '12h', '24h', '48h', '72h',
         '96h', '120h', or 'all'. Default is 'all'.
 

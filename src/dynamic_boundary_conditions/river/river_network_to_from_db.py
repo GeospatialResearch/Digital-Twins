@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-@Description: Store both the REC1 river network and its associated data in files, and their metadata in the database.
-              Retrieve the existing REC1 river network and its associated data.
-              Manages the addition of REC1 geometries that have been excluded from the river network in the database and
-              retrieves them from the database for an existing REC1 river network.
-@Author: sli229
+This script handles the following tasks: storing both the REC1 river network and its associated data in files along with
+their metadata in the database, retrieving the existing REC1 river network and its associated data from the database,
+and managing the addition of REC1 geometries that have been excluded from the river network in the database,
+as well as retrieving them for an existing REC1 river network.
 """
 
-import pathlib
 import logging
-from typing import Tuple
-from datetime import datetime
+import pathlib
 import pickle
+from datetime import datetime
+from typing import Tuple
 
 import geopandas as gpd
+import networkx as nx
+import numpy as np
 import shapely.wkt
 from sqlalchemy import select, func
 from sqlalchemy.engine import Engine
-import networkx as nx
 
 from src.config import get_env_variable
 from src.digitaltwin.tables import (
@@ -172,7 +172,7 @@ def store_rec1_network_to_db(
     rec1_network_id : int
         An identifier for the river network associated with the current run.
     rec1_network : nx.Graph
-        The constructed REC1 river network, represented as a directed graph (DiGraph)
+        The constructed REC1 river network, represented as a directed graph (DiGraph).
     rec1_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the REC1 river network data.
 
@@ -184,13 +184,13 @@ def store_rec1_network_to_db(
     # Get new file paths for storing both the REC1 Network and its associated data
     network_path, network_data_path = get_new_network_output_paths()
     # Save the REC1 river network to the specified file
-    with open(network_path, 'wb') as file:
+    with open(network_path, "wb") as file:
         pickle.dump(rec1_network, file)
 
     # Convert the 'first_coord' and 'last_coord' columns to string format to facilitate exporting
     network_data = rec1_network_data.copy()
-    network_data['first_coord'] = network_data['first_coord'].astype(str)
-    network_data['last_coord'] = network_data['last_coord'].astype(str)
+    network_data["first_coord"] = network_data["first_coord"].astype(str)
+    network_data["last_coord"] = network_data["last_coord"].astype(str)
     # Save the REC1 river network data to the specified file
     network_data.to_file(str(network_data_path), driver="GeoJSON")
 
@@ -251,7 +251,7 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     ----------
     engine : Engine
         The engine used to connect to the database.
-    existing_network_meta:
+    existing_network_meta : gpd.GeoDataFrame
         A GeoDataFrame containing the metadata for the existing REC1 river network.
 
     Returns
@@ -273,7 +273,7 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     # Query the database to retrieve exclusion data for the existing REC1 river network
     rec1_network_exclusions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     # Group exclusion data by the cause of exclusion
-    grouped_data = rec1_network_exclusions.groupby('exclusion_cause')
+    grouped_data = rec1_network_exclusions.groupby("exclusion_cause")
     # Iterate through grouped exclusion data, where each group represents a cause of exclusion
     for exclusion_cause, data in grouped_data:
         # Convert the excluded REC1 river segment object IDs to a list
@@ -287,6 +287,8 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     # Load the REC1 river network data containing geometry information
     rec1_network_data = gpd.read_file(existing_network_series["network_data_path"])
     # Set the data type of the 'first_coord' and 'last_coord' columns to geometry
-    rec1_network_data['first_coord'] = rec1_network_data['first_coord'].apply(shapely.wkt.loads).astype('geometry')
-    rec1_network_data['last_coord'] = rec1_network_data['last_coord'].apply(shapely.wkt.loads).astype('geometry')
+    rec1_network_data["first_coord"] = rec1_network_data["first_coord"].apply(shapely.wkt.loads).astype("geometry")
+    rec1_network_data["last_coord"] = rec1_network_data["last_coord"].apply(shapely.wkt.loads).astype("geometry")
+    # Replace NaN values with None in the 'node_intersect_aoi' column
+    rec1_network_data["node_intersect_aoi"] = rec1_network_data["node_intersect_aoi"].replace(np.nan, None)
     return rec1_network, rec1_network_data

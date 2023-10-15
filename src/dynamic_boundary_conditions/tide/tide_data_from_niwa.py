@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Fetch tide data from NIWA using the Tide API based on the specified approach, datum, and etc.
+Fetch tide data from NIWA using the Tide API based on the specified approach, datum, etc.
 """
 
 from datetime import date, timedelta
@@ -18,8 +18,8 @@ from src import config
 from src.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
 
 # URLs for retrieving tide data from the NIWA Tide API in JSON and CSV formats, respectively
-TIDE_API_URL_DATA = 'https://api.niwa.co.nz/tides/data'
-TIDE_API_URL_DATA_CSV = 'https://api.niwa.co.nz/tides/data.csv'
+TIDE_API_URL_DATA = config.get_env_variable("TIDE_API_URL_DATA")
+TIDE_API_URL_DATA_CSV = config.get_env_variable("TIDE_API_URL_DATA_CSV")
 
 
 def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[float, float, str]:
@@ -57,11 +57,11 @@ def get_date_ranges(
 
     Parameters
     ----------
-    start_date : date, optional
+    start_date : date = date.today()
         The start date for retrieving tide data. It can be in the past or present. Default is today's date.
-    total_days : int, optional
+    total_days : int = 365
         The total number of days of tide data to retrieve. Default is 365 days (one year).
-    days_per_call : int, optional
+    days_per_call : int = 31
         The number of days to fetch in each API call. Must be between 1 and 31 inclusive.
         Default is 31, which represents the maximum number of days that can be fetched per API call.
 
@@ -117,10 +117,10 @@ def gen_api_query_param_list(
     date_ranges : Dict[date, int]
         Dictionary of start date and number of days for each API call needed to retrieve tide data
         for the requested period.
-    interval_mins : Optional[int], optional
+    interval_mins : Optional[int] = None
         Output time interval in minutes, range from 10 to 1440 minutes (1 day).
         Omit to retrieve only the highest and lowest tide data.
-    datum : DatumType, optional
+    datum : DatumType = DatumType.LAT
         Datum used for fetching tide data from NIWA. Default value is LAT.
         Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.
 
@@ -182,7 +182,7 @@ async def fetch_tide_data(
         An instance of `aiohttp.ClientSession` used for making HTTP requests.
     query_param : Dict[str, Union[str, int]]
         The query parameters used to retrieve tide data for a specific location and time period.
-    url : str, optional
+    url : str = TIDE_API_URL_DATA
         Tide API HTTP request URL. Defaults to 'https://api.niwa.co.nz/tides/data'.
         Can be either 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.
 
@@ -236,7 +236,7 @@ async def fetch_tide_data_for_requested_period(
     ----------
     query_param_list : List[Dict[str, Union[str, int]]]
         A list of API query parameters used to retrieve tide data for the requested period.
-    url : str, optional
+    url : str = TIDE_API_URL_DATA
         Tide API HTTP request URL. Defaults to 'https://api.niwa.co.nz/tides/data'.
         Can be either 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.
 
@@ -317,15 +317,15 @@ def fetch_tide_data_from_niwa(
     Parameters
     ----------
     tide_query_loc : gpd.GeoDataFrame
-        GeoPandas dataframe containing the query coordinates and their positions.
-    datum : DatumType, optional
+        A GeoDataFrame containing the query coordinates and their positions.
+    datum : DatumType = DatumType.LAT
         Datum used for fetching tide data from NIWA. Default value is LAT.
         Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.
-    start_date : date, optional
+    start_date : date = date.today()
         The start date for retrieving tide data. It can be in the past or present. Default is today's date.
-    total_days : int, optional
+    total_days : int = 365
         The total number of days of tide data to retrieve. Default is 365 days (one year).
-    interval_mins : Optional[int], optional
+    interval_mins : Optional[int] = None
         Output time interval in minutes, range from 10 to 1440 minutes (1 day).
         Omit to retrieve only the highest and lowest tide data.
 
@@ -465,9 +465,9 @@ def fetch_tide_data_around_highest_tide(
         The time column is expressed in NZ timezone, which was converted from UTC.
     tide_length_mins : int
         The length of the tide event in minutes.
-    interval_mins : int, optional
+    interval_mins : int = 10
         The time interval, in minutes, between each recorded tide data point. The default value is 10 minutes.
-    datum : DatumType, optional
+    datum : DatumType = DatumType.LAT
         Datum used for fetching tide data from NIWA. Default value is LAT.
         Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.
 
@@ -520,7 +520,7 @@ def get_time_mins_to_add(
         The length of the tide event in minutes.
     time_to_peak_mins : Union[int, float]
         The time in minutes when the tide is at its greatest (reaches maximum).
-    interval_mins : int, optional
+    interval_mins : int = 10
         The time interval, in minutes, between each recorded tide data point. The default value is 10 minutes.
 
     Returns
@@ -563,13 +563,13 @@ def add_time_information(
         The tide data for which time information will be added.
     time_to_peak_mins : Union[int, float]
         The time in minutes when the tide is at its greatest (reaches maximum).
-    interval_mins : int, optional
+    interval_mins : int = 10
         The time interval, in minutes, between each recorded tide data point. The default value is 10 minutes.
-    tide_length_mins : Optional[int], optional
+    tide_length_mins : Optional[int] = None
         The length of the tide event in minutes. Only required if the 'approach' is KING_TIDE.
-    total_days : Optional[int], optional
+    total_days : Optional[int] = None
         The total number of days for the tide event. Only required if the 'approach' is PERIOD_TIDE.
-    approach : ApproachType, optional
+    approach : ApproachType = ApproachType.KING_TIDE
         The approach used to get the tide data. Default is KING_TIDE.
 
     Returns
@@ -611,8 +611,6 @@ def add_time_information(
                       f"'total_days': {total_days} (equivalent to {tide_length_mins} minutes)."
             raise ValueError(message)
 
-    # Get the time values in minutes to add to the tide data
-    time_mins = get_time_mins_to_add(tide_data, tide_length_mins, time_to_peak_mins, interval_mins)
     # Group the tide data by position and geometry
     grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
     # Create a new GeoDataFrame to store tide data with time information
@@ -621,6 +619,8 @@ def add_time_information(
     for _, group_data in grouped:
         # Sort the group data by datetime
         group_data = group_data.sort_values(by='datetime_nz')
+        # Get the time values in minutes to add to the tide data
+        time_mins = get_time_mins_to_add(group_data, tide_length_mins, time_to_peak_mins, interval_mins)
         # Add the time information columns
         group_data['mins'] = time_mins
         group_data['hours'] = group_data['mins'] / 60
@@ -649,20 +649,20 @@ def get_tide_data(
     Parameters
     ----------
     tide_query_loc : gpd.GeoDataFrame
-        GeoPandas dataframe containing the query coordinates and their positions.
+        A GeoDataFrame containing the query coordinates and their positions.
     time_to_peak_mins : Union[int, float]
         The time in minutes when the tide is at its greatest (reaches maximum).
-    approach : ApproachType, optional
+    approach : ApproachType = ApproachType.KING_TIDE
         The approach used to get the tide data. Default is KING_TIDE.
-    start_date : date, optional
+    start_date : date = date.today()
         The start date for retrieving tide data. It can be in the past or present. Default is today's date.
-    total_days : Optional[int], optional
+    total_days : Optional[int] = None
         The total number of days for the tide event. Only required if the 'approach' is PERIOD_TIDE.
-    tide_length_mins : Optional[int], optional
+    tide_length_mins : Optional[int] = None
         The length of the tide event in minutes. Only required if the 'approach' is KING_TIDE.
-    interval_mins : int, optional
+    interval_mins : int = 10
         The time interval, in minutes, between each recorded tide data point. The default value is 10 minutes.
-    datum : DatumType, optional
+    datum : DatumType = DatumType.LAT
         Datum used for fetching tide data from NIWA. Default value is LAT.
         Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.
 
