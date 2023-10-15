@@ -189,7 +189,13 @@ def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
         The GeoDataFrame form of the polygon after being transformed.
     """
     selected_polygon = gpd.GeoDataFrame(index=[0], crs="epsg:4326", geometry=[shapely.from_wkt(wkt)])
-    return selected_polygon.to_crs(2193)
+
+    # Convert the polygon to 2193 crs, and recalculate the bounds to ensure it is a rectangle.
+    bbox_2193 = selected_polygon.to_crs(2193).bounds
+    xmin, ymin, xmax, ymax = (bbox_2193[bound_variable][0] for bound_variable in ("minx", "miny", "maxx", "maxy"))
+    selected_as_rectangle_2193 = gpd.GeoDataFrame(index=[0], crs="epsg:2193", geometry=[shapely.box(xmin, ymin, xmax, ymax)])
+
+    return selected_as_rectangle_2193
 
 
 @app.task(base=OnFailureStateTask)
