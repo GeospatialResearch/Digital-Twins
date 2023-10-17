@@ -154,16 +154,16 @@ def main(
         # Get the locations used to fetch tide data
         tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area)
         # Fetch tide data from NIWA using the tide API
-        # tide_data_king = tide_data_from_niwa.get_tide_data(
-        #     tide_query_loc=tide_query_loc,
-        #     approach=ApproachType.KING_TIDE,
-        #     tide_length_mins=tide_length_mins,
-        #     time_to_peak_mins=time_to_peak_mins,
-        #     interval_mins=interval_mins)
+        tide_data_king = tide_data_from_niwa.get_tide_data(
+            tide_query_loc=tide_query_loc,
+            approach=ApproachType.KING_TIDE,
+            tide_length_mins=tide_length_mins,
+            time_to_peak_mins=time_to_peak_mins,
+            interval_mins=interval_mins)
 
         # Fetch or load tide data for demonstration
-        tide_data_king = get_or_load_tide_data_for_demo(
-            tide_query_loc, tide_length_mins, time_to_peak_mins, interval_mins)
+        # tide_data_king = get_or_load_tide_data_for_demo(
+        #     tide_query_loc, tide_length_mins, time_to_peak_mins, interval_mins)
 
         # Store sea level rise data to the database
         sea_level_rise_data.store_slr_data_to_db(engine)
@@ -187,9 +187,9 @@ def main(
         # Log an info message to indicate the absence of tide data
         log.info(error)
 
-    # except RuntimeError as error:
-    #     # Log a warning message to indicate that a runtime error occurred while fetching tide data
-    #     log.warning(error)
+    except RuntimeError as error:
+        # Log a warning message to indicate that a runtime error occurred while fetching tide data
+        log.warning(error)
 
 
 if __name__ == "__main__":
