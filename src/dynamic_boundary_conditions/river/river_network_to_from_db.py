@@ -236,7 +236,7 @@ def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.Ge
     query = f"""
     SELECT *
     FROM rec1_network_output
-    WHERE ST_Contains(geometry, ST_GeomFromText('{catchment_polygon_wkt}', 2193));
+    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_polygon_wkt}', 2193));
     """
     # Fetch the query result as a GeoPandas DataFrame
     existing_network_meta = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
