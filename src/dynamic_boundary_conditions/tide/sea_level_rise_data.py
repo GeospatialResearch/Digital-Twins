@@ -24,9 +24,14 @@ from src.digitaltwin import tables
 log = logging.getLogger(__name__)
 
 
-def download_slr_data_files_from_takiwa() -> None:
+def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     """
     Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
+
+    Parameters
+    ----------
+    slr_data_dir : pathlib.Path
+        The directory where the downloaded sea level rise data files will be saved.
 
     Returns
     -------
@@ -34,7 +39,7 @@ def download_slr_data_files_from_takiwa() -> None:
         This function does not return any value.
     """
     # Normalise the sea level rise data directory to ensure consistent directory separators for the current OS
-    download_directory = os.path.normpath(config.get_env_variable("DATA_DIR_SLR"))
+    download_directory = os.path.normpath(slr_data_dir)
     # Configure Chrome WebDriver options for downloading files to the specified directory
     chrome_options = webdriver.ChromeOptions()
     prefs = {"download.default_directory": download_directory}
@@ -66,9 +71,14 @@ def download_slr_data_files_from_takiwa() -> None:
     log.info("Successfully downloaded regional sea level rise data files from NZ SeaRise Takiwa.")
 
 
-def get_slr_data_from_takiwa() -> gpd.GeoDataFrame:
+def get_slr_data_from_takiwa(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
     """
     Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
+
+    Parameters
+    ----------
+    slr_data_dir : pathlib.Path
+        The directory containing the downloaded sea level rise data files.
 
     Returns
     -------
@@ -80,8 +90,6 @@ def get_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     FileNotFoundError
         If the sea level rise data directory does not exist or if there are no CSV files in the specified directory.
     """
-    # Get the sea level rise data directory from the environment variable
-    slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
     # Check if the sea level rise data directory exists
     if not slr_data_dir.exists():
         raise FileNotFoundError(f"Sea level rise data directory not found: '{slr_data_dir}'.")
@@ -133,10 +141,12 @@ def store_slr_data_to_db(engine: Engine) -> None:
     if tables.check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
+        # Get the sea level rise data directory from the environment variable
+        slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
         # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
-        download_slr_data_files_from_takiwa()
+        download_slr_data_files_from_takiwa(slr_data_dir)
         # Get sea level rise data from the NZ Sea level rise datasets
-        slr_nz = get_slr_data_from_takiwa()
+        slr_nz = get_slr_data_from_takiwa(slr_data_dir)
         # Store the sea level rise data to the database table
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info(f"Stored '{table_name}' data in the database.")
