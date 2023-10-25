@@ -95,7 +95,9 @@ def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
     # Suppress (ignore) Python warnings from appearing in the console
     warnings.simplefilter("ignore")
     # List of loggers to prevent messages from reaching the root logger
-    loggers_to_exclude = ["urllib3", "fiona", "botocore", "pyproj", "asyncio", "rasterio", "scrapy", "distributed"]
+    loggers_to_exclude = [
+        "urllib3", "fiona", "botocore", "pyproj", "asyncio", "rasterio", "scrapy", "distributed", "selenium"
+    ]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:
         # Get the logger instance for each name in the list
