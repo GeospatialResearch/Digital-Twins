@@ -38,6 +38,9 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     None
         This function does not return any value.
     """
+    # If the directory exists, delete all files within it
+    if slr_data_dir.exists():
+        [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
     # Normalise the sea level rise data directory to ensure consistent directory separators for the current OS
     download_directory = os.path.normpath(slr_data_dir)
     # Configure Chrome WebDriver options for downloading files to the specified directory
