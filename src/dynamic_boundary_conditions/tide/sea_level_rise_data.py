@@ -16,7 +16,6 @@ import pyarrow.csv as csv
 from sqlalchemy.engine import Engine
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from bs4 import BeautifulSoup
 
 from src import config
 from src.digitaltwin import tables
@@ -52,20 +51,13 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     # Open the specified website in the Chrome browser
     driver.get("https://searise.takiwa.co/map/6245144372b819001837b900")
     # Find and click the "Accept" button on the web page
-    driver.find_element(By.CSS_SELECTOR, value='button.ui.green.basic.button').click()
+    driver.find_element(By.CSS_SELECTOR, "button.ui.green.basic.button").click()
     # Find and click "Download"
-    driver.find_element(By.XPATH, value='//*[@id="container-control-text-6268d9223c91dd00278d5ecf"]').click()
+    driver.find_element(By.ID, "container-control-text-6268d9223c91dd00278d5ecf").click()
     # Find and click "Download Regional Data"
-    driver.find_element(
-        By.XPATH, value='//*[@id="app"]/div[1]/div[2]/div[2]/div/div/div[3]/div/div/div/div[4]/div/div[1]/h5').click()
-    # Parse the web page using BeautifulSoup to extract links to various data files
-    soup = BeautifulSoup(driver.page_source, "html.parser")
-    content_div = soup.find("div", class_="content active")
-    a_elements = content_div.find_all("a")
-    # Iterate through the found links and download each data file
-    for a_element in a_elements:
-        href = a_element["href"]
-        driver.get(href)
+    [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
+    # Find and download each regional data file
+    [element.click() for element in driver.find_elements(By.CSS_SELECTOR, "div.content.active a")]
     # Add a 5-second delay to ensure all downloads are complete before quitting the browser
     time.sleep(5)
     # Quit the Chrome WebDriver, closing the browser
