@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-This script handles the reading of sea level rise data from the NZ Sea level rise datasets, storing the data in the
-database, and retrieving the closest sea level rise data from the database for all locations in the provided tide data.
+This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
+storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
+in the provided tide data.
 """
 
 import logging
 import pathlib
+import os.path
+import time
 
 import geopandas as gpd
 import pandas as pd
 import pyarrow.csv as csv
 from sqlalchemy.engine import Engine
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
 
 from src import config
 from src.digitaltwin import tables
@@ -18,7 +24,49 @@ from src.digitaltwin import tables
 log = logging.getLogger(__name__)
 
 
-def get_slr_data_from_nz_searise() -> gpd.GeoDataFrame:
+def download_slr_data_files_from_takiwa() -> None:
+    """
+    Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Normalise the sea level rise data directory to ensure consistent directory separators for the current OS
+    download_directory = os.path.normpath(config.get_env_variable("DATA_DIR_SLR"))
+    # Configure Chrome WebDriver options for downloading files to the specified directory
+    chrome_options = webdriver.ChromeOptions()
+    prefs = {"download.default_directory": download_directory}
+    chrome_options.add_experimental_option("prefs", prefs)
+    # Initialize a Chrome WebDriver instance with the configured options
+    driver = webdriver.Chrome(options=chrome_options)
+    # Open the specified website in the Chrome browser
+    driver.get("https://searise.takiwa.co/map/6245144372b819001837b900")
+    # Find and click the "Accept" button on the web page
+    driver.find_element(By.CSS_SELECTOR, value='button.ui.green.basic.button').click()
+    # Find and click "Download"
+    driver.find_element(By.XPATH, value='//*[@id="container-control-text-6268d9223c91dd00278d5ecf"]').click()
+    # Find and click "Download Regional Data"
+    driver.find_element(
+        By.XPATH, value='//*[@id="app"]/div[1]/div[2]/div[2]/div/div/div[3]/div/div/div/div[4]/div/div[1]/h5').click()
+    # Parse the web page using BeautifulSoup to extract links to various data files
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    content_div = soup.find("div", class_="content active")
+    a_elements = content_div.find_all("a")
+    # Iterate through the found links and download each data file
+    for a_element in a_elements:
+        href = a_element["href"]
+        driver.get(href)
+    # Add a 5-second delay to ensure all downloads are complete before quitting the browser
+    time.sleep(5)
+    # Quit the Chrome WebDriver, closing the browser
+    driver.quit()
+    # Log that the files have been successfully downloaded
+    log.info("Successfully downloaded regional sea level rise data files from NZ SeaRise Takiwa.")
+
+
+def get_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     """
     Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
 
@@ -55,7 +103,7 @@ def get_slr_data_from_nz_searise() -> gpd.GeoDataFrame:
         # Append the DataFrame to the list
         slr_nz_list.append(slr_region)
         # Log that the file has been successfully loaded
-        log.info(f"{file_path.name} data file has been successfully loaded.")
+        log.info(f"Successfully loaded the {file_path.name} data file.")
     # Concatenate all the dataframes in the list and add geometry column
     slr_nz = pd.concat(slr_nz_list, axis=0).reset_index(drop=True)
     geometry = gpd.points_from_xy(slr_nz['lon'], slr_nz['lat'], crs=4326)
@@ -85,8 +133,10 @@ def store_slr_data_to_db(engine: Engine) -> None:
     if tables.check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
+        # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
+        download_slr_data_files_from_takiwa()
         # Get sea level rise data from the NZ Sea level rise datasets
-        slr_nz = get_slr_data_from_nz_searise()
+        slr_nz = get_slr_data_from_takiwa()
         # Store the sea level rise data to the database table
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info(f"Stored '{table_name}' data in the database.")
