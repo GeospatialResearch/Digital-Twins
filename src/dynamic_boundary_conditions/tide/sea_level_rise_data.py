@@ -141,8 +141,8 @@ def store_slr_data_to_db(engine: Engine) -> None:
     if tables.check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
-        # Get the sea level rise data directory from the environment variable
-        slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
+        # Get the data directory and append "slr_data" to specify the sea level rise data directory
+        slr_data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "slr_data"
         # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
         download_slr_data_files_from_takiwa(slr_data_dir)
         # Get sea level rise data from the NZ Sea level rise datasets
