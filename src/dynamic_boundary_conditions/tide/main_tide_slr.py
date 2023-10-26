@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Main tide and sea level rise script used to fetch tide data, read and store sea level rise data in the database,
+Main tide and sea level rise script used to fetch tide data, download and store sea level rise data in the database,
 and generate the requested tide uniform boundary model input for BG-Flood etc.
 """
 
