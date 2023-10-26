@@ -46,46 +46,6 @@ def remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None:
         boundary_file.unlink()
 
 
-def get_or_load_tide_data_for_demo(
-        tide_query_loc: gpd.GeoDataFrame,
-        tide_length_mins: int,
-        time_to_peak_mins: Union[int, float],
-        interval_mins: int):
-    """
-    Retrieve or load tide data for demonstration.
-
-    Parameters
-    ----------
-    tide_query_loc : gpd.GeoDataFrame
-        A GeoDataFrame containing the locations used to fetch tide data from NIWA using the tide API.
-    tide_length_mins : int
-        The length of the tide event in minutes.
-    time_to_peak_mins : Union[int, float]
-        The time in minutes when the tide is at its greatest (reaches maximum).
-    interval_mins : int
-        The time interval, in minutes, between each recorded tide data point.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the retrieved or loaded tide data for demonstration.
-    """
-    try:
-        # Fetch tide data from NIWA using the tide API
-        tide_data_king = tide_data_from_niwa.get_tide_data(
-            tide_query_loc=tide_query_loc,
-            approach=ApproachType.KING_TIDE,
-            tide_length_mins=tide_length_mins,
-            time_to_peak_mins=time_to_peak_mins,
-            interval_mins=interval_mins)
-    except RuntimeError:
-        # Load the preprocessed tide data for DEMO
-        data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path)
-        tide_data_king_path = data_dir / "tide_data_king.geojson"
-        tide_data_king = gpd.read_file(tide_data_king_path)
-    return tide_data_king
-
-
 def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         tide_length_mins: int,
@@ -160,10 +120,6 @@ def main(
             tide_length_mins=tide_length_mins,
             time_to_peak_mins=time_to_peak_mins,
             interval_mins=interval_mins)
-
-        # Fetch or load tide data for demonstration
-        # tide_data_king = get_or_load_tide_data_for_demo(
-        #     tide_query_loc, tide_length_mins, time_to_peak_mins, interval_mins)
 
         # Store sea level rise data to the database
         sea_level_rise_data.store_slr_data_to_db(engine)
