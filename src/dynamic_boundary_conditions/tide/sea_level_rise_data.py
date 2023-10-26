@@ -16,6 +16,7 @@ import pyarrow.csv as csv
 from sqlalchemy.engine import Engine
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 
 from src import config
 from src.digitaltwin import tables
@@ -37,14 +38,18 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     None
         This function does not return any value.
     """
-    # If the directory exists, delete all files within it
+    # Check if the directory exists and, if so, delete all files within it
     if slr_data_dir.exists():
         [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
     # Normalise the sea level rise data directory to ensure consistent directory separators for the current OS
     download_directory = os.path.normpath(slr_data_dir)
-    # Configure Chrome WebDriver options for downloading files to the specified directory
+    # Initialize a ChromeOptions instance to customize the Chrome WebDriver settings
     chrome_options = webdriver.ChromeOptions()
+    # Enable headless mode for Chrome (no visible browser window)
+    chrome_options.add_argument("--headless")
+    # Define the download directory preference for downloaded files
     prefs = {"download.default_directory": download_directory}
+    # Apply the download directory preference to ChromeOptions
     chrome_options.add_experimental_option("prefs", prefs)
     # Initialize a Chrome WebDriver instance with the configured options
     driver = webdriver.Chrome(options=chrome_options)
@@ -56,8 +61,11 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     driver.find_element(By.ID, "container-control-text-6268d9223c91dd00278d5ecf").click()
     # Find and click "Download Regional Data"
     [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
-    # Find and download each regional data file
-    [element.click() for element in driver.find_elements(By.CSS_SELECTOR, "div.content.active a")]
+    # Identify links to all the regional data files on the webpage
+    elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
+    # Iterate through the identified links and simulate a click action to trigger the download
+    for element in elements:
+        ActionChains(driver).move_to_element(element).click().perform()
     # Add a 5-second delay to ensure all downloads are complete before quitting the browser
     time.sleep(5)
     # Quit the Chrome WebDriver, closing the browser
