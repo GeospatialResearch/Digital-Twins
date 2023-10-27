@@ -347,12 +347,20 @@ def align_rec1_with_osm(
     osm_columns = ["id", osm_waterways_on_bbox.geometry.name]
     osm_on_bbox = osm_waterways_on_bbox[osm_columns]
     # Perform a spatial join to find the nearest OSM waterway features within a specified distance
-    aligned_rec1_osm = gpd.sjoin_nearest(
+    joined_rec1_osm = gpd.sjoin_nearest(
         rec1_on_bbox, osm_on_bbox, how="inner", distance_col="distances", max_distance=distance_m)
-    # Sort the aligned data by distance
-    aligned_rec1_osm = aligned_rec1_osm.sort_values(by="distances")
-    # Remove duplicate OSM waterway features and keep the closest ones
-    aligned_rec1_osm = aligned_rec1_osm.drop_duplicates(subset="id", keep="first")
+    # Group the joined data based on the 'index_right' and 'id' attributes of OSM waterway features
+    grouped = joined_rec1_osm.groupby(['index_right', 'id'])
+    # Create an empty GeoDataFrame to store the aligned data
+    aligned_rec1_osm = gpd.GeoDataFrame()
+    # Iterate through each group in the grouped data
+    for _, group_data in grouped:
+        # Sort the group_data by distance
+        group_data = group_data.sort_values(by="distances")
+        # Remove duplicate OSM waterway features and keep the closest ones
+        group_data = group_data.drop_duplicates(subset="id", keep="first")
+        # Concatenate the processed group_data with the aligned_rec1_osm GeoDataFrame
+        aligned_rec1_osm = pd.concat([aligned_rec1_osm, group_data])
     # Select relevant columns and merge with OSM waterway data
     aligned_rec1_osm = aligned_rec1_osm[["objectid", "index_right"]]
     aligned_rec1_osm = aligned_rec1_osm.merge(osm_on_bbox, left_on="index_right", right_index=True, how="left")
