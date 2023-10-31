@@ -3,6 +3,7 @@ Takes generated models and adds them to GeoServer so they can be retrieved by AP
 or other clients
 """
 
+import logging
 import os
 import pathlib
 import shutil
@@ -14,6 +15,8 @@ import xarray as xr
 from src.config import get_env_variable
 
 GEOSERVER_REST_URL = "http://localhost:8088/geoserver/rest/"
+
+log = logging.getLogger(__name__)
 
 
 def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
@@ -32,13 +35,14 @@ def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
     """
     name = nc_file_path.stem
     new_name = f"{name}.tif"
+    log.info(f"Converting {name} to {new_name}")
     temp_dir = pathlib.Path("tmp/gtiff")
     # Create temporary storage folder if it does not already exist
     temp_dir.mkdir(parents=True, exist_ok=True)
     gtiff_filepath = temp_dir / new_name
     # Convert the max depths to geo tiff
     with xr.open_dataset(nc_file_path, decode_coords="all") as ds:
-        ds['hmax_P0'].rio.to_raster(gtiff_filepath)
+        ds['hmax_P0'][0].rio.to_raster(gtiff_filepath)
     return pathlib.Path(os.getcwd()) / gtiff_filepath
 
 
@@ -64,6 +68,7 @@ def upload_gtiff_to_store(
         This function does not return anything
     """
     # Copy file to geoserver data folder
+    log.info(f"Uploading {gtiff_filepath.name} to Geoserver workspace {workspace_name}")
     geoserver_data_root = pathlib.Path("geoserver/geoserver_data")
     geoserver_data_dest = pathlib.Path("data") / gtiff_filepath.name
     shutil.copy(gtiff_filepath, geoserver_data_root / geoserver_data_dest)
@@ -193,6 +198,7 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
     None
         This function does not return anything
     """
+    log.debug("Adding model output to geoserver")
     gtiff_filepath = convert_nc_to_gtiff(model_output_path)
     add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs", model_id)
 

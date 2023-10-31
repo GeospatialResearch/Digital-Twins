@@ -4,6 +4,7 @@ Main river script used to read and store REC1 data in the database, fetch OSM wa
 and its associated data, and generate the requested river model input for BG-Flood etc.
 """
 
+import logging
 import pathlib
 from typing import Union, Optional, Tuple
 
@@ -160,6 +161,8 @@ def main(
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
+    log = logging.getLogger(__name__)
+    log.info("Started generating river data")
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area

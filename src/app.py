@@ -1,11 +1,10 @@
 """
 The main web application that serves the Digital Twin to the web through a Rest API.
 """
+import logging
 from functools import wraps
 from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR
-import logging
 from typing import Callable
-
 
 from celery import result, states
 from flask import Flask, Response, jsonify, make_response, request
@@ -13,8 +12,6 @@ from flask_cors import CORS
 from shapely import box
 
 from src import tasks
-from src.config import get_env_variable
-from src.flood_model.bg_flood_model import model_output_from_db_by_id
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -35,12 +32,14 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     Response
         INTERNAL_SERVER_ERROR if the celery workers are down, otherwise continue to function f
     """
+
     @wraps(f)
     def decorated_function(*args, **kwargs) -> Response:
         ping_celery_response = tasks.app.control.ping()
         if len(ping_celery_response) == 0:
             return make_response("Celery workers not active", INTERNAL_SERVER_ERROR)
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -126,6 +125,7 @@ def generate_model() -> Response:
         lng1 = float(bbox.get("lng1"))
         lat2 = float(bbox.get("lat2"))
         lng2 = float(bbox.get("lng2"))
+        scenario_options = request.get_json()["scenarioOptions"]
     except ValueError:
         return make_response(
             "JSON values for bbox: lat1, lng1, lat2, lng2 must be valid floats", BAD_REQUEST
@@ -138,7 +138,7 @@ def generate_model() -> Response:
         return make_response("lat1, lng1 must not equal lat2, lng2", BAD_REQUEST)
 
     bbox_wkt = create_wkt_from_coords(lat1, lng1, lat2, lng2)
-    task = tasks.create_model_for_area(bbox_wkt)
+    task = tasks.create_model_for_area(bbox_wkt, scenario_options)
 
     return make_response(
         jsonify({"taskId": task.id}),
@@ -215,6 +215,13 @@ def get_depth_at_point(task_id: str) -> Response:
         'depth': depths,
         'time': times
     }), OK)
+
+
+@app.route('/tables/<table_name>/distinct', methods=["GET"])
+def get_distinct_column_values(table_name: str) -> Response:
+    distinct_val_task = tasks.get_distinct_column_values.delay(table_name)
+    distinct_vals = distinct_val_task.get()
+    return make_response(jsonify(distinct_vals))
 
 
 def valid_coordinates(latitude: float, longitude: float) -> bool:
