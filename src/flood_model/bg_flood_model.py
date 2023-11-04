@@ -145,7 +145,13 @@ def latest_model_output_from_db() -> pathlib.Path:
     # Get the database engine for establishing a connection
     engine = setup_environment.get_database()
     # Execute a query to get the latest model output record based on the 'created_at' column
-    row = engine.execute("SELECT * FROM bg_flood_model_output ORDER BY created_at DESC LIMIT 1;").fetchone()
+    query = f"""
+    SELECT *
+    FROM {BGFloodModelOutput.__tablename__}
+    ORDER BY created_at DESC
+    LIMIT 1;
+    """
+    row = engine.execute(query).fetchone()
     # Extract the file path from the retrieved record
     latest_output_path = pathlib.Path(row["file_path"])
     # Extract the file path from the retrieved record
