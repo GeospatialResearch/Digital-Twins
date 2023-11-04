@@ -116,7 +116,7 @@ class RiverNetworkOutput(Base):
     network_path : str
         Path to the REC1 river network file.
     network_data_path : str
-        Path to the REC1 river network data file.
+        Path to the REC1 river network data file for the AOI.
     created_at : datetime
         Timestamp indicating when the output was created.
     geometry : Polygon
@@ -126,7 +126,7 @@ class RiverNetworkOutput(Base):
     rec1_network_id = Column(Integer, primary_key=True,
                              comment="An identifier for the river network associated with each run")
     network_path = Column(String, comment="path to the rec1 river network file")
-    network_data_path = Column(String, comment="path to the rec1 river network data file")
+    network_data_path = Column(String, comment="path to the rec1 river network data file for the AOI")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="output created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
 
