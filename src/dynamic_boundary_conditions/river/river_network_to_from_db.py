@@ -235,7 +235,7 @@ def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.Ge
     # Query the REC1 Network Output table to find existing REC1 river network metadata for the catchment area
     query = f"""
     SELECT *
-    FROM rec1_network_output
+    FROM {RiverNetworkOutput.__tablename__}
     WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_polygon_wkt}', 2193));
     """
     # Fetch the query result as a GeoPandas DataFrame
@@ -267,7 +267,7 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     # Construct a query to retrieve exclusion data for the existing REC1 river network
     query = f"""
     SELECT *
-    FROM rec1_network_exclusions
+    FROM {RiverNetworkExclusions.__tablename__}
     WHERE rec1_network_id = {rec1_network_id};
     """
     # Query the database to retrieve exclusion data for the existing REC1 river network
