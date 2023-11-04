@@ -132,7 +132,10 @@ def get_existing_geospatial_layers(engine: Engine) -> pd.DataFrame:
         Data frame containing the existing geospatial layers.
     """
     # SQL query to retrieve specific columns from the geospatial_layers table
-    existing_layer_query = "SELECT data_provider, layer_id FROM geospatial_layers;"
+    existing_layer_query = f"""
+    SELECT data_provider, layer_id
+    FROM {GeospatialLayers.__tablename__};
+    """
     # Execute the query and read the results into a DataFrame
     existing_layers_df = pd.read_sql(existing_layer_query, engine)
     return existing_layers_df
