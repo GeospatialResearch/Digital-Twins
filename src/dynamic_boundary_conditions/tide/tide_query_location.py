@@ -206,16 +206,9 @@ def get_non_intersection_centroid_position(
     # Calculate the centroid for each non-intersection geometry
     non_intersections['centroid'] = non_intersections.centroid
     # Determine the position of each centroid relative to the boundary lines
-    for index, row in non_intersections.iterrows():
-        centroid = row['centroid']
-        # Calculate the distance from the centroid to each boundary line
-        distances = {}
-        for _, boundary_row in boundary_lines.iterrows():
-            distances[boundary_row['line_position']] = centroid.distance(boundary_row['geometry'])
-        # Find the name of the closest line based on the minimum distance
-        closest_line = min(distances, key=distances.get)
-        # Assign the position of the centroid based on the closest line
-        non_intersections.at[index, 'position'] = closest_line
+    non_intersections['position'] = non_intersections['centroid'].apply(
+        lambda centroid: boundary_lines.loc[boundary_lines['geometry'].distance(centroid).idxmin(), 'line_position']
+    )
     # Select the required columns and rename 'centroid' to 'geometry'
     non_intersections = non_intersections[['position', 'centroid']].rename(columns={'centroid': 'geometry'})
     # Set the 'geometry' column as the active geometry column
