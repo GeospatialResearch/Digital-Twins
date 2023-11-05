@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
 from sqlalchemy import inspect, Column, String, Integer, DateTime
-from sqlalchemy.schema import PrimaryKeyConstraint
+from sqlalchemy.schema import PrimaryKeyConstraint, CheckConstraint
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -47,6 +47,14 @@ class GeospatialLayers(Base):
     unique_column_name = Column(String, nullable=True)
     coverage_area = Column(String, nullable=True)
     url = Column(String, nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "((unique_column_name IS NOT NULL AND coverage_area IS NULL) OR "
+            "(unique_column_name IS NULL AND coverage_area IS NOT NULL))",
+            name="unique_column_name_or_coverage_area_required"
+        ),
+    )
 
 
 class UserLogInfo(Base):
