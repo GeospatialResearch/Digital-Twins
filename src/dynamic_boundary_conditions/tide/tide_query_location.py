@@ -248,7 +248,10 @@ def get_tide_query_locations(
     non_intersection_area = catchment_area.overlay(regions_clipped, how='difference')
     if not non_intersection_area.empty:
         # Get the centroid positions of non-intersection areas relative to the catchment boundary lines
-        tide_query_location = get_non_intersection_centroid_position(catchment_area, non_intersection_area)
+        non_intersections = get_non_intersection_centroid_position(catchment_area, non_intersection_area)
+        # Group by the 'position' column and calculate the centroid for each group
+        grouped = non_intersections.groupby('position')['geometry'].apply(lambda x: x.unary_union.centroid)
+        tide_query_location = grouped.reset_index().set_crs(non_intersections.crs)
     else:
         # Get the New Zealand coastline data within the specified distance of the catchment area
         coastline = get_nz_coastline_from_db(engine, catchment_area, distance_km)
