@@ -74,7 +74,7 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     log.info("Successfully downloaded regional sea level rise data files from NZ SeaRise Takiwa.")
 
 
-def get_slr_data_from_takiwa(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
+def read_slr_data_from_files(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
     """
     Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
 
@@ -148,8 +148,8 @@ def store_slr_data_to_db(engine: Engine) -> None:
         slr_data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "slr_data"
         # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
         download_slr_data_files_from_takiwa(slr_data_dir)
-        # Get sea level rise data from the NZ Sea level rise datasets
-        slr_nz = get_slr_data_from_takiwa(slr_data_dir)
+        # Read sea level rise data from the NZ Sea level rise datasets
+        slr_nz = read_slr_data_from_files(slr_data_dir)
         # Store the sea level rise data to the database table
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info(f"Stored '{table_name}' data in the database.")
