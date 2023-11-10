@@ -3,6 +3,7 @@
 Fetch REC1 data in New Zealand from NIWA using the ArcGIS REST API.
 """
 
+import logging
 from typing import Tuple, List, Dict, Union
 import asyncio
 
@@ -14,6 +15,8 @@ from shapely.geometry import LineString
 from sqlalchemy.engine import Engine
 
 from src.digitaltwin.utils import get_nz_boundary
+
+log = logging.getLogger(__name__)
 
 # URL for retrieving REC1 data from NIWA using the ArcGIS REST API
 REC1_API_URL = "https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2"
@@ -198,4 +201,6 @@ def fetch_rec1_data_from_niwa(engine: Engine, url: str = REC1_API_URL) -> gpd.Ge
     query_param_list = gen_api_query_param_list(engine, max_record_count, total_record_count)
     # Iterate over the list of API query parameters to fetch REC1 data in New Zealand
     rec1_data = asyncio.run(fetch_rec1_data_for_nz(query_param_list, url))
+    # Log that the REC1 data has been successfully fetched
+    log.info("Successfully retrieved REC1 data.")
     return rec1_data
