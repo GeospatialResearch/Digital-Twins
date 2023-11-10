@@ -1,57 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-This script handles the following tasks: reading REC1 data from the NIWA REC1 dataset, storing REC1 data within the
-database, and retrieving REC1 data enriched with sea-draining catchment information from the database.
+This script handles storing REC1 data in the database, and retrieving REC1 data enriched with sea-draining catchment
+information from the database.
 """
 
 import logging
-import pathlib
 
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
 
-from src import config
 from src.digitaltwin.tables import check_table_exists
+from src.dynamic_boundary_conditions.river import river_data_from_niwa
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import add_network_exclusions_to_db
 
 log = logging.getLogger(__name__)
 
 
-def get_niwa_rec1_data() -> gpd.GeoDataFrame:
-    """
-    Reads REC1 data from the NIWA REC1 dataset and returns a GeoDataFrame.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 data from the NZ REC1 dataset.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the REC1 data directory does not exist or if there are no Shapefiles in the specified directory.
-    """
-    # Get the REC1 data directory from the environment variable
-    rec1_data_dir = config.get_env_variable("DATA_DIR_REC1", cast_to=pathlib.Path)
-    # Check if the REC1 data directory exists
-    if not rec1_data_dir.exists():
-        raise FileNotFoundError(f"REC1 data directory not found: {rec1_data_dir}")
-    # Check if there are any Shapefiles in the specified directory
-    if not any(rec1_data_dir.glob("*.shp")):
-        raise FileNotFoundError(f"REC1 data files not found: {rec1_data_dir}")
-    # Find the path of the first file in `rec1_data_dir` that ends with .shp
-    rec1_file_path = next(rec1_data_dir.glob("*.shp"))
-    # Read the Shapefile into a GeoDataFrame
-    rec1_nz = gpd.read_file(rec1_file_path)
-    # Convert column names to lowercase for consistency
-    rec1_nz.columns = rec1_nz.columns.str.lower()
-    return rec1_nz
-
-
 def store_rec1_data_to_db(engine: Engine) -> None:
     """
-    Store REC1 data to the database.
+    Store REC1 data in the database.
 
     Parameters
     ----------
@@ -69,8 +37,8 @@ def store_rec1_data_to_db(engine: Engine) -> None:
     if check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
-        # Get REC1 data from the NZ REC1 dataset
-        rec1_nz = get_niwa_rec1_data()
+        # Retrieve REC1 data from NIWA
+        rec1_nz = river_data_from_niwa.fetch_rec1_data_from_niwa(engine)
         # Store the REC1 data to the database table
         rec1_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info(f"Stored '{table_name}' data in the database.")
