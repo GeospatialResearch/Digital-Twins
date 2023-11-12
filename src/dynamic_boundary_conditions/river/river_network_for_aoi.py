@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script processes REC1 data to construct a river network for the defined catchment area.
+This script processes REC data to construct a river network for the defined catchment area.
 """
 
 import logging
@@ -16,7 +16,7 @@ from src.dynamic_boundary_conditions.river import main_river, river_data_to_from
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
     get_next_network_id,
     add_network_exclusions_to_db,
-    store_rec1_network_to_db,
+    store_rec_network_to_db,
     get_existing_network_metadata_from_db,
     get_existing_network
 )
@@ -24,76 +24,76 @@ from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
 log = logging.getLogger(__name__)
 
 
-def get_unique_nodes_dict(rec1_data_w_node_coords: gpd.GeoDataFrame) -> Dict[Point, int]:
+def get_unique_nodes_dict(rec_data_w_node_coords: gpd.GeoDataFrame) -> Dict[Point, int]:
     """
-    Generates a dictionary that contains the unique node coordinates in the REC1 data for the catchment area.
+    Generates a dictionary that contains the unique node coordinates in the REC data for the catchment area.
 
     Parameters
     ----------
-    rec1_data_w_node_coords : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 data for the catchment area with additional columns for the
+    rec_data_w_node_coords : gpd.GeoDataFrame
+        A GeoDataFrame containing the REC data for the catchment area with additional columns for the
         first and last coordinates of each LineString.
 
     Returns
     -------
     Dict[Point, int]
-        A dictionary that contains the unique node coordinates (Point objects) in the REC1 data for the catchment area.
+        A dictionary that contains the unique node coordinates (Point objects) in the REC data for the catchment area.
     """
     # Combine the first and last coordinates of each LineString into a single list
-    rec1_node_coords = (
-            rec1_data_w_node_coords["first_coord"].to_list() +
-            rec1_data_w_node_coords["last_coord"].to_list()
+    rec_node_coords = (
+            rec_data_w_node_coords["first_coord"].to_list() +
+            rec_data_w_node_coords["last_coord"].to_list()
     )
     # Extract unique node coordinates while preserving their original order
-    unique_node_coords = [x for i, x in enumerate(rec1_node_coords) if x not in rec1_node_coords[:i]]
+    unique_node_coords = [x for i, x in enumerate(rec_node_coords) if x not in rec_node_coords[:i]]
     # Create a dictionary containing the unique node coordinates
     unique_nodes_dict = {coord_point: i + 1 for i, coord_point in enumerate(unique_node_coords)}
     return unique_nodes_dict
 
 
-def add_nodes_to_rec1(rec1_data_with_sdc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def add_nodes_to_rec(rec_data_with_sdc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Add columns for the first and last coordinates/nodes of each LineString in the REC1 data within the catchment area.
+    Add columns for the first and last coordinates/nodes of each LineString in the REC data within the catchment area.
 
     Parameters
     ----------
-    rec1_data_with_sdc : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 data for the catchment area with an additional column that identifies
-        the associated sea-draining catchment for each REC1 geometry.
+    rec_data_with_sdc : gpd.GeoDataFrame
+        A GeoDataFrame containing the REC data for the catchment area with an additional column that identifies
+        the associated sea-draining catchment for each REC geometry.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 data for the catchment area with additional columns for the
+        A GeoDataFrame containing the REC data for the catchment area with additional columns for the
         first and last coordinates/nodes of each LineString.
     """
     # Create a copy of the input GeoDataFrame to avoid modifying the original data
-    rec1_data_w_nodes = rec1_data_with_sdc.copy()
+    rec_data_w_nodes = rec_data_with_sdc.copy()
     # Add the "first_coord" column with the first coordinate of each LineString
-    rec1_data_w_nodes["first_coord"] = rec1_data_w_nodes["geometry"].apply(lambda g: Point(g.coords[0]))
+    rec_data_w_nodes["first_coord"] = rec_data_w_nodes["geometry"].apply(lambda g: Point(g.coords[0]))
     # Add the "last_coord" column with the last coordinate of each LineString
-    rec1_data_w_nodes["last_coord"] = rec1_data_w_nodes["geometry"].apply(lambda g: Point(g.coords[-1]))
-    # Generate a dictionary that contains the unique node coordinates in the REC1 data
-    unique_nodes_dict = get_unique_nodes_dict(rec1_data_w_nodes)
+    rec_data_w_nodes["last_coord"] = rec_data_w_nodes["geometry"].apply(lambda g: Point(g.coords[-1]))
+    # Generate a dictionary that contains the unique node coordinates in the REC data
+    unique_nodes_dict = get_unique_nodes_dict(rec_data_w_nodes)
     # Map the first coordinates of LineStrings to their corresponding node indices and assign to the "first_node" column
-    rec1_data_w_nodes["first_node"] = rec1_data_w_nodes["first_coord"].apply(lambda x: unique_nodes_dict.get(x, None))
+    rec_data_w_nodes["first_node"] = rec_data_w_nodes["first_coord"].apply(lambda x: unique_nodes_dict.get(x, None))
     # Map the last coordinates of LineStrings to their corresponding node indices and assign to the "last_node" column
-    rec1_data_w_nodes["last_node"] = rec1_data_w_nodes["last_coord"].apply(lambda x: unique_nodes_dict.get(x, None))
-    return rec1_data_w_nodes
+    rec_data_w_nodes["last_node"] = rec_data_w_nodes["last_coord"].apply(lambda x: unique_nodes_dict.get(x, None))
+    return rec_data_w_nodes
 
 
 def add_nodes_intersection_type(
         catchment_area: gpd.GeoDataFrame,
-        rec1_data_with_nodes: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        rec_data_with_nodes: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Calculate and add an 'intersection_type' column to the GeoDataFrame that contains REC1 data with node information.
+    Calculate and add an 'intersection_type' column to the GeoDataFrame that contains REC data with node information.
 
     Parameters
     ----------
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    rec1_data_with_nodes : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 data for the catchment area with additional columns for the
+    rec_data_with_nodes : gpd.GeoDataFrame
+        A GeoDataFrame containing the REC data for the catchment area with additional columns for the
         first and last coordinates/nodes of each LineString.
 
     Returns
@@ -104,45 +104,45 @@ def add_nodes_intersection_type(
     # Extract the catchment polygon from the GeoDataFrame
     catchment_polygon = catchment_area["geometry"][0]
     # Calculate if the first and last coordinates/nodes intersect with the catchment_area
-    rec1_data_with_nodes["first_intersects"] = rec1_data_with_nodes["first_coord"].intersects(catchment_polygon)
-    rec1_data_with_nodes["last_intersects"] = rec1_data_with_nodes["last_coord"].intersects(catchment_polygon)
+    rec_data_with_nodes["first_intersects"] = rec_data_with_nodes["first_coord"].intersects(catchment_polygon)
+    rec_data_with_nodes["last_intersects"] = rec_data_with_nodes["last_coord"].intersects(catchment_polygon)
     # Define conditions and corresponding values for 'node_intersect_aoi' column
     conditions = [
-        (rec1_data_with_nodes["first_intersects"] & rec1_data_with_nodes["last_intersects"]),
-        (rec1_data_with_nodes["first_intersects"]),
-        (rec1_data_with_nodes["last_intersects"])
+        (rec_data_with_nodes["first_intersects"] & rec_data_with_nodes["last_intersects"]),
+        (rec_data_with_nodes["first_intersects"]),
+        (rec_data_with_nodes["last_intersects"])
     ]
     values = ["both_nodes", "first_node", "last_node"]
     # Create 'node_intersect_aoi' column based on conditions
-    rec1_data_with_nodes["node_intersect_aoi"] = np.select(conditions, values, default=None)
+    rec_data_with_nodes["node_intersect_aoi"] = np.select(conditions, values, default=None)
     # Remove unnecessary column
-    rec1_data_with_nodes = rec1_data_with_nodes.drop(columns=["first_intersects", "last_intersects"])
-    return rec1_data_with_nodes
+    rec_data_with_nodes = rec_data_with_nodes.drop(columns=["first_intersects", "last_intersects"])
+    return rec_data_with_nodes
 
 
 def prepare_network_data_for_construction(
         catchment_area: gpd.GeoDataFrame,
-        rec1_data_with_sdc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        rec_data_with_sdc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Prepares the necessary data for constructing the river network for the catchment area using the REC1 data.
+    Prepares the necessary data for constructing the river network for the catchment area using the REC data.
 
     Parameters
     ----------
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    rec1_data_with_sdc : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 data for the catchment area with an additional column that identifies
-        the associated sea-draining catchment for each REC1 geometry.
+    rec_data_with_sdc : gpd.GeoDataFrame
+        A GeoDataFrame containing the REC data for the catchment area with an additional column that identifies
+        the associated sea-draining catchment for each REC geometry.
 
     Returns
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
     """
-    # Add columns for the first and last coordinates/nodes of each LineString in the REC1 data
-    rec1_data_with_nodes = add_nodes_to_rec1(rec1_data_with_sdc)
+    # Add columns for the first and last coordinates/nodes of each LineString in the REC data
+    rec_data_with_nodes = add_nodes_to_rec(rec_data_with_sdc)
     # Calculate and add a 'node_intersect_aoi' column for the nodes
-    prepared_network_data = add_nodes_intersection_type(catchment_area, rec1_data_with_nodes)
+    prepared_network_data = add_nodes_intersection_type(catchment_area, rec_data_with_nodes)
     # Group the data by sea-draining catchments (identified by 'catch_id')
     grouped_data = prepared_network_data.groupby("catch_id")
     # Determine the river segment in each sea-draining catchment with the largest area
@@ -150,14 +150,14 @@ def prepare_network_data_for_construction(
     return prepared_network_data
 
 
-def add_nodes_to_network(rec1_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> None:
+def add_nodes_to_network(rec_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> None:
     """
-    Add nodes to the REC1 river network along with their attributes.
+    Add nodes to the REC river network along with their attributes.
 
     Parameters
     ----------
-    rec1_network : nx.Graph
-        The REC1 river network, a directed graph, to which nodes will be added.
+    rec_network : nx.Graph
+        The REC river network, a directed graph, to which nodes will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
 
@@ -172,18 +172,18 @@ def add_nodes_to_network(rec1_network: nx.Graph, prepared_network_data: gpd.GeoD
         first_node, first_coord = row_edge["first_node"], row_edge["first_coord"]
         last_node, last_coord = row_edge["last_node"], row_edge["last_coord"]
         # Add nodes to the river network along with their attributes
-        rec1_network.add_node(first_node, geometry=first_coord)
-        rec1_network.add_node(last_node, geometry=last_coord)
+        rec_network.add_node(first_node, geometry=first_coord)
+        rec_network.add_node(last_node, geometry=last_coord)
 
 
-def add_initial_edges_to_network(rec1_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> None:
+def add_initial_edges_to_network(rec_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> None:
     """
-    Add initial edges to the REC1 river network along with their attributes.
+    Add initial edges to the REC river network along with their attributes.
 
     Parameters
     ----------
-    rec1_network : nx.Graph
-        The REC1 river network, a directed graph, to which initial edges will be added.
+    rec_network : nx.Graph
+        The REC river network, a directed graph, to which initial edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
 
@@ -224,7 +224,7 @@ def add_initial_edges_to_network(rec1_network: nx.Graph, prepared_network_data: 
 
                 # Add the edges to the river network along with their attributes
                 for from_node, to_node, edge_attributes in edges:
-                    rec1_network.add_edge(
+                    rec_network.add_edge(
                         from_node,
                         to_node,
                         objectid=edge_attributes["objectid"],
@@ -237,30 +237,30 @@ def add_initial_edges_to_network(rec1_network: nx.Graph, prepared_network_data: 
                     )
 
 
-def identify_absent_edges_to_add(rec1_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def identify_absent_edges_to_add(rec_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Identify edges that are absent from the REC1 river network and require addition.
+    Identify edges that are absent from the REC river network and require addition.
 
     Parameters
     ----------
-    rec1_network : nx.Graph
-        The REC1 river network, a directed graph.
+    rec_network : nx.Graph
+        The REC river network, a directed graph.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing edges that are absent from the REC1 river network and require addition.
+        A GeoDataFrame containing edges that are absent from the REC river network and require addition.
     """
     # Check for existing edges in the river network
     edge_exists = prepared_network_data.apply(
         lambda row:
-        rec1_network.has_edge(row["first_node"], row["last_node"]) or
-        rec1_network.has_edge(row["last_node"], row["first_node"]),
+        rec_network.has_edge(row["first_node"], row["last_node"]) or
+        rec_network.has_edge(row["last_node"], row["first_node"]),
         axis=1
     )
-    # Select edges that are absent in the REC1 river network
+    # Select edges that are absent in the REC river network
     absent_edges = prepared_network_data[~edge_exists].reset_index(drop=True)
     # Filter edges that have both the largest catchment area and both nodes intersect the catchment_area
     absent_edges_to_add = absent_edges[absent_edges["is_largest_area"]]
@@ -271,10 +271,10 @@ def identify_absent_edges_to_add(rec1_network: nx.Graph, prepared_network_data: 
 def add_absent_edges_to_network(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
-        rec1_network: nx.Graph,
+        rec_network: nx.Graph,
         prepared_network_data: gpd.GeoDataFrame) -> None:
     """
-    Add absent edges that are required for the current river network construction to the REC1 river network along with
+    Add absent edges that are required for the current river network construction to the REC river network along with
     their attributes.
 
     Parameters
@@ -283,8 +283,8 @@ def add_absent_edges_to_network(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame,
         A GeoDataFrame representing the catchment area.
-    rec1_network : nx.Graph
-        The REC1 river network, a directed graph, to which absent edges will be added.
+    rec_network : nx.Graph
+        The REC river network, a directed graph, to which absent edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
 
@@ -293,8 +293,8 @@ def add_absent_edges_to_network(
     None
         This function does not return any value.
     """
-    # Identify edges that are absent from the REC1 river network and require addition
-    absent_edges_to_add = identify_absent_edges_to_add(rec1_network, prepared_network_data)
+    # Identify edges that are absent from the REC river network and require addition
+    absent_edges_to_add = identify_absent_edges_to_add(rec_network, prepared_network_data)
 
     # Check if there are any absent edges to add
     if not absent_edges_to_add.empty:
@@ -331,8 +331,8 @@ def add_absent_edges_to_network(
             else:
                 from_node, to_node = absent_edge["last_node"], absent_edge["first_node"]
 
-            # Add the edge to the REC1 network with its attributes
-            rec1_network.add_edge(
+            # Add the edge to the REC network with its attributes
+            rec_network.add_edge(
                 from_node,
                 to_node,
                 objectid=absent_edge["objectid"],
@@ -347,22 +347,22 @@ def add_absent_edges_to_network(
 
 def add_edge_directions_to_network_data(
         engine: Engine,
-        rec1_network_id: int,
-        rec1_network: nx.Graph,
+        rec_network_id: int,
+        rec_network: nx.Graph,
         prepared_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Add edge directions to the river network data based on the provided REC1 river network.
-    Subsequently, eliminate REC1 geometries from the network data where the edge direction is absent (None), and
-    append these excluded REC1 geometries to the relevant database table.
+    Add edge directions to the river network data based on the provided REC river network.
+    Subsequently, eliminate REC geometries from the network data where the edge direction is absent (None), and
+    append these excluded REC geometries to the relevant database table.
 
     Parameters
     ----------
     engine : Engine
         The engine used to connect to the database.
-    rec1_network_id : int
+    rec_network_id : int
         An identifier for the river network associated with the current run.
-    rec1_network : nx.Graph
-        The REC1 river network, a directed graph, used to determine the edge directions.
+    rec_network : nx.Graph
+        The REC river network, a directed graph, used to determine the edge directions.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
 
@@ -377,12 +377,12 @@ def add_edge_directions_to_network_data(
     directions = []
     # Iterate over rows in the network data
     for _, row in network_data.iterrows():
-        # Check if there's an edge from first_node to last_node in REC1 network
-        if rec1_network.has_edge(row["first_node"], row["last_node"]):
+        # Check if there's an edge from first_node to last_node in REC network
+        if rec_network.has_edge(row["first_node"], row["last_node"]):
             # If there's an edge from first_node to last_node, the edge direction is 'to'
             directions.append("to")
-        # Check if there's an edge from last_node to first_node in REC1 network
-        elif rec1_network.has_edge(row["last_node"], row["first_node"]):
+        # Check if there's an edge from last_node to first_node in REC network
+        elif rec_network.has_edge(row["last_node"], row["first_node"]):
             # If there's an edge from last_node to first_node, the edge direction is 'from'
             directions.append("from")
         else:
@@ -391,46 +391,46 @@ def add_edge_directions_to_network_data(
     # Add the computed edge directions to the network data as a new column
     network_data["node_direction"] = directions
     # Remove rows from the network data where the edge direction is None
-    rec1_network_data = network_data[~network_data["node_direction"].isna()].reset_index(drop=True)
+    rec_network_data = network_data[~network_data["node_direction"].isna()].reset_index(drop=True)
     # Identify edges that were not added to the network
-    rec1_network_exclusions = network_data[network_data["node_direction"].isna()].reset_index(drop=True)
-    # Add excluded REC1 geometries in the River Network to the relevant database table
-    add_network_exclusions_to_db(engine, rec1_network_id, rec1_network_exclusions,
+    rec_network_exclusions = network_data[network_data["node_direction"].isna()].reset_index(drop=True)
+    # Add excluded REC geometries in the River Network to the relevant database table
+    add_network_exclusions_to_db(engine, rec_network_id, rec_network_exclusions,
                                  exclusion_cause="undetermined edge direction")
     # Return the updated network data with added edge directions
-    return rec1_network_data
+    return rec_network_data
 
 
 def remove_unconnected_edges_from_network(
         engine: Engine,
-        rec1_network_id: int,
-        rec1_network: nx.Graph,
-        rec1_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        rec_network_id: int,
+        rec_network: nx.Graph,
+        rec_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Remove REC1 river network edges that are not connected to their respective sea-draining catchment's end nodes.
+    Remove REC river network edges that are not connected to their respective sea-draining catchment's end nodes.
 
     Parameters
     ----------
     engine : Engine
         The engine used to connect to the database.
-    rec1_network_id : int
+    rec_network_id : int
         An identifier for the river network associated with the current run.
-    rec1_network : nx.Graph
-        The REC1 river network, a directed graph, used to identify edges that are connected to the end nodes of their
+    rec_network : nx.Graph
+        The REC river network, a directed graph, used to identify edges that are connected to the end nodes of their
         respective sea-draining catchments.
-    rec1_network_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 river network data with added edge directions.
+    rec_network_data : gpd.GeoDataFrame
+        A GeoDataFrame containing the REC river network data with added edge directions.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the modified river network data with REC1 geometries removed if they are not
+        A GeoDataFrame containing the modified river network data with REC geometries removed if they are not
         connected to their end nodes within their respective sea-draining catchments.
     """
     # Group the data by sea-draining catchment ID
-    grouped_data = rec1_network_data.groupby("catch_id")
-    # Initialize an empty list to keep track of REC1 geometries that need to be removed
-    rec1_edges_to_remove = []
+    grouped_data = rec_network_data.groupby("catch_id")
+    # Initialize an empty list to keep track of REC geometries that need to be removed
+    rec_edges_to_remove = []
     # Iterate through each sea-draining catchment's network data
     for _, data in grouped_data:
         # Find the edge with the largest area within the current catchment
@@ -444,31 +444,31 @@ def remove_unconnected_edges_from_network(
             # Determine the starting node of the current edge based on its direction
             edge_start_node = edge["first_node"] if edge["node_direction"] == "to" else edge["last_node"]
             # Check if there is a path from the edge's start node to the catchment's end node
-            if not nx.has_path(rec1_network, edge_start_node, catch_end_node):
-                # If there isn't a path, remove the edge from the REC1 network
-                rec1_network.remove_edge(edge["first_node"], edge["last_node"])
+            if not nx.has_path(rec_network, edge_start_node, catch_end_node):
+                # If there isn't a path, remove the edge from the REC network
+                rec_network.remove_edge(edge["first_node"], edge["last_node"])
                 # Add the edge's object ID to the list of edges to be removed
-                rec1_edges_to_remove.append(edge["objectid"])
-    # Filter to remove REC1 geometries that were excluded
-    rec1_network_data_update = (
-        rec1_network_data[~rec1_network_data["objectid"].isin(rec1_edges_to_remove)].reset_index(drop=True)
+                rec_edges_to_remove.append(edge["objectid"])
+    # Filter to remove REC geometries that were excluded
+    rec_network_data_update = (
+        rec_network_data[~rec_network_data["objectid"].isin(rec_edges_to_remove)].reset_index(drop=True)
     )
-    # Create a GeoDataFrame containing the edges that were removed from the REC1 network
-    rec1_network_exclusions = (
-        rec1_network_data[rec1_network_data["objectid"].isin(rec1_edges_to_remove)].reset_index(drop=True)
+    # Create a GeoDataFrame containing the edges that were removed from the REC network
+    rec_network_exclusions = (
+        rec_network_data[rec_network_data["objectid"].isin(rec_edges_to_remove)].reset_index(drop=True)
     )
-    # Add excluded REC1 geometries in the River Network to the relevant database table
-    add_network_exclusions_to_db(engine, rec1_network_id, rec1_network_exclusions,
+    # Add excluded REC geometries in the River Network to the relevant database table
+    add_network_exclusions_to_db(engine, rec_network_id, rec_network_exclusions,
                                  exclusion_cause="unconnected to its respective sea-draining catchment end node")
-    return rec1_network_data_update
+    return rec_network_data_update
 
 
-def build_rec1_river_network(
+def build_rec_river_network(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
-        rec1_network_id: int) -> Tuple[nx.DiGraph, gpd.GeoDataFrame]:
+        rec_network_id: int) -> Tuple[nx.DiGraph, gpd.GeoDataFrame]:
     """
-    Builds a river network for the catchment area using the REC1 data.
+    Builds a river network for the catchment area using the REC data.
 
     Parameters
     ----------
@@ -476,41 +476,41 @@ def build_rec1_river_network(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    rec1_network_id : int
+    rec_network_id : int
         An identifier for the river network associated with the current run.
 
     Returns
     -------
     Tuple[nx.DiGraph, gpd.GeoDataFrame]
-        A tuple containing the constructed REC1 river network, represented as a directed graph (DiGraph),
+        A tuple containing the constructed REC river network, represented as a directed graph (DiGraph),
         along with its associated data in the form of a GeoDataFrame.
     """
-    # Get REC1 data from the database for the catchment area
-    rec1_data_with_sdc = river_data_to_from_db.get_rec1_data_with_sdc_from_db(engine, catchment_area, rec1_network_id)
+    # Get REC data from the database for the catchment area
+    rec_data_with_sdc = river_data_to_from_db.get_rec_data_with_sdc_from_db(engine, catchment_area, rec_network_id)
     # Prepare network data for construction
-    prepared_network_data = prepare_network_data_for_construction(catchment_area, rec1_data_with_sdc)
-    # Initialize an empty directed graph to represent the REC1 river network
-    rec1_network = nx.DiGraph()
-    # Add nodes to the REC1 river network
-    add_nodes_to_network(rec1_network, prepared_network_data)
-    # Connect nodes in the REC1 river network with initial edges
-    add_initial_edges_to_network(rec1_network, prepared_network_data)
+    prepared_network_data = prepare_network_data_for_construction(catchment_area, rec_data_with_sdc)
+    # Initialize an empty directed graph to represent the REC river network
+    rec_network = nx.DiGraph()
+    # Add nodes to the REC river network
+    add_nodes_to_network(rec_network, prepared_network_data)
+    # Connect nodes in the REC river network with initial edges
+    add_initial_edges_to_network(rec_network, prepared_network_data)
     # Complete the network by adding necessary remaining edges
-    add_absent_edges_to_network(engine, catchment_area, rec1_network, prepared_network_data)
-    # Integrate edge directions into the network data based on the REC1 river network structure
-    network_data = add_edge_directions_to_network_data(engine, rec1_network_id, rec1_network, prepared_network_data)
+    add_absent_edges_to_network(engine, catchment_area, rec_network, prepared_network_data)
+    # Integrate edge directions into the network data based on the REC river network structure
+    network_data = add_edge_directions_to_network_data(engine, rec_network_id, rec_network, prepared_network_data)
     # Identify and remove unconnected edges from the network
-    rec1_network_data = remove_unconnected_edges_from_network(engine, rec1_network_id, rec1_network, network_data)
+    rec_network_data = remove_unconnected_edges_from_network(engine, rec_network_id, rec_network, network_data)
     # Identify nodes with neither incoming nor outgoing edges and remove them from the network
-    isolated_nodes = [node for node in rec1_network.nodes() if not rec1_network.degree(node)]
-    rec1_network.remove_nodes_from(isolated_nodes)
-    # Return the constructed REC1 river network and its associated data
-    return rec1_network, rec1_network_data
+    isolated_nodes = [node for node in rec_network.nodes() if not rec_network.degree(node)]
+    rec_network.remove_nodes_from(isolated_nodes)
+    # Return the constructed REC river network and its associated data
+    return rec_network, rec_network_data
 
 
-def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Tuple[nx.Graph, gpd.GeoDataFrame]:
+def get_rec_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Tuple[nx.Graph, gpd.GeoDataFrame]:
     """
-    Retrieve or create REC1 river network for the specified catchment area.
+    Retrieve or create REC river network for the specified catchment area.
 
     Parameters
     ----------
@@ -522,20 +522,20 @@ def get_rec1_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame) -> 
     Returns
     -------
     Tuple[nx.Graph, gpd.GeoDataFrame]
-        A tuple containing the REC1 river network as a directed graph (DiGraph) and its associated data
+        A tuple containing the REC river network as a directed graph (DiGraph) and its associated data
         as a GeoDataFrame.
     """
-    # Obtain the identifier for the REC1 river network associated with each run
-    rec1_network_id = get_next_network_id(engine)
-    # Retrieve existing REC1 river network metadata for the specified catchment area from the database
+    # Obtain the identifier for the REC river network associated with each run
+    rec_network_id = get_next_network_id(engine)
+    # Retrieve existing REC river network metadata for the specified catchment area from the database
     existing_network_meta = get_existing_network_metadata_from_db(engine, catchment_area)
 
     if existing_network_meta.empty:
-        # If no existing REC1 river network metadata is found, build the REC1 river network
-        rec1_network, rec1_network_data = build_rec1_river_network(engine, catchment_area, rec1_network_id)
-        # Store the newly created REC1 river network in the database
-        store_rec1_network_to_db(engine, catchment_area, rec1_network_id, rec1_network, rec1_network_data)
+        # If no existing REC river network metadata is found, build the REC river network
+        rec_network, rec_network_data = build_rec_river_network(engine, catchment_area, rec_network_id)
+        # Store the newly created REC river network in the database
+        store_rec_network_to_db(engine, catchment_area, rec_network_id, rec_network, rec_network_data)
     else:
-        # If existing REC1 river network metadata is found, retrieve the network and its associated data
-        rec1_network, rec1_network_data = get_existing_network(engine, existing_network_meta)
-    return rec1_network, rec1_network_data
+        # If existing REC river network metadata is found, retrieve the network and its associated data
+        rec_network, rec_network_data = get_existing_network(engine, existing_network_meta)
+    return rec_network, rec_network_data

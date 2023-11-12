@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Fetch REC1 data in New Zealand from NIWA using the ArcGIS REST API.
+Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.
 """
 
 import logging
@@ -18,18 +18,18 @@ from src.digitaltwin.utils import get_nz_boundary
 
 log = logging.getLogger(__name__)
 
-# URL for retrieving REC1 data from NIWA using the ArcGIS REST API
-REC1_API_URL = "https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2"
+# URL for retrieving REC data from NIWA using the ArcGIS REST API
+REC_API_URL = "https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2"
 
 
-def get_feature_layer_record_counts(url: str = REC1_API_URL) -> Tuple[int, int]:
+def get_feature_layer_record_counts(url: str = REC_API_URL) -> Tuple[int, int]:
     """
-    Retrieves the maximum and total record counts from the REC1 feature layer.
+    Retrieves the maximum and total record counts from the REC feature layer.
 
     Parameters
     ----------
-    url : str = REC1_API_URL
-        The URL of the REC1 feature layer. Defaults to 'REC1_API_URL'.
+    url : str = REC_API_URL
+        The URL of the REC feature layer. Defaults to 'REC_API_URL'.
 
     Returns
     -------
@@ -58,7 +58,7 @@ def gen_api_query_param_list(
         max_record_count: int,
         total_record_count: int) -> List[Dict[str, Union[str, int]]]:
     """
-    Generate a list of API query parameters used to retrieve REC1 data in New Zealand.
+    Generate a list of API query parameters used to retrieve REC data in New Zealand.
 
     Parameters
     ----------
@@ -72,7 +72,7 @@ def gen_api_query_param_list(
     Returns
     -------
     List[Dict[str, Union[str, int]]]
-        A list of API query parameters used to retrieve REC1 data in New Zealand.
+        A list of API query parameters used to retrieve REC data in New Zealand.
     """
     # Get the New Zealand boundary geometry in the specified CRS
     nz_boundary = get_nz_boundary(engine, to_crs=2193)
@@ -106,26 +106,26 @@ def gen_api_query_param_list(
     return query_param_list
 
 
-async def fetch_rec1_data(
+async def fetch_rec_data(
         session: aiohttp.ClientSession,
         query_param: Dict[str, Union[str, int]],
-        url: str = f"{REC1_API_URL}/query") -> gpd.GeoDataFrame:
+        url: str = f"{REC_API_URL}/query") -> gpd.GeoDataFrame:
     """
-    Fetch REC1 data using the provided query parameters within a single API call.
+    Fetch REC data using the provided query parameters within a single API call.
 
     Parameters
     ----------
     session : aiohttp.ClientSession
         An instance of `aiohttp.ClientSession` used for making HTTP requests.
     query_param : Dict[str, Union[str, int]]
-        The query parameters used to retrieve REC1 data.
-    url : str = REC1_API_URL
-        The query URL of the REC1 feature layer.
+        The query parameters used to retrieve REC data.
+    url : str = REC_API_URL
+        The query URL of the REC feature layer.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the fetched REC1 data.
+        A GeoDataFrame containing the fetched REC data.
     """
     # Send a GET request to the provided query URL with the query parameters
     async with session.get(url, params=query_param) as resp:
@@ -134,73 +134,73 @@ async def fetch_rec1_data(
         # Extract the features from the response
         features = resp_dict["features"]
         # Create a Pandas DataFrame from the attributes of each feature in the response
-        rec1_features = pd.DataFrame([feature['attributes'] for feature in features])
+        rec_features = pd.DataFrame([feature['attributes'] for feature in features])
         # Extract the geometries from the response and create a list of LineString objects
-        rec1_geometries = [LineString(feature['geometry']['paths'][0]) for feature in features]
-        # Create a GeoDataFrame with REC1 features and geometries, with specified CRS
-        rec1_gdf = gpd.GeoDataFrame(rec1_features, geometry=rec1_geometries, crs=resp_dict['spatialReference']['wkid'])
-        # Return the GeoDataFrame containing REC1 data
-        return rec1_gdf
+        rec_geometries = [LineString(feature['geometry']['paths'][0]) for feature in features]
+        # Create a GeoDataFrame with REC features and geometries, with specified CRS
+        rec_data = gpd.GeoDataFrame(rec_features, geometry=rec_geometries, crs=resp_dict['spatialReference']['wkid'])
+        # Return the GeoDataFrame containing REC data
+        return rec_data
 
 
-async def fetch_rec1_data_for_nz(
+async def fetch_rec_data_for_nz(
         query_param_list: List[Dict[str, Union[str, int]]],
-        url: str = REC1_API_URL) -> gpd.GeoDataFrame:
+        url: str = REC_API_URL) -> gpd.GeoDataFrame:
     """
-    Iterate over the list of API query parameters to fetch REC1 data in New Zealand.
+    Iterate over the list of API query parameters to fetch REC data in New Zealand.
 
     Parameters
     ----------
     query_param_list : List[Dict[str, Union[str, int]]]
-        A list of API query parameters used to retrieve REC1 data in New Zealand.
-    url : str = REC1_API_URL
-        The URL of the REC1 feature layer. Defaults to 'REC1_API_URL'.
+        A list of API query parameters used to retrieve REC data in New Zealand.
+    url : str = REC_API_URL
+        The URL of the REC feature layer. Defaults to 'REC_API_URL'.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the fetched REC1 data in New Zealand.
+        A GeoDataFrame containing the fetched REC data in New Zealand.
     """
     async with aiohttp.ClientSession() as session:
-        # Construct the query URL for the REC1 feature layer
+        # Construct the query URL for the REC feature layer
         query_url = f"{url}/query"
-        # Create a list of tasks to fetch REC1 data for each query parameter
-        tasks = [fetch_rec1_data(session, query_param, query_url) for query_param in query_param_list]
+        # Create a list of tasks to fetch REC data for each query parameter
+        tasks = [fetch_rec_data(session, query_param, query_url) for query_param in query_param_list]
         # Wait for all tasks to complete and retrieve the results
         query_results = await asyncio.gather(*tasks, return_exceptions=True)
         # Concatenate the results into a single GeoDataFrame
-        rec1_data = gpd.GeoDataFrame(pd.concat(query_results))
+        rec_data = gpd.GeoDataFrame(pd.concat(query_results))
         # Convert all column names to lowercase
-        rec1_data.columns = rec1_data.columns.str.lower()
+        rec_data.columns = rec_data.columns.str.lower()
         # Remove duplicate records based on the 'objectid' column, preserving the first occurrence
-        rec1_data = rec1_data.drop_duplicates(subset='objectid', keep='first')
+        rec_data = rec_data.drop_duplicates(subset='objectid', keep='first')
         # Sort the GeoDataFrame by the 'objectid' column and reset the index
-        rec1_data = rec1_data.sort_values(by=['objectid']).reset_index(drop=True)
-    return rec1_data
+        rec_data = rec_data.sort_values(by=['objectid']).reset_index(drop=True)
+    return rec_data
 
 
-def fetch_rec1_data_from_niwa(engine: Engine, url: str = REC1_API_URL) -> gpd.GeoDataFrame:
+def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoDataFrame:
     """
-    Retrieve REC1 data in New Zealand from NIWA using the ArcGIS REST API.
+    Retrieve REC data in New Zealand from NIWA using the ArcGIS REST API.
 
     Parameters
     ----------
     engine : Engine
         The engine used to connect to the database.
-    url : str = REC1_API_URL
-        The URL of the REC1 feature layer. Defaults to 'REC1_API_URL'.
+    url : str = REC_API_URL
+        The URL of the REC feature layer. Defaults to 'REC_API_URL'.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the fetched REC1 data in New Zealand.
+        A GeoDataFrame containing the fetched REC data in New Zealand.
     """
-    # Retrieves the maximum and total record counts from the REC1 feature layer
+    # Retrieves the maximum and total record counts from the REC feature layer
     max_record_count, total_record_count = get_feature_layer_record_counts(url)
-    # Generate a list of API query parameters used to retrieve REC1 data in New Zealand
+    # Generate a list of API query parameters used to retrieve REC data in New Zealand
     query_param_list = gen_api_query_param_list(engine, max_record_count, total_record_count)
-    # Iterate over the list of API query parameters to fetch REC1 data in New Zealand
-    rec1_data = asyncio.run(fetch_rec1_data_for_nz(query_param_list, url))
-    # Log that the REC1 data has been successfully fetched
-    log.info("Successfully retrieved REC1 data.")
-    return rec1_data
+    # Iterate over the list of API query parameters to fetch REC data in New Zealand
+    rec_data = asyncio.run(fetch_rec_data_for_nz(query_param_list, url))
+    # Log that the REC data has been successfully fetched
+    log.info("Successfully retrieved REC data.")
+    return rec_data
