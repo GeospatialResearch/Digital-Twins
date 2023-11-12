@@ -111,9 +111,9 @@ class RiverNetworkExclusions(Base):
     )
 
 
-class RiverNetworkOutput(Base):
+class RiverNetwork(Base):
     """
-    Class representing the 'rec_network_output' table.
+    Class representing the 'rec_network' table.
 
     Attributes
     ----------
@@ -130,7 +130,7 @@ class RiverNetworkOutput(Base):
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """
-    __tablename__ = "rec_network_output"
+    __tablename__ = "rec_network"
     rec_network_id = Column(Integer, primary_key=True,
                             comment="An identifier for the river network associated with each run")
     network_path = Column(String, comment="path to the rec river network file")

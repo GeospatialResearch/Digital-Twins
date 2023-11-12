@@ -25,7 +25,7 @@ from src.digitaltwin.tables import (
     create_table,
     execute_query,
     RiverNetworkExclusions,
-    RiverNetworkOutput
+    RiverNetwork
 )
 
 log = logging.getLogger(__name__)
@@ -194,20 +194,20 @@ def store_rec_network_to_db(
     # Save the REC river network data to the specified file
     network_data.to_file(str(network_data_path), driver="GeoJSON")
 
-    # Create the REC Network Output table in the database if it doesn't exist
-    create_table(engine, RiverNetworkOutput)
+    # Create the REC Network table in the database if it doesn't exist
+    create_table(engine, RiverNetwork)
     # Get metadata related to the REC Network Output
     network_path, network_data_path, geometry = get_network_output_metadata(
         network_path, network_data_path, catchment_area)
-    # Create a new query object representing the REC Network Output metadata
-    query = RiverNetworkOutput(
+    # Create a new query object representing the REC Network metadata
+    query = RiverNetwork(
         rec_network_id=rec_network_id,
         network_path=network_path,
         network_data_path=network_data_path,
         geometry=geometry)
-    # Execute the query to store the REC Network Output metadata in the database
+    # Execute the query to store the REC Network metadata in the database
     execute_query(engine, query)
-    # Log a message indicating the successful storage of REC network output metadata in the database
+    # Log a message indicating the successful storage of REC network metadata in the database
     log.info("REC river network metadata successfully stored in the database.")
 
 
@@ -227,15 +227,15 @@ def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.Ge
     gpd.GeoDataFrame
         A GeoDataFrame containing the existing REC river network metadata for the specified catchment area.
     """
-    # Create the REC Network Output table in the database if it doesn't exist
-    create_table(engine, RiverNetworkOutput)
+    # Create the REC Network table in the database if it doesn't exist
+    create_table(engine, RiverNetwork)
     # Extract the catchment polygon from the catchment area and convert it to Well-Known Text (WKT) format
     catchment_polygon = catchment_area["geometry"].iloc[0]
     catchment_polygon_wkt = shapely.wkt.dumps(catchment_polygon, rounding_precision=6)
     # Query the REC Network Output table to find existing REC river network metadata for the catchment area
     query = f"""
     SELECT *
-    FROM {RiverNetworkOutput.__tablename__}
+    FROM {RiverNetwork.__tablename__}
     WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_polygon_wkt}', 2193));
     """
     # Fetch the query result as a GeoPandas DataFrame
