@@ -19,7 +19,7 @@ from __init__ import __version__
 
 # -- Project information -----------------------------------------------------
 
-project = 'Digital Twin for Flood Resilience in Aotearoa New Zealand'
+project = 'Flood Resilience Digital Twin (FReDT)'
 copyright = '2023, Geospatial Research Institute Toi Hangarau'
 author = 'Geospatial Research Institute Toi Hangarau'
 
@@ -61,4 +61,7 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+latex_elements = {
+    'sphinxsetup': 'verbatimforcewraps'
+}
 

@@ -1,4 +1,4 @@
-# Digital Twin for Flood Resilience in Aotearoa, New Zealand
+# Flood Resilience Digital Twin (FReDT)
 ## Introduction
 
 According to the National Emergency Management Agency, flooding is the greatest hazard in New Zealand, in terms of frequency, losses and civil defence emergencies. 
