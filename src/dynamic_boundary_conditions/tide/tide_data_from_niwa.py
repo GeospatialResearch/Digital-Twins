@@ -18,8 +18,8 @@ from src import config
 from src.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
 
 # URLs for retrieving tide data from the NIWA Tide API in JSON and CSV formats, respectively
-TIDE_API_URL_DATA = config.get_env_variable("TIDE_API_URL_DATA")
-TIDE_API_URL_DATA_CSV = config.get_env_variable("TIDE_API_URL_DATA_CSV")
+TIDE_API_URL_DATA = "https://api.niwa.co.nz/tides/data"
+TIDE_API_URL_DATA_CSV = "https://api.niwa.co.nz/tides/data.csv"
 
 
 def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[float, float, str]:
