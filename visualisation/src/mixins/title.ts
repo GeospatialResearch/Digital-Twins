@@ -4,7 +4,7 @@
 import Vue from "vue";
 
 /** The base title of the application, displayed in the document title */
-export const appBaseTitle = "Digital Twin for Flood Resilience";
+export const appBaseTitle = "Flood Resilience Digital Twin (FReDT)";
 
 export default {
   /**
