@@ -154,7 +154,7 @@ async def fetch_rec_data_for_nz(
     query_param_list : List[Dict[str, Union[str, int]]]
         A list of API query parameters used to retrieve REC data in New Zealand.
     url : str = REC_API_URL
-        The URL of the REC feature layer. Defaults to 'REC_API_URL'.
+        The URL of the REC feature layer. Defaults to `REC_API_URL`.
 
     Returns
     -------
@@ -188,7 +188,7 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
     engine : Engine
         The engine used to connect to the database.
     url : str = REC_API_URL
-        The URL of the REC feature layer. Defaults to 'REC_API_URL'.
+        The URL of the REC feature layer. Defaults to `REC_API_URL`.
 
     Returns
     -------
