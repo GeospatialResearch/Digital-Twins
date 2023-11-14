@@ -4,7 +4,7 @@ Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.
 """
 
 import logging
-from typing import Tuple, List, Dict, Union
+from typing import Tuple, List, Dict, Union, NamedTuple
 import asyncio
 
 import aiohttp
@@ -22,7 +22,22 @@ log = logging.getLogger(__name__)
 REC_API_URL = "https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2"
 
 
-def get_feature_layer_record_counts(url: str = REC_API_URL) -> Tuple[int, int]:
+class RecordCounts(NamedTuple):
+    """
+    Represents the record counts of the REC feature layer.
+
+    Attributes
+    ----------
+    max_record_count : int
+        The maximum number of records that will be returned per query.
+    total_record_count : int
+        The total number of records available in the feature layer.
+    """
+    max_record_count: int
+    total_record_count: int
+
+
+def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     """
     Retrieves the maximum and total record counts from the REC feature layer.
 
@@ -33,10 +48,8 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> Tuple[int, int]:
 
     Returns
     -------
-    Tuple[int, int]
-        A tuple of integers containing the maximum record count and the total record count.
-        - max_record_count (int): The maximum number of records that will be returned per query.
-        - total_record_count (int): The total number of records available in the feature layer.
+    RecordCounts
+        A named tuple containing the maximum and total record counts of the REC feature layer.
     """
     # Set up parameters for the initial request to get the maximum record count
     params = {"f": "json"}
@@ -49,8 +62,8 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> Tuple[int, int]:
     response = requests.get(url=f"{url}/query", params=params)
     # Extract the total record count from the response
     total_record_count = response.json()["count"]
-    # Return a tuple containing the max and total record counts
-    return max_record_count, total_record_count
+    # Returns the maximum and total record counts of the REC feature layer
+    return RecordCounts(max_record_count, total_record_count)
 
 
 def gen_api_query_param_list(
