@@ -66,7 +66,7 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     return RecordCounts(max_record_count, total_record_count)
 
 
-def gen_api_query_param_list(
+def gen_rec_query_param_list(
         engine: Engine,
         max_record_count: int,
         total_record_count: int) -> List[Dict[str, Union[str, int]]]:
@@ -211,7 +211,7 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
     # Retrieves the maximum and total record counts from the REC feature layer
     max_record_count, total_record_count = get_feature_layer_record_counts(url)
     # Generate a list of API query parameters used to retrieve REC data in New Zealand
-    query_param_list = gen_api_query_param_list(engine, max_record_count, total_record_count)
+    query_param_list = gen_rec_query_param_list(engine, max_record_count, total_record_count)
     # Iterate over the list of API query parameters to fetch REC data in New Zealand
     rec_data = asyncio.run(fetch_rec_data_for_nz(query_param_list, url))
     # Log that the REC data has been successfully fetched
