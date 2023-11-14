@@ -183,8 +183,8 @@ async def fetch_tide_data(
     query_param : Dict[str, Union[str, int]]
         The query parameters used to retrieve tide data for a specific location and time period.
     url : str = TIDE_API_URL_DATA
-        Tide API HTTP request URL. Defaults to 'https://api.niwa.co.nz/tides/data'.
-        Can be either 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.
+        Tide API HTTP request URL. Defaults to `TIDE_API_URL_DATA`.
+        Can be either `TIDE_API_URL_DATA` or `TIDE_API_URL_DATA_CSV`.
 
     Returns
     -------
@@ -237,8 +237,8 @@ async def fetch_tide_data_for_requested_period(
     query_param_list : List[Dict[str, Union[str, int]]]
         A list of API query parameters used to retrieve tide data for the requested period.
     url : str = TIDE_API_URL_DATA
-        Tide API HTTP request URL. Defaults to 'https://api.niwa.co.nz/tides/data'.
-        Can be either 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.
+        Tide API HTTP request URL. Defaults to `TIDE_API_URL_DATA`.
+        Can be either `TIDE_API_URL_DATA` or `TIDE_API_URL_DATA_CSV`.
 
     Returns
     -------
