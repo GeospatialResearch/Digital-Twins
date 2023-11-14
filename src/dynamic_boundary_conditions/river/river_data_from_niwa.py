@@ -29,7 +29,7 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> Tuple[int, int]:
     Parameters
     ----------
     url : str = REC_API_URL
-        The URL of the REC feature layer. Defaults to 'REC_API_URL'.
+        The URL of the REC feature layer. Defaults to `REC_API_URL`.
 
     Returns
     -------
