@@ -99,7 +99,7 @@ def get_date_ranges(
     return date_ranges
 
 
-def gen_api_query_param_list(
+def gen_tide_query_param_list(
         lat: Union[int, float],
         long: Union[int, float],
         date_ranges: Dict[date, int],
@@ -345,7 +345,7 @@ def fetch_tide_data_from_niwa(
         # Get the latitude, longitude, and position of the query location
         lat, long, position = get_query_loc_coords_position(query_loc_row)
         # Generate a list of API query parameters used to retrieve tide data for the requested period
-        query_param_list = gen_api_query_param_list(lat, long, date_ranges, interval_mins, datum)
+        query_param_list = gen_tide_query_param_list(lat, long, date_ranges, interval_mins, datum)
         # Iterate over the list of API query parameters to fetch tide data for the requested period
         query_loc_tide = asyncio.run(fetch_tide_data_for_requested_period(query_param_list))
         # Add the 'position' column to indicate the position of the query location
