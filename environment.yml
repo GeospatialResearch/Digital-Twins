@@ -28,6 +28,7 @@ dependencies:
   - redis-py
   - pip:
     - geovoronoi==0.4.0
+    - selenium
     - geoapis
     - celery==5.2.7
     - gunicorn==20.1.0

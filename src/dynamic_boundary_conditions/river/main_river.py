@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Main river script used to read and store REC1 data in the database, fetch OSM waterways data, create a river network
+Main river script used to read and store REC data in the database, fetch OSM waterways data, create a river network
 and its associated data, and generate the requested river model input for BG-Flood etc.
 """
 
@@ -125,7 +125,7 @@ def main(
         bound: BoundType = BoundType.MIDDLE,
         log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
-    Read and store REC1 data in the database, fetch OSM waterways data, create a river network and its associated data,
+    Read and store REC data in the database, fetch OSM waterways data, create a river network and its associated data,
     and generate the requested river model input for BG-Flood.
 
     Parameters
@@ -142,7 +142,7 @@ def main(
         The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
         Mandatory when 'maf' is set to False, and should be set to None when 'maf' is set to True.
     bound : BoundType = BoundType.MIDDLE
-        Set the type of bound (estimate) for the REC1 river inflow scenario data.
+        Set the type of bound (estimate) for the REC river inflow scenario data.
         Valid options include: 'BoundType.LOWER', 'BoundType.MIDDLE', or 'BoundType.UPPER'.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
@@ -172,18 +172,18 @@ def main(
     # Remove any existing river model inputs in the BG-Flood directory
     remove_existing_river_inputs(bg_flood_dir)
 
-    # Store REC1 data to the database
-    river_data_to_from_db.store_rec1_data_to_db(engine)
-    # Get the REC1 river network for the catchment area
-    _, rec1_network_data = river_network_for_aoi.get_rec1_river_network(engine, catchment_area)
+    # Store REC data to the database
+    river_data_to_from_db.store_rec_data_to_db(engine)
+    # Get the REC river network for the catchment area
+    _, rec_network_data = river_network_for_aoi.get_rec_river_network(engine, catchment_area)
 
-    # Obtain REC1 river inflow data along with the corresponding river input points used in the BG-Flood model
-    rec1_inflows_data = river_inflows.get_rec1_inflows_with_input_points(
-        engine, catchment_area, rec1_network_data, distance_m=300)
+    # Obtain REC river inflow data along with the corresponding river input points used in the BG-Flood model
+    rec_inflows_data = river_inflows.get_rec_inflows_with_input_points(
+        engine, catchment_area, rec_network_data, distance_m=300)
 
-    # Generate hydrograph data for the requested REC1 river inflow scenario
+    # Generate hydrograph data for the requested REC river inflow scenario
     hydrograph_data = hydrograph.get_hydrograph_data(
-        rec1_inflows_data,
+        rec_inflows_data,
         flow_length_mins=flow_length_mins,
         time_to_peak_mins=time_to_peak_mins,
         maf=maf,

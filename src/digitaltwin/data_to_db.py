@@ -11,7 +11,7 @@ import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
 
-from src.digitaltwin.tables import UserLogInfo, create_table, check_table_exists, execute_query
+from src.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
 from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
 
 log = logging.getLogger(__name__)
@@ -37,9 +37,9 @@ def get_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
         Data frame containing geospatial layers that have a coverage area of New Zealand.
     """
     # SQL query to retrieve geospatial layers that have a coverage area of New Zealand
-    nz_geo_query = """
+    nz_geo_query = f"""
     SELECT *
-    FROM geospatial_layers
+    FROM {GeospatialLayers.__tablename__}
     WHERE coverage_area = 'New Zealand' AND unique_column_name IS NULL;
     """
     # Retrieve geospatial layers using the provided SQL query
@@ -64,9 +64,9 @@ def get_non_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
         Data frame containing geospatial layers that do not have a coverage area of New Zealand.
     """
     # SQL query to retrieve geospatial layers that do not have coverage area of New Zealand
-    non_nz_query = """
+    non_nz_query = f"""
     SELECT *
-    FROM geospatial_layers
+    FROM {GeospatialLayers.__tablename__}
     WHERE unique_column_name IS NOT NULL AND (coverage_area != 'New Zealand' OR coverage_area IS NULL);
     """
     # Retrieve geospatial layers using the provided SQL query

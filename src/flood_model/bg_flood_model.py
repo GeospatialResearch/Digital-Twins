@@ -284,8 +284,8 @@ def prepare_bg_flood_model_inputs(
         model_output_path: pathlib.Path,
         hydro_dem_path: pathlib.Path,
         resolution: Union[int, float],
-        output_timestep: Union[int, float] = 0,
-        end_time: Union[int, float] = 0,
+        output_timestep: Union[int, float],
+        end_time: Union[int, float],
         mask: Union[int, float] = 9999,
         gpu_device: int = 0,
         small_nc: int = 0) -> None:
@@ -302,10 +302,10 @@ def prepare_bg_flood_model_inputs(
         The file path of the Hydrologically conditioned DEM (Hydro DEM) for the specified catchment area.
     resolution : Union[int, float]
         The grid resolution in meters for metric grids, representing the size of each grid cell.
-    output_timestep : Union[int, float] = 0
-        Time step between model outputs in seconds. Default value is 0.0 (no output generated).
-    end_time : Union[int, float] = 0
-        Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
+    output_timestep : Union[int, float]
+        Time step between model outputs in seconds. If the value is set to 0 then no output is generated.
+    end_time : Union[int, float]
+        Time in seconds when the model stops. If the value is set to 0 then the model initializes but does not run.
     mask : Union[int, float] = 9999
         The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
         the specified value. Default value is 9999.0 (no areas are masked).
@@ -354,8 +354,8 @@ def run_bg_flood_model(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
         model_output_path: pathlib.Path,
-        output_timestep: Union[int, float] = 0,
-        end_time: Union[int, float] = 0,
+        output_timestep: Union[int, float],
+        end_time: Union[int, float],
         resolution: Optional[Union[int, float]] = None,
         mask: Union[int, float] = 9999,
         gpu_device: int = 0,
@@ -371,10 +371,10 @@ def run_bg_flood_model(
         A GeoDataFrame representing the catchment area.
     model_output_path : pathlib.Path
         The new file path for saving the BG Flood model output with the current timestamp included in the filename.
-    output_timestep : Union[int, float] = 0
-        Time step between model outputs in seconds. Default value is 0.0 (no output generated).
-    end_time : Union[int, float] = 0
-        Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
+    output_timestep : Union[int, float]
+        Time step between model outputs in seconds. If the value is set to 0 then no output is generated.
+    end_time : Union[int, float]
+        Time in seconds when the model stops. If the value is set to 0 then the model initializes but does not run.
     resolution : Optional[Union[int, float]] = None
         The grid resolution in meters for metric grids, representing the size of each grid cell.
         If not provided (default is None), the resolution of the Hydrologically conditioned DEM will be used as
@@ -428,8 +428,8 @@ def run_bg_flood_model(
 
 def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
-        output_timestep: Union[int, float] = 0,
-        end_time: Union[int, float] = 0,
+        output_timestep: Union[int, float],
+        end_time: Union[int, float],
         resolution: Optional[Union[int, float]] = None,
         mask: Union[int, float] = 9999,
         gpu_device: int = 0,
@@ -443,10 +443,10 @@ def main(
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
-    output_timestep : Union[int, float] = 0
-        Time step between model outputs in seconds. Default value is 0.0 (no output generated).
-    end_time : Union[int, float] = 0
-        Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
+    output_timestep : Union[int, float]
+        Time step between model outputs in seconds. If the value is set to 0 then no output is generated.
+    end_time : Union[int, float]
+        Time in seconds when the model stops. If the value is set to 0 then the model initializes but does not run.
     resolution : Optional[Union[int, float]] = None
         The grid resolution in meters for metric grids, representing the size of each grid cell.
         If not provided (default is None), the resolution of the Hydrologically conditioned DEM will be used as

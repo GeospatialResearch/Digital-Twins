@@ -18,8 +18,8 @@ from src import config
 from src.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
 
 # URLs for retrieving tide data from the NIWA Tide API in JSON and CSV formats, respectively
-TIDE_API_URL_DATA = config.get_env_variable("TIDE_API_URL_DATA")
-TIDE_API_URL_DATA_CSV = config.get_env_variable("TIDE_API_URL_DATA_CSV")
+TIDE_API_URL_DATA = "https://api.niwa.co.nz/tides/data"
+TIDE_API_URL_DATA_CSV = "https://api.niwa.co.nz/tides/data.csv"
 
 
 def get_query_loc_coords_position(query_loc_row: gpd.GeoDataFrame) -> Tuple[float, float, str]:
@@ -99,7 +99,7 @@ def get_date_ranges(
     return date_ranges
 
 
-def gen_api_query_param_list(
+def gen_tide_query_param_list(
         lat: Union[int, float],
         long: Union[int, float],
         date_ranges: Dict[date, int],
@@ -183,8 +183,8 @@ async def fetch_tide_data(
     query_param : Dict[str, Union[str, int]]
         The query parameters used to retrieve tide data for a specific location and time period.
     url : str = TIDE_API_URL_DATA
-        Tide API HTTP request URL. Defaults to 'https://api.niwa.co.nz/tides/data'.
-        Can be either 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.
+        Tide API HTTP request URL. Defaults to `TIDE_API_URL_DATA`.
+        Can be either `TIDE_API_URL_DATA` or `TIDE_API_URL_DATA_CSV`.
 
     Returns
     -------
@@ -237,8 +237,8 @@ async def fetch_tide_data_for_requested_period(
     query_param_list : List[Dict[str, Union[str, int]]]
         A list of API query parameters used to retrieve tide data for the requested period.
     url : str = TIDE_API_URL_DATA
-        Tide API HTTP request URL. Defaults to 'https://api.niwa.co.nz/tides/data'.
-        Can be either 'https://api.niwa.co.nz/tides/data' or 'https://api.niwa.co.nz/tides/data.csv'.
+        Tide API HTTP request URL. Defaults to `TIDE_API_URL_DATA`.
+        Can be either `TIDE_API_URL_DATA` or `TIDE_API_URL_DATA_CSV`.
 
     Returns
     -------
@@ -345,7 +345,7 @@ def fetch_tide_data_from_niwa(
         # Get the latitude, longitude, and position of the query location
         lat, long, position = get_query_loc_coords_position(query_loc_row)
         # Generate a list of API query parameters used to retrieve tide data for the requested period
-        query_param_list = gen_api_query_param_list(lat, long, date_ranges, interval_mins, datum)
+        query_param_list = gen_tide_query_param_list(lat, long, date_ranges, interval_mins, datum)
         # Iterate over the list of API query parameters to fetch tide data for the requested period
         query_loc_tide = asyncio.run(fetch_tide_data_for_requested_period(query_param_list))
         # Add the 'position' column to indicate the position of the query location

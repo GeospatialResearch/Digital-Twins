@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script handles the task of obtaining REC1 river inflow data along with the corresponding river input points used
+This script handles the task of obtaining REC river inflow data along with the corresponding river input points used
 for the BG-Flood model.
 """
 
@@ -12,20 +12,20 @@ from sqlalchemy.engine import Engine
 import pyproj
 from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
-from src.dynamic_boundary_conditions.river import main_river, align_rec1_osm
+from src.dynamic_boundary_conditions.river import main_river, align_rec_osm
 
 
-def get_elevations_near_rec1_entry_point(
-        rec1_inflows_row: pd.Series,
+def get_elevations_near_rec_entry_point(
+        rec_inflows_row: pd.Series,
         hydro_dem: xr.Dataset) -> gpd.GeoDataFrame:
     """
     Extracts elevation values and their corresponding coordinates from the Hydrologically Conditioned DEM in the
-    vicinity of the entry point of the REC1 river inflow segment.
+    vicinity of the entry point of the REC river inflow segment.
 
     Parameters
     ----------
-    rec1_inflows_row : pd.Series
-        Represents data pertaining to an individual REC1 river inflow segment, including its entry point into the
+    rec_inflows_row : pd.Series
+        Represents data pertaining to an individual REC river inflow segment, including its entry point into the
         catchment area and the boundary line it aligns with.
     hydro_dem : xr.Dataset
         Hydrologically Conditioned DEM for the catchment area.
@@ -34,14 +34,14 @@ def get_elevations_near_rec1_entry_point(
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing elevation values and their corresponding coordinates extracted from the
-        Hydrologically Conditioned DEM in the vicinity of the entry point of the REC1 river inflow segment.
+        Hydrologically Conditioned DEM in the vicinity of the entry point of the REC river inflow segment.
     """
     # Clip the Hydro DEM using the buffered DEM boundary line
-    clipped_hydro_dem = hydro_dem.rio.clip([rec1_inflows_row['dem_boundary_line_buffered']])
-    # Get the x and y coordinates of the aligned REC1 entry point
-    aligned_rec1_entry_point = rec1_inflows_row["aligned_rec1_entry_point"]
-    entry_point_x, entry_point_y = aligned_rec1_entry_point.x, aligned_rec1_entry_point.y
-    # Find the indices of the REC1 entry point x and y coordinates in the clipped Hydro DEM
+    clipped_hydro_dem = hydro_dem.rio.clip([rec_inflows_row['dem_boundary_line_buffered']])
+    # Get the x and y coordinates of the aligned REC entry point
+    aligned_rec_entry_point = rec_inflows_row["aligned_rec_entry_point"]
+    entry_point_x, entry_point_y = aligned_rec_entry_point.x, aligned_rec_entry_point.y
+    # Find the indices of the REC entry point x and y coordinates in the clipped Hydro DEM
     entry_point_x_index = int(np.argmin(abs(clipped_hydro_dem['x'].values - entry_point_x)))
     entry_point_y_index = int(np.argmin(abs(clipped_hydro_dem['y'].values - entry_point_y)))
     # Define the starting and ending indices for the x coordinates in the clipped Hydro DEM
@@ -68,15 +68,15 @@ def get_elevations_near_rec1_entry_point(
     return nearby_elevations
 
 
-def get_min_elevation_river_input_point(rec1_inflows_row: pd.Series, hydro_dem: xr.Dataset) -> gpd.GeoDataFrame:
+def get_min_elevation_river_input_point(rec_inflows_row: pd.Series, hydro_dem: xr.Dataset) -> gpd.GeoDataFrame:
     """
     Locate the river input point with the lowest elevation, used for BG-Flood model river input, from the
-    Hydrologically Conditioned DEM for the specific REC1 river inflow segment.
+    Hydrologically Conditioned DEM for the specific REC river inflow segment.
 
     Parameters
     ----------
-    rec1_inflows_row : pd.Series
-        Represents data pertaining to an individual REC1 river inflow segment, including its entry point into the
+    rec_inflows_row : pd.Series
+        Represents data pertaining to an individual REC river inflow segment, including its entry point into the
         catchment area and the boundary line it aligns with.
     hydro_dem : xr.Dataset
         Hydrologically Conditioned DEM for the catchment area.
@@ -85,10 +85,10 @@ def get_min_elevation_river_input_point(rec1_inflows_row: pd.Series, hydro_dem: 
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the river input point with the lowest elevation, used for BG-Flood model river input,
-        from the Hydrologically Conditioned DEM for the specific REC1 river inflow segment.
+        from the Hydrologically Conditioned DEM for the specific REC river inflow segment.
     """
-    # Extracts elevation values and their corresponding coordinates near the REC1 inflow entry point from the Hydro DEM
-    nearby_elevations = get_elevations_near_rec1_entry_point(rec1_inflows_row, hydro_dem)
+    # Extracts elevation values and their corresponding coordinates near the REC inflow entry point from the Hydro DEM
+    nearby_elevations = get_elevations_near_rec_entry_point(rec_inflows_row, hydro_dem)
     # Determine the midpoint by calculating the centroid of all 'river_input_point' coordinates
     midpoint_coord = nearby_elevations['river_input_point'].unary_union.centroid
     # Calculate the distance between each 'river_input_point' and the midpoint
@@ -104,13 +104,13 @@ def get_min_elevation_river_input_point(rec1_inflows_row: pd.Series, hydro_dem: 
     return min_elevation_entry_point
 
 
-def get_rec1_inflows_with_input_points(
+def get_rec_inflows_with_input_points(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
-        rec1_network_data: gpd.GeoDataFrame,
+        rec_network_data: gpd.GeoDataFrame,
         distance_m: int = 300) -> gpd.GeoDataFrame:
     """
-    Obtain data for REC1 river inflow segments whose boundary points align with the boundary points of
+    Obtain data for REC river inflow segments whose boundary points align with the boundary points of
     OpenStreetMap (OSM) waterways within a specified distance threshold, along with their corresponding
     river input points used for the BG-Flood model.
 
@@ -120,50 +120,50 @@ def get_rec1_inflows_with_input_points(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    rec1_network_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the REC1 river network data.
+    rec_network_data : gpd.GeoDataFrame
+        A GeoDataFrame containing the REC river network data.
     distance_m : int = 300
         Distance threshold in meters for spatial proximity matching. The default value is 300 meters.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing data for REC1 river inflow segments whose boundary points align with the
+        A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
         boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
         along with their corresponding river input points used for the BG-Flood model.
     """
-    # Obtain data for REC1 river inflow segments whose boundary points align with the boundary points of OSM waterways
+    # Obtain data for REC river inflow segments whose boundary points align with the boundary points of OSM waterways
     # within a specified distance threshold
-    aligned_rec1_inflows = align_rec1_osm.get_rec1_inflows_aligned_to_osm(
-        engine, catchment_area, rec1_network_data, distance_m)
+    aligned_rec_inflows = align_rec_osm.get_rec_inflows_aligned_to_osm(
+        engine, catchment_area, rec_network_data, distance_m)
     # Get the boundary lines of the Hydrologically Conditioned DEM
     dem_boundary_lines = main_river.get_hydro_dem_boundary_lines(engine, catchment_area)
-    # Perform a spatial join between the REC1 inflow data and the Hydro DEM boundary lines
-    rec1_inflows = gpd.sjoin(aligned_rec1_inflows, dem_boundary_lines, how="left", predicate="intersects")
+    # Perform a spatial join between the REC inflow data and the Hydro DEM boundary lines
+    rec_inflows = gpd.sjoin(aligned_rec_inflows, dem_boundary_lines, how="left", predicate="intersects")
     # Merge with the Hydro DEM boundary lines data and remove unnecessary columns
-    rec1_inflows = rec1_inflows.merge(dem_boundary_lines, on="dem_boundary_line_no", how="left")
-    rec1_inflows = rec1_inflows.drop(columns=["index_right"])
+    rec_inflows = rec_inflows.merge(dem_boundary_lines, on="dem_boundary_line_no", how="left")
+    rec_inflows = rec_inflows.drop(columns=["index_right"])
     # Retrieve the Hydro DEM data and resolution for the specified catchment area
     hydro_dem, res_no = get_dem_band_and_resolution_by_geometry(engine, catchment_area)
     # Buffer the Hydro DEM boundary lines using the Hydro DEM resolution
-    rec1_inflows["dem_boundary_line_buffered"] = rec1_inflows["dem_boundary_line"].buffer(distance=res_no, cap_style=2)
+    rec_inflows["dem_boundary_line_buffered"] = rec_inflows["dem_boundary_line"].buffer(distance=res_no, cap_style=2)
     # Add the Hydro DEM resolution information
-    rec1_inflows["dem_resolution"] = res_no
-    # Create an empty GeoDataFrame to store REC1 inflows input
-    rec1_inflows_w_input_points = gpd.GeoDataFrame()
-    # Iterate through each row in the 'rec1_inflows' GeoDataFrame
-    for _, row in rec1_inflows.iterrows():
+    rec_inflows["dem_resolution"] = res_no
+    # Create an empty GeoDataFrame to store REC inflows input
+    rec_inflows_w_input_points = gpd.GeoDataFrame()
+    # Iterate through each row in the 'rec_inflows' GeoDataFrame
+    for _, row in rec_inflows.iterrows():
         # Locate the river input point used for BG-Flood model river input from the Hydro DEM
         river_input_point = get_min_elevation_river_input_point(row, hydro_dem)
         # Assign the lowest DEM elevation value to the 'dem_elevation' column in the current 'row'
         row['dem_elevation'] = river_input_point['dem_elevation'][0]
         # Assign the river input point geometry to the 'river_input_point' column in the current 'row'
         row['river_input_point'] = river_input_point['river_input_point'][0]
-        # Append the updated 'row' to the 'rec1_inflows_w_input_points' GeoDataFrame
-        rec1_inflows_w_input_points = rec1_inflows_w_input_points.append(row, ignore_index=True)
+        # Append the updated 'row' to the 'rec_inflows_w_input_points' GeoDataFrame
+        rec_inflows_w_input_points = rec_inflows_w_input_points.append(row, ignore_index=True)
     # Set 'river_input_point' as the geometry column and maintain the same CRS
-    rec1_inflows_w_input_points = gpd.GeoDataFrame(
-        rec1_inflows_w_input_points, geometry="river_input_point", crs=rec1_inflows.crs)
+    rec_inflows_w_input_points = gpd.GeoDataFrame(
+        rec_inflows_w_input_points, geometry="river_input_point", crs=rec_inflows.crs)
     # Reset the index to ensure a clean sequential order
-    rec1_inflows_w_input_points = rec1_inflows_w_input_points.reset_index(drop=True)
-    return rec1_inflows_w_input_points
+    rec_inflows_w_input_points = rec_inflows_w_input_points.reset_index(drop=True)
+    return rec_inflows_w_input_points

@@ -6,13 +6,12 @@ This script contains SQLAlchemy models for various database tables and utility f
 from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
-from sqlalchemy import Boolean
-from sqlalchemy import inspect, Column, String, Integer, DateTime
+from sqlalchemy import Boolean, Column, DateTime, inspect, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
-from sqlalchemy.schema import PrimaryKeyConstraint
+from sqlalchemy.schema import CheckConstraint, PrimaryKeyConstraint
 
 Base = declarative_base()
 
@@ -49,6 +48,14 @@ class GeospatialLayers(Base):
     coverage_area = Column(String, nullable=True)
     url = Column(String, nullable=False)
 
+    __table_args__ = (
+        CheckConstraint(
+            "((unique_column_name IS NOT NULL AND coverage_area IS NULL) OR "
+            "(unique_column_name IS NULL AND coverage_area IS NOT NULL))",
+            name="unique_column_name_or_coverage_area_required"
+        ),
+    )
+
 
 class UserLogInfo(Base):
     """
@@ -76,58 +83,58 @@ class UserLogInfo(Base):
 
 class RiverNetworkExclusions(Base):
     """
-    Class representing the 'rec1_network_exclusions' table.
+    Class representing the 'rec_network_exclusions' table.
 
     Attributes
     ----------
     __tablename__ : str
         Name of the database table.
-    rec1_network_id : int
+    rec_network_id : int
         An identifier for the river network associated with each new run.
     objectid : int
-        An identifier for the REC1 river object matching from the 'rec1_data' table.
+        An identifier for the REC river object matching from the 'rec_data' table.
     exclusion_cause : str
-        Cause of exclusion, i.e., the reason why the REC1 river geometry was excluded.
+        Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
     geometry : LineString
-        Geometric representation of the excluded REC1 river features.
+        Geometric representation of the excluded REC river features.
     """
-    __tablename__ = "rec1_network_exclusions"
-    rec1_network_id = Column(Integer, primary_key=True,
-                             comment="An identifier for the river network associated with each run")
+    __tablename__ = "rec_network_exclusions"
+    rec_network_id = Column(Integer, primary_key=True,
+                            comment="An identifier for the river network associated with each run")
     objectid = Column(Integer, primary_key=True,
-                      comment="An identifier for the REC1 river object matching from the 'rec1_data' table")
+                      comment="An identifier for the REC river object matching from the 'rec_data' table")
     exclusion_cause = Column(String, comment="Cause of exclusion")
     geometry = Column(Geometry("LINESTRING", srid=2193))
 
     __table_args__ = (
-        PrimaryKeyConstraint('rec1_network_id', 'objectid', name='network_exclusions_pk'),
+        PrimaryKeyConstraint('rec_network_id', 'objectid', name='network_exclusions_pk'),
     )
 
 
-class RiverNetworkOutput(Base):
+class RiverNetwork(Base):
     """
-    Class representing the 'rec1_network_output' table.
+    Class representing the 'rec_network' table.
 
     Attributes
     ----------
     __tablename__ : str
         Name of the database table.
-    rec1_network_id : int
+    rec_network_id : int
         An identifier for the river network associated with each new run (primary key).
     network_path : str
-        Path to the REC1 river network file.
+        Path to the REC river network file.
     network_data_path : str
-        Path to the REC1 river network data file.
+        Path to the REC river network data file for the AOI.
     created_at : datetime
         Timestamp indicating when the output was created.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """
-    __tablename__ = "rec1_network_output"
-    rec1_network_id = Column(Integer, primary_key=True,
-                             comment="An identifier for the river network associated with each run")
-    network_path = Column(String, comment="path to the rec1 river network file")
-    network_data_path = Column(String, comment="path to the rec1 river network data file")
+    __tablename__ = "rec_network"
+    rec_network_id = Column(Integer, primary_key=True,
+                            comment="An identifier for the river network associated with each run")
+    network_path = Column(String, comment="path to the rec river network file")
+    network_data_path = Column(String, comment="path to the rec river network data file for the AOI")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="output created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
 

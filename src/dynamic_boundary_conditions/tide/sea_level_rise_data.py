@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-This script handles the reading of sea level rise data from the NZ Sea level rise datasets, storing the data in the
-database, and retrieving the closest sea level rise data from the database for all locations in the provided tide data.
+This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
+storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
+in the provided tide data.
 """
 
 import logging
 import pathlib
+import os.path
+import time
 
 import geopandas as gpd
 import pandas as pd
 import pyarrow.csv as csv
 from sqlalchemy.engine import Engine
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 
 from src import config
 from src.digitaltwin import tables
@@ -18,9 +24,64 @@ from src.digitaltwin import tables
 log = logging.getLogger(__name__)
 
 
-def get_slr_data_from_nz_searise() -> gpd.GeoDataFrame:
+def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
+    """
+    Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
+
+    Parameters
+    ----------
+    slr_data_dir : pathlib.Path
+        The directory where the downloaded sea level rise data files will be saved.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Check if the directory exists and, if so, delete all files within it
+    if slr_data_dir.exists():
+        [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
+    # Normalise the sea level rise data directory to ensure consistent directory separators for the current OS
+    download_directory = os.path.normpath(slr_data_dir)
+    # Initialize a ChromeOptions instance to customize the Chrome WebDriver settings
+    chrome_options = webdriver.ChromeOptions()
+    # Enable headless mode for Chrome (no visible browser window)
+    chrome_options.add_argument("--headless")
+    # Define the download directory preference for downloaded files
+    prefs = {"download.default_directory": download_directory}
+    # Apply the download directory preference to ChromeOptions
+    chrome_options.add_experimental_option("prefs", prefs)
+    # Initialize a Chrome WebDriver instance with the configured options
+    driver = webdriver.Chrome(options=chrome_options)
+    # Open the specified website in the Chrome browser
+    driver.get("https://searise.takiwa.co/map/6245144372b819001837b900")
+    # Find and click the "Accept" button on the web page
+    driver.find_element(By.CSS_SELECTOR, "button.ui.green.basic.button").click()
+    # Find and click "Download"
+    driver.find_element(By.ID, "container-control-text-6268d9223c91dd00278d5ecf").click()
+    # Find and click "Download Regional Data"
+    [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
+    # Identify links to all the regional data files on the webpage
+    elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
+    # Iterate through the identified links and simulate a click action to trigger the download
+    for element in elements:
+        ActionChains(driver).move_to_element(element).click().perform()
+    # Add a 5-second delay to ensure all downloads are complete before quitting the browser
+    time.sleep(5)
+    # Quit the Chrome WebDriver, closing the browser
+    driver.quit()
+    # Log that the files have been successfully downloaded
+    log.info("Successfully downloaded regional sea level rise data files from NZ SeaRise Takiwa.")
+
+
+def read_slr_data_from_files(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
     """
     Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
+
+    Parameters
+    ----------
+    slr_data_dir : pathlib.Path
+        The directory containing the downloaded sea level rise data files.
 
     Returns
     -------
@@ -32,8 +93,6 @@ def get_slr_data_from_nz_searise() -> gpd.GeoDataFrame:
     FileNotFoundError
         If the sea level rise data directory does not exist or if there are no CSV files in the specified directory.
     """
-    # Get the sea level rise data directory from the environment variable
-    slr_data_dir = config.get_env_variable("DATA_DIR_SLR", cast_to=pathlib.Path)
     # Check if the sea level rise data directory exists
     if not slr_data_dir.exists():
         raise FileNotFoundError(f"Sea level rise data directory not found: '{slr_data_dir}'.")
@@ -55,7 +114,7 @@ def get_slr_data_from_nz_searise() -> gpd.GeoDataFrame:
         # Append the DataFrame to the list
         slr_nz_list.append(slr_region)
         # Log that the file has been successfully loaded
-        log.info(f"{file_path.name} data file has been successfully loaded.")
+        log.info(f"Successfully loaded the {file_path.name} data file.")
     # Concatenate all the dataframes in the list and add geometry column
     slr_nz = pd.concat(slr_nz_list, axis=0).reset_index(drop=True)
     geometry = gpd.points_from_xy(slr_nz['lon'], slr_nz['lat'], crs=4326)
@@ -85,8 +144,12 @@ def store_slr_data_to_db(engine: Engine) -> None:
     if tables.check_table_exists(engine, table_name):
         log.info(f"Table '{table_name}' already exists in the database.")
     else:
-        # Get sea level rise data from the NZ Sea level rise datasets
-        slr_nz = get_slr_data_from_nz_searise()
+        # Get the data directory and append "slr_data" to specify the sea level rise data directory
+        slr_data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "slr_data"
+        # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
+        download_slr_data_files_from_takiwa(slr_data_dir)
+        # Read sea level rise data from the NZ Sea level rise datasets
+        slr_nz = read_slr_data_from_files(slr_data_dir)
         # Store the sea level rise data to the database table
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info(f"Stored '{table_name}' data in the database.")
