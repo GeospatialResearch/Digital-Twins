@@ -4,7 +4,7 @@ Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.
 """
 
 import logging
-from typing import Tuple, List, Dict, Union, NamedTuple
+from typing import List, Dict, Union, NamedTuple
 import asyncio
 
 import aiohttp
