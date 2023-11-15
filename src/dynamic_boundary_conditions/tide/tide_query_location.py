@@ -58,7 +58,7 @@ def get_nz_coastline_from_db(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    distance_km : int, optional
+    distance_km : int = 1
         Distance in kilometers used to buffer the catchment area for coastline retrieval. Default is 1 kilometer.
 
     Returns
@@ -206,16 +206,9 @@ def get_non_intersection_centroid_position(
     # Calculate the centroid for each non-intersection geometry
     non_intersections['centroid'] = non_intersections.centroid
     # Determine the position of each centroid relative to the boundary lines
-    for index, row in non_intersections.iterrows():
-        centroid = row['centroid']
-        # Calculate the distance from the centroid to each boundary line
-        distances = {}
-        for _, boundary_row in boundary_lines.iterrows():
-            distances[boundary_row['line_position']] = centroid.distance(boundary_row['geometry'])
-        # Find the name of the closest line based on the minimum distance
-        closest_line = min(distances, key=distances.get)
-        # Assign the position of the centroid based on the closest line
-        non_intersections.at[index, 'position'] = closest_line
+    non_intersections['position'] = non_intersections['centroid'].apply(
+        lambda centroid: boundary_lines.loc[boundary_lines['geometry'].distance(centroid).idxmin(), 'line_position']
+    )
     # Select the required columns and rename 'centroid' to 'geometry'
     non_intersections = non_intersections[['position', 'centroid']].rename(columns={'centroid': 'geometry'})
     # Set the 'geometry' column as the active geometry column
@@ -236,7 +229,7 @@ def get_tide_query_locations(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    distance_km : int, optional
+    distance_km : int = 1
         Distance in kilometers used to buffer the catchment area for coastline retrieval. Default is 1 kilometer.
 
     Returns
@@ -255,7 +248,10 @@ def get_tide_query_locations(
     non_intersection_area = catchment_area.overlay(regions_clipped, how='difference')
     if not non_intersection_area.empty:
         # Get the centroid positions of non-intersection areas relative to the catchment boundary lines
-        tide_query_location = get_non_intersection_centroid_position(catchment_area, non_intersection_area)
+        non_intersections = get_non_intersection_centroid_position(catchment_area, non_intersection_area)
+        # Group by the 'position' column and calculate the centroid for each group
+        grouped = non_intersections.groupby('position')['geometry'].apply(lambda x: x.unary_union.centroid)
+        tide_query_location = grouped.reset_index().set_crs(non_intersections.crs)
     else:
         # Get the New Zealand coastline data within the specified distance of the catchment area
         coastline = get_nz_coastline_from_db(engine, catchment_area, distance_km)

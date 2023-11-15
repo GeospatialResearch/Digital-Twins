@@ -11,7 +11,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 import plotly.express as px
 
-from src.dynamic_boundary_conditions.rainfall_enum import HyetoMethod
+from src.dynamic_boundary_conditions.rainfall.rainfall_enum import HyetoMethod
 
 
 def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:
@@ -412,7 +412,7 @@ def hyetograph_data_wide_to_long(hyetograph_data: pd.DataFrame) -> pd.DataFrame:
     return hyetograph_data_long
 
 
-def hyetograph(hyetograph_data: pd.DataFrame, ari: int) -> None:
+def hyetograph(hyetograph_data: pd.DataFrame, ari: float) -> None:
     """
     Create interactive individual hyetograph plots for sites within the catchment area.
 

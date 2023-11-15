@@ -3,10 +3,11 @@
 This script contains SQLAlchemy models for various database tables and utility functions for database operations.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
 from sqlalchemy import inspect, Column, String, Integer, DateTime
+from sqlalchemy.schema import PrimaryKeyConstraint, CheckConstraint
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -31,10 +32,10 @@ class GeospatialLayers(Base):
         Identifier for the layer.
     table_name : str
         Name of the table containing the data.
-    unique_column_name : str, optional
+    unique_column_name : Optional[str]
         Name of the unique column in the table.
-    coverage_area : str, optional
-        Coverage area of the geospatial data. It can be either the whole country or NULL.
+    coverage_area : Optional[str]
+        Coverage area of the geospatial data, e.g. 'New Zealand'.
     url : str
         URL pointing to the geospatial layer.
     """
@@ -47,6 +48,14 @@ class GeospatialLayers(Base):
     coverage_area = Column(String, nullable=True)
     url = Column(String, nullable=False)
 
+    __table_args__ = (
+        CheckConstraint(
+            "((unique_column_name IS NOT NULL AND coverage_area IS NULL) OR "
+            "(unique_column_name IS NULL AND coverage_area IS NOT NULL))",
+            name="unique_column_name_or_coverage_area_required"
+        ),
+    )
+
 
 class UserLogInfo(Base):
     """
@@ -58,7 +67,7 @@ class UserLogInfo(Base):
         Name of the database table.
     unique_id : int
         Unique identifier for each log entry (primary key).
-    source_table_list : List[str]
+    source_table_list : Dict[str]
         A list of tables (geospatial layers) associated with the log entry.
     created_at : datetime
         Timestamp indicating when the log entry was created.
@@ -68,35 +77,66 @@ class UserLogInfo(Base):
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="log created datetime")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
 
 
-class HydroDEM(Base):
+class RiverNetworkExclusions(Base):
     """
-    Class representing the 'hydrological_dem' table.
+    Class representing the 'rec_network_exclusions' table.
 
     Attributes
     ----------
     __tablename__ : str
         Name of the database table.
-    unique_id : int
-        Unique identifier for each entry (primary key).
-    file_name : str
-        Name of the hydrological DEM file.
-    file_path : str
-        Path to the hydrological DEM file.
+    rec_network_id : int
+        An identifier for the river network associated with each new run.
+    objectid : int
+        An identifier for the REC river object matching from the 'rec_data' table.
+    exclusion_cause : str
+        Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
+    geometry : LineString
+        Geometric representation of the excluded REC river features.
+    """
+    __tablename__ = "rec_network_exclusions"
+    rec_network_id = Column(Integer, primary_key=True,
+                            comment="An identifier for the river network associated with each run")
+    objectid = Column(Integer, primary_key=True,
+                      comment="An identifier for the REC river object matching from the 'rec_data' table")
+    exclusion_cause = Column(String, comment="Cause of exclusion")
+    geometry = Column(Geometry("LINESTRING", srid=2193))
+
+    __table_args__ = (
+        PrimaryKeyConstraint('rec_network_id', 'objectid', name='network_exclusions_pk'),
+    )
+
+
+class RiverNetwork(Base):
+    """
+    Class representing the 'rec_network' table.
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    rec_network_id : int
+        An identifier for the river network associated with each new run (primary key).
+    network_path : str
+        Path to the REC river network file.
+    network_data_path : str
+        Path to the REC river network data file for the AOI.
     created_at : datetime
         Timestamp indicating when the output was created.
-    geometry : Geometry
+    geometry : Polygon
         Geometric representation of the catchment area coverage.
     """
-    __tablename__ = "hydrological_dem"
-    unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    file_name = Column(String, comment="name of the hydro-DEM file")
-    file_path = Column(String, comment="path to the hydro-DEM file")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
-    geometry = Column(Geometry("GEOMETRY", srid=2193))
+    __tablename__ = "rec_network"
+    rec_network_id = Column(Integer, primary_key=True,
+                            comment="An identifier for the river network associated with each run")
+    network_path = Column(String, comment="path to the rec river network file")
+    network_data_path = Column(String, comment="path to the rec river network data file for the AOI")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="output created datetime")
+    geometry = Column(Geometry("POLYGON", srid=2193))
 
 
 class BGFloodModelOutput(Base):
@@ -115,15 +155,15 @@ class BGFloodModelOutput(Base):
         Path to the flood model output file.
     created_at : datetime
         Timestamp indicating when the output was created.
-    geometry : Geometry
+    geometry : Polygon
         Geometric representation of the catchment area coverage.
     """
     __tablename__ = "bg_flood_model_output"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     file_name = Column(String, comment="name of the flood model output file")
     file_path = Column(String, comment="path to the flood model output file")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(), comment="output created datetime")
-    geometry = Column(Geometry("GEOMETRY", srid=2193))
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="output created datetime")
+    geometry = Column(Geometry("POLYGON", srid=2193))
 
 
 def create_table(engine: Engine, table: Base) -> None:
@@ -155,7 +195,7 @@ def check_table_exists(engine: Engine, table_name: str, schema: str = "public") 
         The engine used to connect to the database.
     table_name : str
         The name of the table to check for existence.
-    schema : str, optional
+    schema : str = "public"
         The name of the schema where the table resides. Defaults to "public".
 
     Returns

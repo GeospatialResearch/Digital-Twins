@@ -1,3 +1,6 @@
+"""
+The main web application that serves the Digital Twin to the web through a Rest API.
+"""
 import logging
 from http.client import OK, ACCEPTED, BAD_REQUEST
 
@@ -19,12 +22,34 @@ CORS(app, origins=["http://localhost:8080"])
 
 @app.route('/health-check')
 def health_check() -> Response:
-    """Ping this endpoint to check that the server is up and running"""
+    """
+    Ping this endpoint to check that the server is up and running
+    Supported methods: GET
+
+    Returns
+    -------
+    Response
+        The HTTP Response. Expect OK if health check is successful
+    """
     return Response("Healthy", OK)
 
 
 @app.route('/tasks/<task_id>', methods=["GET"])
-def get_status(task_id) -> Response:
+def get_status(task_id: str) -> Response:
+    """
+    Retrieves status of a particular Celery backend task.
+    Supported methods: GET
+
+    Parameters
+    ----------
+    task_id : str
+        The id of the Celery task to retrieve status from
+
+    Returns
+    -------
+    Response
+        JSON response containing taskStatus
+    """
     task_result = AsyncResult(task_id, app=tasks.app)
     return make_response(jsonify({
         "taskId": task_result.id,
@@ -34,6 +59,20 @@ def get_status(task_id) -> Response:
 
 @app.route('/tasks/<task_id>', methods=["DELETE"])
 def remove_task(task_id) -> Response:
+    """
+    Deletes and stops a particular Celery backend task.
+    Supported methods: DELETE
+
+    Parameters
+    ----------
+    task_id : str
+        The id of the Celery task to remove
+
+    Returns
+    -------
+    Response
+        ACCEPTED is the expected response
+    """
     task_result = AsyncResult(task_id, app=tasks.app)
     task_result.revoke()
     return make_response("Task removed", ACCEPTED)
@@ -41,6 +80,16 @@ def remove_task(task_id) -> Response:
 
 @app.route('/model/generate', methods=["POST"])
 def generate_model() -> Response:
+    """
+    Generates a flood model for a given area.
+    Supported methods: POST
+    POST values: {"bbox": {"lat1": number, "lat2": number, "lng1": number, "lng2": number}}
+
+    Returns
+    -------
+    Response
+        ACCEPTED is the expected response. Response body contains Celery taskId
+    """
     try:
         bbox = request.get_json()["bbox"]
         lat1 = float(bbox.get("lat1"))
@@ -80,6 +129,25 @@ def get_wfs_layer_latest_model(model_id):
 
 
 def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:
+    """
+    Takes two points and creates a wkt bbox string from them
+
+    Parameters
+    ----------
+    lat1 : float
+        latitude of first point
+    lng1: float
+        longitude of first point
+    lat2 : float
+        latitude of second point
+    lng2: float
+        longitude of second point
+
+    Returns
+    -------
+    str
+        bbox in wkt form generated from the two coordinates
+    """
     xmin = min([lng1, lng2])
     ymin = min([lat1, lat2])
     xmax = max([lng1, lng2])
@@ -116,6 +184,22 @@ def get_depth_at_point() -> Response:
 
 
 def valid_coordinates(latitude: float, longitude: float) -> bool:
+    """
+    Validates coordinates are in the valid range of WGS84
+    (-90 < latitude <= 90) and (-180 < longitude <= 180)
+
+    Parameters
+    ----------
+    latitude : float
+        The latitude part of the coordinate
+    longitude : float
+        The longitude part of the coordinate
+
+    Returns
+    -------
+    bool
+        True if both latitude and longitude are within their valid ranges.
+    """
     return (-90 < latitude <= 90) and (-180 < longitude <= 180)
 
 

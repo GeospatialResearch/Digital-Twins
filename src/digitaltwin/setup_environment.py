@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This script provides functions to set up the database connection using SQLAlchemy and environment
-              variables, as well as to create an SQLAlchemy engine for database operations.
+This script provides functions to set up the database connection using SQLAlchemy and environment variables,
+as well as to create an SQLAlchemy engine for database operations.
 """
 
 import logging
@@ -37,7 +37,7 @@ def get_database() -> Engine:
         log.debug("Connected to PostgreSQL database successfully!")
         return engine
     except OperationalError as e:
-        raise OperationalError("Connection to database failed. Please check .env file.") from e
+        raise OperationalError("Database connection failed. Please check database running and check .env file.") from e
 
 
 def get_connection_from_profile() -> Engine:

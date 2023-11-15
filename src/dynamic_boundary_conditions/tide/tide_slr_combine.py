@@ -118,7 +118,7 @@ def get_slr_scenario_data(
 def get_interpolated_slr_scenario_data(
         slr_scenario_data: gpd.GeoDataFrame,
         increment_year: int = 1,
-        interp_method: str = 'linear') -> gpd.GeoDataFrame:
+        interp_method: str = "linear") -> gpd.GeoDataFrame:
     """
     Interpolates sea level rise scenario data based on the specified year interval and interpolation method.
 
@@ -126,9 +126,9 @@ def get_interpolated_slr_scenario_data(
     ----------
     slr_scenario_data : gpd.GeoDataFrame
         A GeoDataFrame containing the sea level rise scenario data.
-    increment_year : int, optional
-        Year interval used for interpolation. Defaults to 1 year.
-    interp_method : str, optional
+    increment_year : int = 1
+        The year interval used for interpolation. Defaults to 1 year.
+    interp_method : str = "linear"
         Temporal interpolation method to be used. Defaults to 'linear'.
         Available methods: 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous',
         'next'. Refer to 'scipy.interpolate.interp1d()' for more details.
@@ -228,15 +228,15 @@ def add_slr_to_tide(
         raise ValueError(f"Invalid value '{proj_year}' for proj_year. Must be one of {valid_proj_year}.")
 
     # Select only the necessary columns for further processing
-    tide_df = tide_df[['year', 'seconds', 'tide_metres', 'position']]
-    # Group the tide data by year and position
-    grouped = tide_df.groupby(['year', 'position'])
+    tide_df = tide_df[['year', 'seconds', 'tide_metres', 'position', 'geometry']]
+    # Group the tide data by year, position, and geometry
+    grouped = tide_df.groupby(['year', 'position', tide_df['geometry'].to_wkt()])
     # Create an empty DataFrame to store the tide data with added sea level rise data
     tide_slr_data = gpd.GeoDataFrame()
     # Iterate over each group and add sea level rise to the tide data
     for group_name, group_data in grouped:
         # Extract the current year and position from the group_name
-        current_year, position = group_name
+        current_year, position, _ = group_name
         # Create a filter to select rows in the slr_interp_scenario DataFrame with matching current year and position
         current_filt = (slr_interp_scenario['year'] == current_year) & (slr_interp_scenario['position'] == position)
         # Create a filter to select rows in the slr_interp_scenario DataFrame with matching projection year and position
@@ -267,7 +267,7 @@ def get_combined_tide_slr_data(
         add_vlm: bool,
         percentile: int,
         increment_year: int = 1,
-        interp_method: str = 'linear') -> pd.DataFrame:
+        interp_method: str = "linear") -> pd.DataFrame:
     """
     Generates the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
     confidence_level, ssp_scenario, add_vlm, percentile, and more.
@@ -288,9 +288,9 @@ def get_combined_tide_slr_data(
         Indicates whether Vertical Land Motion (VLM) should be included in the sea level rise data.
     percentile : int
         The desired percentile for the sea level rise data.
-    increment_year : int, optional
-        Year interval used for interpolating the sea level rise data. Defaults to 1 year.
-    interp_method : str, optional
+    increment_year : int = 1
+        The year interval used for interpolating the sea level rise data. Defaults to 1 year.
+    interp_method : str = "linear"
         Temporal interpolation method used for interpolating the sea level rise data. Defaults to 'linear'.
         Available methods: 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous',
         'next'. Refer to 'scipy.interpolate.interp1d()' for more details.
