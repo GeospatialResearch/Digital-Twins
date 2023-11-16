@@ -224,24 +224,29 @@ def get_multi_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFra
         A GeoDataFrame containing the REC river segments that intersect the catchment boundary multiple times and
         are inflows into the catchment area, along with their corresponding inflow boundary points.
     """
-    # Identify and explode MultiPoint geometries into individual Point geometries
-    multi_intersect = get_exploded_multi_intersect(rec_on_bbox)
-    # Categorize the exploded Point geometries into 'inflow' and 'outflow' categories
-    categorized_multi_intersect = categorize_exploded_multi_intersect(multi_intersect)
-    # Extract the 'objectid' and the last inflow point for each REC river segment
-    inflow_points = [(objectid, data["inflow"][-1]) for objectid, data in categorized_multi_intersect.items()]
-    # Create a DataFrame from the extracted inflow points with columns 'objectid' and 'rec_inflow_point'
-    inflow_points_df = pd.DataFrame(inflow_points, columns=["objectid", "rec_inflow_point"])
-    # Merge the inflow points DataFrame with the original MultiPoint GeoDataFrame
-    multi_point_inflows = multi_intersect.merge(inflow_points_df, on="objectid", how="left")
-    # Convert the 'rec_inflow_point' column to a geometry data type
-    multi_point_inflows["rec_inflow_point"] = multi_point_inflows["rec_inflow_point"].astype("geometry")
-    # Set the geometry column and coordinate reference system (CRS) for the GeoDataFrame
-    multi_point_inflows = multi_point_inflows.set_geometry("rec_inflow_point", crs=multi_point_inflows.crs)
-    # Drop the temporary column used for exploding MultiPoint geometries
-    multi_point_inflows = multi_point_inflows.drop(columns=["rec_boundary_point_explode"])
-    # Reset the index
-    multi_point_inflows.reset_index(drop=True, inplace=True)
+    # Check if there are any MultiPoint geometries
+    if any(rec_on_bbox.geom_type == "MultiPoint"):
+        # Identify and explode MultiPoint geometries into individual Point geometries
+        multi_intersect = get_exploded_multi_intersect(rec_on_bbox)
+        # Categorize the exploded Point geometries into 'inflow' and 'outflow' categories
+        categorized_multi_intersect = categorize_exploded_multi_intersect(multi_intersect)
+        # Extract the 'objectid' and the last inflow point for each REC river segment
+        inflow_points = [(objectid, data["inflow"][-1]) for objectid, data in categorized_multi_intersect.items()]
+        # Create a DataFrame from the extracted inflow points with columns 'objectid' and 'rec_inflow_point'
+        inflow_points_df = pd.DataFrame(inflow_points, columns=["objectid", "rec_inflow_point"])
+        # Merge the inflow points DataFrame with the original MultiPoint GeoDataFrame
+        multi_point_inflows = multi_intersect.merge(inflow_points_df, on="objectid", how="left")
+        # Convert the 'rec_inflow_point' column to a geometry data type
+        multi_point_inflows["rec_inflow_point"] = multi_point_inflows["rec_inflow_point"].astype("geometry")
+        # Set the geometry column and coordinate reference system (CRS) for the GeoDataFrame
+        multi_point_inflows = multi_point_inflows.set_geometry("rec_inflow_point", crs=multi_point_inflows.crs)
+        # Drop the temporary column used for exploding MultiPoint geometries
+        multi_point_inflows = multi_point_inflows.drop(columns=["rec_boundary_point_explode"])
+        # Reset the index
+        multi_point_inflows.reset_index(drop=True, inplace=True)
+    else:
+        # No MultiPoint geometries found, return an empty GeoDataFrame
+        multi_point_inflows = gpd.GeoDataFrame()
     return multi_point_inflows
 
 
