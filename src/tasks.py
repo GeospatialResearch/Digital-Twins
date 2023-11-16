@@ -14,7 +14,7 @@ from newzealidar import process
 from pyproj import Transformer
 
 from src.config import get_env_variable
-from src.digitaltwin import run, setup_environment
+from src.digitaltwin import retrieve_static_boundaries, setup_environment
 from src.digitaltwin.utils import setup_logging
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.river import main_river
@@ -76,9 +76,9 @@ def add_base_data_to_db(selected_polygon_wkt: str) -> None:
     None
         This task does not return anything
     """
-    parameters = DEFAULT_MODULES_TO_PARAMETERS[run]
+    parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_static_boundaries]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    run.main(selected_polygon, **parameters)
+    retrieve_static_boundaries.main(selected_polygon, **parameters)
 
 
 @app.task(base=OnFailureStateTask)

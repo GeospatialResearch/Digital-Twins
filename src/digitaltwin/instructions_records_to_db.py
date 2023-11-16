@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script processes 'instructions_run' records, validates URLs and instruction fields, and stores them in the
+This script processes 'static_boundary_instructions' records, validates URLs and instruction fields, and stores them in the
 'geospatial_layers' table of the database.
 """
 
@@ -92,15 +92,15 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
 
 def read_and_check_instructions_file() -> pd.DataFrame:
     """
-    Read and check the instructions_run file, validating URLs and instruction fields.
+    Read and check the static_boundary_instructions file, validating URLs and instruction fields.
 
     Returns
     -------
     pd.DataFrame
         The processed instructions DataFrame.
     """
-    # Path to the 'instructions_run.json' file
-    instruction_file = pathlib.Path("src/digitaltwin/instructions_run.json")
+    # Path to the 'static_boundary_instructions.json' file
+    instruction_file = pathlib.Path("src/digitaltwin/static_boundary_instructions.json")
     with open(instruction_file, "r") as file:
         instructions = json.load(file)
         for section, instruction in instructions.items():
@@ -112,7 +112,7 @@ def read_and_check_instructions_file() -> pd.DataFrame:
         instructions_df = pd.DataFrame(instructions).transpose().reset_index(names='section')
         # Strip leading and trailing whitespace from the URLs
         instructions_df['url'] = instructions_df['url'].str.strip()
-        # Drop duplicated records in case they exist in the 'instructions_run' file
+        # Drop duplicated records in case they exist in the 'static_boundary_instructions' file
         instructions_df = instructions_df.drop_duplicates(subset=instructions_df.columns.difference(['section']))
     return instructions_df
 
@@ -143,19 +143,19 @@ def get_existing_geospatial_layers(engine: Engine) -> pd.DataFrame:
 
 def get_non_existing_records(instructions_df: pd.DataFrame, existing_layers_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Get 'instructions_run' records that are not available in the database.
+    Get 'static_boundary_instructions' records that are not available in the database.
 
     Parameters
     ----------
     instructions_df : pd.DataFrame
-        Data frame containing the 'instructions_run' records.
+        Data frame containing the 'static_boundary_instructions' records.
     existing_layers_df : pd.DataFrame
-        Data frame containing the existing 'instructions_run' records from the database.
+        Data frame containing the existing 'static_boundary_instructions' records from the database.
 
     Returns
     -------
     pd.DataFrame
-        Data frame containing the 'instructions_run' records that are not available in the database.
+        Data frame containing the 'static_boundary_instructions' records that are not available in the database.
     """
     # Merge the instructions DataFrame with the existing data DataFrame
     merged_df = instructions_df.merge(existing_layers_df, on=['data_provider', 'layer_id'], how='left', indicator=True)
@@ -169,7 +169,7 @@ def get_non_existing_records(instructions_df: pd.DataFrame, existing_layers_df: 
 
 def store_instructions_records_to_db(engine: Engine) -> None:
     """
-    Store 'instructions_run' records in the 'geospatial_layers' table in the database.
+    Store 'static_boundary_instructions' records in the 'geospatial_layers' table in the database.
 
     Parameters
     ----------
@@ -187,12 +187,12 @@ def store_instructions_records_to_db(engine: Engine) -> None:
     existing_layers_df = get_existing_geospatial_layers(engine)
     # Read and check the instructions file
     instructions_df = read_and_check_instructions_file()
-    # Get 'instructions_run' records that are not available in the database.
+    # Get 'static_boundary_instructions' records that are not available in the database.
     non_existing_records = get_non_existing_records(instructions_df, existing_layers_df)
 
     if non_existing_records.empty:
-        log.info("No new 'instructions_run' records found. All records already exist in the database.")
+        log.info("No new 'static_boundary_instructions' records found. All records already exist in the database.")
     else:
         # Store the non-existing records to the 'geospatial_layers' table
         non_existing_records.to_sql(GeospatialLayers.__tablename__, engine, index=False, if_exists="append")
-        log.info("New 'instructions_run' records have been successfully added to the database.")
+        log.info("New 'static_boundary_instructions' records have been successfully added to the database.")

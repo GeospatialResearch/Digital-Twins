@@ -10,7 +10,7 @@ from typing import Dict, Union
 import geopandas as gpd
 from newzealidar import datasets, process
 
-from src.digitaltwin import run
+from src.digitaltwin import retrieve_static_boundaries
 from src.digitaltwin.utils import LogLevel
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
@@ -54,7 +54,7 @@ def main(
 
 
 DEFAULT_MODULES_TO_PARAMETERS = {
-    run: {
+    retrieve_static_boundaries: {
         "log_level": LogLevel.DEBUG
     },
     datasets: {
