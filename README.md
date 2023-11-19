@@ -13,7 +13,7 @@ The Flood Resilience Digital Twin can provide a better understanding of the degr
 Digital Twin not only represents the current status of the visualised assets but also how they will perform/react to future situations. 
 The build twin when used to run flood models combined with other sources of information can allow us to make predictions.
 
-Data is collected from an open data portal provided by multiple organisations or data providers such as LINZ, LRIS - MWLR, StatsNZ, ECAN, opentopography, NIWA, MFE, and more.
+Data is collected from an open data portal provided by multiple organisations or data providers such as LINZ, StatsNZ, opentopography, NIWA, MFE, and more.
 The collected data is stored in the application database using PostgreSQL
 
 The reason for implementing a database are:
