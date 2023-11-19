@@ -25,10 +25,12 @@ The reason for implementing a database are:
 ## Basic running instructions
 The following list defines the basic steps required to setup and run the digital twin.
 
+
 ## Requirements
 * [Docker](https://www.docker.com/)
 * [Anaconda](https://www.anaconda.com/download)
 * [Node.js / NPM](https://nodejs.org/)
+
 
 ## Required Credentials:
 Create API keys for each of these services. You may need to create an account and log in
@@ -37,6 +39,7 @@ Create API keys for each of these services. You may need to create an account an
 * [MFE API Key](https://data.mfe.govt.nz/my/api/)
 * [NIWA Application API Key](https://developer.niwa.co.nz/) - Create an app that has the Tide API enabled  
 * [Cesium access token](https://cesium.com/ion/tokens)
+
 
 ## Starting the Digital Twin application (localhost)
 1. Set up Docker, Anaconda, and NPM to work on your system.
@@ -71,12 +74,13 @@ Create API keys for each of these services. You may need to create an account an
    
 1. You may inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin or DBeaver or PyCharm Professional.
 
+
 ## Using the Digital Twin application
 1. With the visualisation server running, visit the address shown in the visualisation server window, default [http://localhost:8080](http://localhost:8080)
 1. To run a flood model, hold SHIFT and hold the left mouse button to drag a box around the area you wish to run the model for.
 1. Once the model has completed running, you may need to click the button at the bottom of the screen requesting you to reload the flood model.
 1. To see a graph for flood depths over time at a location, hold CTRL and click the left mouse button on the area you wish to query.
-<br>
+
 
 ## Setup for developers
 
@@ -105,18 +109,14 @@ To do so:
 #!/usr/bin/env bash
 docker-compose up --build -d db_postgres geoserver
 ```
-2. 
+2. For local testing, it may be useful to use the `src.run_all.py` script to run the processing.
 
-For local testing, it may be useful to use the `src.run_all.py` script to run the processing.
-
-<br>
 
 ## Tests
 Tests exist in the `tests/` folder.
 
 ### Automated testing
 [Github Actions](https://docs.github.com/en/actions) are used to run tests after each push to remote (i.e. github). [Miniconda](https://github.com/marketplace/actions/setup-miniconda) from the GitHub Actions marketplace is used to install the package dependencies. Linting with [Flake8](https://github.com/py-actions/flake8) and testing with [PyTest](https://docs.pytest.org/en/6.2.x/contents.html) is then performed. Several tests require an API key. This is stored as a GitHub secret and accessed by the workflow.
-
 
 
 ## Raster Database
