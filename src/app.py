@@ -37,6 +37,7 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     def decorated_function(*args, **kwargs) -> Response:
         ping_celery_response = tasks.app.control.ping()
         if len(ping_celery_response) == 0:
+            logging.warning("Celery workers not active, may indicate a fault")
             return make_response("Celery workers not active", INTERNAL_SERVER_ERROR)
         return f(*args, **kwargs)
 

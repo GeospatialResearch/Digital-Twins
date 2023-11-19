@@ -33,9 +33,8 @@ def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
     pathlib.Path
         The filepath of the new GeoTiff file.
     """
-    name = nc_file_path.stem
-    new_name = f"{name}.tif"
-    log.info(f"Converting {name} to {new_name}")
+    new_name = f"{nc_file_path.stem}.tif"
+    log.info(f"Converting {nc_file_path.name} to {new_name}")
     temp_dir = pathlib.Path("tmp/gtiff")
     # Create temporary storage folder if it does not already exist
     temp_dir.mkdir(parents=True, exist_ok=True)
