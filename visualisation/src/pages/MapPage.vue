@@ -3,11 +3,18 @@
   <div class="full-height">
     <div v-for="column of selectionOptions" :key="column.name">
       <label>{{ column.name }}</label>
-      <select v-model="selectedOption[column.name]">
+      <select v-if="column.data" v-model="selectedOption[column.name]">
         <option v-for="option of column.data" :value="option" :key="option">
           {{ option }}
         </option>
       </select>
+      <input
+        v-if="column.min && column.max"
+        type="number"
+        v-model="selectedOption[column.name]"
+        :min="column.min"
+        :max="column.max"
+      />
     </div>
     <MapViewer
       :init-lat="kaiapoi.latitude"
@@ -48,15 +55,19 @@ export default Vue.extend({
       scenarios: [] as Scenario[],
       cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
       selectionOptions: {
-        year: {name: "Projected Year", data: [2005, 2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100, 2110, 2120, 2130, 2140, 2150, 2160, 2170, 2180, 2190, 2200, 2210, 2220, 2230, 2240, 2250, 2260, 2270, 2280, 2290, 2300]},
+        year: {
+          name: "Projected Year",
+          min: 2023,
+          max: 2300
+        },
         sspScenario: {name: "SSP Scenario", data: ['SSP1-1.9', 'SSP1-2.6', 'SSP2-4.5', 'SSP3-7.0', 'SSP5-8.5']},
         confidenceLevel: {name: "Confidence Level", data: ['low', 'medium']},
         addVerticalLandMovement: {name: "Add Vertical Land Movement", data: [true, false]}
       },
       selectedOption: {
-        "Projected Year": 2005,
-        "SSP Scenario": 'SSP1-1.9',
-        "Confidence Level": "low",
+        "Projected Year": 2050,
+        "SSP Scenario": 'SSP2-4.5',
+        "Confidence Level": "medium",
         "Add Vertical Land Movement": true
       }
     }
@@ -64,18 +75,19 @@ export default Vue.extend({
   async mounted() {
     // Limit scrolling on this page
     // document.body.style.overflow = "hidden"
-    const bbox = {
-  "lat1": -43.3689919971569,
-  "lng1": 172.636650393486,
-  "lat2": -43.4095566828889,
-  "lng2": 172.72477915911261
-}
-      const geoJsonDataSources = await this.loadGeoJson(bbox, 9)
-      const floodRasterProvider = await this.fetchFloodRaster(9)
-      this.dataSources = {
-        geoJsonDataSources,
-        imageryProviders: [floodRasterProvider]
-      }  },
+    // const bbox = {
+    //   "lat1": -43.3689919971569,
+    //   "lng1": 172.636650393486,
+    //   "lat2": -43.4095566828889,
+    //   "lng2": 172.72477915911261
+    // }
+    // const geoJsonDataSources = await this.loadGeoJson(bbox, 9)
+    // const floodRasterProvider = await this.fetchFloodRaster(9)
+    // this.dataSources = {
+    //   geoJsonDataSources,
+    //   imageryProviders: [floodRasterProvider]
+    // }
+  },
   beforeDestroy() {
     // Reset scrolling for other pages
     // document.body.style.overflow = ""
