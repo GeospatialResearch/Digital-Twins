@@ -17,7 +17,7 @@ Data is collected from an open data portal provided by multiple organisations or
 The collected data is stored in the application database using PostgreSQL
 
 The reason for implementing a database are:
-1.  Reusing data that has been processed by the digital twinthat may have taken a long time to process 
+1.  Reusing data that has been processed by the digital twin that may have taken a long time to process 
 1.	Avoid unnecessary network overhead on the data providers
 1.	To avoid delays in fetching the same data from the API when required again and again to run the models.
 
@@ -34,7 +34,6 @@ The following list defines the basic steps required to setup and run the digital
 Create API keys for each of these services. You may need to create an account and log in
 * [Stats NZ API Key](https://datafinder.stats.govt.nz/my/api/)
 * [LINZ API Key](https://data.linz.govt.nz/my/api/)
-* [LRIS Manaaki Whenua API Key](https://lris.scinfo.org.nz/my/api/)
 * [MFE API Key](https://data.mfe.govt.nz/my/api/)
 * [NIWA Application API Key](https://developer.niwa.co.nz/) - Create an app that has the Tide API enabled  
 * [Cesium access token](https://cesium.com/ion/tokens)
@@ -70,7 +69,7 @@ Create API keys for each of these services. You may need to create an account an
 
 1. You may inspect the logs of the backend in the celery window.
    
-1. You may inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin or dbeaver or PyCharm Professional.
+1. You may inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin or DBeaver or PyCharm Professional.
 
 ## Using the Digital Twin application
 1. With the visualisation server running, visit the address shown in the visualisation server window, default [http://localhost:8080](http://localhost:8080)
