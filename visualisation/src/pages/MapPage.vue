@@ -20,7 +20,7 @@
       v-on:task-posted="onTaskPosted"
       v-on:task-completed="onTaskCompleted"
     />
-    <img id="legend" src="legend.png"/>
+    <img id="legend" src="viridis_legend.png" />
   </div>
 </template>
 
