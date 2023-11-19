@@ -2,7 +2,7 @@ import geopandas as gpd
 import shapely
 from celery import Celery, states, result
 
-from src.digitaltwin import run
+from src.digitaltwin import retrieve_static_boundaries
 from src.dynamic_boundary_conditions import main_rainfall
 from src.flood_model import bg_flood_model
 
@@ -32,7 +32,7 @@ def create_model_for_area(selected_polygon_wkt: str) -> result.GroupResult:
 
 @app.task(base=OnFailureStateTask)
 def initialise_db_with_region_geometries():
-    run.main()
+    retrieve_static_boundaries.main()
 
 
 @app.task(base=OnFailureStateTask)
