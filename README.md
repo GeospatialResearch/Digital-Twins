@@ -122,9 +122,9 @@ Tests exist in the `tests/` folder.
 
 ## Raster Database
 
-Hydrologically-conditioned Digital Elevation Models (DEMs) are generated using [NewZeaLiDAR](https://github.com/xandercai/NewZeaLiDAR) desgined by Xander Cai at the GRI,
-and [geofabrics](https://github.com/rosepearson/GeoFabrics ) designed by NIWA which downloads the LiDAR data from 
-[opentopography](https://portal.opentopography.org/dataCatalog ) and generates . 
+Hydrologically-conditioned Digital Elevation Models (DEMs) are generated using [NewZeaLiDAR](https://github.com/xandercai/NewZeaLiDAR) designed by Xander Cai at the GRI,
+and [geofabrics](https://github.com/rosepearson/GeoFabrics) designed by NIWA which downloads the LiDAR data from 
+[opentopography](https://portal.opentopography.org/dataCatalog).
 
 The objective of NewZeaLiDAR is to store the metadata of the generated DEM in the database for the requested catchment area.
 Storing these details in the database helps in getting the DEM already generated using geofabrics rather than generating DEM for the same catchment, again and again, saving time and resources.
