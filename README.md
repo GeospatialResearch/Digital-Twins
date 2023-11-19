@@ -84,6 +84,10 @@ Create API keys for each of these services. You may need to create an account an
 
 ## Setup for developers
 
+### Setup IDE working directory.
+This is different for every IDE, but **for the application to run you must set your IDE working directory to the root folder of the project.**
+Otherwise it may cause `ModuleNotFound` or other errors.
+
 ### Run single Docker service e.g. database
 To run only one isolated service (services defined in `docker-compose.yml`) use the following command:
 `docker-compose up --build [-d] [SERVICES]`
