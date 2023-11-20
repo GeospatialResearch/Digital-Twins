@@ -65,19 +65,24 @@ def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
         A GeoDataFrame containing the REC river segments that intersect the catchment boundary once and
         are inflows into the catchment area, along with their corresponding inflow boundary points.
     """
-    # Select only the records where 'rec_boundary_point' is a single point
-    single_intersect = rec_on_bbox[rec_on_bbox["rec_boundary_point"].geom_type == "Point"]
-    # Identify the inflow boundary points
-    single_intersect_inflow = single_intersect[
-        ((single_intersect["node_direction"] == "to") & (single_intersect["node_intersect_aoi"] == "last_node")) |
-        ((single_intersect["node_direction"] == "from") & (single_intersect["node_intersect_aoi"] == "first_node"))
-        ]
-    # Create a new column for inflow points for consistency purposes
-    single_intersect_inflow["rec_inflow_point"] = single_intersect_inflow["rec_boundary_point"]
-    # Set the geometry of the GeoDataFrame to 'rec_inflow_point'
-    single_intersect_inflow.set_geometry("rec_inflow_point", inplace=True)
-    # Reset the index
-    single_intersect_inflow.reset_index(drop=True, inplace=True)
+    # Check if there are any single Point geometries
+    if any(rec_on_bbox.geom_type == "Point"):
+        # Select only the records where 'rec_boundary_point' is a single point
+        single_intersect = rec_on_bbox[rec_on_bbox["rec_boundary_point"].geom_type == "Point"]
+        # Identify the inflow boundary points
+        single_intersect_inflow = single_intersect[
+            ((single_intersect["node_direction"] == "to") & (single_intersect["node_intersect_aoi"] == "last_node")) |
+            ((single_intersect["node_direction"] == "from") & (single_intersect["node_intersect_aoi"] == "first_node"))
+            ]
+        # Create a new column for inflow points for consistency purposes
+        single_intersect_inflow["rec_inflow_point"] = single_intersect_inflow["rec_boundary_point"]
+        # Set the geometry of the GeoDataFrame to 'rec_inflow_point'
+        single_intersect_inflow.set_geometry("rec_inflow_point", inplace=True)
+        # Reset the index
+        single_intersect_inflow.reset_index(drop=True, inplace=True)
+    else:
+        # No single Point geometries found, return an empty GeoDataFrame
+        single_intersect_inflow = gpd.GeoDataFrame()
     return single_intersect_inflow
 
 
