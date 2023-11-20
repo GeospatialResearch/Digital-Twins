@@ -14,6 +14,11 @@ from sqlalchemy.engine import Engine
 from src.dynamic_boundary_conditions.river import main_river, osm_waterways
 
 
+class NoRiverDataException(Exception):
+    """Exception raised when no river data is to be used for the BG-Flood model."""
+    pass
+
+
 def get_rec_network_data_on_bbox(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
@@ -36,16 +41,28 @@ def get_rec_network_data_on_bbox(
     gpd.GeoDataFrame
         A GeoDataFrame containing REC river network data that intersects with the catchment area boundary,
         along with the corresponding intersection points on the boundary.
+
+    Raises
+    ------
+    NoRiverDataException
+        If no REC river segment is found crossing the catchment boundary.
     """
     # Obtain the spatial extent of the hydro DEM
     _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
     # Select features that intersect with the hydro DEM extent
     rec_on_bbox = rec_network_data[rec_network_data.intersects(hydro_dem_extent)].reset_index(drop=True)
-    # Determine the points of intersection along the boundary
-    rec_on_bbox["rec_boundary_point"] = rec_on_bbox["geometry"].intersection(hydro_dem_extent)
-    # Rename the 'geometry' column to 'rec_river_line' and set the geometry to 'rec_boundary_point'
-    rec_on_bbox = rec_on_bbox.rename_geometry("rec_river_line").set_geometry("rec_boundary_point")
-    return rec_on_bbox
+    # Check if there are REC river segments that cross the hydro DEM extent
+    if not rec_on_bbox.empty:
+        # Determine the points of intersection along the boundary
+        rec_on_bbox["rec_boundary_point"] = rec_on_bbox["geometry"].intersection(hydro_dem_extent)
+        # Rename the 'geometry' column to 'rec_river_line' and set the geometry to 'rec_boundary_point'
+        rec_on_bbox = rec_on_bbox.rename_geometry("rec_river_line").set_geometry("rec_boundary_point")
+        return rec_on_bbox
+    else:
+        # If no REC river segment is found, raise an exception
+        raise NoRiverDataException(
+            "No relevant river data could be found for the catchment area. "
+            "As a result, river data will not be used in the BG-Flood model.")
 
 
 def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
