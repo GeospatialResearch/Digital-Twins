@@ -131,6 +131,11 @@ def get_rec_inflows_with_input_points(
         A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
         boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
         along with their corresponding river input points used for the BG-Flood model.
+
+    Raises
+    ------
+    NoRiverDataException
+        If no REC river segment is found crossing the catchment boundary.
     """
     # Obtain data for REC river inflow segments whose boundary points align with the boundary points of OSM waterways
     # within a specified distance threshold

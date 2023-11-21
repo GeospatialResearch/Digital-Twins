@@ -293,6 +293,11 @@ def get_rec_inflows_on_bbox(
     gpd.GeoDataFrame
         A GeoDataFrame containing REC river segments that are inflows into the catchment area, along with their
         corresponding inflow boundary points.
+
+    Raises
+    ------
+    NoRiverDataException
+        If no REC river segment is found crossing the catchment boundary.
     """
     # Get REC river network segments that intersect with the catchment area boundary
     rec_on_bbox = get_rec_network_data_on_bbox(engine, catchment_area, rec_network_data)
@@ -424,6 +429,11 @@ def get_rec_inflows_aligned_to_osm(
     gpd.GeoDataFrame
         A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
         boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold.
+
+    Raises
+    ------
+    NoRiverDataException
+        If no REC river segment is found crossing the catchment boundary.
     """
     # Obtain REC river network segments where water flows into the catchment area
     rec_inflows_on_bbox = get_rec_inflows_on_bbox(engine, catchment_area, rec_network_data)

@@ -176,6 +176,7 @@ def main(
     river_data_to_from_db.store_rec_data_to_db(engine)
     # Get the REC river network for the catchment area
     _, rec_network_data = river_network_for_aoi.get_rec_river_network(engine, catchment_area)
+
     try:
         # Obtain REC river inflow data along with the corresponding river input points used in the BG-Flood model
         rec_inflows_data = river_inflows.get_rec_inflows_with_input_points(
