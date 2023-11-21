@@ -161,23 +161,22 @@ def main(
     None
         This function does not return any value.
     """
+    # Set up logging with the specified log level
+    setup_logging(log_level)
+    # Connect to the database
+    engine = setup_environment.get_database()
+    # Get catchment area
+    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
+    # BG-Flood Model Directory
+    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    # Remove any existing river model inputs in the BG-Flood directory
+    remove_existing_river_inputs(bg_flood_dir)
+
+    # Store REC data to the database
+    river_data_to_from_db.store_rec_data_to_db(engine)
+    # Get the REC river network for the catchment area
+    _, rec_network_data = river_network_for_aoi.get_rec_river_network(engine, catchment_area)
     try:
-        # Set up logging with the specified log level
-        setup_logging(log_level)
-        # Connect to the database
-        engine = setup_environment.get_database()
-        # Get catchment area
-        catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
-        # BG-Flood Model Directory
-        bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
-        # Remove any existing river model inputs in the BG-Flood directory
-        remove_existing_river_inputs(bg_flood_dir)
-
-        # Store REC data to the database
-        river_data_to_from_db.store_rec_data_to_db(engine)
-        # Get the REC river network for the catchment area
-        _, rec_network_data = river_network_for_aoi.get_rec_river_network(engine, catchment_area)
-
         # Obtain REC river inflow data along with the corresponding river input points used in the BG-Flood model
         rec_inflows_data = river_inflows.get_rec_inflows_with_input_points(
             engine, catchment_area, rec_network_data, distance_m=300)
