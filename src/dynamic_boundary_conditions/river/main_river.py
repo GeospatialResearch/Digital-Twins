@@ -4,6 +4,7 @@ Main river script used to read and store REC data in the database, fetch OSM wat
 and its associated data, and generate the requested river model input for BG-Flood etc.
 """
 
+import logging
 import pathlib
 from typing import Union, Optional, Tuple
 
@@ -21,10 +22,13 @@ from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.river import (
     river_data_to_from_db,
     river_network_for_aoi,
+    align_rec_osm,
     river_inflows,
     hydrograph,
     river_model_input
 )
+
+log = logging.getLogger(__name__)
 
 
 def retrieve_hydro_dem_info(
@@ -173,22 +177,27 @@ def main(
     # Get the REC river network for the catchment area
     _, rec_network_data = river_network_for_aoi.get_rec_river_network(engine, catchment_area)
 
-    # Obtain REC river inflow data along with the corresponding river input points used in the BG-Flood model
-    rec_inflows_data = river_inflows.get_rec_inflows_with_input_points(
-        engine, catchment_area, rec_network_data, distance_m=300)
+    try:
+        # Obtain REC river inflow data along with the corresponding river input points used in the BG-Flood model
+        rec_inflows_data = river_inflows.get_rec_inflows_with_input_points(
+            engine, catchment_area, rec_network_data, distance_m=300)
 
-    # Generate hydrograph data for the requested REC river inflow scenario
-    hydrograph_data = hydrograph.get_hydrograph_data(
-        rec_inflows_data,
-        flow_length_mins=flow_length_mins,
-        time_to_peak_mins=time_to_peak_mins,
-        maf=maf,
-        ari=ari,
-        bound=bound
-    )
+        # Generate hydrograph data for the requested REC river inflow scenario
+        hydrograph_data = hydrograph.get_hydrograph_data(
+            rec_inflows_data,
+            flow_length_mins=flow_length_mins,
+            time_to_peak_mins=time_to_peak_mins,
+            maf=maf,
+            ari=ari,
+            bound=bound
+        )
 
-    # Generate river model inputs for BG-Flood
-    river_model_input.generate_river_model_input(bg_flood_dir, hydrograph_data)
+        # Generate river model inputs for BG-Flood
+        river_model_input.generate_river_model_input(bg_flood_dir, hydrograph_data)
+
+    except align_rec_osm.NoRiverDataException as error:
+        # Log an info message to indicate the absence of river data
+        log.info(error)
 
 
 if __name__ == "__main__":

@@ -14,6 +14,11 @@ from sqlalchemy.engine import Engine
 from src.dynamic_boundary_conditions.river import main_river, osm_waterways
 
 
+class NoRiverDataException(Exception):
+    """Exception raised when no river data is to be used for the BG-Flood model."""
+    pass
+
+
 def get_rec_network_data_on_bbox(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
@@ -36,11 +41,22 @@ def get_rec_network_data_on_bbox(
     gpd.GeoDataFrame
         A GeoDataFrame containing REC river network data that intersects with the catchment area boundary,
         along with the corresponding intersection points on the boundary.
+
+    Raises
+    ------
+    NoRiverDataException
+        If no REC river segment is found crossing the catchment boundary.
     """
     # Obtain the spatial extent of the hydro DEM
     _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
     # Select features that intersect with the hydro DEM extent
     rec_on_bbox = rec_network_data[rec_network_data.intersects(hydro_dem_extent)].reset_index(drop=True)
+    # Check if there are REC river segments that cross the hydro DEM extent
+    if rec_on_bbox.empty:
+        # If no REC river segment is found, raise an exception
+        raise NoRiverDataException(
+            "No relevant river data could be found for the catchment area. "
+            "As a result, river data will not be used in the BG-Flood model.")
     # Determine the points of intersection along the boundary
     rec_on_bbox["rec_boundary_point"] = rec_on_bbox["geometry"].intersection(hydro_dem_extent)
     # Rename the 'geometry' column to 'rec_river_line' and set the geometry to 'rec_boundary_point'
@@ -65,19 +81,24 @@ def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
         A GeoDataFrame containing the REC river segments that intersect the catchment boundary once and
         are inflows into the catchment area, along with their corresponding inflow boundary points.
     """
-    # Select only the records where 'rec_boundary_point' is a single point
-    single_intersect = rec_on_bbox[rec_on_bbox["rec_boundary_point"].geom_type == "Point"]
-    # Identify the inflow boundary points
-    single_intersect_inflow = single_intersect[
-        ((single_intersect["node_direction"] == "to") & (single_intersect["node_intersect_aoi"] == "last_node")) |
-        ((single_intersect["node_direction"] == "from") & (single_intersect["node_intersect_aoi"] == "first_node"))
-        ]
-    # Create a new column for inflow points for consistency purposes
-    single_intersect_inflow["rec_inflow_point"] = single_intersect_inflow["rec_boundary_point"]
-    # Set the geometry of the GeoDataFrame to 'rec_inflow_point'
-    single_intersect_inflow.set_geometry("rec_inflow_point", inplace=True)
-    # Reset the index
-    single_intersect_inflow.reset_index(drop=True, inplace=True)
+    # Check if there are any single Point geometries
+    if any(rec_on_bbox.geom_type == "Point"):
+        # Select only the records where 'rec_boundary_point' is a single point
+        single_intersect = rec_on_bbox[rec_on_bbox["rec_boundary_point"].geom_type == "Point"]
+        # Identify the inflow boundary points
+        single_intersect_inflow = single_intersect[
+            ((single_intersect["node_direction"] == "to") & (single_intersect["node_intersect_aoi"] == "last_node")) |
+            ((single_intersect["node_direction"] == "from") & (single_intersect["node_intersect_aoi"] == "first_node"))
+            ]
+        # Create a new column for inflow points for consistency purposes
+        single_intersect_inflow["rec_inflow_point"] = single_intersect_inflow["rec_boundary_point"]
+        # Set the geometry of the GeoDataFrame to 'rec_inflow_point'
+        single_intersect_inflow.set_geometry("rec_inflow_point", inplace=True)
+        # Reset the index
+        single_intersect_inflow.reset_index(drop=True, inplace=True)
+    else:
+        # No single Point geometries found, return an empty GeoDataFrame
+        single_intersect_inflow = gpd.GeoDataFrame()
     return single_intersect_inflow
 
 
@@ -224,24 +245,29 @@ def get_multi_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFra
         A GeoDataFrame containing the REC river segments that intersect the catchment boundary multiple times and
         are inflows into the catchment area, along with their corresponding inflow boundary points.
     """
-    # Identify and explode MultiPoint geometries into individual Point geometries
-    multi_intersect = get_exploded_multi_intersect(rec_on_bbox)
-    # Categorize the exploded Point geometries into 'inflow' and 'outflow' categories
-    categorized_multi_intersect = categorize_exploded_multi_intersect(multi_intersect)
-    # Extract the 'objectid' and the last inflow point for each REC river segment
-    inflow_points = [(objectid, data["inflow"][-1]) for objectid, data in categorized_multi_intersect.items()]
-    # Create a DataFrame from the extracted inflow points with columns 'objectid' and 'rec_inflow_point'
-    inflow_points_df = pd.DataFrame(inflow_points, columns=["objectid", "rec_inflow_point"])
-    # Merge the inflow points DataFrame with the original MultiPoint GeoDataFrame
-    multi_point_inflows = multi_intersect.merge(inflow_points_df, on="objectid", how="left")
-    # Convert the 'rec_inflow_point' column to a geometry data type
-    multi_point_inflows["rec_inflow_point"] = multi_point_inflows["rec_inflow_point"].astype("geometry")
-    # Set the geometry column and coordinate reference system (CRS) for the GeoDataFrame
-    multi_point_inflows = multi_point_inflows.set_geometry("rec_inflow_point", crs=multi_point_inflows.crs)
-    # Drop the temporary column used for exploding MultiPoint geometries
-    multi_point_inflows = multi_point_inflows.drop(columns=["rec_boundary_point_explode"])
-    # Reset the index
-    multi_point_inflows.reset_index(drop=True, inplace=True)
+    # Check if there are any MultiPoint geometries
+    if any(rec_on_bbox.geom_type == "MultiPoint"):
+        # Identify and explode MultiPoint geometries into individual Point geometries
+        multi_intersect = get_exploded_multi_intersect(rec_on_bbox)
+        # Categorize the exploded Point geometries into 'inflow' and 'outflow' categories
+        categorized_multi_intersect = categorize_exploded_multi_intersect(multi_intersect)
+        # Extract the 'objectid' and the last inflow point for each REC river segment
+        inflow_points = [(objectid, data["inflow"][-1]) for objectid, data in categorized_multi_intersect.items()]
+        # Create a DataFrame from the extracted inflow points with columns 'objectid' and 'rec_inflow_point'
+        inflow_points_df = pd.DataFrame(inflow_points, columns=["objectid", "rec_inflow_point"])
+        # Merge the inflow points DataFrame with the original MultiPoint GeoDataFrame
+        multi_point_inflows = multi_intersect.merge(inflow_points_df, on="objectid", how="left")
+        # Convert the 'rec_inflow_point' column to a geometry data type
+        multi_point_inflows["rec_inflow_point"] = multi_point_inflows["rec_inflow_point"].astype("geometry")
+        # Set the geometry column and coordinate reference system (CRS) for the GeoDataFrame
+        multi_point_inflows = multi_point_inflows.set_geometry("rec_inflow_point", crs=multi_point_inflows.crs)
+        # Drop the temporary column used for exploding MultiPoint geometries
+        multi_point_inflows = multi_point_inflows.drop(columns=["rec_boundary_point_explode"])
+        # Reset the index
+        multi_point_inflows.reset_index(drop=True, inplace=True)
+    else:
+        # No MultiPoint geometries found, return an empty GeoDataFrame
+        multi_point_inflows = gpd.GeoDataFrame()
     return multi_point_inflows
 
 
@@ -267,6 +293,11 @@ def get_rec_inflows_on_bbox(
     gpd.GeoDataFrame
         A GeoDataFrame containing REC river segments that are inflows into the catchment area, along with their
         corresponding inflow boundary points.
+
+    Raises
+    ------
+    NoRiverDataException
+        If no REC river segment is found crossing the catchment boundary.
     """
     # Get REC river network segments that intersect with the catchment area boundary
     rec_on_bbox = get_rec_network_data_on_bbox(engine, catchment_area, rec_network_data)
@@ -398,6 +429,11 @@ def get_rec_inflows_aligned_to_osm(
     gpd.GeoDataFrame
         A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
         boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold.
+
+    Raises
+    ------
+    NoRiverDataException
+        If no REC river segment is found crossing the catchment boundary.
     """
     # Obtain REC river network segments where water flows into the catchment area
     rec_inflows_on_bbox = get_rec_inflows_on_bbox(engine, catchment_area, rec_network_data)

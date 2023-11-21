@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This script processes 'static_vector_instructions' records, validates URLs and instruction fields, and stores them in the
-'geospatial_layers' table of the database.
+This script processes 'static_vector_instructions' records, validates URLs and instruction fields, and stores them in
+the 'geospatial_layers' table of the database.
 """
 
 import json
