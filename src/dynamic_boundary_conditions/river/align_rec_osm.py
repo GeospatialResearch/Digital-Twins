@@ -52,17 +52,16 @@ def get_rec_network_data_on_bbox(
     # Select features that intersect with the hydro DEM extent
     rec_on_bbox = rec_network_data[rec_network_data.intersects(hydro_dem_extent)].reset_index(drop=True)
     # Check if there are REC river segments that cross the hydro DEM extent
-    if not rec_on_bbox.empty:
-        # Determine the points of intersection along the boundary
-        rec_on_bbox["rec_boundary_point"] = rec_on_bbox["geometry"].intersection(hydro_dem_extent)
-        # Rename the 'geometry' column to 'rec_river_line' and set the geometry to 'rec_boundary_point'
-        rec_on_bbox = rec_on_bbox.rename_geometry("rec_river_line").set_geometry("rec_boundary_point")
-        return rec_on_bbox
-    else:
+    if rec_on_bbox.empty:
         # If no REC river segment is found, raise an exception
         raise NoRiverDataException(
             "No relevant river data could be found for the catchment area. "
             "As a result, river data will not be used in the BG-Flood model.")
+    # Determine the points of intersection along the boundary
+    rec_on_bbox["rec_boundary_point"] = rec_on_bbox["geometry"].intersection(hydro_dem_extent)
+    # Rename the 'geometry' column to 'rec_river_line' and set the geometry to 'rec_boundary_point'
+    rec_on_bbox = rec_on_bbox.rename_geometry("rec_river_line").set_geometry("rec_boundary_point")
+    return rec_on_bbox
 
 
 def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
