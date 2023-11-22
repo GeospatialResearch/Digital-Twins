@@ -26,6 +26,7 @@ dependencies:
   - flask
   - flask-cors
   - redis-py
+  - botocore>=1.13.0 # Minimum version that is compatable with python >= 3.10
   - pip:
     - geovoronoi==0.4.0
     - selenium
