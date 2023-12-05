@@ -207,13 +207,22 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the fetched REC data in New Zealand.
+
+    Raises
+    ------
+    RuntimeError
+        If failed to fetch REC data.
     """
     # Retrieves the maximum and total record counts from the REC feature layer
     max_record_count, total_record_count = get_feature_layer_record_counts(url)
     # Generate a list of API query parameters used to retrieve REC data in New Zealand
     query_param_list = gen_rec_query_param_list(engine, max_record_count, total_record_count)
-    # Iterate over the list of API query parameters to fetch REC data in New Zealand
-    rec_data = asyncio.run(fetch_rec_data_for_nz(query_param_list, url))
-    # Log that the REC data has been successfully fetched
-    log.info("Successfully retrieved REC data.")
-    return rec_data
+    try:
+        # Iterate over the list of API query parameters to fetch REC data in New Zealand
+        rec_data = asyncio.run(fetch_rec_data_for_nz(query_param_list, url))
+        # Log that the REC data has been successfully fetched
+        log.info("Successfully retrieved REC data.")
+        return rec_data
+    except TypeError:
+        # Raise a RuntimeError to indicate the failure
+        raise RuntimeError("Failed to fetch REC data.")
