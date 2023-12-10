@@ -1,0 +1,93 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--db6ffc1:18a5cf5bb82:-7ff7</id>
+  <name>building_flood_status</name>
+  <nativeName>building_flood_status</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-2e977b02:18488465719:-7fe3</id>
+  </namespace>
+  <title>building_flood_status</title>
+  <keywords>
+    <string>features</string>
+    <string>building_flood_status</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;NZGD2000 / New Zealand Transverse Mercator 2000&quot;, 
+  GEOGCS[&quot;NZGD2000&quot;, 
+    DATUM[&quot;New Zealand Geodetic Datum 2000&quot;, 
+      SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]], 
+      TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6167&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4167&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
+  PARAMETER[&quot;central_meridian&quot;, 173.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 1600000.0], 
+  PARAMETER[&quot;false_northing&quot;, 10000000.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;2193&quot;]]</nativeCRS>
+  <srs>EPSG:2193</srs>
+  <nativeBoundingBox>
+    <minx>987942.4517130491</minx>
+    <maxx>2119620.661218957</maxx>
+    <miny>4736810.692680219</miny>
+    <maxy>6226643.307867811</maxy>
+    <crs class="projected">EPSG:2193</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>164.91153211187205</minx>
+    <maxx>179.87672447778496</maxx>
+    <miny>-47.52048795153667</miny>
+    <maxy>-33.922676462668306</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="JDBC_VIRTUAL_TABLE">
+      <virtualTable>
+        <name>building_flood_status</name>
+        <sql>SELECT * &#xd;
+FROM nz_building_outlines&#xd;
+LEFT OUTER JOIN (&#xd;
+	SELECT *&#xd;
+	FROM building_flood_status&#xd;
+	WHERE flood_model_id=%scenario%&#xd;
+) AS flood_statuses&#xd;
+USING (building_outline_id)&#xd;
+WHERE building_outline_lifecycle ILIKE &apos;current&apos;
+</sql>
+        <escapeSql>false</escapeSql>
+        <geometry>
+          <name>geometry</name>
+          <type>Polygon</type>
+          <srid>2193</srid>
+        </geometry>
+        <parameter>
+          <name>scenario</name>
+          <defaultValue>-1</defaultValue>
+          <regexpValidator>^(-)?[\d]+$</regexpValidator>
+        </parameter>
+      </virtualTable>
+    </entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-2e977b02:18488465719:-7fe2</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <internationalTitle/>
+  <internationalAbstract/>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>
