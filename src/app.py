@@ -60,7 +60,6 @@ def health_check() -> Response:
 
 
 @app.route('/tasks/<task_id>', methods=["GET"])
-@check_celery_alive
 def get_status(task_id) -> Response:
     """
     Retrieves status of a particular Celery backend task.
@@ -79,11 +78,14 @@ def get_status(task_id) -> Response:
     task_result = result.AsyncResult(task_id, app=tasks.app)
     status = task_result.status
     task_value = task_result.get() if status == states.SUCCESS else None
+    http_status = OK
+    if status == states.FAILURE:
+        http_status = INTERNAL_SERVER_ERROR
     return make_response(jsonify({
         "taskId": task_result.id,
         "taskStatus": status,
         "taskValue": task_value
-    }), OK)
+    }), http_status)
 
 
 @app.route('/tasks/<task_id>', methods=["DELETE"])

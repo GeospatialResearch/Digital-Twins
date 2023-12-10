@@ -1,0 +1,98 @@
+import json
+import time
+
+import requests
+from celery import states
+
+"""A script to help guide people in how to use the APIs. Just for documentation and reference"""
+
+# You must have the celery worker running to use most of these API endpoints
+# (any that are marked with @check_celery_active in app.py)
+
+# Set backend url to point at backend.
+# This may be a different host than localhost if you are trying to reach the server from an external source
+backend_url = "http://localhost:5000"
+
+
+def perform_health_check():
+    # Run health-check - to verify if backend server is running,
+    health_check_response = requests.get(f"{backend_url}/health-check")
+    # This health_check will respond in one of 3 ways.
+    # Either 200: Healthy, 600: Celery workers are not active,
+    # or it will not respond with either of these if there is a problem with the server
+    print(f"Status: {health_check_response.status_code}, body: {health_check_response.text}")
+    # Raises error if the status is not 200
+    health_check_response.raise_for_status()
+
+
+def generate_flood_model() -> str:
+    # Create request data for getting flood model data from a region over Kaiapoi
+    request_data = {
+        "bbox": {
+            "lat1": -43.38205648955185,
+            "lng1": 172.6487081332888,
+            "lng2": 172.66,
+            "lat2": -43.40
+        },
+        "scenarioOptions": {
+            "Projected Year": 2050,
+            "SSP Scenario": "SSP2-4.5",
+            "Confidence Level": "medium",
+            "Add Vertical Land Movement": True
+        }
+    }
+    print(f"Requesting backend to generate flood model for {request_data}")
+    generate_model_response = requests.post(f"{backend_url}/models/generate", json=request_data)
+    # Check for errors (400/500 codes)
+    generate_model_response.raise_for_status()
+    # Load the body JSON into a python dict
+    response_body = json.loads(generate_model_response.text)
+    # Read the task id
+    return response_body["taskId"]
+
+
+def poll_for_completion(task_id: str):
+    # Retry forever until the task is complete
+    task_status = None
+    while task_status != states.SUCCESS:
+        # 5 Second delay before retrying
+        time.sleep(5)
+        print("Polling backend for task completion...")
+
+        # Get status of a task
+        task_status_response = requests.get(f"{backend_url}/tasks/{task_id}")
+        task_status_response.raise_for_status()
+        # Load the body JSON into a python dict
+        response_body = json.loads(task_status_response.text)
+        task_status = response_body["taskStatus"]
+
+    print(f"Task completed with value {response_body['taskValue']}")
+
+
+def get_depths_at_point(task_id: str):
+    point = {"lat": -43.39, "lng": 172.65}
+    # Send a request to get the depths at a point for a flood model associated with a task
+    print(f"requesting depths for point {point}")
+    depths_response = requests.get(f"{backend_url}/tasks/{task_id}/model/depth", params=point)
+
+    # Check for errors (400/500 codes)
+    depths_response.raise_for_status()
+    # Load the body JSON into a python dict
+    response_body = json.loads(depths_response.text)
+    print(response_body)
+
+
+def stop_task(task_id: str):
+    # Send a request to stop the task
+    requests.delete(f"{backend_url}/tasks/{task_id}")
+
+
+def main():
+    perform_health_check()
+    flood_generation_task_id = generate_flood_model()
+    poll_for_completion(flood_generation_task_id)
+    get_depths_at_point(flood_generation_task_id)
+
+
+if __name__ == '__main__':
+    main()
