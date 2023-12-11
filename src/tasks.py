@@ -242,6 +242,30 @@ def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> Tuple[L
 
 
 @app.task(base=OnFailureStateTask)
+def get_model_extents_bbox(model_id: int) -> str:
+    """
+    Task to find the bounding box of a given model output
+
+    Parameters
+    ----------
+    model_id : int
+        The database id of the model output to query.
+
+    Returns
+    -------
+    str:
+        The bounding box in '[x1],[y1],[x2],[y2]' format
+    """
+    extents = bg_flood_model.model_extents_from_db_by_id(model_id).geometry[0]
+    # Retrieve a tuple of the corners of the extents
+    bbox_corners = extents.bounds
+    # Convert the tuple into a string in [x1],[y1],[x2],[y2]
+    return ",".join(map(str, bbox_corners))
+
+
+
+
+@app.task(base=OnFailureStateTask)
 def get_distinct_column_values(table_name: str) -> dict:
     engine = setup_environment.get_database()
     column_names = pd.read_sql(

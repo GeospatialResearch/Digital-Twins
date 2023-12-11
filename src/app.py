@@ -6,6 +6,7 @@ from functools import wraps
 from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR
 from typing import Callable
 
+import requests
 from celery import result, states
 from flask import Flask, Response, jsonify, make_response, request
 from flask_cors import CORS
@@ -60,7 +61,7 @@ def health_check() -> Response:
 
 
 @app.route('/tasks/<task_id>', methods=["GET"])
-def get_status(task_id) -> Response:
+def get_status(task_id: str) -> Response:
     """
     Retrieves status of a particular Celery backend task.
     Supported methods: GET
@@ -89,7 +90,7 @@ def get_status(task_id) -> Response:
 
 
 @app.route('/tasks/<task_id>', methods=["DELETE"])
-def remove_task(task_id) -> Response:
+def remove_task(task_id: str) -> Response:
     """
     Deletes and stops a particular Celery backend task.
     Supported methods: DELETE
@@ -218,6 +219,47 @@ def get_depth_at_point(task_id: str) -> Response:
         'depth': depths,
         'time': times
     }), OK)
+
+
+@app.route('/models/<int:model_id>/buildings', methods=["GET"])
+def retrieve_building_flood_status(model_id: int) -> Response:
+    """
+    Retrieves information on building flood status, for a given flood model output id.
+    It is recommended to use the geoserver API if it is possible, since this is a proxy around that.
+
+    Parameters
+    ----------
+    model_id: int
+        The ID of the flood output model to be queried
+
+    Returns
+    -------
+    Response
+        Returns GeoJSON building layer for the area of the flood model output.
+        Has a property "is_flooded" to designate if a building is flooded in that scenario or not
+    """
+    # Set output crs argument from request args
+    crs = request.args.get("crs", type=int, default=4326)
+
+    # Get bounding box of model output to filter vector data to that area
+    bbox = tasks.get_model_extents_bbox.delay(model_id).get()
+
+    # Set up geoserver request parameters
+    request_url = "http://localhost:8088/geoserver/digitaltwin/ows"
+    params = {
+        "service": "WFS",
+        "version": "1.0.0",
+        "request": "GetFeature",
+        "typeName": "digitaltwin:building_flood_status",
+        "outputFormat": "application/json",
+        "srsName": f"EPSG:{crs}",  # Set output CRS
+        "viewParams": f"scenario:{model_id}",  # Choose scenario for flooded_buildings
+        "cql_filter": f"bbox(geometry,{bbox},'EPSG:2193')"  # Filter output to be only geometries inside the model bbox
+    }
+    # Request building statuses from geoserver
+    geoserver_response = requests.get(request_url, params)
+    # Serve those building statuses
+    return make_response(geoserver_response.json(), OK)
 
 
 @app.route('/tables/<table_name>/distinct', methods=["GET"])

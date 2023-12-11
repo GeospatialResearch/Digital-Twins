@@ -153,6 +153,28 @@ def model_output_from_db_by_id(model_id: int) -> pathlib.Path:
     return latest_output_path
 
 
+def model_extents_from_db_by_id(model_id: int) -> gpd.GeoDataFrame:
+    """
+    Finds the extents of a model output in gpd.GeoDataFrame format
+
+    Parameters
+    ----------
+    model_id: int
+        The ID of the flood model output being queried for
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        Returns the geometry (extents) of the flood model output.
+    """
+    # Get the database engine for establishing a connection
+    engine = setup_environment.get_database()
+    # Execute a query to get the model output record based on the 'flood_model_id' column
+    query = text("SELECT geometry FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
+        flood_model_id=model_id)
+    return gpd.read_postgis(query, engine, geom_col='geometry')
+
+
 def add_crs_to_latest_model_output(flood_model_output_id: int) -> None:
     """
     Add Coordinate Reference System (CRS) to the latest BG-Flood model output.
