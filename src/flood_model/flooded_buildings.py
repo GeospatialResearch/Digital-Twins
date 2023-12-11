@@ -8,11 +8,13 @@ import xarray
 from sqlalchemy.engine import Engine
 
 from src.digitaltwin import setup_environment
+from src.flood_model.serve_model import create_building_database_views_if_not_exists
 
 
 def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame, flood_model_id: int):
     buildings["flood_model_id"] = flood_model_id
     buildings.to_sql("building_flood_status", engine, if_exists="append", index=True)
+    create_building_database_views_if_not_exists()
 
 
 def find_flooded_buildings(area_of_interest: gpd.GeoDataFrame, flood_model_output_path: pathlib.Path,
