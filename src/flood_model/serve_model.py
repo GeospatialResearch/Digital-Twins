@@ -217,36 +217,47 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
         raise requests.HTTPError(response.text, response=response)
 
 
-def create_datastore_layer(workspace_name, layer_name, metadata_elem: str = "") -> None:
+def create_datastore_layer(workspace_name, data_store_name: str, layer_name, metadata_elem: str = "") -> None:
+    db_exists_response = requests.get(
+        f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes.json',
+        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+    )
+    response_data = db_exists_response.json()
+    # Parse JSON structure to get list of feature names
+    layer_names = [layer["name"] for layer in response_data["featureTypes"]["featureType"]]
+    if layer_name in layer_names:
+        # If the layer already exists, we don't have to add it again, and can instead return
+        return
+    # Construct new layer request
     data = f"""
-            <FeatureType>
-                <name>{layer_name}</name>
-                <title>{layer_name}</title>
-                <srs>EPSG:2193</srs>
-                <nativeBoundingBox>
-                    <minx>1569250.25</minx>
-                    <maxx>1576146.125</maxx>
-                    <miny>5193063.0</miny>
-                    <maxy>5198796.5</maxy>
-                    <crs class="projected">EPSG:2193</crs>
-                </nativeBoundingBox>
-                <latLonBoundingBox>
-                    <minx>172.6201769738012</minx>
-                    <maxx>172.70560400234294</maxx>
-                    <miny>-43.41493996360092</miny>
-                    <maxy>-43.36306275550463</maxy>
-                    <crs>EPSG:4326</crs>
-                </latLonBoundingBox>
-                <store>
-                    <@class>dataStore</@class>
-                    <name>{workspace_name}</name>
-                </store>
-                {metadata_elem}
-            </FeatureType>
+        <featureType>
+            <name>{layer_name}</name>
+            <title>{layer_name}</title>
+            <srs>EPSG:2193</srs>
+            <nativeBoundingBox>
+                <minx>1569250.25</minx>
+                <maxx>1576146.125</maxx>
+                <miny>5193063.0</miny>
+                <maxy>5198796.5</maxy>
+                <crs class="projected">EPSG:2193</crs>
+            </nativeBoundingBox>
+            <latLonBoundingBox>
+                <minx>172.6201769738012</minx>
+                <maxx>172.70560400234294</maxx>
+                <miny>-43.41493996360092</miny>
+                <maxy>-43.36306275550463</maxy>
+                <crs>EPSG:4326</crs>
+            </latLonBoundingBox>
+            <store>
+                <class>dataStore</class>
+                <name>{data_store_name}</name>
+            </store>
+            {metadata_elem}
+        </featureType>
         """
 
     response = requests.post(
-        f"{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{layer_name}/featuretypes",
+        f"{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes",
         params={"configure": "all"},
         headers={"Content-type": "text/xml"},
         data=data,
@@ -254,14 +265,13 @@ def create_datastore_layer(workspace_name, layer_name, metadata_elem: str = "") 
     )
     if response.status_code == HTTPStatus.CREATED:
         log.info(f"Created new datastore layer {workspace_name}:{layer_name}.")
-    # Expected responses are CREATED if the new store is created or CONFLICT if one already exists.
-    if response.status_code not in [HTTPStatus.CREATED, HTTPStatus.CONFLICT]:
+    else:
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
 
 
-def create_building_layers(workspace_name: str) -> None:
+def create_building_layers(workspace_name: str, data_store_name: str) -> None:
     """
     Creates dynamic geoserver layers "nz_building_outlines" and "building_flood_status" for the given workspace.
     If they already exist then does nothing.
@@ -278,9 +288,9 @@ def create_building_layers(workspace_name: str) -> None:
         This function does not return anything
     """
     # Simple layer that is just displaying the nz_building_outlines database table
-    create_datastore_layer(workspace_name, layer_name="nz_building_outlines")
+    create_datastore_layer(workspace_name, data_store_name, layer_name="nz_building_outlines")
 
-    # More complex layer that has to do sql queries to fetch
+    # More complex layer that has to do dynamic sql queries against model output ID to fetch
     flood_status_layer_name = "building_flood_status"
     flood_status_xml_query = f"""
       <metadata>
@@ -313,10 +323,10 @@ def create_building_layers(workspace_name: str) -> None:
         </entry>
       </metadata>
     """
-    create_datastore_layer(workspace_name, layer_name="building_flood_status", metadata_elem=flood_status_xml_query)
+    create_datastore_layer(workspace_name, data_store_name, layer_name="building_flood_status", metadata_elem=flood_status_xml_query)
 
 
-def create_db_store_if_not_exists(db_name: str, workspace_name: str) -> None:
+def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_store_name: str) -> None:
     """
     Creates PostGIS database store in a geoserver workspace for a given database.
     If it already exists, does not do anything.
@@ -340,7 +350,6 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str) -> None:
     # Parse JSON structure to get list of data store names
     data_store_names = [data_store["name"] for data_store in response_data["dataStores"]["dataStore"]]
 
-    new_data_store_name = f"{db_name} PostGIS"
     if new_data_store_name in data_store_names:
         # If the data store already exists we don't have to do anything
         return
@@ -392,8 +401,10 @@ def create_building_database_views_if_not_exists() -> None:
     # Create workspace if it doesn't exist, so that the namespaces can be separated if multiple dbs are running
     create_workspace_if_not_exists(workspace_name)
     # Create a new database store if geoserver is not yet configured for that database
-    create_db_store_if_not_exists(db_name, workspace_name)
+    data_store_name = f"{db_name} PostGIS"
+    create_db_store_if_not_exists(db_name, workspace_name, data_store_name)
     # Create SQL view layers so geoserver can dynamically serve building layers based on model outputs.
+    create_building_layers(workspace_name, data_store_name)
 
 
 def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int) -> None:

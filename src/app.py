@@ -13,6 +13,7 @@ from flask_cors import CORS
 from shapely import box
 
 from src import tasks
+from src.config import get_env_variable
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -222,6 +223,7 @@ def get_depth_at_point(task_id: str) -> Response:
 
 
 @app.route('/models/<int:model_id>/buildings', methods=["GET"])
+@check_celery_alive
 def retrieve_building_flood_status(model_id: int) -> Response:
     """
     Retrieves information on building flood status, for a given flood model output id.
@@ -244,13 +246,16 @@ def retrieve_building_flood_status(model_id: int) -> Response:
     # Get bounding box of model output to filter vector data to that area
     bbox = tasks.get_model_extents_bbox.delay(model_id).get()
 
+    # Geoserver workspace is dependant on environment variables
+    db_name = get_env_variable("POSTGRES_DB")
+    workspace_name = f"{db_name} PostGIS"
     # Set up geoserver request parameters
     request_url = "http://localhost:8088/geoserver/digitaltwin/ows"
     params = {
         "service": "WFS",
         "version": "1.0.0",
         "request": "GetFeature",
-        "typeName": "digitaltwin:building_flood_status",
+        "typeName": f"{workspace_name}:building_flood_status",
         "outputFormat": "application/json",
         "srsName": f"EPSG:{crs}",  # Set output CRS
         "viewParams": f"scenario:{model_id}",  # Choose scenario for flooded_buildings
