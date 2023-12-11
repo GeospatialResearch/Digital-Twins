@@ -201,7 +201,7 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
     gtiff_filepath = convert_nc_to_gtiff(model_output_path)
     try:
         add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs", model_id)
-    except HTTPError as e:
+    except requests.HTTPError as e:
         # Log all of the information for debugging purposes if errors happen and reraise the exception
         log.error(e)
         log.error(e.response.text)
