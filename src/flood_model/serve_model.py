@@ -224,7 +224,10 @@ def create_datastore_layer(workspace_name, data_store_name: str, layer_name, met
     )
     response_data = db_exists_response.json()
     # Parse JSON structure to get list of feature names
-    layer_names = [layer["name"] for layer in response_data["featureTypes"]["featureType"]]
+    top_layer_node = response_data["featureTypes"]
+    # defaults to empty list if no layers exist
+    layers = top_layer_node["featureType"] if top_layer_node else []
+    layer_names = [layer["name"] for layer in layers]
     if layer_name in layer_names:
         # If the layer already exists, we don't have to add it again, and can instead return
         return
@@ -347,8 +350,12 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
     )
     response_data = db_exists_response.json()
+
     # Parse JSON structure to get list of data store names
-    data_store_names = [data_store["name"] for data_store in response_data["dataStores"]["dataStore"]]
+    top_data_store_node = response_data["dataStores"]
+    # defaults to empty list if no data stores exist
+    data_stores = top_data_store_node["dataStore"] if top_data_store_node else []
+    data_store_names = [data_store["name"] for data_store in data_stores]
 
     if new_data_store_name in data_store_names:
         # If the data store already exists we don't have to do anything
