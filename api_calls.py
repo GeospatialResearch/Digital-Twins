@@ -3,6 +3,7 @@ import time
 
 import requests
 from celery import states
+from geopandas import GeoDataFrame
 
 """A script to help guide people in how to use the APIs. Just for documentation and reference"""
 
@@ -51,7 +52,8 @@ def generate_flood_model() -> str:
     return response_body["taskId"]
 
 
-def poll_for_completion(task_id: str):
+def poll_for_completion(task_id: str) -> int:
+    """Returns task value of completed task e.g. generate model task -> model output id"""
     # Retry forever until the task is complete
     task_status = None
     while task_status != states.SUCCESS:
@@ -65,8 +67,21 @@ def poll_for_completion(task_id: str):
         # Load the body JSON into a python dict
         response_body = json.loads(task_status_response.text)
         task_status = response_body["taskStatus"]
+    task_value = response_body['taskValue']
+    print(f"Task completed with value {task_value}")
+    return task_value
 
-    print(f"Task completed with value {response_body['taskValue']}")
+
+def get_building_statuses(model_id: int) -> GeoDataFrame:
+    # Retrieve building statuses
+    building_response = requests.get(f"{backend_url}/models/{model_id}/buildings")
+    # Check for errors (400/500 codes)
+    building_response.raise_for_status()
+    # Read response GeoJSON into python dict
+    building_json = building_response.json()
+    # Build gdf from GeoJSON Features
+    return GeoDataFrame.from_features(building_json["features"])
+
 
 
 def get_depths_at_point(task_id: str):
@@ -78,7 +93,7 @@ def get_depths_at_point(task_id: str):
     # Check for errors (400/500 codes)
     depths_response.raise_for_status()
     # Load the body JSON into a python dict
-    response_body = json.loads(depths_response.text)
+    response_body = depths_response.json()
     print(response_body)
 
 
@@ -90,7 +105,8 @@ def stop_task(task_id: str):
 def main():
     perform_health_check()
     flood_generation_task_id = generate_flood_model()
-    poll_for_completion(flood_generation_task_id)
+    model_output_id = poll_for_completion(flood_generation_task_id)
+    get_building_statuses(model_output_id)
     get_depths_at_point(flood_generation_task_id)
 
 
