@@ -1,13 +1,11 @@
 <style>
   <id>StyleInfoImpl-3d12876e:18be87cccf0:-1745</id>
   <name>viridis_raster</name>
-  <workspace>
-    <id>WorkspaceInfoImpl-4a31c2fc:187e8cb532b:-7ffc</id>
-  </workspace>
   <format>sld</format>
   <languageVersion>
     <version>1.0.0</version>
   </languageVersion>
   <filename>viridis_raster.sld</filename>
   <dateCreated>2023-11-19 18:10:54.666 UTC</dateCreated>
+  <dateModified>2023-12-11 16:46:18.814 UTC</dateModified>
 </style>

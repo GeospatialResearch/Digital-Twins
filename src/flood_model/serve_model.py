@@ -7,14 +7,13 @@ import logging
 import os
 import pathlib
 import shutil
+from http import HTTPStatus
 
 import rasterio as rio
 import requests
 import xarray as xr
 
 from src.config import get_env_variable
-
-GEOSERVER_REST_URL = "http://localhost:8088/geoserver/rest/"
 
 log = logging.getLogger(__name__)
 
@@ -88,8 +87,9 @@ def upload_gtiff_to_store(
         data=data,
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
     )
-    # Raise exception if request fails.
-    response.raise_for_status()
+    if not response.ok:
+        # Raise error manually so we can configure the text
+        raise requests.HTTPError(response.text, response=response)
 
 
 def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str, workspace_name: str) -> None:
@@ -136,6 +136,7 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
     )
     if not response.ok:
+        # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
 
 
@@ -180,10 +181,46 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, mo
     create_layer_from_store(gs_url, layer_name, gtiff_crs, workspace_name)
 
 
+def create_workspace_if_not_exists(workspace_name: str):
+    """
+    Creates a geoserver workspace if it does not currently exist.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the workspace to create if it does not exists.
+
+    Returns
+    -------
+    None
+        This function does not return anything.
+    """
+    # Create the geoserver REST API request to create the workspace
+    log.info(f"Creating geoserver workspace {workspace_name} if it does not already exist.")
+    req_body = {
+        "workspace": {
+            "name": workspace_name
+        }
+    }
+    response = requests.post(
+        f"{get_geoserver_url()}/workspaces",
+        json=req_body,
+        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD"))
+    )
+    if response.status_code == HTTPStatus.CREATED:
+        log.info(f"Created new workspace {workspace_name}.")
+    elif response.status_code == HTTPStatus.CONFLICT:
+        log.info(f"Workspace {workspace_name} already exists.")
+    else:
+        # If it does not meet the expected results then raise an error
+        # Raise error manually so we can configure the text
+        raise requests.HTTPError(response.text, response=response)
+
+
 def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int):
     """
     Adds the model output max depths to GeoServer, ready for serving.
-    The GeoServer layer name will be f"Output_{model_id}" and the workspace name will be "dt-model-outputs"
+    The GeoServer layer name will be f"Output_{model_id}" and the workspace name will be "{db_name}-dt-model-outputs"
 
     Parameters
     ----------
@@ -199,10 +236,8 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
     """
     log.debug("Adding model output to geoserver")
     gtiff_filepath = convert_nc_to_gtiff(model_output_path)
-    try:
-        add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs", model_id)
-    except requests.HTTPError as e:
-        # Log all of the information for debugging purposes if errors happen and reraise the exception
-        log.error(e)
-        log.error(e.response.text)
-        raise e
+    db_name = get_env_variable("POSTGRES_DB")
+    # Assign a new workspace name based on the db_name, to prevent name clashes if running multiple databases
+    workspace_name = f"{db_name}-dt-model-outputs"
+    create_workspace_if_not_exists(workspace_name)
+    add_gtiff_to_geoserver(gtiff_filepath, workspace_name, model_id)
