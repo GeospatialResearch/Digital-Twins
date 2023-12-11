@@ -206,19 +206,3 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
         log.error(e)
         log.error(e.response.text)
         raise e
-
-# def add_flooded_buildings_to_geoserver(flooded_buildings: gpd.GeoDataFrame, model_id: str):
-#     """"""
-#     layer_name = f"buildings_{model_id}"
-#     buildings_crs = flooded_buildings.crs.wkt
-#
-#     # Save file to disk to be read my geoserver
-#     temp_dir = pathlib.Path("tmp/geojson")
-#     # Create temporary storage folder if it does not already exist
-#     temp_dir.mkdir(parents=True, exist_ok=True)
-#     geojson_path = temp_dir / f"{layer_name}.geojson"
-#     flooded_buildings.to_file("geojson_filepath", crs=buildings_crs)
-#
-#     gs_url = get_geoserver_url()
-#     upload_geojson_to_store(gs_url, geojson_path, layer_name, workspace_name)
-#     create_layer_from_store(gs_url, layer_name, buildings_crs, workspace_name)
