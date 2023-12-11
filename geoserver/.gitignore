@@ -1,1 +1,6 @@
 geoserver_data/gwc
+/geoserver_data/data/
+/geoserver_data/gwc-layers/
+/geoserver_data/layouts/
+/geoserver_data/workspaces/
+/geoserver_data/wfs.xml
