@@ -199,7 +199,13 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
     """
     log.debug("Adding model output to geoserver")
     gtiff_filepath = convert_nc_to_gtiff(model_output_path)
-    add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs", model_id)
+    try:
+        add_gtiff_to_geoserver(gtiff_filepath, "dt-model-outputs", model_id)
+    except HTTPError as e:
+        # Log all of the information for debugging purposes if errors happen and reraise the exception
+        log.error(e)
+        log.error(e.response.text)
+        raise e
 
 # def add_flooded_buildings_to_geoserver(flooded_buildings: gpd.GeoDataFrame, model_id: str):
 #     """"""
