@@ -248,14 +248,15 @@ def retrieve_building_flood_status(model_id: int) -> Response:
 
     # Geoserver workspace is dependant on environment variables
     db_name = get_env_variable("POSTGRES_DB")
-    workspace_name = f"{db_name} PostGIS"
+    workspace_name = f"{db_name}-buildings"
+    store_name = f"{db_name} PostGIS"
     # Set up geoserver request parameters
-    request_url = "http://localhost:8088/geoserver/digitaltwin/ows"
+    request_url = f"http://localhost:8088/geoserver/{workspace_name}/ows"
     params = {
         "service": "WFS",
         "version": "1.0.0",
         "request": "GetFeature",
-        "typeName": f"{workspace_name}:building_flood_status",
+        "typeName": f"{store_name}:building_flood_status",
         "outputFormat": "application/json",
         "srsName": f"EPSG:{crs}",  # Set output CRS
         "viewParams": f"scenario:{model_id}",  # Choose scenario for flooded_buildings
