@@ -41,20 +41,25 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     # Check if the directory exists and, if so, delete all files within it
     if slr_data_dir.exists():
         [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
-    # Normalise the sea level rise data directory to ensure consistent directory separators for the current OS
-    download_directory = os.path.normpath(slr_data_dir)
+    # Create the directory if it does not already exist
+    else:
+        slr_data_dir.mkdir(parents=True, exist_ok=True)
+    # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
+    log.info("Downloading regional sea level rise data files from NZ SeaRise Takiwa.")
     # Initialize a ChromeOptions instance to customize the Chrome WebDriver settings
     chrome_options = webdriver.ChromeOptions()
     # Enable headless mode for Chrome (no visible browser window)
     chrome_options.add_argument("--headless")
     # Define the download directory preference for downloaded files
-    prefs = {"download.default_directory": download_directory}
+    prefs = {"download.default_directory": str(slr_data_dir.resolve())}
     # Apply the download directory preference to ChromeOptions
     chrome_options.add_experimental_option("prefs", prefs)
     # Initialize a Chrome WebDriver instance with the configured options
     driver = webdriver.Chrome(options=chrome_options)
     # Open the specified website in the Chrome browser
     driver.get("https://searise.takiwa.co/map/6245144372b819001837b900")
+    # Add a 1-second delay to ensure that the website is open before downloading
+    time.sleep(1)
     # Find and click the "Accept" button on the web page
     driver.find_element(By.CSS_SELECTOR, "button.ui.green.basic.button").click()
     # Find and click "Download"
@@ -152,7 +157,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
         slr_nz = read_slr_data_from_files(slr_data_dir)
         # Store the sea level rise data to the database table
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
-        log.info(f"Stored '{table_name}' data in the database.")
+        log.info(f"Successfully stored '{table_name}' data in the database.")
 
 
 def get_closest_slr_data(engine: Engine, single_query_loc: pd.Series) -> gpd.GeoDataFrame:
