@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This script processes 'static_boundary_instructions' records, validates URLs and instruction fields, and stores them in the
-'geospatial_layers' table of the database.
+This script processes 'static_boundary_instructions' records, validates URLs and instruction fields, and stores them in
+the 'geospatial_layers' table of the database.
 """
 
 import json
@@ -101,8 +101,11 @@ def read_and_check_instructions_file() -> pd.DataFrame:
     """
     # Path to the 'static_boundary_instructions.json' file
     instruction_file = pathlib.Path("src/digitaltwin/static_boundary_instructions.json")
+    # Read the 'static_boundary_instructions.json' file
     with open(instruction_file, "r") as file:
+        # Load content from the file
         instructions = json.load(file)
+        # Iterate through each section
         for section, instruction in instructions.items():
             # Validate the URL and its reachability
             validate_url_reachability(section, instruction.get("url"))
@@ -194,5 +197,6 @@ def store_instructions_records_to_db(engine: Engine) -> None:
         log.info("No new 'static_boundary_instructions' records found. All records already exist in the database.")
     else:
         # Store the non-existing records to the 'geospatial_layers' table
+        log.info("Adding new 'static_boundary_instructions' records to the database.")
         non_existing_records.to_sql(GeospatialLayers.__tablename__, engine, index=False, if_exists="append")
         log.info("New 'static_boundary_instructions' records have been successfully added to the database.")
