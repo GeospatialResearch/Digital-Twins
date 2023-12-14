@@ -166,19 +166,20 @@ def nz_geospatial_layers_data_to_db(
     # Get New Zealand geospatial layers
     nz_geo_layers = get_nz_geospatial_layers(engine)
 
+    # Iterate over each NZ geospatial layer
     for _, layer_row in nz_geo_layers.iterrows():
         # Extract geospatial layer information
         data_provider, layer_id, table_name, _ = get_geospatial_layer_info(layer_row)
 
         # Check if the table already exists in the database
-        if not check_table_exists(engine, table_name):
+        if check_table_exists(engine, table_name):
+            log.info(f"Table '{table_name}' already exists in the database.")
+        else:
             # Fetch vector data using geoapis
             vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose)
             # Insert vector data into the database
             vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
             log.info(f"Added {table_name} data ({data_provider} {layer_id}) to the database.")
-        else:
-            log.info(f"Table '{table_name}' already exists in the database.")
 
 
 def get_non_intersection_area_from_db(
@@ -229,11 +230,11 @@ def get_non_intersection_area_from_db(
         return catchment_area
     # Compute the non-intersecting area by overlaying the catchment area with the intersections
     non_intersection_area = catchment_area.overlay(user_log_intersections, how='difference')
-    # Check if the non-intersecting area is not empty
-    if not non_intersection_area.empty:
-        return non_intersection_area
-    else:
+    # Check if the non-intersecting area is empty
+    if non_intersection_area.empty:
         raise NoNonIntersectionError(f"The '{table_name}' data for the catchment area has already been requested.")
+    else:
+        return non_intersection_area
 
 
 def process_new_non_nz_geospatial_layers(
@@ -377,14 +378,14 @@ def non_nz_geospatial_layers_data_to_db(
             continue
 
         # Check if the table already exists in the database
-        if not check_table_exists(engine, table_name):
-            # Process new non-NZ geospatial layers
-            process_new_non_nz_geospatial_layers(
-                engine, data_provider, layer_id, table_name, non_intersection_area, crs, verbose)
-        else:
+        if check_table_exists(engine, table_name):
             # Process existing non-NZ geospatial layers
             process_existing_non_nz_geospatial_layers(
                 engine, data_provider, layer_id, table_name, unique_column_name, non_intersection_area, crs, verbose)
+        else:
+            # Process new non-NZ geospatial layers
+            process_new_non_nz_geospatial_layers(
+                engine, data_provider, layer_id, table_name, non_intersection_area, crs, verbose)
 
 
 def store_geospatial_layers_data_to_db(
