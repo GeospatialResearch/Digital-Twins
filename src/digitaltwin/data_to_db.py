@@ -173,13 +173,14 @@ def nz_geospatial_layers_data_to_db(
 
         # Check if the table already exists in the database
         if check_table_exists(engine, table_name):
-            log.info(f"Table '{table_name}' already exists in the database.")
+            log.info(f"'{table_name}' data already exists in the database.")
         else:
             # Fetch vector data using geoapis
+            log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}).")
             vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose)
             # Insert vector data into the database
+            log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
             vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-            log.info(f"Added {table_name} data ({data_provider} {layer_id}) to the database.")
 
 
 def get_non_intersection_area_from_db(
@@ -232,7 +233,8 @@ def get_non_intersection_area_from_db(
     non_intersection_area = catchment_area.overlay(user_log_intersections, how='difference')
     # Check if the non-intersecting area is empty
     if non_intersection_area.empty:
-        raise NoNonIntersectionError(f"The '{table_name}' data for the catchment area has already been requested.")
+        raise NoNonIntersectionError(
+            f"'{table_name}' data for the requested catchment area is already in the database.")
     else:
         return non_intersection_area
 
@@ -271,14 +273,15 @@ def process_new_non_nz_geospatial_layers(
         This function does not return any value.
     """
     # Fetch vector data using geoapis
+    log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
     vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, area_of_interest)
     # Check if the fetched vector data is empty
     if vector_data.empty:
-        log.info(f"The requested catchment area does not contain any {table_name} data ({data_provider} {layer_id}).")
+        log.info(f"The requested catchment area does not contain any '{table_name}' data ({data_provider} {layer_id}).")
     else:
         # Insert vector data into the database
+        log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
         vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-        log.info(f"Added {table_name} data ({data_provider} {layer_id}) for the catchment area to the database.")
 
 
 def process_existing_non_nz_geospatial_layers(
@@ -318,10 +321,11 @@ def process_existing_non_nz_geospatial_layers(
         This function does not return any value.
     """
     # Fetch vector data using geoapis
+    log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
     vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, area_of_interest)
     # Check if the fetched vector data is empty
     if vector_data.empty:
-        log.info(f"{table_name} data for the requested catchment area already in the database!")
+        log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
     else:
         # Get IDs from the vector data that are not in the database
         ids_not_in_db = get_vector_data_id_not_in_db(
@@ -331,11 +335,11 @@ def process_existing_non_nz_geospatial_layers(
             # Get vector data that contains only the IDs not present in the database
             vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
             # Insert vector data into the database
-            vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
             log.info(
-                f"Added new {table_name} data ({data_provider} {layer_id}) for the catchment area to the database.")
+                f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
+            vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
         else:
-            log.info(f"{table_name} data for the requested catchment area already in the database.")
+            log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
 
 
 def non_nz_geospatial_layers_data_to_db(

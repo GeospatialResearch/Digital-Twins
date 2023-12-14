@@ -199,4 +199,3 @@ def store_instructions_records_to_db(engine: Engine) -> None:
         # Store the non-existing records to the 'geospatial_layers' table
         log.info("Adding new 'static_boundary_instructions' records to the database.")
         non_existing_records.to_sql(GeospatialLayers.__tablename__, engine, index=False, if_exists="append")
-        log.info("New 'static_boundary_instructions' records have been successfully added to the database.")
