@@ -156,6 +156,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
         # Read sea level rise data from the NZ Sea level rise datasets
         slr_nz = read_slr_data_from_files(slr_data_dir)
         # Store the sea level rise data to the database table
+        log.info("Storing sea level rise data in the database.")
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
         log.info(f"Successfully stored '{table_name}' data in the database.")
 
