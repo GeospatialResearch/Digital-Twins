@@ -243,8 +243,10 @@ def generate_rain_model_input(
     main_rainfall.remove_existing_rain_inputs(bg_flood_dir)
     # Generate the requested type of rainfall model input
     if input_type == RainInputType.UNIFORM:
+        log.info("Generating the spatially uniform rain model input for BG-Flood.")
         spatial_uniform_rain_input(hyetograph_data, sites_coverage, bg_flood_dir)
         log.info("Successfully generated the spatially uniform rain model input for BG-Flood.")
     elif input_type == RainInputType.VARYING:
+        log.info("Generating the spatially varying rain model input for BG-Flood.")
         spatial_varying_rain_input(hyetograph_data, sites_coverage, bg_flood_dir)
         log.info("Successfully generated the spatially varying rain model input for BG-Flood.")

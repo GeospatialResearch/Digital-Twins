@@ -120,13 +120,14 @@ def thiessen_polygons_to_db(engine: Engine, area_of_interest: gpd.GeoDataFrame, 
     table_name = "rainfall_sites_voronoi"
     # Check if the table already exists in the database
     if tables.check_table_exists(engine, table_name):
-        log.info(f"Table '{table_name}' already exists in the database.")
+        log.info(f"'{table_name}' data already exists in the database.")
     else:
         # Calculate the Thiessen polygons, i.e. the area covered by each rainfall site
+        log.info(f"Calculating '{table_name}'.")
         rainfall_sites_voronoi = thiessen_polygons_calculator(area_of_interest, sites_in_aoi)
         # Store the Thiessen polygons data in the database
+        log.info(f"Adding '{table_name}' data to the database.")
         rainfall_sites_voronoi.to_postgis(f"{table_name}", engine, if_exists="replace")
-        log.info(f"Stored '{table_name}' data in the database.")
 
 
 def thiessen_polygons_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
