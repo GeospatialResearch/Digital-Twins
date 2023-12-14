@@ -164,8 +164,6 @@ def main(
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
-    log = logging.getLogger(__name__)
-    log.info("Started generating river data")
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area
