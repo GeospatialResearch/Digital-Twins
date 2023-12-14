@@ -34,6 +34,7 @@ def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: p
     # Group the combined tide and sea level rise data by position
     grouped = tide_slr_data.groupby('position')
     # Iterate over each group and generate the required uniform boundary input file
+    log.info("Generating the uniform boundary model inputs for BG-Flood.")
     for position, group_data in grouped:
         # Extract the necessary columns from the group data
         input_data = group_data[['seconds', 'tide_slr_metres']]

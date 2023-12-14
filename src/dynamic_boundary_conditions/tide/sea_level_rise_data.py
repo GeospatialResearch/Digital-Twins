@@ -103,7 +103,7 @@ def read_slr_data_from_files(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
         raise FileNotFoundError(f"Sea level rise data directory not found: '{slr_data_dir}'.")
     # Check if there are any CSV files in the specified directory
     if not any(slr_data_dir.glob("*.csv")):
-        raise FileNotFoundError(f"Sea level rise data files not found in: {slr_data_dir}")
+        raise FileNotFoundError(f"Sea level rise data files not found in: '{slr_data_dir}'")
     # Create an empty list to store the sea level rise datasets
     slr_nz_list = []
     # Loop through each CSV file in the specified directory
@@ -119,7 +119,7 @@ def read_slr_data_from_files(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
         # Append the DataFrame to the list
         slr_nz_list.append(slr_region)
         # Log that the file has been successfully loaded
-        log.info(f"Successfully loaded the {file_path.name} data file.")
+        log.info(f"Successfully loaded the '{file_path.name}' data file.")
     # Concatenate all the dataframes in the list and add geometry column
     slr_nz = pd.concat(slr_nz_list, axis=0).reset_index(drop=True)
     geometry = gpd.points_from_xy(slr_nz['lon'], slr_nz['lat'], crs=4326)
@@ -147,7 +147,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
     table_name = "sea_level_rise"
     # Check if the table already exists in the database
     if tables.check_table_exists(engine, table_name):
-        log.info(f"Table '{table_name}' already exists in the database.")
+        log.info(f"'{table_name}' data already exists in the database.")
     else:
         # Get the data directory and append "slr_data" to specify the sea level rise data directory
         slr_data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "slr_data"
@@ -156,9 +156,8 @@ def store_slr_data_to_db(engine: Engine) -> None:
         # Read sea level rise data from the NZ Sea level rise datasets
         slr_nz = read_slr_data_from_files(slr_data_dir)
         # Store the sea level rise data to the database table
-        log.info("Storing sea level rise data in the database.")
+        log.info(f"Adding '{table_name}' data to the database.")
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
-        log.info(f"Successfully stored '{table_name}' data in the database.")
 
 
 def get_closest_slr_data(engine: Engine, single_query_loc: pd.Series) -> gpd.GeoDataFrame:
