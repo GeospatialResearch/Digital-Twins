@@ -4,7 +4,7 @@ import pathlib
 
 import geopandas as gpd
 
-from src.dynamic_boundary_conditions import rainfall_sites
+from src.dynamic_boundary_conditions.rainfall import rainfall_sites
 
 
 class RainfallSitesTest(unittest.TestCase):
@@ -26,7 +26,7 @@ class RainfallSitesTest(unittest.TestCase):
             return file_content
 
     @classmethod
-    @patch("src.dynamic_boundary_conditions.rainfall_sites.get_rainfall_sites_data")
+    @patch("src.dynamic_boundary_conditions.rainfall.rainfall_sites.get_rainfall_sites_data")
     def setUpClass(cls, mock_sites_data):
         """Get rainfall sites data and convert it to tabular format."""
         mock_sites_data.return_value = cls.open_file(r"tests/test_dynamic_boundary_conditions/data/rainfall_sites.txt")
