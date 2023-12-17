@@ -29,7 +29,8 @@ class RainfallSitesTest(unittest.TestCase):
     @patch("src.dynamic_boundary_conditions.rainfall.rainfall_sites.get_rainfall_sites_data")
     def setUpClass(cls, mock_sites_data):
         """Get rainfall sites data and convert it to tabular format."""
-        mock_sites_data.return_value = cls.open_file(r"tests/test_dynamic_boundary_conditions/data/rainfall_sites.txt")
+        mock_sites_data.return_value = cls.open_file(
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/rainfall_sites.txt")
         cls.sites = rainfall_sites.get_rainfall_sites_in_df()
 
     def test_get_rainfall_sites_in_df_correct_frame_type(self):

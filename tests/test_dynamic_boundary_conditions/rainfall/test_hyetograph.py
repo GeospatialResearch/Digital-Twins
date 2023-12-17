@@ -15,27 +15,27 @@ class HyetographTest(unittest.TestCase):
     def setUpClass(cls):
         """Get all relevant data and set up default arguments used for testing."""
         cls.rain_depth_in_catchment = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/rain_depth_in_catchment.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/rain_depth_in_catchment.txt")
         cls.transposed_catchment_data = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/transposed_catchment_data.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/transposed_catchment_data.txt")
         cls.interp_catchment_data = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/interp_catchment_data.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/interp_catchment_data.txt")
         cls.interp_increment_data = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/interp_increment_data.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/interp_increment_data.txt")
         cls.storm_length_data = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/storm_length_data.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/storm_length_data.txt")
         cls.site_data_alt_block = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/site_data_alt_block.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/site_data_alt_block.txt")
         cls.site_data_chicago = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/site_data_chicago.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/site_data_chicago.txt")
         cls.hyetograph_depth_alt_block = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/hyetograph_depth_alt_block.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/hyetograph_depth_alt_block.txt")
         cls.hyetograph_depth_chicago = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/hyetograph_depth_chicago.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/hyetograph_depth_chicago.txt")
         cls.hyetograph_data_alt_block = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/hyetograph_data_alt_block.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/hyetograph_data_alt_block.txt")
         cls.hyetograph_data_chicago = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/data/hyetograph_data_chicago.txt")
+            r"tests/test_dynamic_boundary_conditions/rainfall/data/hyetograph_data_chicago.txt")
 
         cls.increment_mins = 10
         cls.interp_method = "cubic"
