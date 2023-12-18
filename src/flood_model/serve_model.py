@@ -65,10 +65,13 @@ def upload_gtiff_to_store(
     None
         This function does not return anything
     """
-    # Copy file to geoserver data folder
     log.info(f"Uploading {gtiff_filepath.name} to Geoserver workspace {workspace_name}")
-    geoserver_data_root = pathlib.Path("geoserver/geoserver_data")
-    geoserver_data_dest = pathlib.Path("data") / gtiff_filepath.name
+
+
+    # Set file copying src and dest
+    geoserver_data_root = get_env_variable("DATA_DIR_GEOSERVER", cast_to=pathlib.Path)
+    geoserver_data_dest = pathlib.Path("data") / workspace_name / gtiff_filepath.name
+    # Copy file to geoserver data folder
     shutil.copy(gtiff_filepath, geoserver_data_root / geoserver_data_dest)
     # Send request to add data
     data = f"""
@@ -195,6 +198,10 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
     None
         This function does not return anything.
     """
+    # Create data directory for workspace if it does not already exist
+    geoserver_data_root = get_env_variable("DATA_DIR_GEOSERVER", cast_to=pathlib.Path)
+    os.makedirs(geoserver_data_root / "data" / workspace_name, exist_ok=True)
+
     # Create the geoserver REST API request to create the workspace
     log.info(f"Creating geoserver workspace {workspace_name} if it does not already exist.")
     req_body = {

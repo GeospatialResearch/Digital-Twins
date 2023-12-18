@@ -41,7 +41,7 @@ services:
     image: docker.osgeo.org/geoserver:2.21.2
     container_name: geoserver_digital_twin
     volumes:
-      - ./geoserver/geoserver_data:/opt/geoserver_data
+      - ${DATA_DIR_GEOSERVER}:/opt/geoserver_data
     depends_on:
       - db_postgres
     environment:
