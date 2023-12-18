@@ -1,5 +1,0 @@
-POSTGRES_HOST: localhost
-PGDATABASE: db
-PGUSER: postgres
-PGPASSWORD: incorrect_password
-PGPORT: 5432

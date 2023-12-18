@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from sqlalchemy.exc import OperationalError
@@ -18,11 +19,11 @@ class SetupEnvironmentTest(unittest.TestCase):
     @unittest.skip("Skipping until we work on https://github.com/GeospatialResearch/Digital-Twins/issues/23")
     def test_incorrect_password(self):
         """Ensure that when a bad password is given to the database, the connection fails and an exception is raised"""
-        incorrect_password_config_path = 'tests/test_digitaltwin/data/mock_db_configuration.yml'
+        # Override the variables supplied by the .env file with an incorrect password
+        os.environ["POSTGRES_PASSWORD"] = "incorrect_password"
         with self.assertRaises(OperationalError,
                                msg="get_connection_from_profile should raise an OperationalError if the password supplied is incorrect"):
-            setup_environment.get_connection_from_profile(
-                incorrect_password_config_path)
+            setup_environment.get_connection_from_profile()
 
 
 if __name__ == '__main__':
