@@ -34,9 +34,9 @@ class ThiessenPolygonsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Get the New Zealand boundary polygon and rainfall sites data."""
-        cls.nz_boundary = cls.get_nz_boundary(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/nz_boundary.geojson")
-        cls.sites_in_nz = gpd.read_file(r"tests/test_dynamic_boundary_conditions/rainfall/data/sites_in_nz.geojson")
+        data_dir = "tests/test_dynamic_boundary_conditions/rainfall/data"
+        cls.nz_boundary = cls.get_nz_boundary(f"{data_dir}/nz_boundary.geojson")
+        cls.sites_in_nz = gpd.read_file(f"{data_dir}/sites_in_nz.geojson")
 
     def test_thiessen_polygons_calculator_area_of_interest_empty(self):
         """Test to ensure ValueError is raised when 'area_of_interest' is empty."""

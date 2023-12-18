@@ -37,18 +37,13 @@ class RainfallModelInputTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Get all relevant data used for testing."""
-        cls.catchment_area = cls.get_catchment_area(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/selected_polygon.geojson")
-        cls.sites_in_catchment = gpd.read_file(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/sites_in_catchment.geojson")
-        cls.intersections = gpd.read_file(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/intersections.geojson")
-        cls.sites_coverage = gpd.read_file(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/sites_coverage.geojson")
-        cls.hyetograph_data_alt_block = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/hyetograph_data_alt_block.txt")
-        cls.hyetograph_data_chicago = pd.read_csv(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/hyetograph_data_chicago.txt")
+        data_dir = "tests/test_dynamic_boundary_conditions/rainfall/data"
+        cls.catchment_area = cls.get_catchment_area(f"{data_dir}/selected_polygon.geojson")
+        cls.sites_in_catchment = gpd.read_file(f"{data_dir}/sites_in_catchment.geojson")
+        cls.intersections = gpd.read_file(f"{data_dir}/intersections.geojson")
+        cls.sites_coverage = gpd.read_file(f"{data_dir}/sites_coverage.geojson")
+        cls.hyetograph_data_alt_block = pd.read_csv(f"{data_dir}/hyetograph_data_alt_block.txt")
+        cls.hyetograph_data_chicago = pd.read_csv(f"{data_dir}/hyetograph_data_chicago.txt")
 
     def test_sites_voronoi_intersect_catchment_within_catchment(self):
         """Test to ensure returned intersections (overlapped areas) are each within the catchment area."""

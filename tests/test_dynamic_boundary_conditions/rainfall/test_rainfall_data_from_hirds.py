@@ -58,12 +58,10 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Get rainfall depths and intensities data and their layout structures for site 323605."""
-        cls.rainfall_depth = cls.open_file(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/rainfall_depth.txt")
-        cls.rainfall_intensity = cls.open_file(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/rainfall_intensity.txt")
-        cls.depth_historical = cls.open_file(
-            r"tests/test_dynamic_boundary_conditions/rainfall/data/depth_historical.txt")
+        data_dir = "tests/test_dynamic_boundary_conditions/rainfall/data"
+        cls.rainfall_depth = cls.open_file(f"{data_dir}/rainfall_depth.txt")
+        cls.rainfall_intensity = cls.open_file(f"{data_dir}/rainfall_intensity.txt")
+        cls.depth_historical = cls.open_file(f"{data_dir}/depth_historical.txt")
 
         cls.depth_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_depth)
         cls.intensity_layout = rainfall_data_from_hirds.get_layout_structure_of_data(cls.rainfall_intensity)
