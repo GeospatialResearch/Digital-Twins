@@ -325,7 +325,7 @@ def process_existing_non_nz_geospatial_layers(
     vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, area_of_interest)
     # Check if the fetched vector data is empty
     if vector_data.empty:
-        log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
+        log.info(f"The requested catchment area does not contain any '{table_name}' data ({data_provider} {layer_id}).")
     else:
         # Get IDs from the vector data that are not in the database
         ids_not_in_db = get_vector_data_id_not_in_db(
