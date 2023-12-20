@@ -682,8 +682,9 @@ def get_tide_data(
     if interval_mins is None:
         raise ValueError("'interval_mins' must be provided, and it should not be None.")
 
+    # Check if the selected approach is KING_TIDE or PERIOD_TIDE
     if approach == ApproachType.KING_TIDE:
-        # Check if the approach is KING_TIDE and tide_length_mins is not provided or total_days is not None
+        # If the approach is KING_TIDE: tide_length_mins is not provided or total_days is not None
         if tide_length_mins is None or total_days is not None:
             raise ValueError(
                 "If the 'approach' is KING_TIDE, 'tide_length_mins' must be provided and "
@@ -703,7 +704,7 @@ def get_tide_data(
             approach=approach)
         return tide_data_king
     else:
-        # Check if the approach is PERIOD_TIDE and total_days is not provided or tide_length_mins is not None
+        # If the approach is PERIOD_TIDE: total_days is not provided or tide_length_mins is not None
         if total_days is None or tide_length_mins is not None:
             raise ValueError(
                 "If the 'approach' is PERIOD_TIDE, 'total_days' must be provided and "
