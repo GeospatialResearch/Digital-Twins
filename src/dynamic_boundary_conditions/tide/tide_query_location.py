@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Get the locations used to fetch tide data from NIWA using the tide API.
-sli229
 """
 
-from shapely.geometry import LineString, Point
+import logging
+
 import geopandas as gpd
+from shapely.geometry import LineString, Point
 from sqlalchemy.engine import Engine
+
+log = logging.getLogger(__name__)
 
 
 class NoTideDataException(Exception):
@@ -242,6 +245,7 @@ def get_tide_query_locations(
     NoTideDataException
         If no coastline is found within the specified distance of the catchment area.
     """
+    log.info("Identifying query locations used for fetching 'tide' data from NIWA.")
     # Get the regional council clipped data for the catchment area
     regions_clipped = get_regional_council_clipped_from_db(engine, catchment_area)
     # Determine the non-intersection area within the catchment
@@ -254,8 +258,8 @@ def get_tide_query_locations(
         if coastline.empty:
             # If no coastline is found, raise an exception
             raise NoTideDataException(
-                f"No relevant tide data could be found within {distance_km}km of the catchment area. "
-                f"As a result, tide data will not be used in the BG-Flood model.")
+                f"No query locations were found within {distance_km}km of the catchment area; "
+                f"hence, 'tide' data will not be utilised in the BG-Flood model.")
         else:
             # Extract the geometry of the coastline
             coastline_geom = coastline['geometry'].iloc[0]

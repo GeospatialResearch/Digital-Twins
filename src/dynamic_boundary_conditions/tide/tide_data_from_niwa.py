@@ -3,11 +3,12 @@
 Fetch tide data from NIWA using the Tide API based on the specified approach, datum, etc.
 """
 
+import asyncio
+import io
+import logging
 from datetime import date, timedelta
 from math import ceil
 from typing import Dict, List, Tuple, Union, Optional
-import io
-import asyncio
 
 import aiohttp
 import geopandas as gpd
@@ -16,6 +17,8 @@ import pandas as pd
 
 from src import config
 from src.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
+
+log = logging.getLogger(__name__)
 
 # URLs for retrieving tide data from the NIWA Tide API in JSON and CSV formats, respectively
 TIDE_API_URL_DATA = "https://api.niwa.co.nz/tides/data"
@@ -678,6 +681,8 @@ def get_tide_data(
         - If the 'approach' is KING_TIDE and 'tide_length_mins' is None or 'total_days' is not None.
         - If the 'approach' is PERIOD_TIDE and 'total_days' is None or 'tide_length_mins' is not None.
     """
+    log.info("Fetching 'tide' data from NIWA.")
+
     # Check if 'interval_mins' is None
     if interval_mins is None:
         raise ValueError("'interval_mins' must be provided, and it should not be None.")

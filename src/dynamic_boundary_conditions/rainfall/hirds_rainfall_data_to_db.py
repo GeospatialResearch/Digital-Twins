@@ -106,7 +106,7 @@ def add_rainfall_data_to_db(engine: Engine, site_id: str, idf: bool) -> None:
     # Get the relevant rainfall data table name from the idf parameter
     rain_table_name = db_rain_table_name(idf)
     # Retrieve the rainfall data for the specified site from HIRDS
-    log.info(f"Fetching '{rain_table_name}' data for site {site_id}.")
+    log.info(f"Fetching '{rain_table_name}' data for site {site_id} from the HIRDS website https://hirds.niwa.co.nz/.")
     site_data = rainfall_data_from_hirds.get_data_from_hirds(site_id, idf)
     # Extract the layout structure of the data
     layout_structure = rainfall_data_from_hirds.get_layout_structure_of_data(site_data)

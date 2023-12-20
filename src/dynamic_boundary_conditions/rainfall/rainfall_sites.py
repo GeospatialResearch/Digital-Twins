@@ -87,7 +87,7 @@ def rainfall_sites_to_db(engine: Engine) -> None:
         log.info(f"'{table_name}' data already exists in the database.")
     else:
         # Get rainfall sites data
-        log.info(f"Fetching '{table_name}' data from the HIRDS website at https://hirds.niwa.co.nz/.")
+        log.info(f"Fetching '{table_name}' data from the HIRDS website https://hirds.niwa.co.nz/.")
         sites = get_rainfall_sites_in_df()
         # Store rainfall sites data in the database
         log.info(f"Adding '{table_name}' data to the database.")

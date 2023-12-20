@@ -4,13 +4,16 @@ Generates combined tide and sea level rise (SLR) data for a specific projection 
 confidence level, SSP scenario, inclusion of Vertical Land Motion (VLM), percentile, and more.
 """
 
+import logging
 import re
 
 import geopandas as gpd
-import pandas as pd
 import numpy as np
-from scipy.interpolate import interp1d
+import pandas as pd
 import shapely.wkt
+from scipy.interpolate import interp1d
+
+log = logging.getLogger(__name__)
 
 
 def split_slr_measurementname_column(slr_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -78,6 +81,8 @@ def get_slr_scenario_data(
         - If an invalid 'add_vlm' value is provided.
         - If an invalid 'percentile' value is provided.
     """
+    log.info("Extracting the requested 'sea_level_rise' scenario data.")
+
     # Split 'measurementname' column to extract and add additional information
     slr_data_split = split_slr_measurementname_column(slr_data)
 
@@ -209,7 +214,7 @@ def add_slr_to_tide(
     pd.DataFrame
         A DataFrame that contains the combined tide and sea level rise data for the specified projection year.
     """
-    # this needs to be year >= current year and the rest and need to be valid proj year value ?
+    log.info("Adding 'sea_level_rise' data to 'tide' data for the requested scenario.")
 
     # Make a copy of the tide_data DataFrame to avoid modifying the original data
     tide_df = tide_data.copy()

@@ -45,7 +45,7 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     else:
         slr_data_dir.mkdir(parents=True, exist_ok=True)
     # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
-    log.info("Downloading regional sea level rise data files from NZ SeaRise Takiwa.")
+    log.info("Downloading regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
     # Initialize a ChromeOptions instance to customize the Chrome WebDriver settings
     chrome_options = webdriver.ChromeOptions()
     # Enable headless mode for Chrome (no visible browser window)
@@ -76,7 +76,7 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     # Quit the Chrome WebDriver, closing the browser
     driver.quit()
     # Log that the files have been successfully downloaded
-    log.info("Successfully downloaded regional sea level rise data files from NZ SeaRise Takiwa.")
+    log.info("Successfully downloaded regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
 
 
 def read_slr_data_from_files(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
@@ -100,10 +100,10 @@ def read_slr_data_from_files(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
     """
     # Check if the sea level rise data directory exists
     if not slr_data_dir.exists():
-        raise FileNotFoundError(f"Sea level rise data directory not found: '{slr_data_dir}'.")
+        raise FileNotFoundError(f"'sea_level_rise' data directory not found: '{slr_data_dir}'.")
     # Check if there are any CSV files in the specified directory
     if not any(slr_data_dir.glob("*.csv")):
-        raise FileNotFoundError(f"Sea level rise data files not found in: '{slr_data_dir}'")
+        raise FileNotFoundError(f"'sea_level_rise' data files not found in: '{slr_data_dir}'")
     # Create an empty list to store the sea level rise datasets
     slr_nz_list = []
     # Loop through each CSV file in the specified directory
@@ -222,6 +222,7 @@ def get_slr_data_from_db(engine: Engine, tide_data: gpd.GeoDataFrame) -> gpd.Geo
     gpd.GeoDataFrame
         A GeoDataFrame containing the closest sea level rise data for all locations in the tide data.
     """
+    log.info("Retrieving 'sea_level_rise' data for the requested catchment area from the database.")
     # Select unique query locations from the tide data
     tide_data_loc = tide_data[['position', 'geometry']].drop_duplicates()
     # Initialize an empty GeoDataFrame to store the closest sea level rise data for all locations
