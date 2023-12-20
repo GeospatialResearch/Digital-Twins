@@ -117,9 +117,8 @@ def spatial_uniform_rain_input(
         sites_coverage: gpd.GeoDataFrame,
         bg_flood_dir: pathlib.Path) -> None:
     """
-    Write the mean catchment rainfall intensities data (i.e., 'seconds' and 'rain_intensity_mmhr' columns)
-    into a text file named 'rain_forcing.txt'. This file can be used as spatially uniform rain input
-    for the BG-Flood model.
+    Write the mean catchment rainfall intensities data (i.e., 'seconds' and 'rain_intensity_mmhr' columns) into a
+    text file named 'rain_forcing.txt'. This file is used as spatially uniform rain input for the BG-Flood model.
 
     Parameters
     ----------
@@ -189,7 +188,7 @@ def spatial_varying_rain_input(
         bg_flood_dir: pathlib.Path) -> None:
     """
     Write the rainfall intensities data cube in NetCDF format (rain_forcing.nc).
-    This file can be used as spatially varying rain input for the BG-Flood model.
+    This file is used as spatially varying rain input for the BG-Flood model.
 
     Parameters
     ----------
