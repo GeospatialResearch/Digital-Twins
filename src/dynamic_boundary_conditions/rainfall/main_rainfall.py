@@ -113,9 +113,9 @@ def main(
     nz_boundary = get_nz_boundary(engine, to_crs=4326)
     sites_in_nz = thiessen_polygons.get_sites_within_aoi(engine, nz_boundary)
     thiessen_polygons.thiessen_polygons_to_db(engine, nz_boundary, sites_in_nz)
+
     # Get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_area)
-
     # Store rainfall depth data of all the sites within the catchment area in the database
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=False)
 

@@ -3,6 +3,7 @@
 Retrieve all rainfall data for sites within the catchment area from the database.
 """
 
+import logging
 from typing import Optional
 
 import geopandas as gpd
@@ -10,6 +11,8 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 
 from src.dynamic_boundary_conditions.rainfall import hirds_rainfall_data_to_db
+
+log = logging.getLogger(__name__)
 
 
 def filter_for_duration(rain_data: pd.DataFrame, duration: str) -> pd.DataFrame:
@@ -78,6 +81,7 @@ def get_one_site_rainfall_data(
     """
     # Get the relevant rainfall data table name from the idf parameter
     rain_table_name = hirds_rainfall_data_to_db.db_rain_table_name(idf)
+    log.info(f"Retrieving the requested '{rain_table_name}' scenario data for site {site_id} from the database.")
     # Check for inconsistent rcp and time_period arguments
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         raise ValueError("Inconsistent arguments provided. "
