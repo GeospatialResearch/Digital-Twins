@@ -37,20 +37,20 @@ def load_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
     rec_data_dir = config.get_env_variable("DATA_DIR_REC", cast_to=pathlib.Path)
     # Check if the REC data directory exists
     if not rec_data_dir.exists():
-        raise FileNotFoundError(f"REC data directory not found: {rec_data_dir}")
+        raise FileNotFoundError(f"'rec_data' directory not found: {rec_data_dir}")
     # Check if there are any Shapefiles in the specified directory
     if not any(rec_data_dir.glob("*.shp")):
-        raise FileNotFoundError(f"REC data file not found: {rec_data_dir}")
+        raise FileNotFoundError(f"'rec_data' file not found: {rec_data_dir}")
     # Find the path of the first file in `rec_data_dir` that ends with .shp
     rec_file_path = next(rec_data_dir.glob("*.shp"))
     # Log indicating the start of loading backup REC data
-    log.info("Loading backup REC data.")
+    log.info("Loading the backup 'rec_data'.")
     # Read the Shapefile into a GeoDataFrame
     rec_data = gpd.read_file(rec_file_path)
     # Convert column names to lowercase for consistency
     rec_data.columns = rec_data.columns.str.lower()
     # Log that the backup REC data has been successfully loaded
-    log.info("Successfully loaded the backup REC data.")
+    log.info("Successfully loaded the backup 'rec_data'.")
     return rec_data
 
 
@@ -86,7 +86,7 @@ def store_rec_data_to_db(engine: Engine) -> None:
             # Store the REC data to the database table
             log.info(f"Adding '{table_name}' to the database.")
             rec_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-            log.info(f"Successfully stored '{table_name}' in the database.")
+            log.info(f"Successfully added '{table_name}' to the database.")
 
 
 def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:

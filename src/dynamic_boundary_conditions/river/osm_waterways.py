@@ -3,6 +3,7 @@
 This script handles the fetching of OpenStreetMap (OSM) waterways data for the defined catchment area.
 """
 
+import logging
 import pathlib
 
 import geopandas as gpd
@@ -10,6 +11,8 @@ from OSMPythonTools.cachingStrategy import CachingStrategy, JSON
 from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
 from src import config
+
+log = logging.getLogger(__name__)
 
 
 def configure_osm_cache() -> None:
@@ -43,6 +46,7 @@ def fetch_osm_waterways(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     gpd.GeoDataFrame
         A GeoDataFrame containing the retrieved OSM waterways data for the specified catchment area.
     """
+    log.info("Fetching OpenStreetMap (OSM) waterways for the requested catchment area.")
     # Convert the catchment area to the desired coordinate reference system (CRS: 4326)
     osm_catchment_area = catchment_area.to_crs(4326)
     # Get the bounding box coordinates of the osm_catchment_area

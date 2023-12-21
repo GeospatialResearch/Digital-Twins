@@ -181,6 +181,7 @@ def store_rec_network_to_db(
     None
         This function does not return any value.
     """
+    log.info("Adding REC river network metadata to the database.")
     # Get new file paths for storing both the REC Network and its associated data
     network_path, network_data_path = get_new_network_output_paths()
     # Save the REC river network to the specified file
@@ -208,7 +209,7 @@ def store_rec_network_to_db(
     # Execute the query to store the REC Network metadata in the database
     execute_query(engine, query)
     # Log a message indicating the successful storage of REC network metadata in the database
-    log.info("REC river network metadata successfully stored in the database.")
+    log.info("Successfully added the REC river network metadata to the database.")
 
 
 def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -260,6 +261,8 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
         A tuple containing the existing REC river network as a directed graph (DiGraph) and its associated data
         as a GeoDataFrame.
     """
+    log.info("Retrieving the existing REC river network and its associated data "
+             "for the requested catchment area from the database.")
     # Extract metadata for the existing REC river network
     existing_network_series = existing_network_meta.iloc[0]
     # Extract the REC river network ID from the provided metadata
@@ -291,4 +294,7 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     rec_network_data["last_coord"] = rec_network_data["last_coord"].apply(shapely.wkt.loads).astype("geometry")
     # Replace NaN values with None in the 'node_intersect_aoi' column
     rec_network_data["node_intersect_aoi"] = rec_network_data["node_intersect_aoi"].replace(np.nan, None)
+    # Log a message indicating the successful retrieval of REC river network and its associated data from the database
+    log.info("Successfully retrieved the existing REC river network and its associated data "
+             "for the requested catchment area from the database.")
     return rec_network, rec_network_data

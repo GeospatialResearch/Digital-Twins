@@ -4,12 +4,15 @@ This script handles the task of obtaining REC river inflow scenario data, whethe
 Average Recurrence Interval (ARI)-based, and generates corresponding hydrograph data for the requested scenarios.
 """
 
+import logging
 from typing import List, Union, Optional
 import re
 
 import geopandas as gpd
 
 from src.dynamic_boundary_conditions.river.river_enum import BoundType
+
+log = logging.getLogger(__name__)
 
 
 def clean_rec_inflow_data(rec_inflows_w_input_points: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -107,6 +110,8 @@ def get_rec_inflow_scenario_data(
     """
     # Selects and renames specific columns that represent REC river inflow data
     rec_inflow_data = clean_rec_inflow_data(rec_inflows_w_input_points)
+
+    log.info("Extracting the requested REC river inflow scenario data.")
     if maf:
         # If MAF-based scenario is selected, ensure 'ari' is not provided (set to None)
         if ari is not None:
