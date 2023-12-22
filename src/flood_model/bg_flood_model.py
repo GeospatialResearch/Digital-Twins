@@ -7,6 +7,7 @@ resulting model output metadata in the database, and incorporates the model outp
 import logging
 import os
 import pathlib
+import platform
 import subprocess
 from datetime import datetime
 from typing import Tuple, Union, Optional, TextIO
@@ -441,8 +442,19 @@ def run_bg_flood_model(
     cwd = pathlib.Path.cwd()
     # Change the current working directory to the BG-Flood Model directory
     os.chdir(bg_flood_dir)
-    # Run the BG-Flood Model executable
-    subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
+    # Run the BG-Flood Model executable, accounting for OS differences
+    operating_system = platform.system()
+    if operating_system == "Windows":
+        # Run the .exe
+        subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
+    elif operating_system == "Linux":
+        # Run the executable linux script
+        subprocess.run([bg_flood_dir / "BG_Flood"], check=True)
+    else:
+        # Other OSs are not officially supported, but we can attempt to try the Linux one.
+        log.warning(f"{operating_system} is not officially supported. Only Windows and Linux are officially supported.")
+        log.warning(f"Attempting to run BG_Flood linux script in {operating_system}")
+        subprocess.run([bg_flood_dir / "BG_Flood"], check=True)
     # Change the current working directory back to the original directory (cwd)
     os.chdir(cwd)
     log.info(f"Saved new flood model to {model_output_path}")

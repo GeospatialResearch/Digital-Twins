@@ -1,7 +1,7 @@
 version: '3.8'
 
 volumes:
-  postgres_db_vol:
+  postgres_db_vol25:
 
 services:
   db_postgres:
@@ -12,7 +12,7 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
-      - postgres_db_vol:/var/lib/postgresql/data
+      - postgres_db_vol25:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -27,6 +27,8 @@ services:
     env_file:
       - .env
       - .env.docker-override
+    volumes:
+      - /mnt/z/stored_data:/stored_data
     ports:
       - "5000:5000"
     depends_on:
@@ -60,7 +62,7 @@ services:
 
   message_broker:
     # Communicates between backend and workers to assign tasks and store state
-    image: redis
+    image: redis:7
     container_name: message_broker_digital_twin
     ports:
       - "6379:6379"
