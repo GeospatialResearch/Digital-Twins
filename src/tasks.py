@@ -3,18 +3,18 @@ Runs backend tasks using Celery. Allowing for multiple long-running tasks to com
 Allows the frontend to send tasks and retrieve status later.
 """
 import logging
+import pathlib
 from typing import List, Tuple
 
 import geopandas as gpd
-import pandas as pd
 import shapely
 import xarray
 from celery import Celery, states, result
-from newzealidar import process
+from newzealidar import datasets, process
 from pyproj import Transformer
 
 from src.config import get_env_variable
-from src.digitaltwin import retrieve_static_boundaries, setup_environment
+from src.digitaltwin import retrieve_static_boundaries, setup_environment, tables
 from src.digitaltwin.utils import setup_logging
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.river import main_river
@@ -52,13 +52,35 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
     result.GroupResult
         The task result for the long-running group of tasks. The task ID represents the final task in the group.
     """
-    return (add_base_data_to_db.si(selected_polygon_wkt) |
+    return (
+            ensure_lidar_datasets_initialised.si() |
+            add_base_data_to_db.si(selected_polygon_wkt) |
             process_dem.si(selected_polygon_wkt) |
             generate_rainfall_inputs.si(selected_polygon_wkt) |
             generate_tide_inputs.si(selected_polygon_wkt, scenario_options) |
             generate_river_inputs.si(selected_polygon_wkt) |
             run_flood_model.si(selected_polygon_wkt)
-            )()
+    )()
+
+
+@app.task(base=OnFailureStateTask)
+def ensure_lidar_datasets_initialised() -> None:
+    """
+    Task checks if LiDAR datasets table is initialised.
+    This table holds URLs to data sources for LiDAR.
+    If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.
+
+    Returns
+    -------
+    None
+        This task does not return anything
+    """
+    # Connect to database
+    engine = setup_environment.get_connection_from_profile()
+    # Check if datasets table initialised
+    if not tables.check_table_exists(engine, "dataset"):
+        # If it is not initialised, then initialise it
+        datasets.main()
 
 
 @app.task(base=OnFailureStateTask)
@@ -185,6 +207,20 @@ def run_flood_model(selected_polygon_wkt: str) -> int:
     return flood_model_id
 
 
+@app.task(base=OnFailureStateTask)
+def refresh_lidar_datasets() -> None:
+    """
+    Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
+    Takes a long time to run but needs to be run periodically so that the datasets are up to date
+
+    Returns
+    -------
+    None
+        This task does not return anything
+    """
+    datasets.main()
+
+
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
     """
     Transforms a WKT string polygon into a GeoDataFrame
@@ -208,6 +244,24 @@ def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
                                                   geometry=[shapely.box(xmin, ymin, xmax, ymax)])
 
     return selected_as_rectangle_2193
+
+
+@app.task(base=OnFailureStateTask)
+def get_model_output_filepath_from_model_id(model_id: int) -> str:
+    """
+    Task to query the database and find the filepath for the model output for the model_id.
+
+    Parameters
+    ----------
+    model_id : int
+        The database id of the model output to query.
+
+    Returns
+    -------
+    str
+        Serialized posix-style str version of the filepath
+    """
+    return bg_flood_model.model_output_from_db_by_id(model_id).as_posix()
 
 
 @app.task(base=OnFailureStateTask)
@@ -261,38 +315,3 @@ def get_model_extents_bbox(model_id: int) -> str:
     bbox_corners = extents.bounds
     # Convert the tuple into a string in [x1],[y1],[x2],[y2]
     return ",".join(map(str, bbox_corners))
-
-
-
-
-@app.task(base=OnFailureStateTask)
-def get_distinct_column_values(table_name: str) -> dict:
-    engine = setup_environment.get_database()
-    column_names = pd.read_sql(
-        "SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name=%(table_name)s",
-        engine, params={'table_name': 'sea_level_rise'})
-    distinct_column_values = {}
-    for col_name, in column_names.values:
-        if col_name not in ("siteid", "lon", "lat", "region", "geometry"):
-            # Can use fstring here because the variables have been sanitised above
-            distinct_values = pd.read_sql(f"SELECT DISTINCT {col_name} FROM {table_name} ORDER BY {col_name}", engine)
-            if col_name== "measurementname" and table_name=="sea_level_rise":
-                distinct_column_values['confidence_level'] = distinct_values['measurementname'].str.extract(
-                    r'(low|medium) confidence')[0].unique().tolist()
-                # Extract the 'ssp_scenario' information from the 'measurementname' column
-                distinct_column_values['ssp_scenario'] = distinct_values['measurementname'].str.extract(r'(\w+-\d\.\d)')[0].unique().tolist()
-                # Extract for the presence of '+ VLM' in the 'measurementname' column
-                distinct_column_values['add_vlm'] = [True, False]
-            else:
-                distinct_column_values[col_name] = distinct_values.values.ravel().tolist()
-
-    return distinct_column_values
-
-
-if __name__ == '__main__':
-    # llat = -43.38205648955185
-    # llng = 172.6487081332888
-    # id = 82
-    # get_depth_by_time_at_point(82, llat, llng)
-    x = get_distinct_column_values("sea_level_rise")
-    print(x)

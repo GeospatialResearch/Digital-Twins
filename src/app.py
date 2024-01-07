@@ -2,13 +2,14 @@
 The main web application that serves the Digital Twin to the web through a Rest API.
 """
 import logging
+import pathlib
 from functools import wraps
 from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR
 from typing import Callable
 
 import requests
 from celery import result, states
-from flask import Flask, Response, jsonify, make_response, request
+from flask import Flask, Response, jsonify, make_response, send_file, request
 from flask_cors import CORS
 from shapely import box
 
@@ -268,11 +269,35 @@ def retrieve_building_flood_status(model_id: int) -> Response:
     return make_response(geoserver_response.json(), OK)
 
 
-@app.route('/tables/<table_name>/distinct', methods=["GET"])
-def get_distinct_column_values(table_name: str) -> Response:
-    distinct_val_task = tasks.get_distinct_column_values.delay(table_name)
-    distinct_vals = distinct_val_task.get()
-    return make_response(jsonify(distinct_vals))
+@app.route('/models/<int:model_id>', methods=['GET'])
+@check_celery_alive
+def serve_model_output(model_id: int):
+    model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()
+    return send_file(pathlib.Path(model_filepath))
+
+
+@app.route('/datasets/update', methods=["POST"])
+@check_celery_alive
+def refresh_lidar_data_sources():
+    """
+    Updates LiDAR data sources to the most recent.
+    Web-scrapes OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
+    Takes a long time to run but needs to be run periodically so that the datasets are up to date.
+    Supported methods: POST
+
+    Returns
+    -------
+    Response
+        ACCEPTED is the expected response. Response body contains Celery taskId
+    """
+
+    # Start task to refresh lidar datasets
+    task = tasks.refresh_lidar_datasets.delay()
+    # Return HTTP Response with task id so it can be monitored with get_status(taskId)
+    return make_response(
+        jsonify({"taskId": task.id}),
+        ACCEPTED
+    )
 
 
 def valid_coordinates(latitude: float, longitude: float) -> bool:

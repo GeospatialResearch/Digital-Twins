@@ -83,7 +83,6 @@ def get_building_statuses(model_id: int) -> GeoDataFrame:
     return GeoDataFrame.from_features(building_json["features"])
 
 
-
 def get_depths_at_point(task_id: str):
     point = {"lat": -43.39, "lng": 172.65}
     # Send a request to get the depths at a point for a flood model associated with a task
@@ -95,6 +94,18 @@ def get_depths_at_point(task_id: str):
     # Load the body JSON into a python dict
     response_body = depths_response.json()
     print(response_body)
+
+
+def fetch_new_dataset_table():
+    # Update LiDAR datasets, takes a long time.
+    print("Refreshing LiDAR OpenTopography URLs to get newest LiDAR data")
+    update_datasets_response = requests.get(f"{backend_url}/datasets/update", methods=["POST"])
+    # Check for errors (400/500 codes)
+    update_datasets_response.raise_for_status()
+    # Load the body JSON into a python dict
+    response_body = json.loads(update_datasets_response.text)
+    # Read the task id
+    return response_body["taskId"]
 
 
 def stop_task(task_id: str):
