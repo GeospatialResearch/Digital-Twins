@@ -30,4 +30,4 @@ COPY instructions.json .
 COPY src/ src/
 
 EXPOSE 5000
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "digitaltwin", "python", "-m", "src.run_all"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "digitaltwin", "gunicorn", "--bind", "0.0.0.0:5000", "src.app:app"]

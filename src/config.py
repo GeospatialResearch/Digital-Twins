@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 T = TypeVar("T", str, bool, int, float)
 
 load_dotenv()
+load_dotenv("api_keys.env")
 
 
 def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: type = str) -> T:
