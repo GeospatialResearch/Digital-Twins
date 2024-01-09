@@ -57,7 +57,6 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
             add_base_data_to_db.si(selected_polygon_wkt) |
             process_dem.si(selected_polygon_wkt) |
             generate_rainfall_inputs.si(selected_polygon_wkt) |
-            generate_tide_inputs.si(selected_polygon_wkt, scenario_options) |
             generate_river_inputs.si(selected_polygon_wkt) |
             run_flood_model.si(selected_polygon_wkt)
     )()
