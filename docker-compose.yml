@@ -27,6 +27,7 @@ services:
     container_name: backend_digital_twin
     env_file:
       - .env
+      - api_keys.env
       - .env.docker-override
     volumes:
       - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
@@ -46,6 +47,7 @@ services:
     entrypoint: conda run --no-capture-output -n digitaltwin celery -A src.tasks worker -P threads --loglevel=INFO
     env_file:
       - .env
+      - api_keys.env
       - .env.docker-override
     volumes:
       # Bind host data directories to container, allowing different instances to share data sources.
