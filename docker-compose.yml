@@ -50,7 +50,6 @@ services:
     volumes:
       # Bind host data directories to container, allowing different instances to share data sources.
       - ${DATA_DIR}:/stored_data
-      - ${DATA_DIR_SLR}:/stored_data/slr_data
       - ${DATA_DIR_REC}:/stored_data/rec_data
       - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
       - ${DATA_DIR_GEOSERVER}:/stored_data/geoserver
