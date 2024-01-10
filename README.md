@@ -29,7 +29,6 @@ The following list defines the basic steps required to setup and run the digital
 ## Requirements
 * [Docker](https://www.docker.com/)
 * [Anaconda](https://www.anaconda.com/download)
-* [Node.js / NPM](https://nodejs.org/)
 
 
 ## Required Credentials:
@@ -37,12 +36,11 @@ Create API keys for each of these services. You may need to create an account an
 * [Stats NZ API Key](https://datafinder.stats.govt.nz/my/api/)
 * [LINZ API Key](https://data.linz.govt.nz/my/api/)
 * [MFE API Key](https://data.mfe.govt.nz/my/api/)
-* [NIWA Application API Key](https://developer.niwa.co.nz/) - Create an app that has the Tide API enabled  
-* [Cesium access token](https://cesium.com/ion/tokens)
+* [NIWA Application API Key](https://developer.niwa.co.nz/) - Create an app that has the Tide API enabled
 
 
 ## Starting the Digital Twin application (localhost)
-1. Set up Docker, Anaconda, and NPM to work on your system.
+1. Set up Docker and Anaconda to work on your system.
 
 1. Clone this repository to your local machine (may be best to avoid network drives for software development since they are much slower)
 
@@ -55,31 +53,23 @@ Create API keys for each of these services. You may need to create an account an
    _While the environment is being created, you can continue with the other steps until using the environment._
    
 1. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields unless a comment says you can leave it blank.
+Blank fields to fill in include things like the POSTGRES_PASSWORD variable.
+
+1. Create a file called `api_keys.env`, copy the contents of `api_keys.env.template` and fill in the blank values with API credentials.
    
-1. Set any file paths in `.env` if needed, for example `FLOOD_MODEL_DIR` references a Geospatial Research Institute
-   network drive, so you may need to provide your own implementation of `BG_flood` here.  
-   Multiple instances of the digital twin can point to the same directories and share the cached data to improve speed.
-    
-1. Create a file `visualisation/.env.local`. In this, fill in 
-   `VUE_APP_CESIUM_ACCESS_TOKEN=[your_token_here]`, replace `[your_token_here]` with the Cesium Access Token
+1. Set any file paths in `.env` if needed. Multiple instances of the digital twin can point to the same directories and share the cached data to improve speed.
     
 1. From project root, run the command `docker-compose up --build -d` to run the database, backend web servers, and helper services.  
 **If this fails on a WindowsToastNotification error on windows, just run it again and it should work.**
    
-1. Currently, the `visualisation` and `celery_worker` services are not set up to work with Docker, so these will be set up manually.
-   1. In one terminal, with the conda environment activated, go to the project root directory and run `celery -A src.tasks worker --loglevel=INFO --pool=solo` to run the backend celery service.
-   1. In another terminal open the `visualisation` directory and run `npm ci && npm run serve` to start the development visualisation server.
-
-1. You may inspect the logs of the backend in the celery window.
+1. You may inspect the logs of the backend using `docker-compose logs -f backend celery_worker`
    
 1. You may inspect the PostgreSQL database by logging in using the credentials you stored in the `.env` file and a database client such as `psql` or pgAdmin or DBeaver or PyCharm Professional.
 
 
 ## Using the Digital Twin application
-1. With the visualisation server running, visit the address shown in the visualisation server window, default [http://localhost:8080](http://localhost:8080)
-1. To run a flood model, hold SHIFT and hold the left mouse button to drag a box around the area you wish to run the model for.
-1. Once the model has completed running, you may need to click the button at the bottom of the screen requesting you to reload the flood model.
-1. To see a graph for flood depths over time at a location, hold CTRL and click the left mouse button on the area you wish to query.
+The current application is running only in headless mode.  Meaning, the front-end website is not active. 
+To interact with the application you send calls to the REST API. Example calls are shown in api_calls.py, and they can be replicated in other http clients such as Postman.
 
 
 ## Setup for developers
@@ -94,14 +84,14 @@ e.g. To run only the database in detached mode:
 docker-compose up --build -d db_postgres
 ```
 
-### Run Celery locally (reccomended, since BG Flood does not yet work on Docker)
+### Run Celery locally (without docker)
 With the conda environment activated run:
 ```bash
 #!/usr/bin/env bash
 celery -A src.tasks worker --loglevel=INFO --pool=solo
 ```
 
-### Running the backend without web interface.
+### Running the backend as a processing script instead of web interface
 It will likely be useful to run processing using the digital twin, without running the web interface.
 To do so:
 1. Run `db_postgres` and `geoserver` services in docker.
@@ -110,6 +100,7 @@ To do so:
 docker-compose up --build -d db_postgres geoserver
 ```
 2. For local testing, it may be useful to use the `src.run_all.py` script to run the processing.
+`python -m src.run_all`
 
 
 ## Tests
