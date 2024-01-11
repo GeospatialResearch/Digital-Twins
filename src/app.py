@@ -252,7 +252,9 @@ def retrieve_building_flood_status(model_id: int) -> Response:
     workspace_name = f"{db_name}-buildings"
     store_name = f"{db_name} PostGIS"
     # Set up geoserver request parameters
-    request_url = f"http://localhost:8088/geoserver/{workspace_name}/ows"
+    geoserver_host = get_env_variable("GEOSERVER_HOST")
+    geoserver_port = get_env_variable("GEOSERVER_PORT")
+    request_url = f"{geoserver_host}:{geoserver_port}/geoserver/{workspace_name}/ows"
     params = {
         "service": "WFS",
         "version": "1.0.0",
