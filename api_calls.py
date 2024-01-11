@@ -30,10 +30,10 @@ def generate_flood_model() -> str:
     # Create request data for getting flood model data from a region over Kaiapoi
     request_data = {
         "bbox": {
-            "lat1": -43.38205648955185,
-            "lng1": 172.6487081332888,
-            "lng2": 172.66,
-            "lat2": -43.40
+            "lat1": -43.370613130921434,
+            "lng1": 172.65156000179044,
+            "lng2": 172.71678302522903,
+            "lat2": -43.400136655560765
         },
         "scenarioOptions": {
             "Projected Year": 2050,
