@@ -10,7 +10,7 @@ import geopandas as gpd
 import shapely
 import xarray
 from celery import Celery, states, result
-from newzealidar import datasets, process
+import newzealidar
 from pyproj import Transformer
 
 from src.config import get_env_variable
@@ -79,16 +79,16 @@ def ensure_lidar_datasets_initialised() -> None:
     # Check if datasets table initialised
     if not tables.check_table_exists(engine, "dataset"):
         # If it is not initialised, then initialise it
-        datasets.main()
+        newzealidar.datasets.main()
     # Check that datasets_mapping is in the instructions.json file
     with open("instructions.json", "r") as file:
         # Load content from the file
         instructions = json.load(file)["instructions"]
     dataset_mapping = instructions.get("dataset_mapping")
-    # If the dataset_mapping does not exist on the instruction file then initialise datasets.
+    # If the dataset_mapping does not exist on the instruction file then read it from the database
     if dataset_mapping is None:
-        # This can happen if the docker container running the code is stopped and the file is reverted
-        datasets.main()
+        # Add dataset_mapping to instructions file, reading from database
+        newzealidar.utils.map_dataset_name(engine, instructions_file)
 
 
 
@@ -129,7 +129,7 @@ def process_dem(selected_polygon_wkt: str):
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[process]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    process.main(selected_polygon, **parameters)
+    newzealidar.process.main(selected_polygon, **parameters)
 
 
 @app.task(base=OnFailureStateTask)
@@ -227,7 +227,7 @@ def refresh_lidar_datasets() -> None:
     None
         This task does not return anything
     """
-    datasets.main()
+    newzealidar.datasets.main()
 
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
