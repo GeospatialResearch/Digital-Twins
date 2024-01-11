@@ -80,6 +80,16 @@ def ensure_lidar_datasets_initialised() -> None:
     if not tables.check_table_exists(engine, "dataset"):
         # If it is not initialised, then initialise it
         datasets.main()
+    # Check that datasets_mapping is in the instructions.json file
+    with open("instructions.json", "r") as file:
+        # Load content from the file
+        instructions = json.load(file)["instructions"]
+    dataset_mapping = instructions.get("dataset_mapping")
+    # If the dataset_mapping does not exist on the instruction file then initialise datasets.
+    if dataset_mapping is None:
+        # This can happen if the docker container running the code is stopped and the file is reverted
+        datasets.main()
+
 
 
 @app.task(base=OnFailureStateTask)
