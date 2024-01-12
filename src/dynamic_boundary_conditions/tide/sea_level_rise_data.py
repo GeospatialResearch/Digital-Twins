@@ -7,7 +7,6 @@ in the provided tide data.
 
 import logging
 import pathlib
-import os.path
 import time
 
 import geopandas as gpd
