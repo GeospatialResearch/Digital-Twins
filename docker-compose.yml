@@ -80,7 +80,14 @@ services:
       timeout: 10s
       retries: 3
 
-  # WWW removed temporarily because build is failing and more work is needed.
+  www:
+    # Webserver for the website interface
+    build:
+      context: ./visualisation
+    container_name: www_digital_twin
+    ports:
+      - "${WWW_PORT}:80"
+
 
   message_broker:
     # Communicates between backend and workers to assign tasks and store state
