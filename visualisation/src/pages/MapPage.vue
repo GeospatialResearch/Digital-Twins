@@ -36,7 +36,7 @@ import Vue from "vue";
 import * as Cesium from "cesium";
 import {MapViewer} from 'geo-visualisation-components/src/components';
 import titleMixin from "@/mixins/title";
-import {bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/dist/types/src/types";
+import {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/src/types";
 
 export default Vue.extend({
   name: "MapPage",
@@ -100,7 +100,7 @@ export default Vue.extend({
       const geoJsonDataSources = await this.loadGeoJson(bbox)
       this.dataSources = {geoJsonDataSources}
     },
-    async onTaskCompleted(event: { bbox: bbox, floodModelId: number }) {
+    async onTaskCompleted(event: { bbox: Bbox, floodModelId: number }) {
       console.log("onTaskCompleted");
       const geoJsonDataSources = await this.loadGeoJson(event.bbox, event.floodModelId)
       const floodRasterProvider = await this.fetchFloodRaster(event.floodModelId)
@@ -122,7 +122,7 @@ export default Vue.extend({
       };
       return new Cesium.WebMapServiceImageryProvider(wmsOptions);
     },
-    async loadGeoJson(bbox: bbox, scenarioId = -1): Promise<Cesium.GeoJsonDataSource[]> {
+    async loadGeoJson(bbox: Bbox, scenarioId = -1): Promise<Cesium.GeoJsonDataSource[]> {
       const buildingStatusUrl = 'http://localhost:8088/geoserver/digitaltwin/ows?service=WFS&version=1.0.0'
         + '&request=GetFeature&typeName=digitaltwin%3Abuilding_flood_status&outputFormat=application%2Fjson'
         + `&srsName=EPSG:4326&viewparams=scenario:${scenarioId}`
