@@ -72,7 +72,7 @@ def upload_gtiff_to_store(
     geoserver_data_root = get_env_variable("DATA_DIR_GEOSERVER", cast_to=pathlib.Path)
     geoserver_data_dest = pathlib.Path("data") / workspace_name / gtiff_filepath.name
     # Copy file to geoserver data folder
-    shutil.copy(gtiff_filepath, geoserver_data_root / geoserver_data_dest)
+    shutil.copyfile(gtiff_filepath, geoserver_data_root / geoserver_data_dest)
     # Send request to add data
     data = f"""
     <coverageStore>
