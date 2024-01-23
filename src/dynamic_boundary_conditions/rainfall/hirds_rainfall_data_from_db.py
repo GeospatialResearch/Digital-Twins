@@ -146,11 +146,11 @@ def rainfall_data_from_db(
         A DataFrame containing the rainfall data for the sites within the catchment area.
     """
     # Get the site IDs within the catchment area
-    sites_id_in_catchment = hirds_rainfall_data_to_db.get_sites_id_in_catchment(sites_in_catchment)
+    site_ids_in_catchment = hirds_rainfall_data_to_db.get_site_ids_in_catchment(sites_in_catchment)
     # Initialize an empty DataFrame to store the rainfall data
     rain_data_in_catchment = pd.DataFrame()
     # Iterate over each site ID in the catchment area
-    for site_id in sites_id_in_catchment:
+    for site_id in site_ids_in_catchment:
         # Retrieve the rainfall data for the site
         rain_data = get_one_site_rainfall_data(engine, site_id, rcp, time_period, ari, duration, idf)
         # Concatenate the site's rainfall data to the overall catchment data
