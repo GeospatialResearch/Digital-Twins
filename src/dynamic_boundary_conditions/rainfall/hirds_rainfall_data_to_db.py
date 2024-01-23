@@ -42,7 +42,7 @@ def get_site_ids_in_catchment(sites_in_catchment: gpd.GeoDataFrame) -> List[str]
     Parameters
     ----------
     sites_in_catchment : gpd.GeoDataFrame
-        Rainfall site coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+        Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
 
     Returns
     -------
