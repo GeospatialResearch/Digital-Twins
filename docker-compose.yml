@@ -44,7 +44,7 @@ services:
     image: lparkinson/flood-resilience-dt:1.0
     container_name: celery_worker_digital_twin
     restart: always
-    entrypoint: conda run --no-capture-output -n digitaltwin celery -A src.tasks worker -P threads --loglevel=INFO
+    entrypoint: ["/bin/bash", "-c", "source /venv/bin/activate && celery -A src.tasks worker -P threads --loglevel=INFO"]
     env_file:
       - .env
       - api_keys.env
