@@ -14,7 +14,7 @@
         v-model="selectedOption[column.name]"
         :min="column.min"
         :max="column.max"
-      />
+      >
     </div>
     <MapViewer
       :init-lat="kaiapoi.latitude"
@@ -27,7 +27,7 @@
       @task-posted="onTaskPosted"
       @task-completed="onTaskCompleted"
     />
-    <img id="legend" src="viridis_legend.png" />
+    <img id="legend" alt="Legend graphic showing how colour relates to depth" src="viridis_legend.png">
   </div>
 </template>
 
@@ -80,27 +80,14 @@ export default Vue.extend({
   },
   async mounted() {
     // Limit scrolling on this page
-    // document.body.style.overflow = "hidden"
-    // const bbox = {
-    //   "lat1": -43.3689919971569,
-    //   "lng1": 172.636650393486,
-    //   "lat2": -43.4095566828889,
-    //   "lng2": 172.72477915911261
-    // }
-    // const geoJsonDataSources = await this.loadGeoJson(bbox, 9)
-    // const floodRasterProvider = await this.fetchFloodRaster(9)
-    // this.dataSources = {
-    //   geoJsonDataSources,
-    //   imageryProviders: [floodRasterProvider]
-    // }
-    console.log(this.env.geoserver.host)
+    document.body.style.overflow = "hidden"
   },
   beforeDestroy() {
     // Reset scrolling for other pages
-    // document.body.style.overflow = ""
+    document.body.style.overflow = ""
   },
   methods: {
-    async onTaskPosted(event: any) {
+    async onTaskPosted(event: {bbox: Bbox}) {
       console.log("onTaskPosted");
       this.dataSources = {}
       const bbox = event.bbox
