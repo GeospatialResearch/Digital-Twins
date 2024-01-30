@@ -20,7 +20,7 @@
       :init-lat="kaiapoi.latitude"
       :init-long="kaiapoi.longitude"
       :init-height="8000"
-      :cesium-access-token="cesiumApiToken"
+      :cesium-access-token="env.cesiumApiToken"
       :data-sources="dataSources"
       :scenarios="scenarios"
       :scenario-options="selectedOption"
@@ -53,7 +53,6 @@ export default Vue.extend({
       },
       dataSources: {} as MapViewerDataSourceOptions,
       scenarios: [] as Scenario[],
-      cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
       selectionOptions: {
         year: {
           name: "Projected Year",
@@ -69,7 +68,14 @@ export default Vue.extend({
         "SSP Scenario": 'SSP2-4.5',
         "Confidence Level": "medium",
         "Add Vertical Land Movement": true
-      }
+      },
+      env: {
+        cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
+        geoserver: {
+          host: process.env.VUE_APP_GEOSERVER_HOST,
+          port: process.env.VUE_APP_GEOSERVER_PORT
+        },
+      },
     }
   },
   async mounted() {
@@ -87,6 +93,7 @@ export default Vue.extend({
     //   geoJsonDataSources,
     //   imageryProviders: [floodRasterProvider]
     // }
+    console.log(this.env.geoserver.host)
   },
   beforeDestroy() {
     // Reset scrolling for other pages
@@ -111,7 +118,7 @@ export default Vue.extend({
     },
     async fetchFloodRaster(model_output_id: number): Promise<Cesium.WebMapServiceImageryProvider> {
       const wmsOptions = {
-        url: 'http://localhost:8088/geoserver/dt-model-outputs/wms',
+        url: `${this.env.geoserver.host}:${this.env.geoserver.port}/geoserver/dt-model-outputs/wms`,
         layers: `output_${model_output_id}`,
         parameters: {
           service: 'WMS',
@@ -123,9 +130,9 @@ export default Vue.extend({
       return new Cesium.WebMapServiceImageryProvider(wmsOptions);
     },
     async loadGeoJson(bbox: Bbox, scenarioId = -1): Promise<Cesium.GeoJsonDataSource[]> {
-      const buildingStatusUrl = 'http://localhost:8088/geoserver/digitaltwin/ows?service=WFS&version=1.0.0'
-        + '&request=GetFeature&typeName=digitaltwin%3Abuilding_flood_status&outputFormat=application%2Fjson'
-        + `&srsName=EPSG:4326&viewparams=scenario:${scenarioId}`
+      const buildingStatusUrl = `${this.env.geoserver.host}:${this.env.geoserver.port}/geoserver/digitaltwin/ows`
+        + '?service=WFS&version=1.0.0&request=GetFeature&typeName=digitaltwin%3Abuilding_flood_status'
+        + `&outputFormat=application%2Fjson&srsName=EPSG:4326&viewparams=scenario:${scenarioId}`
         + `&cql_filter=bbox(geometry,${bbox.lng1},${bbox.lat1},${bbox.lng2},${bbox.lat2},'EPSG:4326')`
       console.log(buildingStatusUrl)
       console.log("loading geojson")

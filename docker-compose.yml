@@ -85,6 +85,10 @@ services:
     build:
       context: ./visualisation
     container_name: www_digital_twin
+    environment:
+      - VUE_APP_CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
+      - VUE_APP_GEOSERVER_HOST=$GEOSERVER_HOST
+      - VUE_APP_GEOSERVER_PORT=$GEOSERVER_PORT
     ports:
       - "${WWW_PORT}:80"
 
