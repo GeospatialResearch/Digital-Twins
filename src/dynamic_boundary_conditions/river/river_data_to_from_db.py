@@ -82,11 +82,10 @@ def store_rec_data_to_db(engine: Engine) -> None:
             log.warning(error)
             # Load REC data from the backup NIWA REC dataset
             rec_data = load_backup_rec_data_from_niwa()
-        finally:
-            # Store the REC data to the database table
-            log.info(f"Adding '{table_name}' to the database.")
-            rec_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-            log.info(f"Successfully added '{table_name}' to the database.")
+        # Store the REC data to the database table
+        log.info(f"Adding '{table_name}' to the database.")
+        rec_data.to_postgis(table_name, engine, index=False, if_exists="replace")
+        log.info(f"Successfully added '{table_name}' to the database.")
 
 
 def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
