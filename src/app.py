@@ -62,7 +62,7 @@ def health_check() -> Response:
     return Response("Healthy", OK)
 
 
-@app.route('/tasks/<str:task_id>', methods=["GET"])
+@app.route('/tasks/<task_id>', methods=["GET"])
 def get_status(task_id: str) -> Response:
     """
     Retrieves status of a particular Celery backend task.
@@ -91,7 +91,7 @@ def get_status(task_id: str) -> Response:
     }), http_status)
 
 
-@app.route('/tasks/<str:task_id>', methods=["DELETE"])
+@app.route('/tasks/<task_id>', methods=["DELETE"])
 def remove_task(task_id: str) -> Response:
     """
     Deletes and stops a particular Celery backend task.
@@ -179,7 +179,7 @@ def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -
     return box(xmin, ymin, xmax, ymax).wkt
 
 
-@app.route('/tasks/<str:task_id>/model/depth', methods=["GET"])
+@app.route('/tasks/<task_id>/model/depth', methods=["GET"])
 @check_celery_alive
 def get_depth_at_point(task_id: str) -> Response:
     """

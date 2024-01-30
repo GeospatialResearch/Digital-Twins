@@ -4,7 +4,7 @@ Allows the frontend to send tasks and retrieve status later.
 """
 import json
 import logging
-from typing import List, Tuple
+from typing import List, NamedTuple
 
 import geopandas as gpd
 import newzealidar
@@ -36,10 +36,25 @@ class OnFailureStateTask(app.Task):
     def on_failure(self, _exc, _task_id, _args, _kwargs, _einfo):
         self.update_state(state=states.FAILURE)
 
+class DepthTimePlot(NamedTuple):
+    """
+    Represents the depths over time for a particular pixel location in a raster.
+    Uses tuples and lists instead of Arrays or Dataframes because it needs to be easily serializable when communicating
+    over message_broker
+
+    Attributes
+    ----------
+    depths : List[float]
+        A list of all of the depths in m for the pixel. Parallels the times list
+    times : List[float]
+        A list of all of the times in s for the pixel. Parallels the depts list
+    """
+    depths: List[float]
+    times: List[float]
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
     """
-    Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks.
+    Creates a model for the area using series of chained (sequential) sub-tasks.
 
     Parameters
     ----------
@@ -273,7 +288,7 @@ def get_model_output_filepath_from_model_id(model_id: int) -> str:
 
 
 @app.task(base=OnFailureStateTask)
-def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> Tuple[List[float], List[float]]:
+def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> DepthTimePlot:
     """
     Task to query a point in a flood model output and return the list of depths and times.
 
@@ -289,10 +304,11 @@ def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> Tuple[L
 
     Returns
     -------
-    Tuple[List[float], List[float]]
+    DepthTimePlot
         Tuple of depths list and times list for the pixel in the output nearest to the point.
     """
-    model_file_path = bg_flood_model.model_output_from_db_by_id(model_id).as_posix()
+    engine = setup_environment.get_connection_from_profile()
+    model_file_path = bg_flood_model.model_output_from_db_by_id(engine, model_id).as_posix()
     with xarray.open_dataset(model_file_path) as ds:
         transformer = Transformer.from_crs(4326, 2193)
         y, x = transformer.transform(lat, lng)
@@ -300,7 +316,7 @@ def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> Tuple[L
 
     depths = da.values.tolist()
     times = da.coords['time'].values.tolist()
-    return depths, times
+    return DepthTimePlot(depths, times)
 
 
 @app.task(base=OnFailureStateTask)
@@ -318,7 +334,8 @@ def get_model_extents_bbox(model_id: int) -> str:
     str:
         The bounding box in '[x1],[y1],[x2],[y2]' format
     """
-    extents = bg_flood_model.model_extents_from_db_by_id(model_id).geometry[0]
+    engine = setup_environment.get_connection_from_profile()
+    extents = bg_flood_model.model_extents_from_db_by_id(engine, model_id).geometry[0]
     # Retrieve a tuple of the corners of the extents
     bbox_corners = extents.bounds
     # Convert the tuple into a string in [x1],[y1],[x2],[y2]

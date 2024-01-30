@@ -7,7 +7,6 @@ import shapely
 import xarray
 from sqlalchemy.engine import Engine
 
-from src.digitaltwin import setup_environment
 from src.flood_model.serve_model import create_building_database_views_if_not_exists
 
 
@@ -37,7 +36,8 @@ def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame,
     create_building_database_views_if_not_exists()
 
 
-def find_flooded_buildings(area_of_interest: gpd.GeoDataFrame,
+def find_flooded_buildings(engine: Engine,
+                           area_of_interest: gpd.GeoDataFrame,
                            flood_model_output_path: pathlib.Path,
                            flood_depth_threshold: float) -> pd.DataFrame:
     """
@@ -47,6 +47,8 @@ def find_flooded_buildings(area_of_interest: gpd.GeoDataFrame,
 
     Parameters
     ----------
+    engine: Engine
+        The sqlalchemy database connection engine
     area_of_interest : gpd.GeoDataFrame
         A GeoDataFrame with a polygon specifying the area to get buildings for.
     flood_model_output_path : pathlib.Path
@@ -64,8 +66,8 @@ def find_flooded_buildings(area_of_interest: gpd.GeoDataFrame,
         max_depth_raster = ds["hmax_P0"]
     # Find areas flooded in a polygon format, if they are deeper than flood_depth_threshold
     thresholded_flood_polygons = polygonize_flooded_area(max_depth_raster, flood_depth_threshold)
-    # Get building outlines from LINZ Data Service
-    buildings = retrieve_building_outlines(area_of_interest)
+    # Get building outlines from database
+    buildings = retrieve_building_outlines(engine, area_of_interest)
     # Categorise buildings as flooded or not flooded
     return categorise_buildings_as_flooded(buildings, thresholded_flood_polygons)
 
@@ -100,12 +102,14 @@ def categorise_buildings_as_flooded(building_polygons: gpd.GeoDataFrame,
     return filtered_buildings
 
 
-def retrieve_building_outlines(area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Retrieve building outlines for an area of interest from the database
 
     Parameters
     ----------
+    engine: Engine
+        The sqlalchemy database connection engine
     area_of_interest : gpd.GeoDataFrame
         A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
 
@@ -122,7 +126,6 @@ def retrieve_building_outlines(area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDat
     SELECT building_outline_id, geometry FROM nz_building_outlines 
     WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
     """
-    engine = setup_environment.get_database()
     # Execute the query and retrieve the result as a GeoDataFrame
     gdf = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_outline_id", geom_col="geometry")
     return gdf
@@ -144,7 +147,7 @@ def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshol
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing all of the building outlines in the area
+        A GeoDataFrame containing polygons of the flooded areas
     """
     # Find areas that are flooded to at least the flood_depth_threshold depth
     mask = flood_raster >= flood_depth_threshold
@@ -157,4 +160,3 @@ def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshol
         new_row = {"geometry": shapely_poly}
         polygons_records.append(new_row)
     return gpd.GeoDataFrame(polygons_records, crs=flood_raster.rio.crs.wkt)
-

@@ -177,10 +177,14 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, mo
     """
     gs_url = get_geoserver_url()
     layer_name = f"output_{model_id}"
+    # Retrieve CRS info from raster
     with rio.open(gtiff_filepath) as gtiff:
         gtiff_crs = gtiff.crs.wkt
+    # Upload the raster into geoserver
     upload_gtiff_to_store(gs_url, gtiff_filepath, layer_name, workspace_name)
+    # We can remove the temporary raster
     gtiff_filepath.unlink()
+    # Create a GIS layer from the raster file to be served from geoserver
     create_layer_from_store(gs_url, layer_name, gtiff_crs, workspace_name)
 
 

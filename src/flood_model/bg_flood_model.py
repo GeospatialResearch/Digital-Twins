@@ -559,7 +559,7 @@ def main(
     add_crs_to_model_output(engine, model_id)
     # Find buildings that are flooded to a depth greater than or equal to 0.1m
     log.info("Analysing flooded buildings")
-    flooded_buildings = find_flooded_buildings(catchment_area, model_output_path, flood_depth_threshold=0.1)
+    flooded_buildings = find_flooded_buildings(engine, catchment_area, model_output_path, flood_depth_threshold=0.1)
     log.info("Analysed flooded buildings - adding flooded buildings to database")
     store_flooded_buildings_in_database(engine, flooded_buildings, model_id)
     # Add the model output to GeoServer for visualization
