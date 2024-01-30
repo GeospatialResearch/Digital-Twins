@@ -2,15 +2,15 @@
 Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
 Allows the frontend to send tasks and retrieve status later.
 """
+import json
 import logging
-import pathlib
 from typing import List, Tuple
 
 import geopandas as gpd
+import newzealidar
 import shapely
 import xarray
 from celery import Celery, states, result
-import newzealidar
 from pyproj import Transformer
 
 from src.config import get_env_variable
@@ -91,7 +91,6 @@ def ensure_lidar_datasets_initialised() -> None:
         newzealidar.utils.map_dataset_name(engine, instructions_file)
 
 
-
 @app.task(base=OnFailureStateTask)
 def add_base_data_to_db(selected_polygon_wkt: str) -> None:
     """
@@ -127,7 +126,7 @@ def process_dem(selected_polygon_wkt: str):
     None
         This task does not return anything
     """
-    parameters = DEFAULT_MODULES_TO_PARAMETERS[process]
+    parameters = DEFAULT_MODULES_TO_PARAMETERS[newzealidar.process]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     newzealidar.process.main(selected_polygon, **parameters)
 
