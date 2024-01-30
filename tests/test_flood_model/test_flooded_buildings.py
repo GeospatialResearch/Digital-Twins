@@ -20,7 +20,7 @@ class CategoriseBuildingsAsFloodedTest(unittest.TestCase):
         """
         flooded_gdf = categorise_buildings_as_flooded(self.building_polygons, self.flood_polygons)
 
-        correct_flood_categories = np.array([False, True, True, True, True])
+        correct_flood_categories = np.array([False, True, True, True, True]) # To understand the values of this array, check the labels in the file supplied by self.building_polygons
         self.assertTrue((flooded_gdf["is_flooded"].values == correct_flood_categories).all())
 
 

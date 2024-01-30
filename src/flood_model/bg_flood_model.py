@@ -564,7 +564,6 @@ def main(
     store_flooded_buildings_in_database(engine, flooded_buildings, model_id)
     # Add the model output to GeoServer for visualization
     add_model_output_to_geoserver(model_output_path, model_id)
-
     return model_id
 
 
