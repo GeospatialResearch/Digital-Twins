@@ -1,5 +1,5 @@
 import os
-from typing import TypeVar
+from typing import Type, TypeVar
 
 from dotenv import load_dotenv
 
@@ -10,7 +10,8 @@ load_dotenv()
 load_dotenv("api_keys.env")
 
 
-def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: type = str) -> T:
+def get_env_variable(var_name: str,
+                     default: T = None, allow_empty: bool = False, cast_to: Type[T] = str) -> T:
     """
     Reads an environment variable, with settings to allow defaults, empty values, and type casting
     To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
@@ -23,7 +24,7 @@ def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False
         Default return value if the environment variable does not exist. Doesn't override empty string vars.
     allow_empty : bool
         If False then a KeyError will be raised if the environment variable is empty.
-    cast_to : Callable[[str], T]
+    cast_to : Type[T]
         The type to cast to e.g. str, int, or bool
 
     Returns
@@ -43,17 +44,17 @@ def get_env_variable(var_name: str, default: T = None, allow_empty: bool = False
     return _cast_str(env_var, cast_to)
 
 
-def _cast_str(str_to_cast: str, cast_to: T) -> T:
+def _cast_str(str_to_cast: str, cast_to: Type[T]) -> T:
     """
     Takes a string and casts it to necessary primitive builtin types. Tested with int, float, and bool.
-    For bools, this detects if the value is in the case-insensitive sets {"True", "T", "1"} or {"False", "F", "0"}
+    For bool, this detects if the value is in the case-insensitive sets {"True", "T", "1"} or {"False", "F", "0"}
     and raises a ValueError if not. For example _cast_str("False", bool) -> False
 
     Parameters
     ----------
     str_to_cast : str
         The string that is going to be casted to the type
-    cast_to : Callable[[str], T]
+    cast_to : Type[T]
         The type to cast to e.g. bool
 
     Returns

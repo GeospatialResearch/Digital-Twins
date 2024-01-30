@@ -22,7 +22,6 @@ from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin import tables
-from src.digitaltwin.utils import setup_logging, LogLevel
 
 log = logging.getLogger(__name__)
 
@@ -107,7 +106,7 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     # Quit the WebDriver, closing the browser
     driver.quit()
     # If running this from windows within a WSL directory, Zone.Identifier files are created and must be removed.
-    for zone_identifier_file in slr_data_dir.glob("*Zone.identfier"):
+    for zone_identifier_file in slr_data_dir.glob("*Zone.identifier"):
         os.remove(zone_identifier_file)
     # Check that the number of downloaded files matches the number of links on the webpage
     slr_dir_files = list(slr_data_dir.glob("*"))
@@ -279,4 +278,3 @@ def get_slr_data_from_db(engine: Engine, tide_data: gpd.GeoDataFrame) -> gpd.Geo
     # Reset the index of the closest sea level rise data
     slr_data = gpd.GeoDataFrame(slr_data).reset_index(drop=True)
     return slr_data
-

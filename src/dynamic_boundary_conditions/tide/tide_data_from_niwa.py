@@ -508,7 +508,7 @@ def fetch_tide_data_around_highest_tide(
 
 
 def get_time_mins_to_add(
-        tide_data: gpd.GeoDataFrame,
+        tide_data: pd.DataFrame,
         tide_length_mins: int,
         time_to_peak_mins: Union[int, float],
         interval_mins: int = 10) -> List[Union[float, int]]:
@@ -517,7 +517,7 @@ def get_time_mins_to_add(
 
     Parameters
     ----------
-    tide_data : gpd.GeoDataFrame
+    tide_data : pd.DataFrame
         The tide data for which time values in minutes will be calculated.
     tide_length_mins : int
         The length of the tide event in minutes.

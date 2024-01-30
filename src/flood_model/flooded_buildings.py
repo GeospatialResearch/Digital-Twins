@@ -137,15 +137,3 @@ def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshol
         polygons_records.append(new_row)
     return gpd.GeoDataFrame(polygons_records, crs=flood_raster.rio.crs.wkt)
 
-
-if __name__ == '__main__':
-    wkt = 'POLYGON ((172.68346232258148 -43.39283883172603, 172.68346232258148 -43.37441484114113, 172.65468036665465 -43.37441484114113, 172.65468036665465 -43.39283883172603, 172.68346232258148 -43.39283883172603))'
-    selected_polygon = gpd.GeoDataFrame(index=[0], crs="epsg:4326", geometry=[shapely.from_wkt(wkt)]).to_crs(2193)
-
-
-    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    b = find_flooded_buildings(selected_polygon,
-                               r"\\file.canterbury.ac.nz\Research\FloodRiskResearch\DigitalTwin\stored_data\model_output\output_2023_09_06_09_03_48.nc",
-                               flood_depth_threshold=0.0)
-    engine = setup_environment.get_database()
-    store_flooded_buildings_in_database(engine, b, flood_model_id=1)
