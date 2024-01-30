@@ -22,14 +22,14 @@ def find_flooded_buildings(area_of_interest: gpd.GeoDataFrame, flood_model_outpu
     """
     Creates a building DataFrame with attribute "is_flooded",
     depending on if the area for each building is flooded to a depth greater than or equal to flood_depth_threshold.
-    the index, building_outline_id, matches building_outline_id from nz_building_outline table/
+    the index, building_outline_id, matches building_outline_id from nz_building_outline table.
 
     Parameters
     ----------
     area_of_interest : gpd.GeoDataFrame
         A GeoDataFrame with a polygon specifying the area to get buildings for.
     flood_model_output_path : pathlib.Path
-        Path to the flood model output file to be read
+        Path to the flood model output file to be read.
     flood_depth_threshold : float
         The minimum depth required to designate a pixel in the raster as flooded.
 
@@ -53,11 +53,11 @@ def categorise_buildings_as_flooded(building_polygons: gpd.GeoDataFrame,
                                     flood_polygons: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Identifies all buildings in building_polygons that intersect with areas in flooded_polygons.
+
     Parameters
     ----------
     building_polygons : gpd.GeoDataFrame
         A GeoDataFrame with each polygon representing a building outline
-
     flood_polygons : gpd.GeoDataFrame
         A GeoDataFrame with each polygon representing a flooded area
 
