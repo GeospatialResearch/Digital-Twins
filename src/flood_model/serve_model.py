@@ -335,7 +335,9 @@ def create_building_layers(workspace_name: str, data_store_name: str) -> None:
         </entry>
       </metadata>
     """
-    create_datastore_layer(workspace_name, data_store_name, layer_name="building_flood_status",
+    create_datastore_layer(workspace_name,
+                           data_store_name,
+                           layer_name="building_flood_status",
                            metadata_elem=flood_status_xml_query)
 
 

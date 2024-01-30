@@ -11,13 +11,34 @@ from src.digitaltwin import setup_environment
 from src.flood_model.serve_model import create_building_database_views_if_not_exists
 
 
-def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame, flood_model_id: int):
+def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame, flood_model_id: int) -> None:
+    """
+    Appends the details of which buildings are flooded for a given flood_model_id to the database
+
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine
+    buildings : pd.DataFrame
+        DataFrame containing a mapping of building_ids to their flood status for the current model run
+    flood_model_id : float
+        The id of the current flood model run, to associate with the building flood data.
+
+    Returns
+    -------
+    None
+        This function does not return anything
+    """
+    # Associate the building flood status dataframe with the current model id
     buildings["flood_model_id"] = flood_model_id
+    # Append the dataframe to the database
     buildings.to_sql("building_flood_status", engine, if_exists="append", index=True)
+    # Create geoserver endpoints for database views if they do not already exist
     create_building_database_views_if_not_exists()
 
 
-def find_flooded_buildings(area_of_interest: gpd.GeoDataFrame, flood_model_output_path: pathlib.Path,
+def find_flooded_buildings(area_of_interest: gpd.GeoDataFrame,
+                           flood_model_output_path: pathlib.Path,
                            flood_depth_threshold: float) -> pd.DataFrame:
     """
     Creates a building DataFrame with attribute "is_flooded",
