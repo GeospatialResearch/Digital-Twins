@@ -434,6 +434,69 @@ def create_building_database_views_if_not_exists() -> None:
     create_building_layers(workspace_name, data_store_name)
 
 
+def style_exists(style_name: str) -> bool:
+    """
+    Checks if a geoserver style definition already exists for a given style_name.
+    The style definition may be empty.
+
+    Parameters
+    ----------
+    style_name : str
+        The name of the style to check for
+
+    Returns
+    -------
+    bool
+        True if the style exists, although it may be empty.
+        False if it does not exist.
+    """
+    response = requests.get(
+        f'{get_geoserver_url()}/styles/{style_name}.sld',
+        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+    )
+    if response.status_code == HTTPStatus.OK:
+        return True
+    if response.status_code == HTTPStatus.NOT_FOUND:
+        return False
+    response.raise_for_status()
+
+
+def create_viridis_style_if_not_exists() -> None:
+    """
+    Creates a geoserver style for rasters using the viridis colour scale
+
+    Returns
+    -------
+    None
+        This function does not return anything
+    """
+    style_name = "viridis_raster"
+    if not style_exists(style_name):
+        # Create the style base
+        create_style_data = f"""
+        <style>
+            <name>{style_name}</name>
+            <filename>{style_name}.sld</filename>
+        </style>
+        """
+        create_style_response = requests.post(
+            f'{get_geoserver_url()}/styles',
+            data=create_style_data,
+            headers=_xml_header,
+            auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        )
+        create_style_response.raise_for_status()
+    # PUT the style definition .sld file into the style base
+    with open('src/flood_model/geoserver_templates/viridis_raster.sld', 'rb') as payload:
+        sld_response = requests.put(
+            f'{get_geoserver_url()}/styles/{style_name}',
+            data=payload,
+            headers={"Content-type": "application/vnd.ogc.sld+xml"},
+            auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        )
+    sld_response.raise_for_status()
+
+
 def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int) -> None:
     """
     Adds the model output max depths to GeoServer, ready for serving.
@@ -458,3 +521,4 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
     workspace_name = f"{db_name}-dt-model-outputs"
     create_workspace_if_not_exists(workspace_name)
     add_gtiff_to_geoserver(gtiff_filepath, workspace_name, model_id)
+    create_viridis_style_if_not_exists()
