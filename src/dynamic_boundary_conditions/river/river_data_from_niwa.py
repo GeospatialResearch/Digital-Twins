@@ -60,8 +60,12 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     params["where"] = "1=1"
     params["returnCountOnly"] = True
     response = requests.get(url=f"{url}/query", params=params)
-    # Extract the total record count from the response
-    total_record_count = response.json()["count"]
+    try:
+        # Extract the total record count from the response
+        total_record_count = response.json()["count"]
+    except KeyError as e:
+        # Raise a RuntimeError to indicate the API failure
+        raise RuntimeError("Failed to fetch rec data feature layer record counts.") from e
     # Returns the maximum and total record counts of the REC feature layer
     return RecordCounts(max_record_count, total_record_count)
 

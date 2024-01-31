@@ -195,7 +195,7 @@ def get_depth_at_point(task_id: str) -> Response:
     Returns
     -------
     Response
-        Returns JSON response in the form {"depth": Arrau<number>,  "time": Array<number>} representing the values
+        Returns JSON response in the form {"depth": Array<number>,  "time": Array<number>} representing the values
         for the given point.
     """
     try:

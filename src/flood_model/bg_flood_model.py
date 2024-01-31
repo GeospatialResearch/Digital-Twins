@@ -141,9 +141,22 @@ def store_model_output_metadata_to_db(
     return model_id
 
 
-def model_output_from_db_by_id(model_id: int) -> pathlib.Path:
-    # Get the database engine for establishing a connection
-    engine = setup_environment.get_database()
+def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
+    """
+    Retrieves the path to the model output file from the database by model_id
+
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine
+    model_id: int
+        The ID of the flood model output being queried for
+
+    Returns
+    -------
+    pathlib.Path
+        The path to the model output file
+    """
     # Execute a query to get the model output record based on the 'flood_model_id' column
     query = text("SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
         flood_model_id=model_id)
@@ -154,12 +167,14 @@ def model_output_from_db_by_id(model_id: int) -> pathlib.Path:
     return latest_output_path
 
 
-def model_extents_from_db_by_id(model_id: int) -> gpd.GeoDataFrame:
+def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFrame:
     """
     Finds the extents of a model output in gpd.GeoDataFrame format
 
     Parameters
     ----------
+    engine: Engine
+        The sqlalchemy database connection engine
     model_id: int
         The ID of the flood model output being queried for
 
@@ -168,17 +183,23 @@ def model_extents_from_db_by_id(model_id: int) -> gpd.GeoDataFrame:
     gpd.GeoDataFrame
         Returns the geometry (extents) of the flood model output.
     """
-    # Get the database engine for establishing a connection
-    engine = setup_environment.get_database()
     # Execute a query to get the model output record based on the 'flood_model_id' column
     query = text("SELECT geometry FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
         flood_model_id=model_id)
     return gpd.read_postgis(query, engine, geom_col='geometry')
 
 
-def add_crs_to_latest_model_output(flood_model_output_id: int) -> None:
+def add_crs_to_model_output(engine: Engine, flood_model_output_id: int) -> None:
     """
-    Add Coordinate Reference System (CRS) to the latest BG-Flood model output.
+    Add Coordinate Reference System (CRS) to the BG-Flood model output.
+
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine
+    flood_model_output_id: int
+        The ID of the flood model output being queried for
+
 
     Returns
     -------
@@ -186,7 +207,7 @@ def add_crs_to_latest_model_output(flood_model_output_id: int) -> None:
         This function does not return any value.
     """
     # Get the path to the latest BG-Flood model output file from the database
-    model_output_file = model_output_from_db_by_id(flood_model_output_id)
+    model_output_file = model_output_from_db_by_id(engine, flood_model_output_id)
     # Create a temporary file path for saving modifications before replacing the current latest model output file
     temp_file = model_output_file.with_name(f"{model_output_file.stem}_temp{model_output_file.suffix}")
 
@@ -535,15 +556,14 @@ def main(
     # Store metadata related to the BG Flood model output in the database
     model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
     # Add CRS to the latest BG-Flood model output
-    add_crs_to_latest_model_output(model_id)
+    add_crs_to_model_output(engine, model_id)
     # Find buildings that are flooded to a depth greater than or equal to 0.1m
     log.info("Analysing flooded buildings")
-    flooded_buildings = find_flooded_buildings(catchment_area, model_output_path, flood_depth_threshold=0.1)
+    flooded_buildings = find_flooded_buildings(engine, catchment_area, model_output_path, flood_depth_threshold=0.1)
     log.info("Analysed flooded buildings - adding flooded buildings to database")
     store_flooded_buildings_in_database(engine, flooded_buildings, model_id)
     # Add the model output to GeoServer for visualization
     add_model_output_to_geoserver(model_output_path, model_id)
-
     return model_id
 
 

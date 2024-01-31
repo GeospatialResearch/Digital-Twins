@@ -14,20 +14,20 @@
         v-model="selectedOption[column.name]"
         :min="column.min"
         :max="column.max"
-      />
+      >
     </div>
     <MapViewer
       :init-lat="kaiapoi.latitude"
       :init-long="kaiapoi.longitude"
       :init-height="8000"
-      :cesium-access-token="cesiumApiToken"
+      :cesium-access-token="env.cesiumApiToken"
       :data-sources="dataSources"
       :scenarios="scenarios"
       :scenario-options="selectedOption"
       @task-posted="onTaskPosted"
       @task-completed="onTaskCompleted"
     />
-    <img id="legend" src="viridis_legend.png" />
+    <img id="legend" alt="Legend graphic showing how colour relates to depth" src="viridis_legend.png">
   </div>
 </template>
 
@@ -36,7 +36,7 @@ import Vue from "vue";
 import * as Cesium from "cesium";
 import {MapViewer} from 'geo-visualisation-components/src/components';
 import titleMixin from "@/mixins/title";
-import {bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/dist/types/src/types";
+import {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/src/types";
 
 export default Vue.extend({
   name: "MapPage",
@@ -47,13 +47,15 @@ export default Vue.extend({
   },
   data() {
     return {
+      // Start location
       kaiapoi: {
         latitude: -43.380881,
         longitude: 172.655714
       },
+      // Features to display on map
       dataSources: {} as MapViewerDataSourceOptions,
       scenarios: [] as Scenario[],
-      cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
+      // Drop down menu options for selecting parameters
       selectionOptions: {
         year: {
           name: "Projected Year",
@@ -64,54 +66,68 @@ export default Vue.extend({
         confidenceLevel: {name: "Confidence Level", data: ['low', 'medium']},
         addVerticalLandMovement: {name: "Add Vertical Land Movement", data: [true, false]}
       },
+      // Default selected options for parameters
       selectedOption: {
         "Projected Year": 2050,
         "SSP Scenario": 'SSP2-4.5',
         "Confidence Level": "medium",
         "Add Vertical Land Movement": true
-      }
+      },
+      // Environment variables
+      env: {
+        cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
+        geoserver: {
+          host: process.env.VUE_APP_GEOSERVER_HOST,
+          port: process.env.VUE_APP_GEOSERVER_PORT
+        },
+        db: {
+          name: process.env.VUE_APP_POSTGRES_DB
+        }
+      },
     }
   },
   async mounted() {
     // Limit scrolling on this page
-    // document.body.style.overflow = "hidden"
-    // const bbox = {
-    //   "lat1": -43.3689919971569,
-    //   "lng1": 172.636650393486,
-    //   "lat2": -43.4095566828889,
-    //   "lng2": 172.72477915911261
-    // }
-    // const geoJsonDataSources = await this.loadGeoJson(bbox, 9)
-    // const floodRasterProvider = await this.fetchFloodRaster(9)
-    // this.dataSources = {
-    //   geoJsonDataSources,
-    //   imageryProviders: [floodRasterProvider]
-    // }
+    document.body.style.overflow = "hidden"
   },
   beforeDestroy() {
     // Reset scrolling for other pages
-    // document.body.style.overflow = ""
+    document.body.style.overflow = ""
   },
   methods: {
-    async onTaskPosted(event: any) {
-      console.log("onTaskPosted");
+    /**
+     * When a task has been posted, loads building outlines for the bbox area.
+     *
+     * @param event The @task-posted event passed up from MapViewer
+     */
+    async onTaskPosted(event: { bbox: Bbox }) {
+      // Wipe existing data sources while new ones are being loaded
       this.dataSources = {}
       const bbox = event.bbox
-      const geoJsonDataSources = await this.loadGeoJson(bbox)
+      const geoJsonDataSources = await this.loadBuildingGeojson(bbox)
       this.dataSources = {geoJsonDataSources}
     },
-    async onTaskCompleted(event: { bbox: bbox, floodModelId: number }) {
-      console.log("onTaskCompleted");
-      const geoJsonDataSources = await this.loadGeoJson(event.bbox, event.floodModelId)
+    /**
+     * When a task has been completed, loads building outlines with flood data and flood raster for the bbox area.
+     *
+     * @param event The @task-completed event passed up from MapViewer
+     */
+    async onTaskCompleted(event: { bbox: Bbox, floodModelId: number }) {
+      const geoJsonDataSources = await this.loadBuildingGeojson(event.bbox, event.floodModelId)
       const floodRasterProvider = await this.fetchFloodRaster(event.floodModelId)
       this.dataSources = {
         geoJsonDataSources,
         imageryProviders: [floodRasterProvider]
       }
     },
+    /**
+     * Creates ImageryProvider from geoserver WMS for the flood raster.
+     *
+     * @param model_output_id The id of the flood raster to fetch
+     */
     async fetchFloodRaster(model_output_id: number): Promise<Cesium.WebMapServiceImageryProvider> {
       const wmsOptions = {
-        url: 'http://localhost:8088/geoserver/dt-model-outputs/wms',
+        url: `${this.env.geoserver.host}:${this.env.geoserver.port}/geoserver/${this.env.db.name}-dt-model-outputs/wms`,
         layers: `output_${model_output_id}`,
         parameters: {
           service: 'WMS',
@@ -122,13 +138,20 @@ export default Vue.extend({
       };
       return new Cesium.WebMapServiceImageryProvider(wmsOptions);
     },
-    async loadGeoJson(bbox: bbox, scenarioId = -1): Promise<Cesium.GeoJsonDataSource[]> {
-      const buildingStatusUrl = 'http://localhost:8088/geoserver/digitaltwin/ows?service=WFS&version=1.0.0'
-        + '&request=GetFeature&typeName=digitaltwin%3Abuilding_flood_status&outputFormat=application%2Fjson'
-        + `&srsName=EPSG:4326&viewparams=scenario:${scenarioId}`
+    /**
+     * Loads the geojson for the building outlines for a given area.
+     * If scenarioId is provided, then it colours each building depending on flood status
+     * @param bbox the bounding box of the area to load
+     * @param scenarioId the flood model output id
+     */
+    async loadBuildingGeojson(bbox: Bbox, scenarioId = -1): Promise<Cesium.GeoJsonDataSource[]> {
+      // Create geoserver url based on bbox and scenarioId
+      const gsWorkspaceName = `${this.env.db.name}-buildings`
+      const buildingStatusUrl = `${this.env.geoserver.host}:${this.env.geoserver.port}/geoserver/`
+        + `${gsWorkspaceName}/ows?service=WFS&version=1.0.0&request=GetFeature`
+        + `&typeName=${gsWorkspaceName}%3Abuilding_flood_status`
+        + `&outputFormat=application%2Fjson&srsName=EPSG:4326&viewparams=scenario:${scenarioId}`
         + `&cql_filter=bbox(geometry,${bbox.lng1},${bbox.lat1},${bbox.lng2},${bbox.lat2},'EPSG:4326')`
-      console.log(buildingStatusUrl)
-      console.log("loading geojson")
       const floodBuildingDS = await Cesium.GeoJsonDataSource.load(
         buildingStatusUrl, {
           strokeWidth: 3,
@@ -147,12 +170,15 @@ export default Vue.extend({
         outlineColor: Cesium.Color.GOLDENROD
       });
 
+      // Add extrusion height and colour to each building
       const buildingEntities = floodBuildingDS.entities.values;
       for (const entity of buildingEntities) {
+        // Base style for all polygons
         const polyGraphics = new Cesium.PolygonGraphics({
           extrudedHeight: 4
         });
         const isFlooded = entity.properties?.is_flooded?.getValue();
+        // Apply different styles based on flood status
         if (isFlooded == null) {
           polyGraphics.merge(unknownStyle);
         } else if (isFlooded) {
@@ -168,11 +194,6 @@ export default Vue.extend({
 
       return [floodBuildingDS];
     },
-  },
-  computed: {
-    scenarioNames(): Array<string> {
-      return this.scenarios.map(scenario => scenario.name);
-    }
   }
 });
 </script>

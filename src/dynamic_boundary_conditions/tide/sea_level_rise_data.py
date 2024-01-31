@@ -6,16 +6,19 @@ in the provided tide data.
 """
 
 import logging
+import os
 import pathlib
+import platform
+import subprocess
 import time
 
 import geopandas as gpd
 import pandas as pd
 import pyarrow.csv as csv
-from sqlalchemy.engine import Engine
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin import tables
@@ -45,17 +48,40 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
         slr_data_dir.mkdir(parents=True, exist_ok=True)
     # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
     log.info("Downloading regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
-    # Initialize a ChromeOptions instance to customize the Chrome WebDriver settings
-    chrome_options = webdriver.ChromeOptions()
-    # Enable headless mode for Chrome (no visible browser window)
-    chrome_options.add_argument("--headless")
-    # Define the download directory preference for downloaded files
-    prefs = {"download.default_directory": str(slr_data_dir.resolve())}
-    # Apply the download directory preference to ChromeOptions
-    chrome_options.add_experimental_option("prefs", prefs)
-    # Initialize a Chrome WebDriver instance with the configured options
-    driver = webdriver.Chrome(options=chrome_options)
-    # Open the specified website in the Chrome browser
+    # Create a webdriver, Chrome for windows or Firefox for other.
+    operating_system = platform.system()
+    if operating_system == "Windows":
+        # Initialize a ChromeOptions instance to customize the Chrome WebDriver settings
+        chrome_options = webdriver.ChromeOptions()
+        # Enable headless mode for Chrome (no visible browser window)
+        chrome_options.add_argument("--headless")
+        # Define the download directory preference for downloaded files
+        prefs = {"download.default_directory": str(slr_data_dir.resolve())}
+        # Apply the download directory preference to ChromeOptions
+        chrome_options.add_experimental_option("prefs", prefs)
+        # Create the webdriver using Chrome
+        driver = webdriver.Chrome(options=chrome_options)
+
+    else:
+        # Initialise a firefox browser since the chrome browser was not successfully being found by selenium in linux
+        firefox_options = webdriver.FirefoxOptions()
+        # Enable headless mode for Chrome (no visible browser window)
+        firefox_options.add_argument("--headless")
+        # Define the download directory preference for downloaded files
+        firefox_options.set_preference("browser.download.folderList", 2)
+        firefox_options.set_preference("browser.download.dir", str(slr_data_dir.resolve()))
+        firefox_options.set_preference("browser.download.manager.showWhenStarting", False)
+        # When downloading files, do not ask user for confirmation or location.
+        firefox_options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream")
+        # Find driver_location with linux command `which` since selenium did not always find the correct binary
+        driver_location = subprocess.check_output("which geckodriver", shell=True,
+                                                  stderr=subprocess.STDOUT).decode().strip()
+        # Create firefox with explicit driver_location since selenium does not always find the correct driver binary
+        firefox_service = webdriver.FirefoxService(executable_path=driver_location)
+        # Create firefox webdriver
+        driver = webdriver.Firefox(options=firefox_options, service=firefox_service)
+
+    # Open the specified website in the browser
     driver.get("https://searise.takiwa.co/map/6245144372b819001837b900")
     # Add a 1-second delay to ensure that the website is open before downloading
     time.sleep(1)
@@ -69,11 +95,26 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
     # Iterate through the identified links and simulate a click action to trigger the download
     for element in elements:
+        # Scroll down the div to the link. Required for firefox browser
+        driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        # Click the download link
         ActionChains(driver).move_to_element(element).click().perform()
-    # Add a 5-second delay to ensure all downloads are complete before quitting the browser
-    time.sleep(5)
-    # Quit the Chrome WebDriver, closing the browser
+        # Wait a short delay before clicking again so that the download starts.
+        time.sleep(0.5)
+    # Add a 3-second delay to ensure all downloads are complete before quitting the browser
+    time.sleep(3)
+    # Quit the WebDriver, closing the browser
     driver.quit()
+    # If running this from windows within a WSL directory, Zone.Identifier files are created and must be removed.
+    for zone_identifier_file in slr_data_dir.glob("*Zone.identifier"):
+        os.remove(zone_identifier_file)
+    # Check that the number of downloaded files matches the number of links on the webpage
+    slr_dir_files = list(slr_data_dir.glob("*"))
+    if len(slr_dir_files) != len(elements):
+        logging.debug(f"slr_dir_files = {slr_dir_files}")
+        logging.debug(f"elements = {elements}")
+        raise ValueError(f"The number of files in slr_data_dir ({len(slr_dir_files)})"
+                         f" does not match the number of datasets found on the web page ({len(elements)})")
     # Log that the files have been successfully downloaded
     log.info("Successfully downloaded regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
 
