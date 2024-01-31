@@ -63,4 +63,4 @@ FROM runtime-base as celery_worker
 
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT source /venv/bin/activate && \
-           celery -A src.tasks worker -P threads --loglevel=INFO"
+           celery -A src.tasks worker -P threads --loglevel=INFO
