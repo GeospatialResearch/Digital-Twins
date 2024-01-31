@@ -80,6 +80,9 @@ export default Vue.extend({
           host: process.env.VUE_APP_GEOSERVER_HOST,
           port: process.env.VUE_APP_GEOSERVER_PORT
         },
+        db: {
+          name: process.env.VUE_APP_POSTGRES_DB
+        }
       },
     }
   },
@@ -97,7 +100,7 @@ export default Vue.extend({
      *
      * @param event The @task-posted event passed up from MapViewer
      */
-    async onTaskPosted(event: {bbox: Bbox}) {
+    async onTaskPosted(event: { bbox: Bbox }) {
       // Wipe existing data sources while new ones are being loaded
       this.dataSources = {}
       const bbox = event.bbox
@@ -124,7 +127,7 @@ export default Vue.extend({
      */
     async fetchFloodRaster(model_output_id: number): Promise<Cesium.WebMapServiceImageryProvider> {
       const wmsOptions = {
-        url: `${this.env.geoserver.host}:${this.env.geoserver.port}/geoserver/dt-model-outputs/wms`,
+        url: `${this.env.geoserver.host}:${this.env.geoserver.port}/geoserver/${this.env.db.name}-dt-model-outputs/wms`,
         layers: `output_${model_output_id}`,
         parameters: {
           service: 'WMS',
@@ -143,8 +146,10 @@ export default Vue.extend({
      */
     async loadBuildingGeojson(bbox: Bbox, scenarioId = -1): Promise<Cesium.GeoJsonDataSource[]> {
       // Create geoserver url based on bbox and scenarioId
-      const buildingStatusUrl = `${this.env.geoserver.host}:${this.env.geoserver.port}/geoserver/digitaltwin/ows`
-        + '?service=WFS&version=1.0.0&request=GetFeature&typeName=digitaltwin%3Abuilding_flood_status'
+      const gsWorkspaceName = `${this.env.db.name}-buildings`
+      const buildingStatusUrl = `${this.env.geoserver.host}:${this.env.geoserver.port}/geoserver/`
+        + `${gsWorkspaceName}/ows?service=WFS&version=1.0.0&request=GetFeature`
+        + `&typeName=${gsWorkspaceName}%3Abuilding_flood_status`
         + `&outputFormat=application%2Fjson&srsName=EPSG:4326&viewparams=scenario:${scenarioId}`
         + `&cql_filter=bbox(geometry,${bbox.lng1},${bbox.lat1},${bbox.lng2},${bbox.lat2},'EPSG:4326')`
       const floodBuildingDS = await Cesium.GeoJsonDataSource.load(
