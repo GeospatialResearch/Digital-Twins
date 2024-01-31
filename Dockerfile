@@ -22,7 +22,7 @@ RUN conda-pack --ignore-missing-files -n digitaltwin -o /tmp/env.tar \
 RUN /venv/bin/conda-unpack
 
 
-FROM lparkinson/bg_flood:v0.9 as runtime
+FROM lparkinson/bg_flood:v0.9 as runtime-base
 # BG_Flood stage for running the digital twin. Reduces image size significantly if we use a multi-stage build
 WORKDIR /app
 
@@ -46,7 +46,21 @@ COPY selected_polygon.geojson .
 COPY instructions.json .
 COPY src/ src/
 
+
+FROM runtime-base as backend
+# Image build target for backend
+# Using separate build targets for each image because the Orbica platform does not allow for modifying entrypoints
+# and using multiple dockerfiles was creating increase complexity problems keeping things in sync
 EXPOSE 5000
+
+SHELL ["/bin/bash", "-c"]
 ENTRYPOINT source /venv/bin/activate && \
            gunicorn --bind 0.0.0.0:5000 src.app:app
 
+
+FROM runtime-base as celery_worker
+# Image build target for celery_worker
+
+SHELL ["/bin/bash", "-c"]
+ENTRYPOINT source /venv/bin/activate && \
+           celery -A src.tasks worker -P threads --loglevel=INFO"

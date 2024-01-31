@@ -22,7 +22,9 @@ services:
 
   backend:
     # Performs analysis, computation, handles web requests, facilitates database interactions
-    build: .
+    build:
+      context: .
+      target: backend
     image: lparkinson/flood-resilience-dt:1.0
     container_name: backend_digital_twin
     env_file:
@@ -40,11 +42,12 @@ services:
 
   celery_worker:
     # Performs tasks such as complex computation asynchronously on behalf of backend
-    build: .
+    build:
+      context: .
+      target: celery_worker
     image: lparkinson/flood-resilience-dt:1.0
     container_name: celery_worker_digital_twin
     restart: always
-    entrypoint: ["/bin/bash", "-c", "source /venv/bin/activate && celery -A src.tasks worker -P threads --loglevel=INFO"]
     env_file:
       - .env
       - api_keys.env
