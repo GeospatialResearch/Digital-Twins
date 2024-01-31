@@ -51,8 +51,8 @@ def get_interpolated_data(
         increment_mins: int,
         interp_method: str) -> pd.DataFrame:
     """
-    Perform temporal interpolation on the transposed scenario data for sites within the catchment area and
-    return it in Pandas DataFrame format.
+    Perform temporal interpolation on the transposed scenario data to the desired time interval
+    for sites within the catchment area.
 
     Parameters
     ----------
@@ -67,7 +67,8 @@ def get_interpolated_data(
     Returns
     -------
     pd.DataFrame
-        A DataFrame containing the interpolated scenario data.
+        A DataFrame containing the scenario data interpolated at the desired time interval for sites within the
+        catchment area.
 
     Raises
     ------

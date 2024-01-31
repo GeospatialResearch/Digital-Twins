@@ -47,8 +47,7 @@ def get_one_site_rainfall_data(
         duration: str,
         idf: bool) -> pd.DataFrame:
     """
-    Get the HIRDS rainfall data for the requested site from the database and return the required data in
-    Pandas DataFrame format.
+    Retrieve rainfall data from the database for the requested site based on the user-requested scenario.
 
     Parameters
     ----------
@@ -72,7 +71,7 @@ def get_one_site_rainfall_data(
     Returns
     -------
     pd.DataFrame
-        HIRDS rainfall data for the requested site and parameters.
+        Rainfall data for the requested site based on the user-requested scenario.
 
     Raises
     ------
@@ -119,14 +118,14 @@ def rainfall_data_from_db(
         idf: bool = False,
         duration: str = "all") -> pd.DataFrame:
     """
-    Get rainfall data for the sites within the catchment area and return it as a Pandas DataFrame.
+    Retrieve rainfall data from the database for sites within the catchment area based on the user-requested scenario.
 
     Parameters
     ----------
     engine : Engine
         The engine used to connect to the database.
     sites_in_catchment : gpd.GeoDataFrame
-        Rainfall sites coverage areas (Thiessen polygons) within the catchment area.
+        Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
     rcp : Optional[float]
         Representative Concentration Pathway (RCP) value. Valid options are 2.6, 4.5, 6.0, 8.5, or None
         for historical data.
@@ -143,14 +142,15 @@ def rainfall_data_from_db(
     Returns
     -------
     pd.DataFrame
-        A DataFrame containing the rainfall data for the sites within the catchment area.
+        A DataFrame containing the rainfall data for sites within the catchment area based on the
+        user-requested scenario.
     """
     # Get the site IDs within the catchment area
-    sites_id_in_catchment = hirds_rainfall_data_to_db.get_sites_id_in_catchment(sites_in_catchment)
+    site_ids_in_catchment = hirds_rainfall_data_to_db.get_site_ids_in_catchment(sites_in_catchment)
     # Initialize an empty DataFrame to store the rainfall data
     rain_data_in_catchment = pd.DataFrame()
     # Iterate over each site ID in the catchment area
-    for site_id in sites_id_in_catchment:
+    for site_id in site_ids_in_catchment:
         # Retrieve the rainfall data for the site
         rain_data = get_one_site_rainfall_data(engine, site_id, rcp, time_period, ari, duration, idf)
         # Concatenate the site's rainfall data to the overall catchment data

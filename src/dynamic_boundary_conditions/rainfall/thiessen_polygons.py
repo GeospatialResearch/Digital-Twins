@@ -12,6 +12,7 @@ from geovoronoi import voronoi_regions_from_coords, points_to_coords
 from sqlalchemy.engine import Engine
 
 from src.digitaltwin import tables
+from src.digitaltwin.utils import get_nz_boundary
 
 log = logging.getLogger(__name__)
 
@@ -98,7 +99,7 @@ def thiessen_polygons_calculator(
     return rainfall_sites_voronoi
 
 
-def thiessen_polygons_to_db(engine: Engine, area_of_interest: gpd.GeoDataFrame, sites_in_aoi: gpd.GeoDataFrame) -> None:
+def thiessen_polygons_to_db(engine: Engine) -> None:
     """
     Store the data representing the Thiessen polygons, site information, and the area covered by
     each rainfall site in the database.
@@ -107,10 +108,6 @@ def thiessen_polygons_to_db(engine: Engine, area_of_interest: gpd.GeoDataFrame, 
     ----------
     engine : Engine
         The engine used to connect to the database.
-    area_of_interest : gpd.GeoDataFrame
-        A GeoDataFrame representing the area of interest.
-    sites_in_aoi : gpd.GeoDataFrame
-        Rainfall sites within the area of interest.
 
     Returns
     -------
@@ -122,9 +119,13 @@ def thiessen_polygons_to_db(engine: Engine, area_of_interest: gpd.GeoDataFrame, 
     if tables.check_table_exists(engine, table_name):
         log.info(f"'{table_name}' data already exists in the database.")
     else:
+        # Get the boundary of New Zealand
+        nz_boundary = get_nz_boundary(engine, to_crs=4326)
+        # Get all rainfall sites within the boundary of New Zealand from the database
+        sites_in_nz = get_sites_within_aoi(engine, nz_boundary)
         # Calculate the Thiessen polygons, i.e. the area covered by each rainfall site
         log.info(f"Calculating '{table_name}'.")
-        rainfall_sites_voronoi = thiessen_polygons_calculator(area_of_interest, sites_in_aoi)
+        rainfall_sites_voronoi = thiessen_polygons_calculator(nz_boundary, sites_in_nz)
         # Store the Thiessen polygons data in the database
         log.info(f"Adding '{table_name}' data to the database.")
         rainfall_sites_voronoi.to_postgis(f"{table_name}", engine, if_exists="replace")
@@ -132,8 +133,7 @@ def thiessen_polygons_to_db(engine: Engine, area_of_interest: gpd.GeoDataFrame, 
 
 def thiessen_polygons_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Get the coverage areas (Thiessen polygons) of all rainfall sites that intersect or are within the
-    specified catchment area.
+    Get rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
 
     Parameters
     ----------
@@ -145,11 +145,12 @@ def thiessen_polygons_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the coverage areas (Thiessen polygons) of rainfall sites within the catchment area.
+        A GeoDataFrame containing the rainfall sites coverage areas (Thiessen polygons) that intersect or
+        are within the catchment area.
     """
     # Extract the geometry of the catchment area
     catchment_polygon = catchment_area["geometry"].iloc[0]
-    # Construct the query to get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
+    # Construct the query to get rainfall sites coverage areas (Thiessen polygons)
     query = f"""
     SELECT *
     FROM rainfall_sites_voronoi AS rsv

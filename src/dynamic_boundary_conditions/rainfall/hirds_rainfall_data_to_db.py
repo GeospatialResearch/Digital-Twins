@@ -35,14 +35,14 @@ def db_rain_table_name(idf: bool) -> str:
     return table_name
 
 
-def get_sites_id_in_catchment(sites_in_catchment: gpd.GeoDataFrame) -> List[str]:
+def get_site_ids_in_catchment(sites_in_catchment: gpd.GeoDataFrame) -> List[str]:
     """
     Get the rainfall site IDs within the catchment area.
 
     Parameters
     ----------
     sites_in_catchment : gpd.GeoDataFrame
-        Rainfall site coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+        Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
 
     Returns
     -------
@@ -50,11 +50,11 @@ def get_sites_id_in_catchment(sites_in_catchment: gpd.GeoDataFrame) -> List[str]
         The rainfall site IDs within the catchment area.
     """
     # Extract the site IDs from the "site_id" column of the sites_in_catchment GeoDataFrame
-    sites_id_in_catchment = sites_in_catchment["site_id"].tolist()
-    return sites_id_in_catchment
+    site_ids_in_catchment = sites_in_catchment["site_id"].tolist()
+    return site_ids_in_catchment
 
 
-def get_sites_id_not_in_db(engine: Engine, sites_id_in_catchment: List[str], idf: bool) -> List[str]:
+def get_site_ids_not_in_db(engine: Engine, site_ids_in_catchment: List[str], idf: bool) -> List[str]:
     """
     Get the list of rainfall site IDs that are within the catchment area but not in the database.
 
@@ -62,7 +62,7 @@ def get_sites_id_not_in_db(engine: Engine, sites_id_in_catchment: List[str], idf
     ----------
     engine : Engine
         The engine used to connect to the database.
-    sites_id_in_catchment : List[str]
+    site_ids_in_catchment : List[str]
         Rainfall site IDs within the catchment area.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
@@ -77,12 +77,12 @@ def get_sites_id_not_in_db(engine: Engine, sites_id_in_catchment: List[str], idf
     # Construct the query to retrieve the distinct site IDs from the rainfall data table
     query = f"SELECT DISTINCT site_id FROM {rain_table_name};"
     # Execute the query and retrieve the site IDs in the database as a DataFrame
-    sites_id_in_db = pd.read_sql_query(query, engine)
+    site_ids_in_db = pd.read_sql_query(query, engine)
     # Convert the DataFrame to a list of site IDs in the database
-    sites_id_in_db = sites_id_in_db["site_id"].tolist()
-    # Find the site IDs in sites_id_in_catchment that are not present in sites_id_in_db
-    sites_id_not_in_db = list(set(sites_id_in_catchment).difference(sites_id_in_db))
-    return sites_id_not_in_db
+    site_ids_in_db = site_ids_in_db["site_id"].tolist()
+    # Find the site IDs in site_ids_in_catchment that are not present in site_ids_in_db
+    site_ids_not_in_db = list(set(site_ids_in_catchment).difference(site_ids_in_db))
+    return site_ids_not_in_db
 
 
 def add_rainfall_data_to_db(engine: Engine, site_id: str, idf: bool) -> None:
@@ -120,15 +120,15 @@ def add_rainfall_data_to_db(engine: Engine, site_id: str, idf: bool) -> None:
         rain_data.to_sql(rain_table_name, engine, index=False, if_exists="append")
 
 
-def add_each_site_rainfall_data(engine: Engine, sites_id_list: List[str], idf: bool) -> None:
+def add_each_site_rainfall_data(engine: Engine, site_ids_list: List[str], idf: bool) -> None:
     """
-    Add rainfall data for each site in the sites_id_list to the database.
+    Add rainfall data for each site in the site_ids_list to the database.
 
     Parameters
     ----------
     engine : Engine
         The engine used to connect to the database.
-    sites_id_list : List[str]
+    site_ids_list : List[str]
         List of rainfall sites' IDs.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
@@ -138,7 +138,7 @@ def add_each_site_rainfall_data(engine: Engine, sites_id_list: List[str], idf: b
     None
         This function does not return any value.
     """
-    for site_id in sites_id_list:
+    for site_id in site_ids_list:
         add_rainfall_data_to_db(engine, site_id, idf)
 
 
@@ -161,23 +161,23 @@ def rainfall_data_to_db(engine: Engine, sites_in_catchment: gpd.GeoDataFrame, id
         This function does not return any value.
     """
     # Get the IDs of the sites within the catchment area
-    sites_id_in_catchment = get_sites_id_in_catchment(sites_in_catchment)
+    site_ids_in_catchment = get_site_ids_in_catchment(sites_in_catchment)
     # Determine the table name based on idf
     table_name = db_rain_table_name(idf)
     # Check if the table already exists in the database
     if tables.check_table_exists(engine, table_name):
         # Get the IDs of sites not in the database
-        sites_id_not_in_db = get_sites_id_not_in_db(engine, sites_id_in_catchment, idf)
+        site_ids_not_in_db = get_site_ids_not_in_db(engine, site_ids_in_catchment, idf)
         # Check if there are sites not in the database
-        if sites_id_not_in_db:
+        if site_ids_not_in_db:
             # Add rainfall data for sites not in the database
-            add_each_site_rainfall_data(engine, sites_id_not_in_db, idf)
+            add_each_site_rainfall_data(engine, site_ids_not_in_db, idf)
         else:
             log.info(f"'{table_name}' data for sites within the requested catchment area is already in the database.")
     else:
         # Check if there are sites within the catchment area
-        if sites_id_in_catchment:
+        if site_ids_in_catchment:
             # Add rainfall data for all sites within the catchment area
-            add_each_site_rainfall_data(engine, sites_id_in_catchment, idf)
+            add_each_site_rainfall_data(engine, site_ids_in_catchment, idf)
         else:
             log.info("No rainfall sites found within the requested catchment area.")

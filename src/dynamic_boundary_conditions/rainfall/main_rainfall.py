@@ -11,7 +11,7 @@ import geopandas as gpd
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area, get_nz_boundary
+from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions.rainfall import (
     rainfall_sites,
@@ -109,17 +109,16 @@ def main(
     # Fetch rainfall sites data from the HIRDS website and store it to the database
     rainfall_sites.rainfall_sites_to_db(engine)
 
-    # Calculate the area covered by each rainfall site across New Zealand and store it in the database
-    nz_boundary = get_nz_boundary(engine, to_crs=4326)
-    sites_in_nz = thiessen_polygons.get_sites_within_aoi(engine, nz_boundary)
-    thiessen_polygons.thiessen_polygons_to_db(engine, nz_boundary, sites_in_nz)
+    # Compute the coverage areas (Thiessen Polygons) for all rainfall sites across NZ and store them in the database
+    thiessen_polygons.thiessen_polygons_to_db(engine)
 
-    # Get coverage areas (Thiessen polygons) of rainfall sites within the catchment area
+    # Get rainfall sites coverage areas (Thiessen Polygons) that intersect or are within the catchment area
     sites_in_catchment = thiessen_polygons.thiessen_polygons_from_db(engine, catchment_area)
-    # Store rainfall depth data of all the sites within the catchment area in the database
+    # Fetch and store rainfall depth data for all sites within the catchment area in the database
     hirds_rainfall_data_to_db.rainfall_data_to_db(engine, sites_in_catchment, idf=False)
 
-    # For a requested scenario, get all rainfall depth data for sites within the catchment area from the database
+    # Retrieve rainfall depth data from the database for all sites within the catchment area based on a
+    # user-requested scenario
     rain_depth_in_catchment = hirds_rainfall_data_from_db.rainfall_data_from_db(
         engine, sites_in_catchment, rcp, time_period, ari, idf=False)
 
@@ -132,7 +131,7 @@ def main(
         interp_method="cubic",
         hyeto_method=hyeto_method)
 
-    # Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area
+    # Calculate the size and percentage of the catchment area covered by each rainfall site
     sites_coverage = rainfall_model_input.sites_coverage_in_catchment(sites_in_catchment, catchment_area)
     # Generate the requested rainfall model input for BG-Flood
     rainfall_model_input.generate_rain_model_input(hyetograph_data, sites_coverage, bg_flood_dir, input_type=input_type)

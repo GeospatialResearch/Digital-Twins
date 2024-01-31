@@ -208,7 +208,7 @@ def get_non_intersection_centroid_position(
     non_intersections = non_intersection_area.explode(index_parts=False, ignore_index=True)
     # Calculate the centroid for each non-intersection geometry
     non_intersections['centroid'] = non_intersections.centroid
-    # Determine the position of each centroid relative to the boundary lines
+    # Identify the closest boundary line for each non-intersection centroid point
     non_intersections['position'] = non_intersections['centroid'].apply(
         lambda centroid: boundary_lines.loc[boundary_lines['geometry'].distance(centroid).idxmin(), 'line_position']
     )
@@ -248,7 +248,7 @@ def get_tide_query_locations(
     log.info("Identifying query locations used for fetching 'tide' data from NIWA.")
     # Get the regional council clipped data for the catchment area
     regions_clipped = get_regional_council_clipped_from_db(engine, catchment_area)
-    # Determine the non-intersection area within the catchment
+    # Determine the non-intersection area
     non_intersection_area = catchment_area.overlay(regions_clipped, how='difference')
     # Check if there is no non-intersection area
     if non_intersection_area.empty:
@@ -273,7 +273,7 @@ def get_tide_query_locations(
             tide_query_location = tide_query_location[['line_position', 'geometry']].rename(
                 columns={'line_position': 'position'})
     else:
-        # Get the centroid positions of non-intersection areas relative to the catchment boundary lines
+        # Determine the positions of non-intersection centroid points relative to the catchment boundary lines
         non_intersections = get_non_intersection_centroid_position(catchment_area, non_intersection_area)
         # Group by the 'position' column and calculate the centroid for each group
         grouped = non_intersections.groupby('position')['geometry'].apply(lambda x: x.unary_union.centroid)
