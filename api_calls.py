@@ -54,7 +54,6 @@ def generate_flood_model() -> str:
 
 def poll_for_completion(task_id: str) -> int:
     """Returns task value of completed task e.g. generate model task -> model output id"""
-    """Returns task value of completed task e.g. generate model task -> model output id"""
     # Retry forever until the task is complete
     task_status = None
     while task_status != states.SUCCESS:
