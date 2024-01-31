@@ -36,6 +36,7 @@ class OnFailureStateTask(app.Task):
     def on_failure(self, _exc, _task_id, _args, _kwargs, _einfo):
         self.update_state(state=states.FAILURE)
 
+
 class DepthTimePlot(NamedTuple):
     """
     Represents the depths over time for a particular pixel location in a raster.
@@ -51,6 +52,7 @@ class DepthTimePlot(NamedTuple):
     """
     depths: List[float]
     times: List[float]
+
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
     """
