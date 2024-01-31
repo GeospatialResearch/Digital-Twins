@@ -266,6 +266,7 @@ def create_datastore_layer(workspace_name, data_store_name: str, layer_name, met
                 <class>dataStore</class>
                 <name>{data_store_name}</name>
             </store>
+            <numDecimals>8</numDecimals>
             {metadata_elem}
         </featureType>
         """
