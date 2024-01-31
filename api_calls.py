@@ -54,18 +54,19 @@ def generate_flood_model() -> str:
 
 def poll_for_completion(task_id: str) -> int:
     """Returns task value of completed task e.g. generate model task -> model output id"""
+    """Returns task value of completed task e.g. generate model task -> model output id"""
     # Retry forever until the task is complete
     task_status = None
     while task_status != states.SUCCESS:
         # 5 Second delay before retrying
         time.sleep(5)
         print("Polling backend for task completion...")
-
         # Get status of a task
         task_status_response = requests.get(f"{backend_url}/tasks/{task_id}")
+        response_body = task_status_response.json()
+        print(response_body)
         task_status_response.raise_for_status()
         # Load the body JSON into a python dict
-        response_body = json.loads(task_status_response.text)
         task_status = response_body["taskStatus"]
     task_value = response_body['taskValue']
     print(f"Task completed with value {task_value}")
@@ -99,7 +100,7 @@ def get_depths_at_point(task_id: str):
 def fetch_new_dataset_table():
     # Update LiDAR datasets, takes a long time.
     print("Refreshing LiDAR OpenTopography URLs to get newest LiDAR data")
-    update_datasets_response = requests.get(f"{backend_url}/datasets/update", methods=["POST"])
+    update_datasets_response = requests.post(f"{backend_url}/datasets/update")
     # Check for errors (400/500 codes)
     update_datasets_response.raise_for_status()
     # Load the body JSON into a python dict
