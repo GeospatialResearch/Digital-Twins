@@ -82,6 +82,7 @@ services:
 
   www:
     # Webserver for the website interface
+    image: lparkinson/www-flood-resilience-dt:1.0
     build:
       context: ./visualisation
     container_name: www_digital_twin
