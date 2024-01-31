@@ -96,14 +96,15 @@ def ensure_lidar_datasets_initialised() -> None:
         # If it is not initialised, then initialise it
         newzealidar.datasets.main()
     # Check that datasets_mapping is in the instructions.json file
-    with open("instructions.json", "r") as instructions_file:
+    instructions_file_name = "instructions.json"
+    with open(instructions_file_name, "r") as instructions_file:
         # Load content from the file
         instructions = json.load(instructions_file)["instructions"]
-        dataset_mapping = instructions.get("dataset_mapping")
-        # If the dataset_mapping does not exist on the instruction file then read it from the database
-        if dataset_mapping is None:
-            # Add dataset_mapping to instructions file, reading from database
-            newzealidar.utils.map_dataset_name(engine, instructions_file)
+    dataset_mapping = instructions.get("dataset_mapping")
+    # If the dataset_mapping does not exist on the instruction file then read it from the database
+    if dataset_mapping is None:
+        # Add dataset_mapping to instructions file, reading from database
+        newzealidar.utils.map_dataset_name(engine, instructions_file_name)
 
 
 @app.task(base=OnFailureStateTask)
