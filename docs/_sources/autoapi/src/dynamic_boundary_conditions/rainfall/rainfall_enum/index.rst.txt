@@ -1,0 +1,85 @@
+:py:mod:`src.dynamic_boundary_conditions.rainfall.rainfall_enum`
+================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.rainfall.rainfall_enum
+
+.. autoapi-nested-parse::
+
+   Enum(s) used in the rainfall module.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod
+   src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType
+
+
+
+
+.. py:class:: HyetoMethod
+
+
+   Bases: :py:obj:`enum.StrEnum`
+
+   Enum class representing different hyetograph methods.
+
+   .. attribute:: ALT_BLOCK
+
+      Alternating Block Method.
+
+      :type: str
+
+   .. attribute:: CHICAGO
+
+      Chicago Method.
+
+      :type: str
+
+   .. py:attribute:: ALT_BLOCK
+      :value: 'alt_block'
+
+      
+
+   .. py:attribute:: CHICAGO
+      :value: 'chicago'
+
+      
+
+
+.. py:class:: RainInputType
+
+
+   Bases: :py:obj:`enum.StrEnum`
+
+   Enum class representing different types of rain input used in the BG-Flood Model.
+
+   .. attribute:: UNIFORM
+
+      Spatially uniform rain input.
+
+      :type: str
+
+   .. attribute:: VARYING
+
+      Spatially varying rain input.
+
+      :type: str
+
+   .. py:attribute:: UNIFORM
+      :value: 'uniform'
+
+      
+
+   .. py:attribute:: VARYING
+      :value: 'varying'
+
+      
+
+

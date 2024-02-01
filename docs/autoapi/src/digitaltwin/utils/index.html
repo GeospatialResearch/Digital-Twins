@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.digitaltwin.utils &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+  <title>src.digitaltwin.utils &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -33,7 +35,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            Digital Twin for Flood Resilience in Aotearoa New Zealand
+            Flood Resilience Digital Twin (FReDT)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -67,7 +69,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+          <a href="../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -262,7 +264,7 @@ loggers from propagating their messages to the root logger. Additionally, logs a
 execution of the function in the script.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log_level</strong> (<em>int</em><em>, </em><em>optional</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+<dd class="field-odd"><p><strong>log_level</strong> (<em>LogLevel = LogLevel.DEBUG</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
 The available logging levels and their corresponding numeric values are:
 - LogLevel.CRITICAL (50)
 - LogLevel.ERROR (40)
@@ -287,12 +289,12 @@ The available logging levels and their corresponding numeric values are:
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
-<li><p><strong>to_crs</strong> (<em>int</em><em>, </em><em>optional</em>) – Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>to_crs</strong> (<em>int = 2193</em>) – Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The catchment area GeoDataFrame with the transformed CRS.</p>
+<dd class="field-even"><p>A GeoDataFrame representing the catchment area with the transformed CRS.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>gpd.GeoDataFrame</p>
@@ -308,7 +310,7 @@ The available logging levels and their corresponding numeric values are:
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>to_crs</strong> (<em>int</em><em>, </em><em>optional</em>) – Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.</p></li>
+<li><p><strong>to_crs</strong> (<em>int = 2193</em>) – Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

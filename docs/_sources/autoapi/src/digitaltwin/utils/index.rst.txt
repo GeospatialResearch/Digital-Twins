@@ -136,7 +136,7 @@ Attributes
                      - LogLevel.INFO (20)
                      - LogLevel.DEBUG (10)
                      - LogLevel.NOTSET (0)
-   :type log_level: int, optional
+   :type log_level: LogLevel = LogLevel.DEBUG
 
    :returns: This function does not return any value.
    :rtype: None
@@ -146,12 +146,12 @@ Attributes
 
    Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.
 
-   :param catchment_area: The GeoDataFrame representing the catchment area.
+   :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
    :param to_crs: Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
-   :type to_crs: int, optional
+   :type to_crs: int = 2193
 
-   :returns: The catchment area GeoDataFrame with the transformed CRS.
+   :returns: A GeoDataFrame representing the catchment area with the transformed CRS.
    :rtype: gpd.GeoDataFrame
 
 
@@ -162,7 +162,7 @@ Attributes
    :param engine: The engine used to connect to the database.
    :type engine: Engine
    :param to_crs: Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.
-   :type to_crs: int, optional
+   :type to_crs: int = 2193
 
    :returns: A GeoDataFrame representing the boundary of New Zealand in the specified CRS.
    :rtype: gpd.GeoDataFrame

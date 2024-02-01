@@ -1,0 +1,159 @@
+:py:mod:`src.dynamic_boundary_conditions.rainfall.rainfall_model_input`
+=======================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.rainfall.rainfall_model_input
+
+.. autoapi-nested-parse::
+
+   Generate the requested rainfall model input for BG-Flood, which can be either
+   spatially uniform rain input ('rain_forcing.txt' text file) or
+   spatially varying rain input ('rain_forcing.nc' NetCDF file).
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment
+   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment
+   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.mean_catchment_rainfall
+   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input
+   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.create_rain_data_cube
+   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_varying_rain_input
+   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.generate_rain_model_input
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log
+
+
+.. py:data:: log
+
+   
+
+.. py:function:: sites_voronoi_intersect_catchment(sites_in_catchment: geopandas.GeoDataFrame, catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,
+   i.e. return the overlapped areas.
+
+   :param sites_in_catchment: Rainfall site coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+   :type sites_in_catchment: gpd.GeoDataFrame
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
+             catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: sites_coverage_in_catchment(sites_in_catchment: geopandas.GeoDataFrame, catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,
+   and calculate the size and percentage of the area covered by each rainfall site inside the catchment area.
+
+   :param sites_in_catchment: Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+   :type sites_in_catchment: gpd.GeoDataFrame
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
+             catchment area, with calculated size and percentage of area covered by each rainfall site.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: mean_catchment_rainfall(hyetograph_data: pandas.DataFrame, sites_coverage: geopandas.GeoDataFrame) -> pandas.DataFrame
+
+   Calculate the mean catchment rainfall intensities (weighted average of gauge measurements)
+   across all durations using the Thiessen polygon method.
+
+   :param hyetograph_data: Hyetograph intensities data for sites within the catchment area.
+   :type hyetograph_data: pd.DataFrame
+   :param sites_coverage: A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+                          including the size and percentage of the catchment area covered by each site.
+   :type sites_coverage: gpd.GeoDataFrame
+
+   :returns: A DataFrame containing the mean catchment rainfall intensities across all durations.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: spatial_uniform_rain_input(hyetograph_data: pandas.DataFrame, sites_coverage: geopandas.GeoDataFrame, bg_flood_dir: pathlib.Path) -> None
+
+   Write the mean catchment rainfall intensities data (i.e., 'seconds' and 'rain_intensity_mmhr' columns)
+   into a text file named 'rain_forcing.txt'. This file can be used as spatially uniform rain input
+   for the BG-Flood model.
+
+   :param hyetograph_data: Hyetograph intensities data for sites within the catchment area.
+   :type hyetograph_data: pd.DataFrame
+   :param sites_coverage: A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+                          including the size and percentage of the catchment area covered by each site.
+   :type sites_coverage: gpd.GeoDataFrame
+   :param bg_flood_dir: BG-Flood model directory.
+   :type bg_flood_dir: pathlib.Path
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: create_rain_data_cube(hyetograph_data: pandas.DataFrame, sites_coverage: geopandas.GeoDataFrame) -> xarray.Dataset
+
+   Create rainfall intensities data cube (xarray data) for the catchment area across all durations,
+   i.e. convert rainfall intensities vector data into rasterized xarray data.
+
+   :param hyetograph_data: Hyetograph intensities data for sites within the catchment area.
+   :type hyetograph_data: pd.DataFrame
+   :param sites_coverage: A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+                          including the size and percentage of the catchment area covered by each site.
+   :type sites_coverage: gpd.GeoDataFrame
+
+   :returns: Rainfall intensities data cube in the form of xarray dataset.
+   :rtype: xr.Dataset
+
+
+.. py:function:: spatial_varying_rain_input(hyetograph_data: pandas.DataFrame, sites_coverage: geopandas.GeoDataFrame, bg_flood_dir: pathlib.Path) -> None
+
+   Write the rainfall intensities data cube in NetCDF format (rain_forcing.nc).
+   This file can be used as spatially varying rain input for the BG-Flood model.
+
+   :param hyetograph_data: Hyetograph intensities data for sites within the catchment area.
+   :type hyetograph_data: pd.DataFrame
+   :param sites_coverage: A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+                          including the size and percentage of the catchment area covered by each site.
+   :type sites_coverage: gpd.GeoDataFrame
+   :param bg_flood_dir: BG-Flood model directory.
+   :type bg_flood_dir: pathlib.Path
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: generate_rain_model_input(hyetograph_data: pandas.DataFrame, sites_coverage: geopandas.GeoDataFrame, bg_flood_dir: pathlib.Path, input_type: src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType) -> None
+
+   Generate the requested rainfall model input for BG-Flood, either spatially uniform rain input
+   ('rain_forcing.txt' text file) or spatially varying rain input ('rain_forcing.nc' NetCDF file).
+
+   :param hyetograph_data: Hyetograph intensities data for sites within the catchment area.
+   :type hyetograph_data: pd.DataFrame
+   :param sites_coverage: A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+                          including the size and percentage of the catchment area covered by each site.
+   :type sites_coverage: gpd.GeoDataFrame
+   :param bg_flood_dir: BG-Flood model directory.
+   :type bg_flood_dir: pathlib.Path
+   :param input_type: The type of rainfall model input to be generated. Valid options are 'uniform' or 'varying',
+                      representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
+   :type input_type: RainInputType
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+

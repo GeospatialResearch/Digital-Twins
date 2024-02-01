@@ -1,0 +1,105 @@
+:py:mod:`src.dynamic_boundary_conditions.river.hydrograph`
+==========================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river.hydrograph
+
+.. autoapi-nested-parse::
+
+   This script handles the task of obtaining REC river inflow scenario data, whether it's Mean Annual Flood (MAF) or
+   Average Recurrence Interval (ARI)-based, and generates corresponding hydrograph data for the requested scenarios.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.hydrograph.clean_rec_inflow_data
+   src.dynamic_boundary_conditions.river.hydrograph.extract_valid_ari_values
+   src.dynamic_boundary_conditions.river.hydrograph.get_rec_inflow_scenario_data
+   src.dynamic_boundary_conditions.river.hydrograph.get_hydrograph_data
+
+
+
+.. py:function:: clean_rec_inflow_data(rec_inflows_w_input_points: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Selects and renames specific columns that represent REC river inflow data from the input GeoDataFrame.
+
+   :param rec_inflows_w_input_points: A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
+                                      boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
+                                      along with their corresponding river input points used in the BG-Flood model.
+   :type rec_inflows_w_input_points: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame with selected and renamed columns representing REC river inflow data.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: extract_valid_ari_values(rec_inflow_data: geopandas.GeoDataFrame) -> List[int]
+
+   Extracts valid ARI (Annual Recurrence Interval) values from the column names of the REC river inflow data.
+
+   :param rec_inflow_data: A GeoDataFrame containing REC river inflow data with column names that include ARI values.
+   :type rec_inflow_data: gpd.GeoDataFrame
+
+   :returns: A list of valid ARI values extracted from the column names of the REC river inflow data.
+   :rtype: List[int]
+
+
+.. py:function:: get_rec_inflow_scenario_data(rec_inflows_w_input_points: geopandas.GeoDataFrame, maf: bool = True, ari: Optional[int] = None, bound: src.dynamic_boundary_conditions.river.river_enum.BoundType = BoundType.MIDDLE) -> geopandas.GeoDataFrame
+
+   Obtain the requested REC river inflow scenario data, which can be either Mean Annual Flood (MAF)-based or
+   Average Recurrence Interval (ARI)-based scenario data.
+
+   :param rec_inflows_w_input_points: A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
+                                      boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
+                                      along with their corresponding river input points used in the BG-Flood model.
+   :type rec_inflows_w_input_points: gpd.GeoDataFrame
+   :param maf: Set to True to obtain MAF-based scenario data or False to obtain ARI-based scenario data.
+   :type maf: bool = True
+   :param ari: The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
+               Mandatory when 'maf' is set to False, and should be set to None when 'maf' is set to True.
+   :type ari: Optional[int] = None
+   :param bound: Set the type of bound (estimate) for the REC river inflow scenario data.
+                 Valid options include: 'BoundType.LOWER', 'BoundType.MIDDLE', or 'BoundType.UPPER'.
+   :type bound: BoundType = BoundType.MIDDLE
+
+   :returns: A GeoDataFrame containing the requested REC river inflow scenario data.
+   :rtype: gpd.GeoDataFrame
+
+   :raises ValueError: - If 'ari' is provided when 'maf' is set to True (i.e. 'maf' is True and 'ari' is not set to None).
+       - If 'ari' is not provided when 'maf' is set to False (i.e. 'maf' is False and 'ari' is set to None).
+       - If an invalid 'ari' value is provided.
+
+
+.. py:function:: get_hydrograph_data(rec_inflows_w_input_points: geopandas.GeoDataFrame, flow_length_mins: int, time_to_peak_mins: Union[int, float], maf: bool = True, ari: Optional[int] = None, bound: src.dynamic_boundary_conditions.river.river_enum.BoundType = BoundType.MIDDLE) -> geopandas.GeoDataFrame
+
+   Generate hydrograph data for the requested REC river inflow scenario.
+
+   :param rec_inflows_w_input_points: A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
+                                      boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
+                                      along with their corresponding river input points used in the BG-Flood model.
+   :type rec_inflows_w_input_points: gpd.GeoDataFrame
+   :param flow_length_mins: Duration of the river flow in minutes.
+   :type flow_length_mins: int
+   :param time_to_peak_mins: The time in minutes when flow is at its greatest (reaches maximum).
+   :type time_to_peak_mins: Union[int, float]
+   :param maf: Set to True to obtain MAF-based scenario data or False to obtain ARI-based scenario data.
+   :type maf: bool = True
+   :param ari: The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
+               Mandatory when 'maf' is set to False, and should be set to None when 'maf' is set to True.
+   :type ari: Optional[int] = None
+   :param bound: Set the type of bound (estimate) for the REC river inflow scenario data.
+                 Valid options include: 'BoundType.LOWER', 'BoundType.MIDDLE', or 'BoundType.UPPER'.
+   :type bound: BoundType = BoundType.MIDDLE
+
+   :returns: A GeoDataFrame containing hydrograph data for the requested REC river inflow scenario.
+   :rtype: gpd.GeoDataFrame
+
+   :raises ValueError: If the specified 'time_to_peak_mins' is less than half of the river flow duration.
+
+

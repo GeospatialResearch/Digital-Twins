@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.river.river_data_from_niwa &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.river.river_data_to_from_db" href="../river_data_to_from_db/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.river.osm_waterways" href="../osm_waterways/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/river/river_data_from_niwa/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.river.river_data_from_niwa">
+<span id="src-dynamic-boundary-conditions-river-river-data-from-niwa"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.river.river_data_from_niwa" title="src.dynamic_boundary_conditions.river.river_data_from_niwa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.river.river_data_from_niwa" title="Link to this heading"></a></h1>
+<p>Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RecordCounts</span></code></a></p></td>
+<td><p>Represents the record counts of the REC feature layer.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_layer_record_counts</span></code></a>(→ RecordCounts)</p></td>
+<td><p>Retrieves the maximum and total record counts from the REC feature layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_rec_query_param_list</span></code></a>(→ List[Dict[str, Union[str, ...)</p></td>
+<td><p>Generate a list of API query parameters used to retrieve REC data in New Zealand.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Fetch REC data using the provided query parameters within a single API call.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data_for_nz</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Iterate over the list of API query parameters to fetch REC data in New Zealand.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data_from_niwa</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Retrieve REC data in New Zealand from NIWA using the ArcGIS REST API.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.log" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.REC_API_URL" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.REC_API_URL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REC_API_URL</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.log">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.REC_API_URL">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">REC_API_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2'</span></em><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.REC_API_URL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">RecordCounts</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>Represents the record counts of the REC feature layer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts.max_record_count">
+<span class="sig-name descname"><span class="pre">max_record_count</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts.max_record_count" title="Link to this definition"></a></dt>
+<dd><p>The maximum number of records that will be returned per query.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts.total_record_count">
+<span class="sig-name descname"><span class="pre">total_record_count</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts.total_record_count" title="Link to this definition"></a></dt>
+<dd><p>The total number of records available in the feature layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">max_record_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">total_record_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_feature_layer_record_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">REC_API_URL</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts"><span class="pre">RecordCounts</span></a></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the maximum and total record counts from the REC feature layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>str = REC_API_URL</em>) – The URL of the REC feature layer. Defaults to <cite>REC_API_URL</cite>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A named tuple containing the maximum and total record counts of the REC feature layer.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts">RecordCounts</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">gen_rec_query_param_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_record_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_record_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list" title="Link to this definition"></a></dt>
+<dd><p>Generate a list of API query parameters used to retrieve REC data in New Zealand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>max_record_count</strong> (<em>int</em>) – The maximum number of records that will be returned per query.</p></li>
+<li><p><strong>total_record_count</strong> (<em>int</em>) – The total number of records available in the feature layer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of API query parameters used to retrieve REC data in New Zealand.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict[str, Union[str, int]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">fetch_rec_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session:</span> <span class="pre">aiohttp.ClientSession,</span> <span class="pre">query_param:</span> <span class="pre">Dict[str,</span> <span class="pre">Union[str,</span> <span class="pre">int]],</span> <span class="pre">url:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">f'{REC_API_URL}/query'</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data" title="Link to this definition"></a></dt>
+<dd><p>Fetch REC data using the provided query parameters within a single API call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>aiohttp.ClientSession</em>) – An instance of <cite>aiohttp.ClientSession</cite> used for making HTTP requests.</p></li>
+<li><p><strong>query_param</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em>) – The query parameters used to retrieve REC data.</p></li>
+<li><p><strong>url</strong> (<em>str = REC_API_URL</em>) – The query URL of the REC feature layer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched REC data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">fetch_rec_data_for_nz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_param_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">REC_API_URL</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz" title="Link to this definition"></a></dt>
+<dd><p>Iterate over the list of API query parameters to fetch REC data in New Zealand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_param_list</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em><em>]</em>) – A list of API query parameters used to retrieve REC data in New Zealand.</p></li>
+<li><p><strong>url</strong> (<em>str = REC_API_URL</em>) – The URL of the REC feature layer. Defaults to <cite>REC_API_URL</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched REC data in New Zealand.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">fetch_rec_data_from_niwa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">REC_API_URL</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa" title="Link to this definition"></a></dt>
+<dd><p>Retrieve REC data in New Zealand from NIWA using the ArcGIS REST API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>url</strong> (<em>str = REC_API_URL</em>) – The URL of the REC feature layer. Defaults to <cite>REC_API_URL</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched REC data in New Zealand.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If failed to fetch REC data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../osm_waterways/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.river.osm_waterways" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../river_data_to_from_db/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.river.river_data_to_from_db" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -32,8 +32,8 @@ Attributes
 
 .. py:function:: get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: type = str) -> T
 
-    Reads an environment variable, with settings to allow defaults, empty values, and type casting
-    To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
+   Reads an environment variable, with settings to allow defaults, empty values, and type casting
+   To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
 
    :param var_name: The name of the environment variable to retrieve.
    :type var_name: str
@@ -41,7 +41,7 @@ Attributes
    :type default: T = None
    :param allow_empty: If False then a KeyError will be raised if the environment variable is empty.
    :type allow_empty: bool
-   :param cast_to: The type to cast to eg. str, int, or bool
+   :param cast_to: The type to cast to e.g. str, int, or bool
    :type cast_to: Callable[[str], T]
 
    :rtype: The environment variable, or default if it does not exist, as type T.

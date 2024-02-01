@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.tide.tide_data_from_niwa &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.tide.tide_enum" href="../tide_enum/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data" href="../sea_level_rise_data/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/tide/tide_data_from_niwa/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.tide.tide_data_from_niwa">
+<span id="src-dynamic-boundary-conditions-tide-tide-data-from-niwa"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.tide.tide_data_from_niwa" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.tide.tide_data_from_niwa" title="Link to this heading"></a></h1>
+<p>Fetch tide data from NIWA using the Tide API based on the specified approach, datum, etc.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_query_loc_coords_position" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_query_loc_coords_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_query_loc_coords_position</span></code></a>(→ Tuple[float, float, str])</p></td>
+<td><p>Get the latitude, longitude, and position of a query location.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_date_ranges" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_date_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_date_ranges</span></code></a>(, total_days, days_per_call, int])</p></td>
+<td><p>Get the start date and duration, measured in days, for each API call used to fetch tide data for the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.gen_tide_query_param_list" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.gen_tide_query_param_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_tide_query_param_list</span></code></a>(→ List[Dict[str, Union[str, ...)</p></td>
+<td><p>Generate a list of API query parameters used to retrieve tide data for the requested period.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_tide_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Fetch tide data using the provided query parameters within a single API call.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_for_requested_period" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_for_requested_period"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_tide_data_for_requested_period</span></code></a>(...)</p></td>
+<td><p>Iterate over the list of API query parameters to fetch tide data for the requested period.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.convert_to_nz_timezone" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.convert_to_nz_timezone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to_nz_timezone</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Convert the time column in the initially retrieved tide data for the requested period from UTC to NZ timezone.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_from_niwa" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_from_niwa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_tide_data_from_niwa</span></code></a>(, total_days, interval_mins)</p></td>
+<td><p>Retrieve tide data from NIWA for the requested time period using the Tide API.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_datetime" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_datetime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_highest_tide_datetime</span></code></a>(→ pandas.Timestamp)</p></td>
+<td><p>Get the datetime of the most recent highest tide that occurred within the requested time period.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_datetime_span" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_datetime_span"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_highest_tide_datetime_span</span></code></a>(...)</p></td>
+<td><p>Get the start and end datetimes of a tide event centered around the datetime of the highest tide.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_date_span" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_date_span"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_highest_tide_date_span</span></code></a>(→ Tuple[datetime.date, int])</p></td>
+<td><p>Get the start date and duration in days of a tide event centered around the datetime of the highest tide.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_around_highest_tide" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_around_highest_tide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_tide_data_around_highest_tide</span></code></a>(...)</p></td>
+<td><p>Fetch tide data around the highest tide from NIWA for the specified tide length and interval.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_time_mins_to_add" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_time_mins_to_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_time_mins_to_add</span></code></a>(→ List[Union[float, int]])</p></td>
+<td><p>Get the time values in minutes to add to the tide data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.add_time_information" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.add_time_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_time_information</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Add time information (seconds, minutes, hours) to the tide data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_tide_data" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_tide_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tide_data</span></code></a>(, total_days, tide_length_mins, ...)</p></td>
+<td><p>Fetch tide data from NIWA using the Tide API based on the specified approach, datum, and other parameters.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TIDE_API_URL_DATA</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA_CSV" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA_CSV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TIDE_API_URL_DATA_CSV</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">TIDE_API_URL_DATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://api.niwa.co.nz/tides/data'</span></em><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA_CSV">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">TIDE_API_URL_DATA_CSV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://api.niwa.co.nz/tides/data.csv'</span></em><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA_CSV" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_query_loc_coords_position">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_query_loc_coords_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_loc_row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_query_loc_coords_position" title="Link to this definition"></a></dt>
+<dd><p>Get the latitude, longitude, and position of a query location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>query_loc_row</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing a query location used to fetch tide data from NIWA using the tide API.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the latitude, longitude, and position of the query location.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[float, float, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_date_ranges">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_date_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.date</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">date.today()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">365</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">days_per_call</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">31</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.date</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_date_ranges" title="Link to this definition"></a></dt>
+<dd><p>Get the start date and duration, measured in days, for each API call used to fetch tide data for the
+requested period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> (<em>date = date.today</em><em>(</em><em>)</em>) – The start date for retrieving tide data. It can be in the past or present. Default is today’s date.</p></li>
+<li><p><strong>total_days</strong> (<em>int = 365</em>) – The total number of days of tide data to retrieve. Default is 365 days (one year).</p></li>
+<li><p><strong>days_per_call</strong> (<em>int = 31</em>) – The number of days to fetch in each API call. Must be between 1 and 31 inclusive.
+Default is 31, which represents the maximum number of days that can be fetched per API call.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the start date as the key and the duration, in days, for each API call as the value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[date, int]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – <ul class="simple">
+<li><p>If ‘total_days’ is less than 1.</p></li>
+<li><p>If ‘days_per_call’ is not between 1 and 31 inclusive.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.gen_tide_query_param_list">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">gen_tide_query_param_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_ranges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.date</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tide_enum/index.html#src.dynamic_boundary_conditions.tide.tide_enum.DatumType" title="src.dynamic_boundary_conditions.tide.tide_enum.DatumType"><span class="pre">src.dynamic_boundary_conditions.tide.tide_enum.DatumType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DatumType.LAT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.gen_tide_query_param_list" title="Link to this definition"></a></dt>
+<dd><p>Generate a list of API query parameters used to retrieve tide data for the requested period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lat</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Latitude in the range of -29 to -53 (e.g., -30.876).</p></li>
+<li><p><strong>long</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Longitude in the range of 160 to 180 and -175 to -180 (e.g., -175.543).</p></li>
+<li><p><strong>date_ranges</strong> (<em>Dict</em><em>[</em><em>date</em><em>, </em><em>int</em><em>]</em>) – Dictionary of start date and number of days for each API call needed to retrieve tide data
+for the requested period.</p></li>
+<li><p><strong>interval_mins</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – Output time interval in minutes, range from 10 to 1440 minutes (1 day).
+Omit to retrieve only the highest and lowest tide data.</p></li>
+<li><p><strong>datum</strong> (<em>DatumType = DatumType.LAT</em>) – Datum used for fetching tide data from NIWA. Default value is LAT.
+Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of API query parameters used to retrieve tide data for the requested period.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict[str, Union[str, int]]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – <ul class="simple">
+<li><p>If the latitude is outside the range of -29 to -53.</p></li>
+<li><p>If the longitude is outside the range of 160 to 180 or -175 to -180.</p></li>
+<li><p>If the time interval is provided and outside the range of 10 to 1440.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">fetch_tide_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aiohttp.ClientSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">TIDE_API_URL_DATA</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data" title="Link to this definition"></a></dt>
+<dd><p>Fetch tide data using the provided query parameters within a single API call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>aiohttp.ClientSession</em>) – An instance of <cite>aiohttp.ClientSession</cite> used for making HTTP requests.</p></li>
+<li><p><strong>query_param</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em>) – The query parameters used to retrieve tide data for a specific location and time period.</p></li>
+<li><p><strong>url</strong> (<em>str = TIDE_API_URL_DATA</em>) – Tide API HTTP request URL. Defaults to <cite>TIDE_API_URL_DATA</cite>.
+Can be either <cite>TIDE_API_URL_DATA</cite> or <cite>TIDE_API_URL_DATA_CSV</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched tide data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_for_requested_period">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">fetch_tide_data_for_requested_period</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_param_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">TIDE_API_URL_DATA</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_for_requested_period" title="Link to this definition"></a></dt>
+<dd><p>Iterate over the list of API query parameters to fetch tide data for the requested period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_param_list</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em><em>]</em>) – A list of API query parameters used to retrieve tide data for the requested period.</p></li>
+<li><p><strong>url</strong> (<em>str = TIDE_API_URL_DATA</em>) – Tide API HTTP request URL. Defaults to <cite>TIDE_API_URL_DATA</cite>.
+Can be either <cite>TIDE_API_URL_DATA</cite> or <cite>TIDE_API_URL_DATA_CSV</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched tide data for the requested period.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If an invalid URL is specified for the Tide API HTTP request.</p></li>
+<li><p><strong>RuntimeError</strong> – If failed to fetch tide data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.convert_to_nz_timezone">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">convert_to_nz_timezone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tide_data_utc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.convert_to_nz_timezone" title="Link to this definition"></a></dt>
+<dd><p>Convert the time column in the initially retrieved tide data for the requested period from UTC to NZ timezone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tide_data_utc</strong> (<em>gpd.GeoDataFrame</em>) – The original tide data obtained for the requested period with the time column expressed in UTC.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The tide data with the time column converted to NZ timezone.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_from_niwa">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">fetch_tide_data_from_niwa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tide_query_loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tide_enum/index.html#src.dynamic_boundary_conditions.tide.tide_enum.DatumType" title="src.dynamic_boundary_conditions.tide.tide_enum.DatumType"><span class="pre">src.dynamic_boundary_conditions.tide.tide_enum.DatumType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DatumType.LAT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.date</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">date.today()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">365</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_from_niwa" title="Link to this definition"></a></dt>
+<dd><p>Retrieve tide data from NIWA for the requested time period using the Tide API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tide_query_loc</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the query coordinates and their positions.</p></li>
+<li><p><strong>datum</strong> (<em>DatumType = DatumType.LAT</em>) – Datum used for fetching tide data from NIWA. Default value is LAT.
+Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.</p></li>
+<li><p><strong>start_date</strong> (<em>date = date.today</em><em>(</em><em>)</em>) – The start date for retrieving tide data. It can be in the past or present. Default is today’s date.</p></li>
+<li><p><strong>total_days</strong> (<em>int = 365</em>) – The total number of days of tide data to retrieve. Default is 365 days (one year).</p></li>
+<li><p><strong>interval_mins</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – Output time interval in minutes, range from 10 to 1440 minutes (1 day).
+Omit to retrieve only the highest and lowest tide data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched tide data from NIWA for the requested time period.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_datetime">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_highest_tide_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tide_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.Timestamp</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_datetime" title="Link to this definition"></a></dt>
+<dd><p>Get the datetime of the most recent highest tide that occurred within the requested time period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tide_data</strong> (<em>gpd.GeoDataFrame</em>) – The tide data fetched from NIWA for the requested time period.
+The time column is expressed in NZ timezone, which was converted from UTC.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The datetime of the most recent highest tide that occurred within the requested time period.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_datetime_span">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_highest_tide_datetime_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">highest_tide_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.Timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tide_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.Timestamp</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.Timestamp</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_datetime_span" title="Link to this definition"></a></dt>
+<dd><p>Get the start and end datetimes of a tide event centered around the datetime of the highest tide.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>highest_tide_datetime</strong> (<em>pd.Timestamp</em>) – The datetime of the most recent highest tide that occurred within the requested time period.</p></li>
+<li><p><strong>tide_length_mins</strong> (<em>int</em>) – The length of the tide event in minutes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the start and end datetimes of the tide event centered around the
+datetime of the highest tide.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[pd.Timestamp, pd.Timestamp]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_date_span">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_highest_tide_date_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.Timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.Timestamp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.date</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_highest_tide_date_span" title="Link to this definition"></a></dt>
+<dd><p>Get the start date and duration in days of a tide event centered around the datetime of the highest tide.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_datetime</strong> (<em>pd.Timestamp</em>) – The start datetime of the tide event centered around the datetime of the highest tide.</p></li>
+<li><p><strong>end_datetime</strong> (<em>pd.Timestamp</em>) – The end datetime of the tide event centered around the datetime of the highest tide.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the start date and the duration in days of a tide event centered around the
+datetime of the highest tide.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[date, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_around_highest_tide">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">fetch_tide_data_around_highest_tide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tide_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tide_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tide_enum/index.html#src.dynamic_boundary_conditions.tide.tide_enum.DatumType" title="src.dynamic_boundary_conditions.tide.tide_enum.DatumType"><span class="pre">src.dynamic_boundary_conditions.tide.tide_enum.DatumType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DatumType.LAT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.fetch_tide_data_around_highest_tide" title="Link to this definition"></a></dt>
+<dd><p>Fetch tide data around the highest tide from NIWA for the specified tide length and interval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tide_data</strong> (<em>gpd.GeoDataFrame</em>) – The tide data fetched from NIWA for the requested time period.
+The time column is expressed in NZ timezone, which was converted from UTC.</p></li>
+<li><p><strong>tide_length_mins</strong> (<em>int</em>) – The length of the tide event in minutes.</p></li>
+<li><p><strong>interval_mins</strong> (<em>int = 10</em>) – The time interval, in minutes, between each recorded tide data point. The default value is 10 minutes.</p></li>
+<li><p><strong>datum</strong> (<em>DatumType = DatumType.LAT</em>) – Datum used for fetching tide data from NIWA. Default value is LAT.
+Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The tide data around the highest tide, fetched from NIWA, for the specified tide length and interval.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_time_mins_to_add">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_time_mins_to_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tide_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tide_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_peak_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_time_mins_to_add" title="Link to this definition"></a></dt>
+<dd><p>Get the time values in minutes to add to the tide data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tide_data</strong> (<em>gpd.GeoDataFrame</em>) – The tide data for which time values in minutes will be calculated.</p></li>
+<li><p><strong>tide_length_mins</strong> (<em>int</em>) – The length of the tide event in minutes.</p></li>
+<li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when the tide is at its greatest (reaches maximum).</p></li>
+<li><p><strong>interval_mins</strong> (<em>int = 10</em>) – The time interval, in minutes, between each recorded tide data point. The default value is 10 minutes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the time values in minutes to add to the tide data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Union[float, int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.add_time_information">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">add_time_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tide_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_peak_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tide_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approach</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tide_enum/index.html#src.dynamic_boundary_conditions.tide.tide_enum.ApproachType" title="src.dynamic_boundary_conditions.tide.tide_enum.ApproachType"><span class="pre">src.dynamic_boundary_conditions.tide.tide_enum.ApproachType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ApproachType.KING_TIDE</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.add_time_information" title="Link to this definition"></a></dt>
+<dd><p>Add time information (seconds, minutes, hours) to the tide data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tide_data</strong> (<em>gpd.GeoDataFrame</em>) – The tide data for which time information will be added.</p></li>
+<li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when the tide is at its greatest (reaches maximum).</p></li>
+<li><p><strong>interval_mins</strong> (<em>int = 10</em>) – The time interval, in minutes, between each recorded tide data point. The default value is 10 minutes.</p></li>
+<li><p><strong>tide_length_mins</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – The length of the tide event in minutes. Only required if the ‘approach’ is KING_TIDE.</p></li>
+<li><p><strong>total_days</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – The total number of days for the tide event. Only required if the ‘approach’ is PERIOD_TIDE.</p></li>
+<li><p><strong>approach</strong> (<em>ApproachType = ApproachType.KING_TIDE</em>) – The approach used to get the tide data. Default is KING_TIDE.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The tide data with added time information in seconds, minutes, and hours.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If ‘time_to_peak_mins’ is less than the minimum time to peak.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The minimum time to peak is calculated differently depending on the approach used:
+- For the KING_TIDE approach, it is half of the ‘tide_length_mins’.
+- For the PERIOD_TIDE approach, it is half of the ‘total_days’ converted to minutes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_tide_data">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_tide_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tide_query_loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_peak_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approach</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tide_enum/index.html#src.dynamic_boundary_conditions.tide.tide_enum.ApproachType" title="src.dynamic_boundary_conditions.tide.tide_enum.ApproachType"><span class="pre">src.dynamic_boundary_conditions.tide.tide_enum.ApproachType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ApproachType.KING_TIDE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.date</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">date.today()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tide_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tide_enum/index.html#src.dynamic_boundary_conditions.tide.tide_enum.DatumType" title="src.dynamic_boundary_conditions.tide.tide_enum.DatumType"><span class="pre">src.dynamic_boundary_conditions.tide.tide_enum.DatumType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DatumType.LAT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_tide_data" title="Link to this definition"></a></dt>
+<dd><p>Fetch tide data from NIWA using the Tide API based on the specified approach, datum, and other parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tide_query_loc</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the query coordinates and their positions.</p></li>
+<li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when the tide is at its greatest (reaches maximum).</p></li>
+<li><p><strong>approach</strong> (<em>ApproachType = ApproachType.KING_TIDE</em>) – The approach used to get the tide data. Default is KING_TIDE.</p></li>
+<li><p><strong>start_date</strong> (<em>date = date.today</em><em>(</em><em>)</em>) – The start date for retrieving tide data. It can be in the past or present. Default is today’s date.</p></li>
+<li><p><strong>total_days</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – The total number of days for the tide event. Only required if the ‘approach’ is PERIOD_TIDE.</p></li>
+<li><p><strong>tide_length_mins</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – The length of the tide event in minutes. Only required if the ‘approach’ is KING_TIDE.</p></li>
+<li><p><strong>interval_mins</strong> (<em>int = 10</em>) – The time interval, in minutes, between each recorded tide data point. The default value is 10 minutes.</p></li>
+<li><p><strong>datum</strong> (<em>DatumType = DatumType.LAT</em>) – Datum used for fetching tide data from NIWA. Default value is LAT.
+Valid options are LAT for the Lowest Astronomical Tide and MSL for the Mean Sea Level.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The tide data with added time information in seconds, minutes, and hours.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – <ul class="simple">
+<li><p>If ‘interval_mins’ is None.</p></li>
+<li><p>If the ‘approach’ is KING_TIDE and ‘tide_length_mins’ is None or ‘total_days’ is not None.</p></li>
+<li><p>If the ‘approach’ is PERIOD_TIDE and ‘total_days’ is None or ‘tide_length_mins’ is not None.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../sea_level_rise_data/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tide_enum/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.tide.tide_enum" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

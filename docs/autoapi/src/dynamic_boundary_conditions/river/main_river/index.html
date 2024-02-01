@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.river.main_river &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.river.osm_waterways" href="../osm_waterways/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.river.hydrograph" href="../hydrograph/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.main_river</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/river/main_river/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.river.main_river">
+<span id="src-dynamic-boundary-conditions-river-main-river"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.river.main_river" title="src.dynamic_boundary_conditions.river.main_river"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.main_river</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.river.main_river" title="Link to this heading"></a></h1>
+<p>Main river script used to read and store REC data in the database, fetch OSM waterways data, create a river network
+and its associated data, and generate the requested river model input for BG-Flood etc.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.main_river.retrieve_hydro_dem_info" title="src.dynamic_boundary_conditions.river.main_river.retrieve_hydro_dem_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retrieve_hydro_dem_info</span></code></a>(→ Tuple[xarray.Dataset, ...)</p></td>
+<td><p>Retrieves the Hydrologically Conditioned DEM (Hydro DEM) data, along with its spatial extent and resolution,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.main_river.get_hydro_dem_boundary_lines" title="src.dynamic_boundary_conditions.river.main_river.get_hydro_dem_boundary_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hydro_dem_boundary_lines</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get the boundary lines of the Hydrologically Conditioned DEM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.main_river.remove_existing_river_inputs" title="src.dynamic_boundary_conditions.river.main_river.remove_existing_river_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_existing_river_inputs</span></code></a>(→ None)</p></td>
+<td><p>Remove existing river input files from the specified directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.main_river.main" title="src.dynamic_boundary_conditions.river.main_river.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ None)</p></td>
+<td><p>Read and store REC data in the database, fetch OSM waterways data, create a river network and its associated data,</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.main_river.log" title="src.dynamic_boundary_conditions.river.main_river.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.main_river.sample_polygon" title="src.dynamic_boundary_conditions.river.main_river.sample_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_polygon</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.main_river.log">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.main_river.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.main_river.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.main_river.retrieve_hydro_dem_info">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.main_river.</span></span><span class="sig-name descname"><span class="pre">retrieve_hydro_dem_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">xarray.Dataset</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">shapely.geometry.LineString</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.main_river.retrieve_hydro_dem_info" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the Hydrologically Conditioned DEM (Hydro DEM) data, along with its spatial extent and resolution,
+for the specified catchment area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the Hydro DEM data as a xarray Dataset, the spatial extent of the Hydro DEM as a LineString,
+and the resolution of the Hydro DEM as either an integer or a float.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[xr.Dataset, LineString, Union[int, float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.main_river.get_hydro_dem_boundary_lines">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.main_river.</span></span><span class="sig-name descname"><span class="pre">get_hydro_dem_boundary_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.main_river.get_hydro_dem_boundary_lines" title="Link to this definition"></a></dt>
+<dd><p>Get the boundary lines of the Hydrologically Conditioned DEM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the boundary lines of the Hydrologically Conditioned DEM.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.main_river.remove_existing_river_inputs">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.main_river.</span></span><span class="sig-name descname"><span class="pre">remove_existing_river_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.main_river.remove_existing_river_inputs" title="Link to this definition"></a></dt>
+<dd><p>Remove existing river input files from the specified directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bg_flood_dir</strong> (<em>pathlib.Path</em>) – The BG-Flood model directory containing the river input files.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.main_river.main">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.main_river.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_peak_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ari</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../river_enum/index.html#src.dynamic_boundary_conditions.river.river_enum.BoundType" title="src.dynamic_boundary_conditions.river.river_enum.BoundType"><span class="pre">src.dynamic_boundary_conditions.river.river_enum.BoundType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">BoundType.MIDDLE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../digitaltwin/utils/index.html#src.digitaltwin.utils.LogLevel" title="src.digitaltwin.utils.LogLevel"><span class="pre">src.digitaltwin.utils.LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.DEBUG</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.main_river.main" title="Link to this definition"></a></dt>
+<dd><p>Read and store REC data in the database, fetch OSM waterways data, create a river network and its associated data,
+and generate the requested river model input for BG-Flood.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_gdf</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the selected polygon, i.e., the catchment area.</p></li>
+<li><p><strong>flow_length_mins</strong> (<em>int</em>) – Duration of the river flow in minutes.</p></li>
+<li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when flow is at its greatest (reaches maximum).</p></li>
+<li><p><strong>maf</strong> (<em>bool = True</em>) – Set to True to obtain MAF-based scenario data or False to obtain ARI-based scenario data.</p></li>
+<li><p><strong>ari</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
+Mandatory when ‘maf’ is set to False, and should be set to None when ‘maf’ is set to True.</p></li>
+<li><p><strong>bound</strong> (<em>BoundType = BoundType.MIDDLE</em>) – Set the type of bound (estimate) for the REC river inflow scenario data.
+Valid options include: ‘BoundType.LOWER’, ‘BoundType.MIDDLE’, or ‘BoundType.UPPER’.</p></li>
+<li><p><strong>log_level</strong> (<em>LogLevel = LogLevel.DEBUG</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+The available logging levels and their corresponding numeric values are:
+- LogLevel.CRITICAL (50)
+- LogLevel.ERROR (40)
+- LogLevel.WARNING (30)
+- LogLevel.INFO (20)
+- LogLevel.DEBUG (10)
+- LogLevel.NOTSET (0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.main_river.sample_polygon">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.main_river.</span></span><span class="sig-name descname"><span class="pre">sample_polygon</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.main_river.sample_polygon" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../hydrograph/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.river.hydrograph" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../osm_waterways/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.river.osm_waterways" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

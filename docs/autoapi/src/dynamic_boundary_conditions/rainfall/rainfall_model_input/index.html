@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.rainfall.rainfall_model_input &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.rainfall.rainfall_sites" href="../rainfall_sites/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum" href="../rainfall_enum/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/rainfall/rainfall_model_input/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input">
+<span id="src-dynamic-boundary-conditions-rainfall-rainfall-model-input"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input" title="Link to this heading"></a></h1>
+<p>Generate the requested rainfall model input for BG-Flood, which can be either
+spatially uniform rain input (‘rain_forcing.txt’ text file) or
+spatially varying rain input (‘rain_forcing.nc’ NetCDF file).</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites_voronoi_intersect_catchment</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites_coverage_in_catchment</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.mean_catchment_rainfall" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.mean_catchment_rainfall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_catchment_rainfall</span></code></a>(→ pandas.DataFrame)</p></td>
+<td><p>Calculate the mean catchment rainfall intensities (weighted average of gauge measurements)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spatial_uniform_rain_input</span></code></a>(→ None)</p></td>
+<td><p>Write the mean catchment rainfall intensities data (i.e., 'seconds' and 'rain_intensity_mmhr' columns)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.create_rain_data_cube" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.create_rain_data_cube"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_rain_data_cube</span></code></a>(→ xarray.Dataset)</p></td>
+<td><p>Create rainfall intensities data cube (xarray data) for the catchment area across all durations,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_varying_rain_input" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_varying_rain_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spatial_varying_rain_input</span></code></a>(→ None)</p></td>
+<td><p>Write the rainfall intensities data cube in NetCDF format (rain_forcing.nc).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.generate_rain_model_input" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.generate_rain_model_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_rain_model_input</span></code></a>(→ None)</p></td>
+<td><p>Generate the requested rainfall model input for BG-Flood, either spatially uniform rain input</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">sites_voronoi_intersect_catchment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment" title="Link to this definition"></a></dt>
+<dd><p>Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,
+i.e. return the overlapped areas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall site coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
+catchment area.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">sites_coverage_in_catchment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment" title="Link to this definition"></a></dt>
+<dd><p>Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,
+and calculate the size and percentage of the area covered by each rainfall site inside the catchment area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
+catchment area, with calculated size and percentage of area covered by each rainfall site.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.mean_catchment_rainfall">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">mean_catchment_rainfall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hyetograph_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_coverage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.mean_catchment_rainfall" title="Link to this definition"></a></dt>
+<dd><p>Calculate the mean catchment rainfall intensities (weighted average of gauge measurements)
+across all durations using the Thiessen polygon method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hyetograph_data</strong> (<em>pd.DataFrame</em>) – Hyetograph intensities data for sites within the catchment area.</p></li>
+<li><p><strong>sites_coverage</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+including the size and percentage of the catchment area covered by each site.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame containing the mean catchment rainfall intensities across all durations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">spatial_uniform_rain_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hyetograph_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_coverage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input" title="Link to this definition"></a></dt>
+<dd><p>Write the mean catchment rainfall intensities data (i.e., ‘seconds’ and ‘rain_intensity_mmhr’ columns)
+into a text file named ‘rain_forcing.txt’. This file can be used as spatially uniform rain input
+for the BG-Flood model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hyetograph_data</strong> (<em>pd.DataFrame</em>) – Hyetograph intensities data for sites within the catchment area.</p></li>
+<li><p><strong>sites_coverage</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+including the size and percentage of the catchment area covered by each site.</p></li>
+<li><p><strong>bg_flood_dir</strong> (<em>pathlib.Path</em>) – BG-Flood model directory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.create_rain_data_cube">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">create_rain_data_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hyetograph_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_coverage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.Dataset</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.create_rain_data_cube" title="Link to this definition"></a></dt>
+<dd><p>Create rainfall intensities data cube (xarray data) for the catchment area across all durations,
+i.e. convert rainfall intensities vector data into rasterized xarray data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hyetograph_data</strong> (<em>pd.DataFrame</em>) – Hyetograph intensities data for sites within the catchment area.</p></li>
+<li><p><strong>sites_coverage</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+including the size and percentage of the catchment area covered by each site.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rainfall intensities data cube in the form of xarray dataset.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_varying_rain_input">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">spatial_varying_rain_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hyetograph_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_coverage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_varying_rain_input" title="Link to this definition"></a></dt>
+<dd><p>Write the rainfall intensities data cube in NetCDF format (rain_forcing.nc).
+This file can be used as spatially varying rain input for the BG-Flood model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hyetograph_data</strong> (<em>pd.DataFrame</em>) – Hyetograph intensities data for sites within the catchment area.</p></li>
+<li><p><strong>sites_coverage</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+including the size and percentage of the catchment area covered by each site.</p></li>
+<li><p><strong>bg_flood_dir</strong> (<em>pathlib.Path</em>) – BG-Flood model directory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.generate_rain_model_input">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">generate_rain_model_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hyetograph_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_coverage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.generate_rain_model_input" title="Link to this definition"></a></dt>
+<dd><p>Generate the requested rainfall model input for BG-Flood, either spatially uniform rain input
+(‘rain_forcing.txt’ text file) or spatially varying rain input (‘rain_forcing.nc’ NetCDF file).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hyetograph_data</strong> (<em>pd.DataFrame</em>) – Hyetograph intensities data for sites within the catchment area.</p></li>
+<li><p><strong>sites_coverage</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
+including the size and percentage of the catchment area covered by each site.</p></li>
+<li><p><strong>bg_flood_dir</strong> (<em>pathlib.Path</em>) – BG-Flood model directory.</p></li>
+<li><p><strong>input_type</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType"><em>RainInputType</em></a>) – The type of rainfall model input to be generated. Valid options are ‘uniform’ or ‘varying’,
+representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../rainfall_enum/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../rainfall_sites/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.rainfall.rainfall_sites" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

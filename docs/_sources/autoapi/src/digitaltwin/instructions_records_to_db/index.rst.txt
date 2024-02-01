@@ -5,8 +5,8 @@
 
 .. autoapi-nested-parse::
 
-   This script processes 'instructions_run' records, validates URLs and instruction fields, and stores them in the
-   'geospatial_layers' table of the database.
+   This script processes 'static_vector_instructions' records, validates URLs and instruction fields, and stores them in
+   the 'geospatial_layers' table of the database.
 
 
 
@@ -75,7 +75,7 @@ Attributes
 
 .. py:function:: read_and_check_instructions_file() -> pandas.DataFrame
 
-   Read and check the instructions_run file, validating URLs and instruction fields.
+   Read and check the static_vector_instructions file, validating URLs and instruction fields.
 
    :returns: The processed instructions DataFrame.
    :rtype: pd.DataFrame
@@ -94,20 +94,20 @@ Attributes
 
 .. py:function:: get_non_existing_records(instructions_df: pandas.DataFrame, existing_layers_df: pandas.DataFrame) -> pandas.DataFrame
 
-   Get 'instructions_run' records that are not available in the database.
+   Get 'static_vector_instructions' records that are not available in the database.
 
-   :param instructions_df: Data frame containing the 'instructions_run' records.
+   :param instructions_df: Data frame containing the 'static_vector_instructions' records.
    :type instructions_df: pd.DataFrame
-   :param existing_layers_df: Data frame containing the existing 'instructions_run' records from the database.
+   :param existing_layers_df: Data frame containing the existing 'static_vector_instructions' records from the database.
    :type existing_layers_df: pd.DataFrame
 
-   :returns: Data frame containing the 'instructions_run' records that are not available in the database.
+   :returns: Data frame containing the 'static_vector_instructions' records that are not available in the database.
    :rtype: pd.DataFrame
 
 
 .. py:function:: store_instructions_records_to_db(engine: sqlalchemy.engine.Engine) -> None
 
-   Store 'instructions_run' records in the 'geospatial_layers' table in the database.
+   Store 'static_vector_instructions' records in the 'geospatial_layers' table in the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine

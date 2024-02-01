@@ -1,0 +1,21 @@
+:py:mod:`src.dynamic_boundary_conditions.tide`
+==============================================
+
+.. py:module:: src.dynamic_boundary_conditions.tide
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   main_tide_slr/index.rst
+   sea_level_rise_data/index.rst
+   tide_data_from_niwa/index.rst
+   tide_enum/index.rst
+   tide_query_location/index.rst
+   tide_slr_combine/index.rst
+   tide_slr_model_input/index.rst
+
+

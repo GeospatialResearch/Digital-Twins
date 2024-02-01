@@ -1,0 +1,134 @@
+:py:mod:`src.dynamic_boundary_conditions.tide.tide_query_location`
+==================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.tide.tide_query_location
+
+.. autoapi-nested-parse::
+
+   Get the locations used to fetch tide data from NIWA using the tide API.
+   sli229
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.tide_query_location.get_regional_council_clipped_from_db
+   src.dynamic_boundary_conditions.tide.tide_query_location.get_nz_coastline_from_db
+   src.dynamic_boundary_conditions.tide.tide_query_location.get_catchment_boundary_info
+   src.dynamic_boundary_conditions.tide.tide_query_location.get_catchment_boundary_lines
+   src.dynamic_boundary_conditions.tide.tide_query_location.get_catchment_boundary_centroids
+   src.dynamic_boundary_conditions.tide.tide_query_location.get_non_intersection_centroid_position
+   src.dynamic_boundary_conditions.tide.tide_query_location.get_tide_query_locations
+
+
+
+.. py:exception:: NoTideDataException
+
+
+   Bases: :py:obj:`Exception`
+
+   Exception raised when no tide data is to be used for the BG-Flood model.
+
+
+.. py:function:: get_regional_council_clipped_from_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Retrieve regional council clipped data from the database based on the catchment area.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the regional council clipped data for the catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_nz_coastline_from_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, distance_km: int = 1) -> geopandas.GeoDataFrame
+
+   Retrieve the New Zealand coastline data within a specified distance of the catchment area from the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param distance_km: Distance in kilometers used to buffer the catchment area for coastline retrieval. Default is 1 kilometer.
+   :type distance_km: int = 1
+
+   :returns: A GeoDataFrame containing the New Zealand coastline data within the specified distance of the catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_catchment_boundary_info(catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Get information about the boundary segments of the catchment area.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing information about the boundary segments of the catchment area.
+   :rtype: gpd.GeoDataFrame
+
+   :raises ValueError: If the position of a catchment boundary line cannot be identified.
+
+
+.. py:function:: get_catchment_boundary_lines(catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Get the boundary lines of the catchment area.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the boundary lines of the catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_catchment_boundary_centroids(catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Get the centroids of the boundary lines of the catchment area.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the centroids of the boundary lines of the catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_non_intersection_centroid_position(catchment_area: geopandas.GeoDataFrame, non_intersection_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Determine the positions of non-intersection centroid points relative to the boundary lines of the catchment area.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param non_intersection_area: A GeoDataFrame representing the non-intersection area.
+   :type non_intersection_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the positions of non-intersection centroid points relative to the catchment boundary
+             lines. The GeoDataFrame includes the 'position' column denoting the relative position and the 'geometry' column
+             representing the centroid points of the non-intersection areas.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_tide_query_locations(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, distance_km: int = 1) -> geopandas.GeoDataFrame
+
+   Get the locations used to fetch tide data from NIWA using the tide API.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param distance_km: Distance in kilometers used to buffer the catchment area for coastline retrieval. Default is 1 kilometer.
+   :type distance_km: int = 1
+
+   :returns: A GeoDataFrame containing the locations used to fetch tide data from NIWA using the tide API.
+   :rtype: gpd.GeoDataFrame
+
+   :raises NoTideDataException: If no coastline is found within the specified distance of the catchment area.
+
+

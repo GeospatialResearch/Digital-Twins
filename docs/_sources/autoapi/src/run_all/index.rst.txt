@@ -27,13 +27,37 @@ Attributes
 
 .. autoapisummary::
 
-   src.run_all.module_to_log_level
+   src.run_all.DEFAULT_MODULES_TO_PARAMETERS
+   src.run_all.sample_polygon
 
 
-.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, modules_with_log_levels: Dict[types.ModuleType, src.digitaltwin.utils.LogLevel]) -> None
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, modules_to_parameters: Dict[types.ModuleType, Dict[str, Union[str, int, float, bool, None, enum.Enum]]]) -> None
+
+   Runs each module in the Digital Twin using the selected polygon and the defined parameters for each module's
+   main function.
+
+   :param selected_polygon_gdf: A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+   :type selected_polygon_gdf: gpd.GeoDataFrame
+   :param modules_to_parameters: A dictionary that associates each module with the parameters necessary for its main function, including the
+                                 option to set the log level for each module's root logger.
+                                 The available logging levels and their corresponding numeric values are:
+                                 - LogLevel.CRITICAL (50)
+                                 - LogLevel.ERROR (40)
+                                 - LogLevel.WARNING (30)
+                                 - LogLevel.INFO (20)
+                                 - LogLevel.DEBUG (10)
+                                 - LogLevel.NOTSET (0)
+   :type modules_to_parameters: Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]
+
+   :returns: This function does not return any value.
+   :rtype: None
 
 
-.. py:data:: module_to_log_level
+.. py:data:: DEFAULT_MODULES_TO_PARAMETERS
+
+   
+
+.. py:data:: sample_polygon
 
    
 

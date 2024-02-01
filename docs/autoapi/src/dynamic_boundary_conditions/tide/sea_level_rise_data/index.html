@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.tide.sea_level_rise_data &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa" href="../tide_data_from_niwa/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.tide.main_tide_slr" href="../main_tide_slr/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide.sea_level_rise_data</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/tide/sea_level_rise_data/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.tide.sea_level_rise_data">
+<span id="src-dynamic-boundary-conditions-tide-sea-level-rise-data"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.tide.sea_level_rise_data" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide.sea_level_rise_data</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.tide.sea_level_rise_data" title="Link to this heading"></a></h1>
+<p>This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
+storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
+in the provided tide data.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.download_slr_data_files_from_takiwa" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data.download_slr_data_files_from_takiwa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_slr_data_files_from_takiwa</span></code></a>(→ None)</p></td>
+<td><p>Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.read_slr_data_from_files" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data.read_slr_data_from_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_slr_data_from_files</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.store_slr_data_to_db" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data.store_slr_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_slr_data_to_db</span></code></a>(→ None)</p></td>
+<td><p>Store sea level rise data to the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_closest_slr_data" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_closest_slr_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_closest_slr_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Retrieve the closest sea level rise data for a single query location from the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_slr_data_from_db" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_slr_data_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_slr_data_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Retrieve the closest sea level rise data from the database for all locations in the provided tide data.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.log" title="src.dynamic_boundary_conditions.tide.sea_level_rise_data.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.sea_level_rise_data.log">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.sea_level_rise_data.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.sea_level_rise_data.download_slr_data_files_from_takiwa">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.sea_level_rise_data.</span></span><span class="sig-name descname"><span class="pre">download_slr_data_files_from_takiwa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slr_data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.download_slr_data_files_from_takiwa" title="Link to this definition"></a></dt>
+<dd><p>Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slr_data_dir</strong> (<em>pathlib.Path</em>) – The directory where the downloaded sea level rise data files will be saved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.sea_level_rise_data.read_slr_data_from_files">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.sea_level_rise_data.</span></span><span class="sig-name descname"><span class="pre">read_slr_data_from_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slr_data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.read_slr_data_from_files" title="Link to this definition"></a></dt>
+<dd><p>Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slr_data_dir</strong> (<em>pathlib.Path</em>) – The directory containing the downloaded sea level rise data files.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the sea level rise data from the NZ Sea level rise datasets.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – If the sea level rise data directory does not exist or if there are no CSV files in the specified directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.sea_level_rise_data.store_slr_data_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.sea_level_rise_data.</span></span><span class="sig-name descname"><span class="pre">store_slr_data_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.store_slr_data_to_db" title="Link to this definition"></a></dt>
+<dd><p>Store sea level rise data to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_closest_slr_data">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.sea_level_rise_data.</span></span><span class="sig-name descname"><span class="pre">get_closest_slr_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_query_loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_closest_slr_data" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the closest sea level rise data for a single query location from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>single_query_loc</strong> (<em>pd.Series</em>) – Pandas Series containing the location coordinate and additional information used for retrieval.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the closest sea level rise data for the query location from the database.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_slr_data_from_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.sea_level_rise_data.</span></span><span class="sig-name descname"><span class="pre">get_slr_data_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tide_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_slr_data_from_db" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the closest sea level rise data from the database for all locations in the provided tide data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>tide_data</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing tide data with added time information (seconds, minutes, hours) and location details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the closest sea level rise data for all locations in the tide data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../main_tide_slr/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.tide.main_tide_slr" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tide_data_from_niwa/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

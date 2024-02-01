@@ -19,7 +19,8 @@ Classes
 
    src.digitaltwin.tables.GeospatialLayers
    src.digitaltwin.tables.UserLogInfo
-   src.digitaltwin.tables.HydroDEM
+   src.digitaltwin.tables.RiverNetworkExclusions
+   src.digitaltwin.tables.RiverNetwork
    src.digitaltwin.tables.BGFloodModelOutput
 
 
@@ -88,13 +89,13 @@ Attributes
 
       Name of the unique column in the table.
 
-      :type: str, optional
+      :type: Optional[str]
 
    .. attribute:: coverage_area
 
-      Coverage area of the geospatial data. It can be either the whole country or NULL.
+      Coverage area of the geospatial data, e.g. 'New Zealand'.
 
-      :type: str, optional
+      :type: Optional[str]
 
    .. attribute:: url
 
@@ -135,6 +136,11 @@ Attributes
 
       
 
+   .. py:attribute:: __table_args__
+      :value: ()
+
+      
+
 
 .. py:class:: UserLogInfo
 
@@ -159,7 +165,7 @@ Attributes
 
       A list of tables (geospatial layers) associated with the log entry.
 
-      :type: List[str]
+      :type: Dict[str]
 
    .. attribute:: created_at
 
@@ -195,12 +201,12 @@ Attributes
       
 
 
-.. py:class:: HydroDEM
+.. py:class:: RiverNetworkExclusions
 
 
    Bases: :py:obj:`Base`
 
-   Class representing the 'hydrological_dem' table.
+   Class representing the 'rec_network_exclusions' table.
 
    .. attribute:: __tablename__
 
@@ -208,21 +214,85 @@ Attributes
 
       :type: str
 
-   .. attribute:: unique_id
+   .. attribute:: rec_network_id
 
-      Unique identifier for each entry (primary key).
+      An identifier for the river network associated with each new run.
 
       :type: int
 
-   .. attribute:: file_name
+   .. attribute:: objectid
 
-      Name of the hydrological DEM file.
+      An identifier for the REC river object matching from the 'rec_data' table.
+
+      :type: int
+
+   .. attribute:: exclusion_cause
+
+      Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
 
       :type: str
 
-   .. attribute:: file_path
+   .. attribute:: geometry
 
-      Path to the hydrological DEM file.
+      Geometric representation of the excluded REC river features.
+
+      :type: LineString
+
+   .. py:attribute:: __tablename__
+      :value: 'rec_network_exclusions'
+
+      
+
+   .. py:attribute:: rec_network_id
+
+      
+
+   .. py:attribute:: objectid
+
+      
+
+   .. py:attribute:: exclusion_cause
+
+      
+
+   .. py:attribute:: geometry
+
+      
+
+   .. py:attribute:: __table_args__
+      :value: ()
+
+      
+
+
+.. py:class:: RiverNetwork
+
+
+   Bases: :py:obj:`Base`
+
+   Class representing the 'rec_network' table.
+
+   .. attribute:: __tablename__
+
+      Name of the database table.
+
+      :type: str
+
+   .. attribute:: rec_network_id
+
+      An identifier for the river network associated with each new run (primary key).
+
+      :type: int
+
+   .. attribute:: network_path
+
+      Path to the REC river network file.
+
+      :type: str
+
+   .. attribute:: network_data_path
+
+      Path to the REC river network data file for the AOI.
 
       :type: str
 
@@ -236,22 +306,22 @@ Attributes
 
       Geometric representation of the catchment area coverage.
 
-      :type: Geometry
+      :type: Polygon
 
    .. py:attribute:: __tablename__
-      :value: 'hydrological_dem'
+      :value: 'rec_network'
 
       
 
-   .. py:attribute:: unique_id
+   .. py:attribute:: rec_network_id
 
       
 
-   .. py:attribute:: file_name
+   .. py:attribute:: network_path
 
       
 
-   .. py:attribute:: file_path
+   .. py:attribute:: network_data_path
 
       
 
@@ -305,7 +375,7 @@ Attributes
 
       Geometric representation of the catchment area coverage.
 
-      :type: Geometry
+      :type: Polygon
 
    .. py:attribute:: __tablename__
       :value: 'bg_flood_model_output'
@@ -355,7 +425,7 @@ Attributes
    :param table_name: The name of the table to check for existence.
    :type table_name: str
    :param schema: The name of the schema where the table resides. Defaults to "public".
-   :type schema: str, optional
+   :type schema: str = "public"
 
    :returns: True if the table exists, False otherwise.
    :rtype: bool

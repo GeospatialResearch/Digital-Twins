@@ -1,0 +1,196 @@
+:py:mod:`src.dynamic_boundary_conditions.rainfall.hyetograph`
+=============================================================
+
+.. py:module:: src.dynamic_boundary_conditions.rainfall.hyetograph
+
+.. autoapi-nested-parse::
+
+   Get hyetograph data and generate interactive hyetograph plots for sites located within the catchment area.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.hyetograph.get_transposed_data
+   src.dynamic_boundary_conditions.rainfall.hyetograph.get_interpolated_data
+   src.dynamic_boundary_conditions.rainfall.hyetograph.get_interp_incremental_data
+   src.dynamic_boundary_conditions.rainfall.hyetograph.get_storm_length_increment_data
+   src.dynamic_boundary_conditions.rainfall.hyetograph.add_time_information
+   src.dynamic_boundary_conditions.rainfall.hyetograph.transform_data_for_selected_method
+   src.dynamic_boundary_conditions.rainfall.hyetograph.hyetograph_depth_to_intensity
+   src.dynamic_boundary_conditions.rainfall.hyetograph.get_hyetograph_data
+   src.dynamic_boundary_conditions.rainfall.hyetograph.hyetograph_data_wide_to_long
+   src.dynamic_boundary_conditions.rainfall.hyetograph.hyetograph
+
+
+
+.. py:function:: get_transposed_data(rain_depth_in_catchment: pandas.DataFrame) -> pandas.DataFrame
+
+   Clean and transpose the retrieved scenario data from the database for sites within the catchment area and
+   return it in transposed Pandas DataFrame format.
+
+   :param rain_depth_in_catchment: Rainfall depths for sites within the catchment area for a specified scenario retrieved from the database.
+   :type rain_depth_in_catchment: pd.DataFrame
+
+   :returns: A DataFrame containing the cleaned and transposed scenario data.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: get_interpolated_data(transposed_catchment_data: pandas.DataFrame, increment_mins: int, interp_method: str) -> pandas.DataFrame
+
+   Perform temporal interpolation on the transposed scenario data for sites within the catchment area and
+   return it in Pandas DataFrame format.
+
+   :param transposed_catchment_data: Transposed scenario data retrieved from the database.
+   :type transposed_catchment_data: pd.DataFrame
+   :param increment_mins: Time interval in minutes.
+   :type increment_mins: int
+   :param interp_method: Temporal interpolation method to be used. Refer to 'scipy.interpolate.interp1d()' for available methods.
+                         One of 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
+   :type interp_method: str
+
+   :returns: A DataFrame containing the interpolated scenario data.
+   :rtype: pd.DataFrame
+
+   :raises ValueError: - If the specified 'increment_mins' is out of range.
+       - If the specified 'interp_method' is not supported.
+
+
+.. py:function:: get_interp_incremental_data(interp_catchment_data: pandas.DataFrame) -> pandas.DataFrame
+
+   Get the incremental rainfall depths (difference between current and preceding cumulative rainfall)
+   for sites within the catchment area and return it in Pandas DataFrame format.
+
+   :param interp_catchment_data: Interpolated scenario data for sites within the catchment area.
+   :type interp_catchment_data: pd.DataFrame
+
+   :returns: A DataFrame containing the incremental rainfall depths.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: get_storm_length_increment_data(interp_increment_data: pandas.DataFrame, storm_length_mins: int) -> pandas.DataFrame
+
+   Get the incremental rainfall depths for sites within the catchment area for a specific storm duration.
+
+   :param interp_increment_data: Incremental rainfall depths for sites within the catchment area.
+   :type interp_increment_data: pd.DataFrame
+   :param storm_length_mins: Storm duration in minutes.
+   :type storm_length_mins: int
+
+   :returns: Incremental rainfall depths for sites within the catchment area for the specified storm duration.
+   :rtype: pd.DataFrame
+
+   :raises ValueError: If the specified 'storm_length_mins' is less than the minimum storm duration available in the data.
+
+
+.. py:function:: add_time_information(site_data: pandas.DataFrame, storm_length_mins: int, time_to_peak_mins: Union[int, float], increment_mins: int, hyeto_method: src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod) -> pandas.DataFrame
+
+   Add time information (seconds, minutes, and hours column) to the hyetograph data based on the
+   selected hyetograph method.
+
+   :param site_data: Hyetograph data for a rainfall site or gauge.
+   :type site_data: pd.DataFrame
+   :param storm_length_mins: Storm duration in minutes.
+   :type storm_length_mins: int
+   :param time_to_peak_mins: The time in minutes when rainfall is at its greatest (reaches maximum).
+   :type time_to_peak_mins: Union[int, float]
+   :param increment_mins: Time interval in minutes.
+   :type increment_mins: int
+   :param hyeto_method: Hyetograph method to be used.
+   :type hyeto_method: HyetoMethod
+
+   :returns: Hyetograph data with added time information.
+   :rtype: pd.DataFrame
+
+   :raises ValueError: If the specified 'time_to_peak_mins' is less than half of the storm duration.
+
+
+.. py:function:: transform_data_for_selected_method(interp_increment_data: pandas.DataFrame, storm_length_mins: int, time_to_peak_mins: Union[int, float], increment_mins: int, hyeto_method: src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod) -> pandas.DataFrame
+
+   Transform the storm length incremental rainfall depths for sites within the catchment area based on
+   the selected hyetograph method and return hyetograph depths data for all sites within the catchment area
+   in Pandas DataFrame format.
+
+   :param interp_increment_data: Incremental rainfall depths for sites within the catchment area.
+   :type interp_increment_data: pd.DataFrame
+   :param storm_length_mins: Storm duration in minutes.
+   :type storm_length_mins: int
+   :param time_to_peak_mins: The time in minutes when rainfall is at its greatest (reaches maximum).
+   :type time_to_peak_mins: Union[int, float]
+   :param increment_mins: Time interval in minutes.
+   :type increment_mins: int
+   :param hyeto_method: Hyetograph method to be used.
+   :type hyeto_method: HyetoMethod
+
+   :returns: Hyetograph depths data for all sites within the catchment area.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: hyetograph_depth_to_intensity(hyetograph_depth: pandas.DataFrame, increment_mins: int, hyeto_method: src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod) -> pandas.DataFrame
+
+   Convert hyetograph depths data to hyetograph intensities data for all sites within the catchment area.
+
+   :param hyetograph_depth: Hyetograph depths data for sites within the catchment area.
+   :type hyetograph_depth: pd.DataFrame
+   :param increment_mins: Time interval in minutes.
+   :type increment_mins: int
+   :param hyeto_method: Hyetograph method to be used.
+   :type hyeto_method: HyetoMethod
+
+   :returns: Hyetograph intensities data for all sites within the catchment area.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: get_hyetograph_data(rain_depth_in_catchment: pandas.DataFrame, storm_length_mins: int, time_to_peak_mins: Union[int, float], increment_mins: int, interp_method: str, hyeto_method: src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod) -> pandas.DataFrame
+
+   Get hyetograph intensities data for all sites within the catchment area and return it in Pandas DataFrame format.
+
+   :param rain_depth_in_catchment: Rainfall depths for sites within the catchment area for a specified scenario retrieved from the database.
+   :type rain_depth_in_catchment: pd.DataFrame
+   :param storm_length_mins: Storm duration in minutes.
+   :type storm_length_mins: int
+   :param time_to_peak_mins: The time in minutes when rainfall is at its greatest (reaches maximum).
+   :type time_to_peak_mins: Union[int, float]
+   :param increment_mins: Time interval in minutes.
+   :type increment_mins: int
+   :param interp_method: Temporal interpolation method to be used. Refer to 'scipy.interpolate.interp1d()' for available methods.
+                         One of 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
+   :type interp_method: str
+   :param hyeto_method: Hyetograph method to be used.
+   :type hyeto_method: HyetoMethod
+
+   :returns: Hyetograph intensities data for all sites within the catchment area.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: hyetograph_data_wide_to_long(hyetograph_data: pandas.DataFrame) -> pandas.DataFrame
+
+   Transform hyetograph intensities data for all sites within the catchment area from wide format to long format.
+
+   :param hyetograph_data: Hyetograph intensities data for sites within the catchment area.
+   :type hyetograph_data: pd.DataFrame
+
+   :returns: Hyetograph intensities data in long format.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: hyetograph(hyetograph_data: pandas.DataFrame, ari: float) -> None
+
+   Create interactive individual hyetograph plots for sites within the catchment area.
+
+   :param hyetograph_data: Hyetograph intensities data for sites within the catchment area.
+   :type hyetograph_data: pd.DataFrame
+   :param ari: Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+   :type ari: float
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
