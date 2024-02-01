@@ -1,0 +1,104 @@
+---
+swagger: '2.0'
+info:
+  title: Flood Resilience Digital Twin (FReDT)
+  version: 1.0.0
+paths:
+  "/":
+    get:
+      description: Returns message showing app is up
+      responses:
+        '200':
+          description: OK - Backend is receiving requests
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: |-
+                  Backend is receiving requests.
+                  GET /health-check to check if celery workers active.
+                  GET /swagger to get API documentation.
+  "/health-check":
+    get:
+      description: Checks that the API service can access the celery workers
+      responses:
+        '200':
+          description: OK - Healthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Healthy"
+        '500':
+          $ref: '#/components/responses/NoCeleryWorkers'
+
+  "/models/generate":
+    post:
+      #todo
+  "/models/{model_id}":
+    get:
+      #todo
+  "/models/{model_id}/buildings":
+    get:
+      #todo
+
+  "/tasks/{task_id}":
+    get:
+      #todo
+    delete:
+      #todo
+  "/tasks/{task_id}/model/depth":
+    get:
+      #todo
+
+  "/datasets/update":
+    post:
+      description: |-
+        Updates LiDAR data sources to the most recent.
+        Web-scrapes OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
+        Takes a long time to run but needs to be run periodically so that the datasets are up to date.
+      response:
+        '202 - Accepted':
+          description: Accepted, the task is started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskId'
+
+
+components:
+  responses:
+    NoCeleryWorkers:
+      description: Internal Server Error - Celery Workers Not Active
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: "Celery workers not active"
+    TaskId:
+      description: Accepted, the task is started
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TaskId'
+
+  schemas:
+    TaskId:
+      type: object
+      properties:
+        taskId:
+          type: string
+          description: The assigned celery task id to track status.
+    Task:
+      type: object
+      properties:
+        taskId:
+          type: string
+          description: The assigned celery task id to track status.
+        taskStatus:
+          type: string
+          description: The celery.State of the task. Eg. 'SUCCESS', 'PENDING', 'FAILURE
+        taskValue:
+          description: Dependent on which task is being checked.
+
+
