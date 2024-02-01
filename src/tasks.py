@@ -315,7 +315,7 @@ def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> DepthTi
     with xarray.open_dataset(model_file_path) as ds:
         transformer = Transformer.from_crs(4326, 2193)
         y, x = transformer.transform(lat, lng)
-        da = ds["hmax_P0"].sel(x=x, y=y, method="nearest")
+        da = ds["hmax_P0"].sel(xx_P0=x, yy_P0=y, method="nearest")
 
     depths = da.values.tolist()
     times = da.coords['time'].values.tolist()
