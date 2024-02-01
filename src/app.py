@@ -47,6 +47,20 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     return decorated_function
 
 
+@app.route('/')
+def index() -> Response:
+    """
+    Ping this endpoint to check that the flask app is running
+    Supported methods: GET
+
+    Returns
+    -------
+    Response
+        The HTTP Response. Expect OK if health check is successful
+    """
+    return Response("Backend is receiving requests. GET /health-check to check if celery workers active.", OK)
+
+
 @app.route('/health-check')
 @check_celery_alive
 def health_check() -> Response:
