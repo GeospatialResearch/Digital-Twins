@@ -167,6 +167,23 @@ class BGFloodModelOutput(Base):
 
 
 class BuildingFloodStatus(Base):
+    """
+    Class representing the 'building_flood_status' table.
+    Represents if a building is flooded for a given flood model output
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each entry (primary key).
+    building_outline_id : int
+        Foreign key building outline id matching from nz_building_outlines table
+    is_flooded : bool
+        If the building is flooded or not
+    flood_model_id: int.
+        Foreign key mathing the unique_id from bg_flood_model_output table
+    """
     __tablename__ = "building_flood_status"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     building_outline_id = Column(Integer, comment="The building outline id matching from nz_building_outlines table")

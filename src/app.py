@@ -34,8 +34,8 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
 
     Returns
     -------
-    Response
-        INTERNAL_SERVER_ERROR if the celery workers are down, otherwise continue to function f
+    Callable[..., Response]
+        Response is INTERNAL_SERVER_ERROR if the celery workers are down, otherwise continue to function f
     """
 
     @wraps(f)
