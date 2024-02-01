@@ -1,0 +1,87 @@
+:py:mod:`src.dynamic_boundary_conditions.rainfall.main_rainfall`
+================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.rainfall.main_rainfall
+
+.. autoapi-nested-parse::
+
+   Main rainfall script used to fetch and store rainfall data in the database, and to generate the requested
+   rainfall model input for BG-Flood, etc.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs
+   src.dynamic_boundary_conditions.rainfall.main_rainfall.main
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon
+
+
+.. py:function:: remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None
+
+   Remove existing rain input files from the specified directory.
+
+   :param bg_flood_dir: BG-Flood model directory containing the rain input files.
+   :type bg_flood_dir: pathlib.Path
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, rcp: Optional[float], time_period: Optional[str], ari: float, storm_length_mins: int, time_to_peak_mins: Union[int, float], increment_mins: int, hyeto_method: src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod, input_type: src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
+
+   Fetch and store rainfall data in the database, and generate the requested rainfall model input for BG-Flood.
+
+   :param selected_polygon_gdf: A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+   :type selected_polygon_gdf: gpd.GeoDataFrame
+   :param rcp: Representative Concentration Pathway (RCP) value. Valid options are 2.6, 4.5, 6.0, 8.5, or None
+               for historical data.
+   :type rcp: Optional[float]
+   :param time_period: Future time period. Valid options are "2031-2050", "2081-2100", or None for historical data.
+   :type time_period: Optional[str]
+   :param ari: Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
+   :type ari: float
+   :param storm_length_mins: Storm duration in minutes.
+   :type storm_length_mins: int
+   :param time_to_peak_mins: The time in minutes when rainfall is at its greatest (reaches maximum).
+   :type time_to_peak_mins: Union[int, float]
+   :param increment_mins: Time interval in minutes.
+   :type increment_mins: int
+   :param hyeto_method: Hyetograph method to be used. Valid options are HyetoMethod.ALT_BLOCK or HyetoMethod.CHICAGO.
+   :type hyeto_method: HyetoMethod
+   :param input_type: The type of rainfall model input to be generated. Valid options are 'uniform' or 'varying',
+                      representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
+   :type input_type: RainInputType
+   :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+                     The available logging levels and their corresponding numeric values are:
+                     - LogLevel.CRITICAL (50)
+                     - LogLevel.ERROR (40)
+                     - LogLevel.WARNING (30)
+                     - LogLevel.INFO (20)
+                     - LogLevel.DEBUG (10)
+                     - LogLevel.NOTSET (0)
+   :type log_level: LogLevel = LogLevel.DEBUG
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:data:: sample_polygon
+
+   
+

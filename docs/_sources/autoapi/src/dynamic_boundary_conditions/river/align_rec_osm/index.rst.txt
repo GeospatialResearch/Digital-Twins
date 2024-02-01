@@ -1,0 +1,209 @@
+:py:mod:`src.dynamic_boundary_conditions.river.align_rec_osm`
+=============================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river.align_rec_osm
+
+.. autoapi-nested-parse::
+
+   This script handles the task of obtaining data for REC river inflow segments whose boundary points align with the
+   boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.align_rec_osm.get_rec_network_data_on_bbox
+   src.dynamic_boundary_conditions.river.align_rec_osm.get_single_intersect_inflows
+   src.dynamic_boundary_conditions.river.align_rec_osm.get_exploded_multi_intersect
+   src.dynamic_boundary_conditions.river.align_rec_osm.determine_multi_intersect_inflow_index
+   src.dynamic_boundary_conditions.river.align_rec_osm.categorize_exploded_multi_intersect
+   src.dynamic_boundary_conditions.river.align_rec_osm.get_multi_intersect_inflows
+   src.dynamic_boundary_conditions.river.align_rec_osm.get_rec_inflows_on_bbox
+   src.dynamic_boundary_conditions.river.align_rec_osm.get_osm_waterways_on_bbox
+   src.dynamic_boundary_conditions.river.align_rec_osm.align_rec_with_osm
+   src.dynamic_boundary_conditions.river.align_rec_osm.get_rec_inflows_aligned_to_osm
+
+
+
+.. py:exception:: NoRiverDataException
+
+
+   Bases: :py:obj:`Exception`
+
+   Exception raised when no river data is to be used for the BG-Flood model.
+
+
+.. py:function:: get_rec_network_data_on_bbox(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, rec_network_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Obtain REC river network data that intersects with the catchment area boundary, along with the corresponding
+   intersection points on the boundary.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec_network_data: A GeoDataFrame containing the REC river network data.
+   :type rec_network_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing REC river network data that intersects with the catchment area boundary,
+             along with the corresponding intersection points on the boundary.
+   :rtype: gpd.GeoDataFrame
+
+   :raises NoRiverDataException: If no REC river segment is found crossing the catchment boundary.
+
+
+.. py:function:: get_single_intersect_inflows(rec_on_bbox: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Identifies REC river segments that intersect the catchment boundary once, then retrieves the segments
+   that are inflows into the catchment area, along with their corresponding inflow boundary points.
+
+   :param rec_on_bbox: A GeoDataFrame containing REC river network data that intersects with the catchment area boundary,
+                       along with the corresponding intersection points on the boundary.
+   :type rec_on_bbox: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the REC river segments that intersect the catchment boundary once and
+             are inflows into the catchment area, along with their corresponding inflow boundary points.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_exploded_multi_intersect(rec_on_bbox: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Identifies REC river segments that intersect the catchment boundary multiple times,
+   transforms MultiPoint geometries into individual Point geometries (boundary points),
+   calculates the distance along the river segment for each boundary point, and
+   adds a new column containing boundary points sorted by their distance along the river.
+
+   :param rec_on_bbox: A GeoDataFrame containing REC river network data that intersects with the catchment area boundary,
+                       along with the corresponding intersection points on the boundary.
+   :type rec_on_bbox: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the REC river segments that intersect the catchment boundary multiple times,
+             along with the corresponding intersection points on the boundary, sorted by distance along the river.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: determine_multi_intersect_inflow_index(multi_intersect_row: pandas.Series) -> int
+
+   Determines the index that represents the position of the first inflow boundary point along a REC river segment.
+
+   :param multi_intersect_row: A REC river segment that intersects the catchment boundary multiple times, along with the
+                               corresponding intersection points on the boundary, sorted by distance along the river.
+   :type multi_intersect_row: pd.Series
+
+   :returns: An integer that represents the position of the first inflow boundary point along a REC river segment.
+   :rtype: int
+
+   :raises ValueError: If the index that represents the position of the first inflow boundary point along a REC river segment
+       cannot be determined.
+
+
+.. py:function:: categorize_exploded_multi_intersect(multi_intersect: geopandas.GeoDataFrame) -> Dict[int, Dict[str, List[shapely.geometry.Point]]]
+
+   Categorizes boundary points of REC river segments that intersect the catchment boundary multiple times into
+   'inflow' and 'outflow' based on their sequential positions along the river segment etc.
+
+   :param multi_intersect: A GeoDataFrame containing the REC river segments that intersect the catchment boundary multiple times,
+                           along with the corresponding intersection points on the boundary, sorted by distance along the river.
+   :type multi_intersect: gpd.GeoDataFrame
+
+   :returns: A dictionary where the keys represent the 'objectid' values of REC river segments, and the values are
+             dictionaries. Each of these dictionaries contains two lists: 'inflow' and 'outflow,' which respectively
+             represent the boundary points where water flows into and out of the catchment area.
+   :rtype: Dict[int, Dict[str, List[Point]]]
+
+
+.. py:function:: get_multi_intersect_inflows(rec_on_bbox: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Identifies REC river segments that intersect the catchment boundary multiple times, then retrieves the segments
+   that are inflows into the catchment area, along with their corresponding inflow boundary points.
+
+   :param rec_on_bbox: A GeoDataFrame containing REC river network data that intersects with the catchment area boundary,
+                       along with the corresponding intersection points on the boundary.
+   :type rec_on_bbox: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the REC river segments that intersect the catchment boundary multiple times and
+             are inflows into the catchment area, along with their corresponding inflow boundary points.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_rec_inflows_on_bbox(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, rec_network_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Obtain REC river segments that are inflows into the specified catchment area, along with their corresponding
+   inflow boundary points.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec_network_data: A GeoDataFrame containing the REC river network data.
+   :type rec_network_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing REC river segments that are inflows into the catchment area, along with their
+             corresponding inflow boundary points.
+   :rtype: gpd.GeoDataFrame
+
+   :raises NoRiverDataException: If no REC river segment is found crossing the catchment boundary.
+
+
+.. py:function:: get_osm_waterways_on_bbox(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment area boundary,
+   along with the corresponding intersection points on the boundary.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing OpenStreetMap (OSM) waterway data that intersects with the catchment boundary,
+             along with the corresponding intersection points on the boundary.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: align_rec_with_osm(rec_inflows_on_bbox: geopandas.GeoDataFrame, osm_waterways_on_bbox: geopandas.GeoDataFrame, distance_m: int = 300) -> geopandas.GeoDataFrame
+
+   Aligns the boundary points of REC river inflow segments with the boundary points of OpenStreetMap (OSM) waterways
+   within a specified distance threshold.
+
+   :param rec_inflows_on_bbox: A GeoDataFrame containing REC river network segments where water flows into the catchment area,
+                               along with their corresponding inflow boundary points.
+   :type rec_inflows_on_bbox: gpd.GeoDataFrame
+   :param osm_waterways_on_bbox: A GeoDataFrame containing OpenStreetMap (OSM) waterway data that intersects with the catchment boundary,
+                                 along with the corresponding intersection points on the boundary.
+   :type osm_waterways_on_bbox: gpd.GeoDataFrame
+   :param distance_m: Distance threshold in meters for spatial proximity matching. The default value is 300 meters.
+   :type distance_m: int = 300
+
+   :returns: A GeoDataFrame containing the boundary points of REC river inflow segments aligned with the boundary points of
+             OpenStreetMap (OSM) waterways within a specified distance threshold.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_rec_inflows_aligned_to_osm(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, rec_network_data: geopandas.GeoDataFrame, distance_m: int = 300) -> geopandas.GeoDataFrame
+
+   Obtain data for REC river inflow segments whose boundary points align with the boundary points of
+   OpenStreetMap (OSM) waterways within a specified distance threshold.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec_network_data: A GeoDataFrame containing the REC river network data.
+   :type rec_network_data: gpd.GeoDataFrame
+   :param distance_m: Distance threshold in meters for spatial proximity matching. The default value is 300 meters.
+   :type distance_m: int = 300
+
+   :returns: A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
+             boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold.
+   :rtype: gpd.GeoDataFrame
+
+   :raises NoRiverDataException: If no REC river segment is found crossing the catchment boundary.
+
+

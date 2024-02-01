@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.config &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <title>src.config &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -33,7 +35,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Digital Twin for Flood Resilience in Aotearoa New Zealand
+            Flood Resilience Digital Twin (FReDT)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -68,7 +70,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+          <a href="../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -122,17 +124,15 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.config.get_env_variable">
 <span class="sig-prename descclassname"><span class="pre">src.config.</span></span><span class="sig-name descname"><span class="pre">get_env_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#src.config.get_env_variable" title="Link to this definition"></a></dt>
-<dd><blockquote>
-<div><p>Reads an environment variable, with settings to allow defaults, empty values, and type casting
+<dd><p>Reads an environment variable, with settings to allow defaults, empty values, and type casting
 To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable(“EXAMPLE_ENV_VAR”, cast_to=bool)</p>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>var_name</strong> (<em>str</em>) – The name of the environment variable to retrieve.</p></li>
 <li><p><strong>default</strong> (<em>T = None</em>) – Default return value if the environment variable does not exist. Doesn’t override empty string vars.</p></li>
 <li><p><strong>allow_empty</strong> (<em>bool</em>) – If False then a KeyError will be raised if the environment variable is empty.</p></li>
-<li><p><strong>cast_to</strong> (<em>Callable</em><em>[</em><em>[</em><em>str</em><em>]</em><em>, </em><em>T</em><em>]</em>) – The type to cast to eg. str, int, or bool</p></li>
+<li><p><strong>cast_to</strong> (<em>Callable</em><em>[</em><em>[</em><em>str</em><em>]</em><em>, </em><em>T</em><em>]</em>) – The type to cast to e.g. str, int, or bool</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

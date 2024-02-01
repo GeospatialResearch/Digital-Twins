@@ -1,0 +1,136 @@
+:py:mod:`src.dynamic_boundary_conditions.tide.tide_slr_combine`
+===============================================================
+
+.. py:module:: src.dynamic_boundary_conditions.tide.tide_slr_combine
+
+.. autoapi-nested-parse::
+
+   Generates combined tide and sea level rise (SLR) data for a specific projection year, taking into account the provided
+   confidence level, SSP scenario, inclusion of Vertical Land Motion (VLM), percentile, and more.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.tide_slr_combine.split_slr_measurementname_column
+   src.dynamic_boundary_conditions.tide.tide_slr_combine.get_slr_scenario_data
+   src.dynamic_boundary_conditions.tide.tide_slr_combine.get_interpolated_slr_scenario_data
+   src.dynamic_boundary_conditions.tide.tide_slr_combine.add_slr_to_tide
+   src.dynamic_boundary_conditions.tide.tide_slr_combine.get_combined_tide_slr_data
+
+
+
+.. py:function:: split_slr_measurementname_column(slr_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Split the 'measurementname' column in the sea level rise data to extract and add additional information.
+
+   :param slr_data: A GeoDataFrame containing the sea level rise data.
+   :type slr_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the sea level rise data with additional columns for extracted information:
+             'confidence_level', 'ssp_scenario', and 'add_vlm'.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_slr_scenario_data(slr_data: geopandas.GeoDataFrame, confidence_level: str, ssp_scenario: str, add_vlm: bool, percentile: int) -> geopandas.GeoDataFrame
+
+   Get sea level rise scenario data based on the specified confidence_level, ssp_scenario, add_vlm, and percentile.
+
+   :param slr_data: A GeoDataFrame containing the sea level rise data.
+   :type slr_data: gpd.GeoDataFrame
+   :param confidence_level: The desired confidence level for the scenario data. Valid values are 'low' or 'medium'.
+   :type confidence_level: str
+   :param ssp_scenario: The desired Shared Socioeconomic Pathways (SSP) scenario for the scenario data.
+                        Valid options for both low and medium confidence are: 'SSP1-2.6', 'SSP2-4.5', or 'SSP5-8.5'.
+                        Additional options for medium confidence are: 'SSP1-1.9' or 'SSP3-7.0'.
+   :type ssp_scenario: str
+   :param add_vlm: Indicates whether to include Vertical Land Motion (VLM) in the scenario data.
+                   Set to True if VLM should be included, False otherwise.
+   :type add_vlm: bool
+   :param percentile: The desired percentile for the scenario data. Valid values are 17, 50, or 83.
+   :type percentile: int
+
+   :returns: A GeoDataFrame containing the sea level rise scenario data based on the specified
+             confidence_level, ssp_scenario, add_vlm, and percentile.
+   :rtype: gpd.GeoDataFrame
+
+   :raises ValueError: - If an invalid 'confidence_level' value is provided.
+       - If an invalid 'ssp_scenario' value is provided.
+       - If an invalid 'add_vlm' value is provided.
+       - If an invalid 'percentile' value is provided.
+
+
+.. py:function:: get_interpolated_slr_scenario_data(slr_scenario_data: geopandas.GeoDataFrame, increment_year: int = 1, interp_method: str = 'linear') -> geopandas.GeoDataFrame
+
+   Interpolates sea level rise scenario data based on the specified year interval and interpolation method.
+
+   :param slr_scenario_data: A GeoDataFrame containing the sea level rise scenario data.
+   :type slr_scenario_data: gpd.GeoDataFrame
+   :param increment_year: The year interval used for interpolation. Defaults to 1 year.
+   :type increment_year: int = 1
+   :param interp_method: Temporal interpolation method to be used. Defaults to 'linear'.
+                         Available methods: 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous',
+                         'next'. Refer to 'scipy.interpolate.interp1d()' for more details.
+   :type interp_method: str = "linear"
+
+   :returns: A GeoDataFrame containing the interpolated sea level rise scenario data.
+   :rtype: gpd.GeoDataFrame
+
+   :raises ValueError: - If the specified 'increment_year' is out of range.
+       - If the specified 'interp_method' is not supported.
+
+
+.. py:function:: add_slr_to_tide(tide_data: geopandas.GeoDataFrame, slr_interp_scenario: geopandas.GeoDataFrame, proj_year: int) -> pandas.DataFrame
+
+   Adds sea level rise (SLR) data to the tide data for a specific projection year and
+   returns the combined tide and sea level rise value.
+
+   :param tide_data: A GeoDataFrame containing tide data with added time information (seconds, minutes, hours) and location details.
+   :type tide_data: gpd.GeoDataFrame
+   :param slr_interp_scenario: A GeoDataFrame containing the interpolated sea level rise scenario data.
+   :type slr_interp_scenario: gpd.GeoDataFrame
+   :param proj_year: The projection year for which sea level rise data should be added to the tide data.
+   :type proj_year: int
+
+   :returns: A DataFrame that contains the combined tide and sea level rise data for the specified projection year.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: get_combined_tide_slr_data(tide_data: geopandas.GeoDataFrame, slr_data: geopandas.GeoDataFrame, proj_year: int, confidence_level: str, ssp_scenario: str, add_vlm: bool, percentile: int, increment_year: int = 1, interp_method: str = 'linear') -> pandas.DataFrame
+
+   Generates the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
+   confidence_level, ssp_scenario, add_vlm, percentile, and more.
+
+   :param tide_data: A GeoDataFrame containing tide data with added time information (seconds, minutes, hours) and location details.
+   :type tide_data: gpd.GeoDataFrame
+   :param slr_data: A GeoDataFrame containing the sea level rise data.
+   :type slr_data: gpd.GeoDataFrame
+   :param proj_year: The projection year for which the combined tide and sea level rise data should be generated.
+   :type proj_year: int
+   :param confidence_level: The desired confidence level for the sea level rise data.
+   :type confidence_level: str
+   :param ssp_scenario: The desired Shared Socioeconomic Pathways (SSP) scenario for the sea level rise data.
+   :type ssp_scenario: str
+   :param add_vlm: Indicates whether Vertical Land Motion (VLM) should be included in the sea level rise data.
+   :type add_vlm: bool
+   :param percentile: The desired percentile for the sea level rise data.
+   :type percentile: int
+   :param increment_year: The year interval used for interpolating the sea level rise data. Defaults to 1 year.
+   :type increment_year: int = 1
+   :param interp_method: Temporal interpolation method used for interpolating the sea level rise data. Defaults to 'linear'.
+                         Available methods: 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous',
+                         'next'. Refer to 'scipy.interpolate.interp1d()' for more details.
+   :type interp_method: str = "linear"
+
+   :returns: A DataFrame containing the combined tide and sea level rise data for the specified projection year,
+             taking into account the provided confidence_level, ssp_scenario, add_vlm, percentile, and more.
+   :rtype: pd.DataFrame
+
+

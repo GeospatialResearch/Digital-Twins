@@ -1,0 +1,155 @@
+:py:mod:`src.dynamic_boundary_conditions.river.river_data_from_niwa`
+====================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river.river_data_from_niwa
+
+.. autoapi-nested-parse::
+
+   Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.log
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.REC_API_URL
+
+
+.. py:data:: log
+
+   
+
+.. py:data:: REC_API_URL
+   :value: 'https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2'
+
+   
+
+.. py:class:: RecordCounts
+
+
+   Bases: :py:obj:`NamedTuple`
+
+   Represents the record counts of the REC feature layer.
+
+   .. attribute:: max_record_count
+
+      The maximum number of records that will be returned per query.
+
+      :type: int
+
+   .. attribute:: total_record_count
+
+      The total number of records available in the feature layer.
+
+      :type: int
+
+   .. py:attribute:: max_record_count
+      :type: int
+
+      
+
+   .. py:attribute:: total_record_count
+      :type: int
+
+      
+
+
+.. py:function:: get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts
+
+   Retrieves the maximum and total record counts from the REC feature layer.
+
+   :param url: The URL of the REC feature layer. Defaults to `REC_API_URL`.
+   :type url: str = REC_API_URL
+
+   :returns: A named tuple containing the maximum and total record counts of the REC feature layer.
+   :rtype: RecordCounts
+
+
+.. py:function:: gen_rec_query_param_list(engine: sqlalchemy.engine.Engine, max_record_count: int, total_record_count: int) -> List[Dict[str, Union[str, int]]]
+
+   Generate a list of API query parameters used to retrieve REC data in New Zealand.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param max_record_count: The maximum number of records that will be returned per query.
+   :type max_record_count: int
+   :param total_record_count: The total number of records available in the feature layer.
+   :type total_record_count: int
+
+   :returns: A list of API query parameters used to retrieve REC data in New Zealand.
+   :rtype: List[Dict[str, Union[str, int]]]
+
+
+.. py:function:: fetch_rec_data(session: aiohttp.ClientSession, query_param: Dict[str, Union[str, int]], url: str = f'{REC_API_URL}/query') -> geopandas.GeoDataFrame
+   :async:
+
+   Fetch REC data using the provided query parameters within a single API call.
+
+   :param session: An instance of `aiohttp.ClientSession` used for making HTTP requests.
+   :type session: aiohttp.ClientSession
+   :param query_param: The query parameters used to retrieve REC data.
+   :type query_param: Dict[str, Union[str, int]]
+   :param url: The query URL of the REC feature layer.
+   :type url: str = REC_API_URL
+
+   :returns: A GeoDataFrame containing the fetched REC data.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: fetch_rec_data_for_nz(query_param_list: List[Dict[str, Union[str, int]]], url: str = REC_API_URL) -> geopandas.GeoDataFrame
+   :async:
+
+   Iterate over the list of API query parameters to fetch REC data in New Zealand.
+
+   :param query_param_list: A list of API query parameters used to retrieve REC data in New Zealand.
+   :type query_param_list: List[Dict[str, Union[str, int]]]
+   :param url: The URL of the REC feature layer. Defaults to `REC_API_URL`.
+   :type url: str = REC_API_URL
+
+   :returns: A GeoDataFrame containing the fetched REC data in New Zealand.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: fetch_rec_data_from_niwa(engine: sqlalchemy.engine.Engine, url: str = REC_API_URL) -> geopandas.GeoDataFrame
+
+   Retrieve REC data in New Zealand from NIWA using the ArcGIS REST API.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param url: The URL of the REC feature layer. Defaults to `REC_API_URL`.
+   :type url: str = REC_API_URL
+
+   :returns: A GeoDataFrame containing the fetched REC data in New Zealand.
+   :rtype: gpd.GeoDataFrame
+
+   :raises RuntimeError: If failed to fetch REC data.
+
+

@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.app &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <title>src.app &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -33,7 +35,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Digital Twin for Flood Resilience in Aotearoa New Zealand
+            Flood Resilience Digital Twin (FReDT)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -68,7 +70,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+          <a href="../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -90,6 +92,7 @@
              
   <section id="module-src.app">
 <span id="src-app"></span><h1><a class="reference internal" href="#module-src.app" title="src.app"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.app</span></code></a><a class="headerlink" href="#module-src.app" title="Link to this heading"></a></h1>
+<p>The main web application that serves the Digital Twin to the web through a Rest API.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <section id="functions">
@@ -100,25 +103,25 @@
 <td><p>Ping this endpoint to check that the server is up and running</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.app.get_status" title="src.app.get_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_status</span></code></a>(→ flask.Response)</p></td>
-<td><p></p></td>
+<td><p>Retrieves status of a particular Celery backend task.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.app.remove_task" title="src.app.remove_task"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_task</span></code></a>(→ flask.Response)</p></td>
-<td><p></p></td>
+<td><p>Deletes and stops a particular Celery backend task.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.app.generate_model" title="src.app.generate_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_model</span></code></a>(→ flask.Response)</p></td>
-<td><p></p></td>
+<td><p>Generates a flood model for a given area.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.app.get_wfs_layer_latest_model" title="src.app.get_wfs_layer_latest_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_wfs_layer_latest_model</span></code></a>(model_id)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.app.create_wkt_from_coords" title="src.app.create_wkt_from_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_wkt_from_coords</span></code></a>(→ str)</p></td>
-<td><p></p></td>
+<td><p>Takes two points and creates a wkt bbox string from them</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.app.get_depth_at_point" title="src.app.get_depth_at_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_depth_at_point</span></code></a>(→ flask.Response)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.app.valid_coordinates" title="src.app.valid_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">valid_coordinates</span></code></a>(→ bool)</p></td>
-<td><p></p></td>
+<td><p>Validates coordinates are in the valid range of WGS84</p></td>
 </tr>
 </tbody>
 </table>
@@ -143,23 +146,69 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.health_check">
 <span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">health_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.app.health_check" title="Link to this definition"></a></dt>
-<dd><p>Ping this endpoint to check that the server is up and running</p>
+<dd><p>Ping this endpoint to check that the server is up and running
+Supported methods: GET</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The HTTP Response. Expect OK if health check is successful</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.get_status">
-<span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.app.get_status" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.app.get_status" title="Link to this definition"></a></dt>
+<dd><p>Retrieves status of a particular Celery backend task.
+Supported methods: GET</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_id</strong> (<em>str</em>) – The id of the Celery task to retrieve status from</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON response containing taskStatus</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.remove_task">
 <span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">remove_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.app.remove_task" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Deletes and stops a particular Celery backend task.
+Supported methods: DELETE</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_id</strong> (<em>str</em>) – The id of the Celery task to remove</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ACCEPTED is the expected response</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.generate_model">
 <span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">generate_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.app.generate_model" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generates a flood model for a given area.
+Supported methods: POST
+POST values: {“bbox”: {“lat1”: number, “lat2”: number, “lng1”: number, “lng2”: number}}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ACCEPTED is the expected response. Response body contains Celery taskId</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.get_wfs_layer_latest_model">
@@ -169,7 +218,24 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.create_wkt_from_coords">
 <span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">create_wkt_from_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lng1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lng2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#src.app.create_wkt_from_coords" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Takes two points and creates a wkt bbox string from them</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lat1</strong> (<em>float</em>) – latitude of first point</p></li>
+<li><p><strong>lng1</strong> (<em>float</em>) – longitude of first point</p></li>
+<li><p><strong>lat2</strong> (<em>float</em>) – latitude of second point</p></li>
+<li><p><strong>lng2</strong> (<em>float</em>) – longitude of second point</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bbox in wkt form generated from the two coordinates</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.get_depth_at_point">
@@ -179,7 +245,23 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.valid_coordinates">
 <span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">valid_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.app.valid_coordinates" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Validates coordinates are in the valid range of WGS84
+(-90 &lt; latitude &lt;= 90) and (-180 &lt; longitude &lt;= 180)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>latitude</strong> (<em>float</em>) – The latitude part of the coordinate</p></li>
+<li><p><strong>longitude</strong> (<em>float</em>) – The longitude part of the coordinate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if both latitude and longitude are within their valid ranges.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="src.app.gunicorn_logger">

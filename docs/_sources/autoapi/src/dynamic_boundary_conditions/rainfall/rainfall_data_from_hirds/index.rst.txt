@@ -1,0 +1,141 @@
+:py:mod:`src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds`
+===========================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds
+
+.. autoapi-nested-parse::
+
+   Fetch rainfall data from the HIRDS website.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds.BlockStructure
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds.get_site_url_key
+   src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds.get_data_from_hirds
+   src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds.get_layout_structure_of_data
+   src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds.convert_to_tabular_data
+
+
+
+.. py:function:: get_site_url_key(site_id: str, idf: bool) -> str
+
+   Get the unique URL key of the requested rainfall site from the HIRDS website.
+
+   :param site_id: HIRDS rainfall site ID.
+   :type site_id: str
+   :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
+   :type idf: bool
+
+   :returns: Unique URL key of the requested rainfall site.
+   :rtype: str
+
+
+.. py:function:: get_data_from_hirds(site_id: str, idf: bool) -> str
+
+   Fetch rainfall data for the requested rainfall site from the HIRDS website.
+
+   :param site_id: HIRDS rainfall site ID.
+   :type site_id: str
+   :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
+   :type idf: bool
+
+   :returns: Rainfall data for the requested site as a string.
+   :rtype: str
+
+
+.. py:class:: BlockStructure
+
+
+   Bases: :py:obj:`NamedTuple`
+
+   Represents the layout structure of fetched rainfall data.
+
+   .. attribute:: skip_rows
+
+      Number of lines to skip at the start of the fetched rainfall site_data.
+
+      :type: int
+
+   .. attribute:: rcp
+
+      There are four different representative concentration pathways (RCPs), and abbreviated as RCP2.6, RCP4.5,
+      RCP6.0 and RCP8.5, in order of increasing radiative forcing by greenhouse gases, or nan for historical data.
+
+      :type: Optional[float]
+
+   .. attribute:: time_period
+
+      Rainfall estimates for two future time periods (e.g. 2031-2050 or 2081-2100) for four RCPs, or None for
+      historical data.
+
+      :type: Optional[str]
+
+   .. attribute:: category
+
+      Historical data, Historical Standard Error or Projections (i.e. hist, hist_stderr or proj).
+
+      :type: str
+
+   .. py:attribute:: skip_rows
+      :type: int
+
+      
+
+   .. py:attribute:: rcp
+      :type: Optional[float]
+
+      
+
+   .. py:attribute:: time_period
+      :type: Optional[str]
+
+      
+
+   .. py:attribute:: category
+      :type: str
+
+      
+
+
+.. py:function:: get_layout_structure_of_data(site_data: str) -> List[BlockStructure]
+
+   Get the layout structure of the fetched rainfall data.
+
+   :param site_data: Fetched rainfall data text string from the HIRDS website for the requested rainfall site.
+   :type site_data: str
+
+   :returns: List of BlockStructure named tuples representing the layout structure of the fetched rainfall data.
+   :rtype: List[BlockStructure]
+
+
+.. py:function:: convert_to_tabular_data(site_data: str, site_id: str, block_structure: BlockStructure) -> pandas.DataFrame
+
+   Convert the fetched rainfall data for the requested site into a Pandas DataFrame.
+
+   :param site_data: Fetched rainfall data text string from the HIRDS website for the requested rainfall site.
+   :type site_data: str
+   :param site_id: HIRDS rainfall site ID.
+   :type site_id: str
+   :param block_structure: The layout structure of the fetched rainfall data, containing skip rows, RCP, time period, and category.
+   :type block_structure: BlockStructure
+
+   :returns: Rainfall data for the requested site in tabular format.
+   :rtype: pd.DataFrame
+
+

@@ -5,9 +5,8 @@
 
 .. autoapi-nested-parse::
 
-   This script handles the processing of input files for the BG-Flood Model, executes the flood model,
-   stores the resulting model output metadata in the database, and incorporates the model output into GeoServer for
-   visualization.
+   This script handles the processing of input files for the BG-Flood Model, executes the flood model, stores the
+   resulting model output metadata in the database, and incorporates the model output into GeoServer for visualization.
 
 
 
@@ -155,7 +154,7 @@ Attributes
    :rtype: None
 
 
-.. py:function:: prepare_bg_flood_model_inputs(bg_flood_dir: pathlib.Path, model_output_path: pathlib.Path, hydro_dem_path: pathlib.Path, resolution: Union[int, float], output_timestep: Union[int, float] = 0, end_time: Union[int, float] = 0, mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0) -> None
+.. py:function:: prepare_bg_flood_model_inputs(bg_flood_dir: pathlib.Path, model_output_path: pathlib.Path, hydro_dem_path: pathlib.Path, resolution: Union[int, float], output_timestep: Union[int, float], end_time: Union[int, float], mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0) -> None
 
    Prepare inputs for the BG-Flood Model.
 
@@ -167,26 +166,26 @@ Attributes
    :type hydro_dem_path: pathlib.Path,
    :param resolution: The grid resolution in meters for metric grids, representing the size of each grid cell.
    :type resolution: Union[int, float]
-   :param output_timestep: Time step between model outputs in seconds. Default value is 0.0 (no output generated).
-   :type output_timestep: Union[int, float], optional
-   :param end_time: Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
-   :type end_time: Union[int, float], optional
+   :param output_timestep: Time step between model outputs in seconds. If the value is set to 0 then no output is generated.
+   :type output_timestep: Union[int, float]
+   :param end_time: Time in seconds when the model stops. If the value is set to 0 then the model initializes but does not run.
+   :type end_time: Union[int, float]
    :param mask: The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
                 the specified value. Default value is 9999.0 (no areas are masked).
-   :type mask: Union[int, float], optional
+   :type mask: Union[int, float] = 9999
    :param gpu_device: Specify the GPU device to be used. Default value is 0 (the first available GPU).
                       Set the value to -1 to use the CPU. For other GPUs, use values 2 and above.
-   :type gpu_device: int, optional
+   :type gpu_device: int = 0
    :param small_nc: Specify whether the output should be saved as short integers to reduce the size of the output file.
                     Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
                     Default value is 0.
-   :type small_nc: int, optional
+   :type small_nc: int = 0
 
    :returns: This function does not return any value.
    :rtype: None
 
 
-.. py:function:: run_bg_flood_model(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, model_output_path: pathlib.Path, output_timestep: Union[int, float] = 0, end_time: Union[int, float] = 0, resolution: Optional[Union[int, float]] = None, mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0) -> None
+.. py:function:: run_bg_flood_model(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, model_output_path: pathlib.Path, output_timestep: Union[int, float], end_time: Union[int, float], resolution: Optional[Union[int, float]] = None, mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0) -> None
 
    Run the BG-Flood Model for the specified catchment area.
 
@@ -196,30 +195,66 @@ Attributes
    :type catchment_area: gpd.GeoDataFrame
    :param model_output_path: The new file path for saving the BG Flood model output with the current timestamp included in the filename.
    :type model_output_path: pathlib.Path
-   :param output_timestep: Time step between model outputs in seconds. Default value is 0.0 (no output generated).
-   :type output_timestep: Union[int, float], optional
-   :param end_time: Time in seconds when the model stops. Default value is 0.0 (model initializes but does not run).
-   :type end_time: Union[int, float], optional
+   :param output_timestep: Time step between model outputs in seconds. If the value is set to 0 then no output is generated.
+   :type output_timestep: Union[int, float]
+   :param end_time: Time in seconds when the model stops. If the value is set to 0 then the model initializes but does not run.
+   :type end_time: Union[int, float]
    :param resolution: The grid resolution in meters for metric grids, representing the size of each grid cell.
                       If not provided (default is None), the resolution of the Hydrologically conditioned DEM will be used as
                       the grid resolution.
-   :type resolution: Optional[Union[int, float]], optional
+   :type resolution: Optional[Union[int, float]] = None
    :param mask: The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
                 the specified value. Default value is 9999.0 (no areas are masked).
-   :type mask: Union[int, float], optional
+   :type mask: Union[int, float] = 9999
    :param gpu_device: Specify the GPU device to be used. Default value is 0 (the first available GPU).
                       Set the value to -1 to use the CPU. For other GPUs, use values 2 and above.
-   :type gpu_device: int, optional
+   :type gpu_device: int = 0
    :param small_nc: Specify whether the output should be saved as short integers to reduce the size of the output file.
                     Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
                     Default value is 0.
-   :type small_nc: int, optional
+   :type small_nc: int = 0
 
    :returns: This function does not return any value.
    :rtype: None
 
 
-.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, output_timestep: Union[int, float], end_time: Union[int, float], resolution: Optional[Union[int, float]] = None, mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
+
+   Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer
+   for visualization.
+
+   :param selected_polygon_gdf: A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+   :type selected_polygon_gdf: gpd.GeoDataFrame
+   :param output_timestep: Time step between model outputs in seconds. If the value is set to 0 then no output is generated.
+   :type output_timestep: Union[int, float]
+   :param end_time: Time in seconds when the model stops. If the value is set to 0 then the model initializes but does not run.
+   :type end_time: Union[int, float]
+   :param resolution: The grid resolution in meters for metric grids, representing the size of each grid cell.
+                      If not provided (default is None), the resolution of the Hydrologically conditioned DEM will be used as
+                      the grid resolution.
+   :type resolution: Optional[Union[int, float]] = None
+   :param mask: The mask value is used to remove blocks from computation where the topography elevation (zb) is greater than
+                the specified value. Default value is 9999.0 (no areas are masked).
+   :type mask: Union[int, float] = 9999
+   :param gpu_device: Specify the GPU device to be used. Default value is 0 (the first available GPU).
+                      Set the value to -1 to use the CPU. For other GPUs, use values 2 and above.
+   :type gpu_device: int = 0
+   :param small_nc: Specify whether the output should be saved as short integers to reduce the size of the output file.
+                    Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
+                    Default value is 0.
+   :type small_nc: int = 0
+   :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+                     The available logging levels and their corresponding numeric values are:
+                     - LogLevel.CRITICAL (50)
+                     - LogLevel.ERROR (40)
+                     - LogLevel.WARNING (30)
+                     - LogLevel.INFO (20)
+                     - LogLevel.DEBUG (10)
+                     - LogLevel.NOTSET (0)
+   :type log_level: LogLevel = LogLevel.DEBUG
+
+   :returns: This function does not return any value.
+   :rtype: None
 
 
 .. py:data:: sample_polygon

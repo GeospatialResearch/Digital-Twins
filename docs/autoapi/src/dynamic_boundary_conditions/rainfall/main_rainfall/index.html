@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.rainfall.main_rainfall &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds" href="../rainfall_data_from_hirds/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.rainfall.hyetograph" href="../hyetograph/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/rainfall/main_rainfall/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.rainfall.main_rainfall">
+<span id="src-dynamic-boundary-conditions-rainfall-main-rainfall"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rainfall.main_rainfall" title="src.dynamic_boundary_conditions.rainfall.main_rainfall"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.main_rainfall" title="Link to this heading"></a></h1>
+<p>Main rainfall script used to fetch and store rainfall data in the database, and to generate the requested
+rainfall model input for BG-Flood, etc.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_existing_rain_inputs</span></code></a>(→ None)</p></td>
+<td><p>Remove existing rain input files from the specified directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.main" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ None)</p></td>
+<td><p>Fetch and store rainfall data in the database, and generate the requested rainfall model input for BG-Flood.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_polygon</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">remove_existing_rain_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs" title="Link to this definition"></a></dt>
+<dd><p>Remove existing rain input files from the specified directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bg_flood_dir</strong> (<em>pathlib.Path</em>) – BG-Flood model directory containing the rain input files.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.main">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rcp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ari</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storm_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_peak_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyeto_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../digitaltwin/utils/index.html#src.digitaltwin.utils.LogLevel" title="src.digitaltwin.utils.LogLevel"><span class="pre">src.digitaltwin.utils.LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.DEBUG</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.main" title="Link to this definition"></a></dt>
+<dd><p>Fetch and store rainfall data in the database, and generate the requested rainfall model input for BG-Flood.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_gdf</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the selected polygon, i.e., the catchment area.</p></li>
+<li><p><strong>rcp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Representative Concentration Pathway (RCP) value. Valid options are 2.6, 4.5, 6.0, 8.5, or None
+for historical data.</p></li>
+<li><p><strong>time_period</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Future time period. Valid options are “2031-2050”, “2081-2100”, or None for historical data.</p></li>
+<li><p><strong>ari</strong> (<em>float</em>) – Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.</p></li>
+<li><p><strong>storm_length_mins</strong> (<em>int</em>) – Storm duration in minutes.</p></li>
+<li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when rainfall is at its greatest (reaches maximum).</p></li>
+<li><p><strong>increment_mins</strong> (<em>int</em>) – Time interval in minutes.</p></li>
+<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used. Valid options are HyetoMethod.ALT_BLOCK or HyetoMethod.CHICAGO.</p></li>
+<li><p><strong>input_type</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType"><em>RainInputType</em></a>) – The type of rainfall model input to be generated. Valid options are ‘uniform’ or ‘varying’,
+representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).</p></li>
+<li><p><strong>log_level</strong> (<em>LogLevel = LogLevel.DEBUG</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+The available logging levels and their corresponding numeric values are:
+- LogLevel.CRITICAL (50)
+- LogLevel.ERROR (40)
+- LogLevel.WARNING (30)
+- LogLevel.INFO (20)
+- LogLevel.DEBUG (10)
+- LogLevel.NOTSET (0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">sample_polygon</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../hyetograph/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.rainfall.hyetograph" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../rainfall_data_from_hirds/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.rainfall.rainfall_data_from_hirds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

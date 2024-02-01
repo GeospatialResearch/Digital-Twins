@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.rainfall.hyetograph" href="../hyetograph/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db" href="../hirds_rainfall_data_from_db/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/rainfall/hirds_rainfall_data_to_db/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db">
+<span id="src-dynamic-boundary-conditions-rainfall-hirds-rainfall-data-to-db"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db" title="Link to this heading"></a></h1>
+<p>Store the rainfall data for all the sites within the catchment area in the database.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.db_rain_table_name" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.db_rain_table_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">db_rain_table_name</span></code></a>(→ str)</p></td>
+<td><p>Return the relevant rainfall data table name used in the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_in_catchment" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_in_catchment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_id_in_catchment</span></code></a>(→ List[str])</p></td>
+<td><p>Get the rainfall site IDs within the catchment area.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_not_in_db" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_not_in_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_id_not_in_db</span></code></a>(→ List[str])</p></td>
+<td><p>Get the list of rainfall site IDs that are within the catchment area but not in the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_rainfall_data_to_db" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_rainfall_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_rainfall_data_to_db</span></code></a>(→ None)</p></td>
+<td><p>Store the rainfall data for a specific site in the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_each_site_rainfall_data" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_each_site_rainfall_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_each_site_rainfall_data</span></code></a>(→ None)</p></td>
+<td><p>Add rainfall data for each site in the sites_id_list to the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.rainfall_data_to_db" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.rainfall_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rainfall_data_to_db</span></code></a>(→ None)</p></td>
+<td><p>Store rainfall data of all the sites within the catchment area in the database.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.log" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.log">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.db_rain_table_name">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.</span></span><span class="sig-name descname"><span class="pre">db_rain_table_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.db_rain_table_name" title="Link to this definition"></a></dt>
+<dd><p>Return the relevant rainfall data table name used in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idf</strong> (<em>bool</em>) – Set to False for rainfall depth data, and True for rainfall intensity data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The relevant rainfall data table name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_in_catchment">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.</span></span><span class="sig-name descname"><span class="pre">get_sites_id_in_catchment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_in_catchment" title="Link to this definition"></a></dt>
+<dd><p>Get the rainfall site IDs within the catchment area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall site coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The rainfall site IDs within the catchment area.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_not_in_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.</span></span><span class="sig-name descname"><span class="pre">get_sites_id_not_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_id_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_not_in_db" title="Link to this definition"></a></dt>
+<dd><p>Get the list of rainfall site IDs that are within the catchment area but not in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>sites_id_in_catchment</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Rainfall site IDs within the catchment area.</p></li>
+<li><p><strong>idf</strong> (<em>bool</em>) – Set to False for rainfall depth data, and True for rainfall intensity data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The rainfall site IDs within the catchment area but not present in the database.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_rainfall_data_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.</span></span><span class="sig-name descname"><span class="pre">add_rainfall_data_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_rainfall_data_to_db" title="Link to this definition"></a></dt>
+<dd><p>Store the rainfall data for a specific site in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>site_id</strong> (<em>str</em>) – HIRDS rainfall site ID.</p></li>
+<li><p><strong>idf</strong> (<em>bool</em>) – Set to False for rainfall depth data, and True for rainfall intensity data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_each_site_rainfall_data">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.</span></span><span class="sig-name descname"><span class="pre">add_each_site_rainfall_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_id_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_each_site_rainfall_data" title="Link to this definition"></a></dt>
+<dd><p>Add rainfall data for each site in the sites_id_list to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>sites_id_list</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of rainfall sites’ IDs.</p></li>
+<li><p><strong>idf</strong> (<em>bool</em>) – Set to False for rainfall depth data, and True for rainfall intensity data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.rainfall_data_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.</span></span><span class="sig-name descname"><span class="pre">rainfall_data_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.rainfall_data_to_db" title="Link to this definition"></a></dt>
+<dd><p>Store rainfall data of all the sites within the catchment area in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></li>
+<li><p><strong>idf</strong> (<em>bool = False</em>) – Set to False for rainfall depth data, and True for rainfall intensity data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../hirds_rainfall_data_from_db/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../hyetograph/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.rainfall.hyetograph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

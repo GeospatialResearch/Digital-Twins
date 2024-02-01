@@ -1,0 +1,93 @@
+:py:mod:`src.dynamic_boundary_conditions.river.river_data_to_from_db`
+=====================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river.river_data_to_from_db
+
+.. autoapi-nested-parse::
+
+   This script handles storing REC data in the database, and retrieving REC data enriched with sea-draining catchment
+   information from the database.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.get_sdc_data_from_db
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.get_rec_data_with_sdc_from_db
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.log
+
+
+.. py:data:: log
+
+   
+
+.. py:function:: load_backup_rec_data_from_niwa() -> geopandas.GeoDataFrame
+
+   Loads REC data from the NIWA REC dataset.
+
+   :returns: A GeoDataFrame containing the REC data from the NZ REC dataset.
+   :rtype: gpd.GeoDataFrame
+
+   :raises FileNotFoundError: If the REC data directory does not exist or if there are no Shapefiles in the specified directory.
+
+
+.. py:function:: store_rec_data_to_db(engine: sqlalchemy.engine.Engine) -> None
+
+   Store REC data in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: get_sdc_data_from_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Retrieve sea-draining catchment data from the database that intersects with the given catchment area.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing sea-draining catchment data that intersects with the given catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_rec_data_with_sdc_from_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, river_network_id: int) -> geopandas.GeoDataFrame
+
+   Retrieve REC data from the database for the specified catchment area with an additional column that identifies
+   the associated sea-draining catchment for each REC geometry.
+   Simultaneously, identify the REC geometries that do not fully reside within sea-draining catchments and
+   proceed to add these excluded REC geometries to the appropriate database table.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param river_network_id: An identifier for the river network associated with the current run.
+   :type river_network_id: int
+
+   :returns: A GeoDataFrame containing the retrieved REC data for the specified catchment area with an additional column
+             that identifies the associated sea-draining catchment for each REC geometry.
+   :rtype: gpd.GeoDataFrame
+
+

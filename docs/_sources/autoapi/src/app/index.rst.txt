@@ -3,6 +3,11 @@
 
 .. py:module:: src.app
 
+.. autoapi-nested-parse::
+
+   The main web application that serves the Digital Twin to the web through a Rest API.
+
+
 
 Module Contents
 ---------------
@@ -40,15 +45,44 @@ Attributes
 .. py:function:: health_check() -> flask.Response
 
    Ping this endpoint to check that the server is up and running
+   Supported methods: GET
+
+   :returns: The HTTP Response. Expect OK if health check is successful
+   :rtype: Response
 
 
-.. py:function:: get_status(task_id) -> flask.Response
+.. py:function:: get_status(task_id: str) -> flask.Response
+
+   Retrieves status of a particular Celery backend task.
+   Supported methods: GET
+
+   :param task_id: The id of the Celery task to retrieve status from
+   :type task_id: str
+
+   :returns: JSON response containing taskStatus
+   :rtype: Response
 
 
 .. py:function:: remove_task(task_id) -> flask.Response
 
+   Deletes and stops a particular Celery backend task.
+   Supported methods: DELETE
+
+   :param task_id: The id of the Celery task to remove
+   :type task_id: str
+
+   :returns: ACCEPTED is the expected response
+   :rtype: Response
+
 
 .. py:function:: generate_model() -> flask.Response
+
+   Generates a flood model for a given area.
+   Supported methods: POST
+   POST values: {"bbox": {"lat1": number, "lat2": number, "lng1": number, "lng2": number}}
+
+   :returns: ACCEPTED is the expected response. Response body contains Celery taskId
+   :rtype: Response
 
 
 .. py:function:: get_wfs_layer_latest_model(model_id)
@@ -56,11 +90,36 @@ Attributes
 
 .. py:function:: create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str
 
+   Takes two points and creates a wkt bbox string from them
+
+   :param lat1: latitude of first point
+   :type lat1: float
+   :param lng1: longitude of first point
+   :type lng1: float
+   :param lat2: latitude of second point
+   :type lat2: float
+   :param lng2: longitude of second point
+   :type lng2: float
+
+   :returns: bbox in wkt form generated from the two coordinates
+   :rtype: str
+
 
 .. py:function:: get_depth_at_point() -> flask.Response
 
 
 .. py:function:: valid_coordinates(latitude: float, longitude: float) -> bool
+
+   Validates coordinates are in the valid range of WGS84
+   (-90 < latitude <= 90) and (-180 < longitude <= 180)
+
+   :param latitude: The latitude part of the coordinate
+   :type latitude: float
+   :param longitude: The longitude part of the coordinate
+   :type longitude: float
+
+   :returns: True if both latitude and longitude are within their valid ranges.
+   :rtype: bool
 
 
 .. py:data:: gunicorn_logger

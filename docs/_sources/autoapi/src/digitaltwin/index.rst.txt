@@ -13,7 +13,7 @@ Submodules
    data_to_db/index.rst
    get_data_using_geoapis/index.rst
    instructions_records_to_db/index.rst
-   run/index.rst
+   retrieve_static_boundaries/index.rst
    setup_environment/index.rst
    tables/index.rst
    utils/index.rst

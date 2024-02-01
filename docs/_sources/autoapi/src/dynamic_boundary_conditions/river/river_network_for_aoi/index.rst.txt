@@ -1,0 +1,225 @@
+:py:mod:`src.dynamic_boundary_conditions.river.river_network_for_aoi`
+=====================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river.river_network_for_aoi
+
+.. autoapi-nested-parse::
+
+   This script processes REC data to construct a river network for the defined catchment area.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.get_unique_nodes_dict
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_rec
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_intersection_type
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.prepare_network_data_for_construction
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_network
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.add_initial_edges_to_network
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.identify_absent_edges_to_add
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.add_absent_edges_to_network
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.add_edge_directions_to_network_data
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.remove_unconnected_edges_from_network
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.build_rec_river_network
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.get_rec_river_network
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.log
+
+
+.. py:data:: log
+
+   
+
+.. py:function:: get_unique_nodes_dict(rec_data_w_node_coords: geopandas.GeoDataFrame) -> Dict[shapely.geometry.Point, int]
+
+   Generates a dictionary that contains the unique node coordinates in the REC data for the catchment area.
+
+   :param rec_data_w_node_coords: A GeoDataFrame containing the REC data for the catchment area with additional columns for the
+                                  first and last coordinates of each LineString.
+   :type rec_data_w_node_coords: gpd.GeoDataFrame
+
+   :returns: A dictionary that contains the unique node coordinates (Point objects) in the REC data for the catchment area.
+   :rtype: Dict[Point, int]
+
+
+.. py:function:: add_nodes_to_rec(rec_data_with_sdc: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Add columns for the first and last coordinates/nodes of each LineString in the REC data within the catchment area.
+
+   :param rec_data_with_sdc: A GeoDataFrame containing the REC data for the catchment area with an additional column that identifies
+                             the associated sea-draining catchment for each REC geometry.
+   :type rec_data_with_sdc: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the REC data for the catchment area with additional columns for the
+             first and last coordinates/nodes of each LineString.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: add_nodes_intersection_type(catchment_area: geopandas.GeoDataFrame, rec_data_with_nodes: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Calculate and add an 'intersection_type' column to the GeoDataFrame that contains REC data with node information.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec_data_with_nodes: A GeoDataFrame containing the REC data for the catchment area with additional columns for the
+                               first and last coordinates/nodes of each LineString.
+   :type rec_data_with_nodes: gpd.GeoDataFrame
+
+   :returns: The input GeoDataFrame with the 'intersection_type' column added.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: prepare_network_data_for_construction(catchment_area: geopandas.GeoDataFrame, rec_data_with_sdc: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Prepares the necessary data for constructing the river network for the catchment area using the REC data.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec_data_with_sdc: A GeoDataFrame containing the REC data for the catchment area with an additional column that identifies
+                             the associated sea-draining catchment for each REC geometry.
+   :type rec_data_with_sdc: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: add_nodes_to_network(rec_network: networkx.Graph, prepared_network_data: geopandas.GeoDataFrame) -> None
+
+   Add nodes to the REC river network along with their attributes.
+
+   :param rec_network: The REC river network, a directed graph, to which nodes will be added.
+   :type rec_network: nx.Graph
+   :param prepared_network_data: A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+   :type prepared_network_data: gpd.GeoDataFrame
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: add_initial_edges_to_network(rec_network: networkx.Graph, prepared_network_data: geopandas.GeoDataFrame) -> None
+
+   Add initial edges to the REC river network along with their attributes.
+
+   :param rec_network: The REC river network, a directed graph, to which initial edges will be added.
+   :type rec_network: nx.Graph
+   :param prepared_network_data: A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+   :type prepared_network_data: gpd.GeoDataFrame
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: identify_absent_edges_to_add(rec_network: networkx.Graph, prepared_network_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Identify edges that are absent from the REC river network and require addition.
+
+   :param rec_network: The REC river network, a directed graph.
+   :type rec_network: nx.Graph
+   :param prepared_network_data: A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+   :type prepared_network_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing edges that are absent from the REC river network and require addition.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: add_absent_edges_to_network(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, rec_network: networkx.Graph, prepared_network_data: geopandas.GeoDataFrame) -> None
+
+   Add absent edges that are required for the current river network construction to the REC river network along with
+   their attributes.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame,
+   :param rec_network: The REC river network, a directed graph, to which absent edges will be added.
+   :type rec_network: nx.Graph
+   :param prepared_network_data: A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+   :type prepared_network_data: gpd.GeoDataFrame
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: add_edge_directions_to_network_data(engine: sqlalchemy.engine.Engine, rec_network_id: int, rec_network: networkx.Graph, prepared_network_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Add edge directions to the river network data based on the provided REC river network.
+   Subsequently, eliminate REC geometries from the network data where the edge direction is absent (None), and
+   append these excluded REC geometries to the relevant database table.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param rec_network_id: An identifier for the river network associated with the current run.
+   :type rec_network_id: int
+   :param rec_network: The REC river network, a directed graph, used to determine the edge directions.
+   :type rec_network: nx.Graph
+   :param prepared_network_data: A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
+   :type prepared_network_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the updated river network data with added edge directions.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: remove_unconnected_edges_from_network(engine: sqlalchemy.engine.Engine, rec_network_id: int, rec_network: networkx.Graph, rec_network_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Remove REC river network edges that are not connected to their respective sea-draining catchment's end nodes.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param rec_network_id: An identifier for the river network associated with the current run.
+   :type rec_network_id: int
+   :param rec_network: The REC river network, a directed graph, used to identify edges that are connected to the end nodes of their
+                       respective sea-draining catchments.
+   :type rec_network: nx.Graph
+   :param rec_network_data: A GeoDataFrame containing the REC river network data with added edge directions.
+   :type rec_network_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the modified river network data with REC geometries removed if they are not
+             connected to their end nodes within their respective sea-draining catchments.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: build_rec_river_network(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, rec_network_id: int) -> Tuple[networkx.DiGraph, geopandas.GeoDataFrame]
+
+   Builds a river network for the catchment area using the REC data.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec_network_id: An identifier for the river network associated with the current run.
+   :type rec_network_id: int
+
+   :returns: A tuple containing the constructed REC river network, represented as a directed graph (DiGraph),
+             along with its associated data in the form of a GeoDataFrame.
+   :rtype: Tuple[nx.DiGraph, gpd.GeoDataFrame]
+
+
+.. py:function:: get_rec_river_network(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> Tuple[networkx.Graph, geopandas.GeoDataFrame]
+
+   Retrieve or create REC river network for the specified catchment area.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A tuple containing the REC river network as a directed graph (DiGraph) and its associated data
+             as a GeoDataFrame.
+   :rtype: Tuple[nx.Graph, gpd.GeoDataFrame]
+
+

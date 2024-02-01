@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.run_all &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <title>src.run_all &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -33,7 +35,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Digital Twin for Flood Resilience in Aotearoa New Zealand
+            Flood Resilience Digital Twin (FReDT)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -68,7 +70,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+          <a href="../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -98,7 +100,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.run_all.main" title="src.run_all.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ None)</p></td>
-<td><p></p></td>
+<td><p>Runs each module in the Digital Twin using the selected polygon and the defined parameters for each module's</p></td>
 </tr>
 </tbody>
 </table>
@@ -107,19 +109,51 @@
 <h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.run_all.module_to_log_level" title="src.run_all.module_to_log_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">module_to_log_level</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.run_all.DEFAULT_MODULES_TO_PARAMETERS" title="src.run_all.DEFAULT_MODULES_TO_PARAMETERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_MODULES_TO_PARAMETERS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.run_all.sample_polygon" title="src.run_all.sample_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_polygon</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.run_all.main">
-<span class="sig-prename descclassname"><span class="pre">src.run_all.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modules_with_log_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">types.ModuleType</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../digitaltwin/utils/index.html#src.digitaltwin.utils.LogLevel" title="src.digitaltwin.utils.LogLevel"><span class="pre">src.digitaltwin.utils.LogLevel</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.run_all.main" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.run_all.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modules_to_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">types.ModuleType</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">enum.Enum</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.run_all.main" title="Link to this definition"></a></dt>
+<dd><p>Runs each module in the Digital Twin using the selected polygon and the defined parameters for each module’s
+main function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_gdf</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the selected polygon, i.e., the catchment area.</p></li>
+<li><p><strong>modules_to_parameters</strong> (<em>Dict</em><em>[</em><em>ModuleType</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>int</em><em>, </em><em>float</em><em>, </em><em>bool</em><em>, </em><em>None</em><em>, </em><em>Enum</em><em>]</em><em>]</em><em>]</em>) – A dictionary that associates each module with the parameters necessary for its main function, including the
+option to set the log level for each module’s root logger.
+The available logging levels and their corresponding numeric values are:
+- LogLevel.CRITICAL (50)
+- LogLevel.ERROR (40)
+- LogLevel.WARNING (30)
+- LogLevel.INFO (20)
+- LogLevel.DEBUG (10)
+- LogLevel.NOTSET (0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.run_all.DEFAULT_MODULES_TO_PARAMETERS">
+<span class="sig-prename descclassname"><span class="pre">src.run_all.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_MODULES_TO_PARAMETERS</span></span><a class="headerlink" href="#src.run_all.DEFAULT_MODULES_TO_PARAMETERS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="src.run_all.module_to_log_level">
-<span class="sig-prename descclassname"><span class="pre">src.run_all.</span></span><span class="sig-name descname"><span class="pre">module_to_log_level</span></span><a class="headerlink" href="#src.run_all.module_to_log_level" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="src.run_all.sample_polygon">
+<span class="sig-prename descclassname"><span class="pre">src.run_all.</span></span><span class="sig-name descname"><span class="pre">sample_polygon</span></span><a class="headerlink" href="#src.run_all.sample_polygon" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

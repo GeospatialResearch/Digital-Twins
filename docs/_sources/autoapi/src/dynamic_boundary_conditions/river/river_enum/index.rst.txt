@@ -1,0 +1,65 @@
+:py:mod:`src.dynamic_boundary_conditions.river.river_enum`
+==========================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river.river_enum
+
+.. autoapi-nested-parse::
+
+   Enum(s) used in the river module.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_enum.BoundType
+
+
+
+
+.. py:class:: BoundType
+
+
+   Bases: :py:obj:`enum.StrEnum`
+
+   Enum class representing different types of estimates used in river flow scenarios.
+
+   .. attribute:: LOWER
+
+      Lower bound of a confidence interval.
+
+      :type: str
+
+   .. attribute:: MIDDLE
+
+      Point estimate or sample mean.
+
+      :type: str
+
+   .. attribute:: UPPER
+
+      Upper bound of a confidence interval.
+
+      :type: str
+
+   .. py:attribute:: LOWER
+      :value: 'lower'
+
+      
+
+   .. py:attribute:: MIDDLE
+      :value: 'middle'
+
+      
+
+   .. py:attribute:: UPPER
+      :value: 'upper'
+
+      
+
+

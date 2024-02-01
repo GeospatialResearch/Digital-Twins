@@ -1,0 +1,65 @@
+:py:mod:`src.dynamic_boundary_conditions.rainfall.rainfall_sites`
+=================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.rainfall.rainfall_sites
+
+.. autoapi-nested-parse::
+
+   Fetch rainfall sites data from the HIRDS website and store it in the database.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.rainfall_sites.get_rainfall_sites_data
+   src.dynamic_boundary_conditions.rainfall.rainfall_sites.get_rainfall_sites_in_df
+   src.dynamic_boundary_conditions.rainfall.rainfall_sites.rainfall_sites_to_db
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.rainfall_sites.log
+
+
+.. py:data:: log
+
+   
+
+.. py:function:: get_rainfall_sites_data() -> str
+
+   Get rainfall sites data from the HIRDS website.
+
+   :returns: The rainfall sites data as a string.
+   :rtype: str
+
+
+.. py:function:: get_rainfall_sites_in_df() -> geopandas.GeoDataFrame
+
+   Get rainfall sites data from the HIRDS website and transform it into a GeoDataFrame.
+
+   :returns: A GeoDataFrame containing the rainfall sites data.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: rainfall_sites_to_db(engine: sqlalchemy.engine.Engine) -> None
+
+   Store rainfall sites data from the HIRDS website in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+

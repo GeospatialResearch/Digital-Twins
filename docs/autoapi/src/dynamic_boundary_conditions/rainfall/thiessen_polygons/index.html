@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.rainfall.thiessen_polygons &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.river" href="../../river/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.rainfall.rainfall_sites" href="../rainfall_sites/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/rainfall/thiessen_polygons/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.rainfall.thiessen_polygons">
+<span id="src-dynamic-boundary-conditions-rainfall-thiessen-polygons"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rainfall.thiessen_polygons" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.thiessen_polygons" title="Link to this heading"></a></h1>
+<p>Calculate the area covered by each rainfall site throughout New Zealand and store it in the database.
+Retrieve the coverage areas (Thiessen polygons) for all rainfall sites located within the catchment area.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_sites_within_aoi" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_sites_within_aoi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_within_aoi</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get all rainfall sites within the area of interest from the database and return the required data as a</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_calculator" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_calculator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_calculator</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Create Thiessen polygons for rainfall sites within the area of interest and calculate the area covered by each</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_to_db</span></code></a>(→ None)</p></td>
+<td><p>Store the data representing the Thiessen polygons, site information, and the area covered by</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get the coverage areas (Thiessen polygons) of all rainfall sites that intersect or are within the</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.log" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.log">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_sites_within_aoi">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">get_sites_within_aoi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_sites_within_aoi" title="Link to this definition"></a></dt>
+<dd><p>Get all rainfall sites within the area of interest from the database and return the required data as a
+GeoDataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the area of interest.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the rainfall sites within the area of interest.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_calculator">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">thiessen_polygons_calculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_in_aoi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_calculator" title="Link to this definition"></a></dt>
+<dd><p>Create Thiessen polygons for rainfall sites within the area of interest and calculate the area covered by each
+rainfall site.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the area of interest.</p></li>
+<li><p><strong>sites_in_aoi</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites within the area of interest.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the Thiessen polygons, site information, and area covered by each rainfall site.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – <ul class="simple">
+<li><p>If the provided ‘area_of_interest’ GeoDataFrame does not contain any data.</p></li>
+<li><p>If the provided ‘sites_in_aoi’ GeoDataFrame does not contain any data.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">thiessen_polygons_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_in_aoi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db" title="Link to this definition"></a></dt>
+<dd><p>Store the data representing the Thiessen polygons, site information, and the area covered by
+each rainfall site in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the area of interest.</p></li>
+<li><p><strong>sites_in_aoi</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites within the area of interest.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">thiessen_polygons_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db" title="Link to this definition"></a></dt>
+<dd><p>Get the coverage areas (Thiessen polygons) of all rainfall sites that intersect or are within the
+specified catchment area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the coverage areas (Thiessen polygons) of rainfall sites within the catchment area.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../rainfall_sites/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.rainfall.rainfall_sites" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../river/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.river" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

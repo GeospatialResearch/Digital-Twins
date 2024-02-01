@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.dynamic_boundary_conditions.river.hydrograph &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.dynamic_boundary_conditions.river.main_river" href="../main_river/index.html" />
+    <link rel="prev" title="src.dynamic_boundary_conditions.river.align_rec_osm" href="../align_rec_osm/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.hydrograph</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/river/hydrograph/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.dynamic_boundary_conditions.river.hydrograph">
+<span id="src-dynamic-boundary-conditions-river-hydrograph"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.river.hydrograph" title="src.dynamic_boundary_conditions.river.hydrograph"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.hydrograph</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.river.hydrograph" title="Link to this heading"></a></h1>
+<p>This script handles the task of obtaining REC river inflow scenario data, whether it’s Mean Annual Flood (MAF) or
+Average Recurrence Interval (ARI)-based, and generates corresponding hydrograph data for the requested scenarios.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.hydrograph.clean_rec_inflow_data" title="src.dynamic_boundary_conditions.river.hydrograph.clean_rec_inflow_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_rec_inflow_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Selects and renames specific columns that represent REC river inflow data from the input GeoDataFrame.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.hydrograph.extract_valid_ari_values" title="src.dynamic_boundary_conditions.river.hydrograph.extract_valid_ari_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_valid_ari_values</span></code></a>(→ List[int])</p></td>
+<td><p>Extracts valid ARI (Annual Recurrence Interval) values from the column names of the REC river inflow data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.hydrograph.get_rec_inflow_scenario_data" title="src.dynamic_boundary_conditions.river.hydrograph.get_rec_inflow_scenario_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rec_inflow_scenario_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Obtain the requested REC river inflow scenario data, which can be either Mean Annual Flood (MAF)-based or</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.hydrograph.get_hydrograph_data" title="src.dynamic_boundary_conditions.river.hydrograph.get_hydrograph_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hydrograph_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Generate hydrograph data for the requested REC river inflow scenario.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.hydrograph.clean_rec_inflow_data">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.hydrograph.</span></span><span class="sig-name descname"><span class="pre">clean_rec_inflow_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_inflows_w_input_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.hydrograph.clean_rec_inflow_data" title="Link to this definition"></a></dt>
+<dd><p>Selects and renames specific columns that represent REC river inflow data from the input GeoDataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rec_inflows_w_input_points</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
+boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
+along with their corresponding river input points used in the BG-Flood model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame with selected and renamed columns representing REC river inflow data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.hydrograph.extract_valid_ari_values">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.hydrograph.</span></span><span class="sig-name descname"><span class="pre">extract_valid_ari_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_inflow_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.hydrograph.extract_valid_ari_values" title="Link to this definition"></a></dt>
+<dd><p>Extracts valid ARI (Annual Recurrence Interval) values from the column names of the REC river inflow data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rec_inflow_data</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing REC river inflow data with column names that include ARI values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of valid ARI values extracted from the column names of the REC river inflow data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.hydrograph.get_rec_inflow_scenario_data">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.hydrograph.</span></span><span class="sig-name descname"><span class="pre">get_rec_inflow_scenario_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_inflows_w_input_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ari</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../river_enum/index.html#src.dynamic_boundary_conditions.river.river_enum.BoundType" title="src.dynamic_boundary_conditions.river.river_enum.BoundType"><span class="pre">src.dynamic_boundary_conditions.river.river_enum.BoundType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">BoundType.MIDDLE</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.hydrograph.get_rec_inflow_scenario_data" title="Link to this definition"></a></dt>
+<dd><p>Obtain the requested REC river inflow scenario data, which can be either Mean Annual Flood (MAF)-based or
+Average Recurrence Interval (ARI)-based scenario data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec_inflows_w_input_points</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
+boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
+along with their corresponding river input points used in the BG-Flood model.</p></li>
+<li><p><strong>maf</strong> (<em>bool = True</em>) – Set to True to obtain MAF-based scenario data or False to obtain ARI-based scenario data.</p></li>
+<li><p><strong>ari</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
+Mandatory when ‘maf’ is set to False, and should be set to None when ‘maf’ is set to True.</p></li>
+<li><p><strong>bound</strong> (<em>BoundType = BoundType.MIDDLE</em>) – Set the type of bound (estimate) for the REC river inflow scenario data.
+Valid options include: ‘BoundType.LOWER’, ‘BoundType.MIDDLE’, or ‘BoundType.UPPER’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the requested REC river inflow scenario data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – <ul class="simple">
+<li><p>If ‘ari’ is provided when ‘maf’ is set to True (i.e. ‘maf’ is True and ‘ari’ is not set to None).</p></li>
+<li><p>If ‘ari’ is not provided when ‘maf’ is set to False (i.e. ‘maf’ is False and ‘ari’ is set to None).</p></li>
+<li><p>If an invalid ‘ari’ value is provided.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.hydrograph.get_hydrograph_data">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.hydrograph.</span></span><span class="sig-name descname"><span class="pre">get_hydrograph_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_inflows_w_input_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_peak_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ari</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../river_enum/index.html#src.dynamic_boundary_conditions.river.river_enum.BoundType" title="src.dynamic_boundary_conditions.river.river_enum.BoundType"><span class="pre">src.dynamic_boundary_conditions.river.river_enum.BoundType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">BoundType.MIDDLE</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.hydrograph.get_hydrograph_data" title="Link to this definition"></a></dt>
+<dd><p>Generate hydrograph data for the requested REC river inflow scenario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec_inflows_w_input_points</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
+boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
+along with their corresponding river input points used in the BG-Flood model.</p></li>
+<li><p><strong>flow_length_mins</strong> (<em>int</em>) – Duration of the river flow in minutes.</p></li>
+<li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when flow is at its greatest (reaches maximum).</p></li>
+<li><p><strong>maf</strong> (<em>bool = True</em>) – Set to True to obtain MAF-based scenario data or False to obtain ARI-based scenario data.</p></li>
+<li><p><strong>ari</strong> (<em>Optional</em><em>[</em><em>int</em><em>] </em><em>= None</em>) – The Average Recurrence Interval (ARI) value. Valid options are 5, 10, 20, 50, 100, or 1000.
+Mandatory when ‘maf’ is set to False, and should be set to None when ‘maf’ is set to True.</p></li>
+<li><p><strong>bound</strong> (<em>BoundType = BoundType.MIDDLE</em>) – Set the type of bound (estimate) for the REC river inflow scenario data.
+Valid options include: ‘BoundType.LOWER’, ‘BoundType.MIDDLE’, or ‘BoundType.UPPER’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing hydrograph data for the requested REC river inflow scenario.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the specified ‘time_to_peak_mins’ is less than half of the river flow duration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../align_rec_osm/index.html" class="btn btn-neutral float-left" title="src.dynamic_boundary_conditions.river.align_rec_osm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../main_river/index.html" class="btn btn-neutral float-right" title="src.dynamic_boundary_conditions.river.main_river" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

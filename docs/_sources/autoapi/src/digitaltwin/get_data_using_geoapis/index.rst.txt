@@ -61,10 +61,10 @@ Functions
 
    Clean the fetched vector data by performing necessary transformations.
 
-   :param fetched_data: The fetched vector data as a GeoDataFrame.
+   :param fetched_data: A GeoDataFrame containing the fetched vector data.
    :type fetched_data: gpd.GeoDataFrame
 
-   :returns: The cleaned vector data as a GeoDataFrame.
+   :returns: A GeoDataFrame containing the cleaned vector data.
    :rtype: gpd.GeoDataFrame
 
 
@@ -77,13 +77,13 @@ Functions
    :param layer_id: The ID of the layer to fetch.
    :type layer_id: int
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
-   :type crs: int, optional
+   :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
-   :type verbose: bool, optional
+   :type verbose: bool = False
    :param bounding_polygon: Bounding polygon for data fetching. Default is all of New Zealand.
-   :type bounding_polygon: gpd.GeoDataFrame, optional
+   :type bounding_polygon: Optional[gpd.GeoDataFrame] = None
 
-   :returns: The fetched vector data as a GeoDataFrame.
+   :returns: A GeoDataFrame containing the fetched vector data.
    :rtype: gpd.GeoDataFrame
 
    :raises ValueError: If an unsupported 'data_provider' value is provided.

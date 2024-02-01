@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.digitaltwin.instructions_records_to_db &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+  <title>src.digitaltwin.instructions_records_to_db &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -20,7 +22,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="src.digitaltwin.run" href="../run/index.html" />
+    <link rel="next" title="src.digitaltwin.retrieve_static_boundaries" href="../retrieve_static_boundaries/index.html" />
     <link rel="prev" title="src.digitaltwin.get_data_using_geoapis" href="../get_data_using_geoapis/index.html" /> 
 </head>
 
@@ -33,7 +35,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            Digital Twin for Flood Resilience in Aotearoa New Zealand
+            Flood Resilience Digital Twin (FReDT)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -67,7 +69,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+          <a href="../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -90,8 +92,8 @@
              
   <section id="module-src.digitaltwin.instructions_records_to_db">
 <span id="src-digitaltwin-instructions-records-to-db"></span><h1><a class="reference internal" href="#module-src.digitaltwin.instructions_records_to_db" title="src.digitaltwin.instructions_records_to_db"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin.instructions_records_to_db</span></code></a><a class="headerlink" href="#module-src.digitaltwin.instructions_records_to_db" title="Link to this heading"></a></h1>
-<p>This script processes ‘instructions_run’ records, validates URLs and instruction fields, and stores them in the
-‘geospatial_layers’ table of the database.</p>
+<p>This script processes ‘static_vector_instructions’ records, validates URLs and instruction fields, and stores them in
+the ‘geospatial_layers’ table of the database.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <section id="functions">
@@ -105,16 +107,16 @@
 <td><p>Validate the fields of an instruction.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file" title="src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_and_check_instructions_file</span></code></a>(→ pandas.DataFrame)</p></td>
-<td><p>Read and check the instructions_run file, validating URLs and instruction fields.</p></td>
+<td><p>Read and check the static_vector_instructions file, validating URLs and instruction fields.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers" title="src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_geospatial_layers</span></code></a>(→ pandas.DataFrame)</p></td>
 <td><p>Retrieve existing geospatial layers from the 'geospatial_layers' table.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.get_non_existing_records" title="src.digitaltwin.instructions_records_to_db.get_non_existing_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_non_existing_records</span></code></a>(→ pandas.DataFrame)</p></td>
-<td><p>Get 'instructions_run' records that are not available in the database.</p></td>
+<td><p>Get 'static_vector_instructions' records that are not available in the database.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db" title="src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_instructions_records_to_db</span></code></a>(→ None)</p></td>
-<td><p>Store 'instructions_run' records in the 'geospatial_layers' table in the database.</p></td>
+<td><p>Store 'static_vector_instructions' records in the 'geospatial_layers' table in the database.</p></td>
 </tr>
 </tbody>
 </table>
@@ -191,7 +193,7 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
 <dl class="py function">
 <dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file">
 <span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">read_and_check_instructions_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file" title="Link to this definition"></a></dt>
-<dd><p>Read and check the instructions_run file, validating URLs and instruction fields.</p>
+<dd><p>Read and check the static_vector_instructions file, validating URLs and instruction fields.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The processed instructions DataFrame.</p>
@@ -222,16 +224,16 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
 <dl class="py function">
 <dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.get_non_existing_records">
 <span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">get_non_existing_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_layers_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.get_non_existing_records" title="Link to this definition"></a></dt>
-<dd><p>Get ‘instructions_run’ records that are not available in the database.</p>
+<dd><p>Get ‘static_vector_instructions’ records that are not available in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>instructions_df</strong> (<em>pd.DataFrame</em>) – Data frame containing the ‘instructions_run’ records.</p></li>
-<li><p><strong>existing_layers_df</strong> (<em>pd.DataFrame</em>) – Data frame containing the existing ‘instructions_run’ records from the database.</p></li>
+<li><p><strong>instructions_df</strong> (<em>pd.DataFrame</em>) – Data frame containing the ‘static_vector_instructions’ records.</p></li>
+<li><p><strong>existing_layers_df</strong> (<em>pd.DataFrame</em>) – Data frame containing the existing ‘static_vector_instructions’ records from the database.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Data frame containing the ‘instructions_run’ records that are not available in the database.</p>
+<dd class="field-even"><p>Data frame containing the ‘static_vector_instructions’ records that are not available in the database.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -242,7 +244,7 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
 <dl class="py function">
 <dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db">
 <span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">store_instructions_records_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db" title="Link to this definition"></a></dt>
-<dd><p>Store ‘instructions_run’ records in the ‘geospatial_layers’ table in the database.</p>
+<dd><p>Store ‘static_vector_instructions’ records in the ‘geospatial_layers’ table in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p>
@@ -265,7 +267,7 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../get_data_using_geoapis/index.html" class="btn btn-neutral float-left" title="src.digitaltwin.get_data_using_geoapis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../run/index.html" class="btn btn-neutral float-right" title="src.digitaltwin.run" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../retrieve_static_boundaries/index.html" class="btn btn-neutral float-right" title="src.digitaltwin.retrieve_static_boundaries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

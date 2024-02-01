@@ -4,35 +4,14 @@
 .. py:module:: src.dynamic_boundary_conditions
 
 
-Submodules
-----------
+Subpackages
+-----------
 .. toctree::
    :titlesonly:
-   :maxdepth: 1
+   :maxdepth: 3
 
-   hirds_rainfall_data_from_db/index.rst
-   hirds_rainfall_data_to_db/index.rst
-   hydrograph/index.rst
-   hyetograph/index.rst
-   main_rainfall/index.rst
-   main_river/index.rst
-   main_tide_slr/index.rst
-   osm_waterways/index.rst
-   rainfall_data_from_hirds/index.rst
-   rainfall_enum/index.rst
-   rainfall_model_input/index.rst
-   rainfall_sites/index.rst
-   rec1_osm_match/index.rst
-   river_data_to_from_db/index.rst
-   river_enum/index.rst
-   river_model_input/index.rst
-   river_network_for_aoi/index.rst
-   sea_level_rise_data/index.rst
-   thiessen_polygons/index.rst
-   tide_data_from_niwa/index.rst
-   tide_enum/index.rst
-   tide_query_location/index.rst
-   tide_slr_combine/index.rst
-   tide_slr_model_input/index.rst
+   rainfall/index.rst
+   river/index.rst
+   tide/index.rst
 
 

@@ -1,0 +1,25 @@
+:py:mod:`src.dynamic_boundary_conditions.river`
+===============================================
+
+.. py:module:: src.dynamic_boundary_conditions.river
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   align_rec_osm/index.rst
+   hydrograph/index.rst
+   main_river/index.rst
+   osm_waterways/index.rst
+   river_data_from_niwa/index.rst
+   river_data_to_from_db/index.rst
+   river_enum/index.rst
+   river_inflows/index.rst
+   river_model_input/index.rst
+   river_network_for_aoi/index.rst
+   river_network_to_from_db/index.rst
+
+

@@ -1,0 +1,82 @@
+:py:mod:`src.dynamic_boundary_conditions.river.river_inflows`
+=============================================================
+
+.. py:module:: src.dynamic_boundary_conditions.river.river_inflows
+
+.. autoapi-nested-parse::
+
+   This script handles the task of obtaining REC river inflow data along with the corresponding river input points used
+   for the BG-Flood model.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_inflows.get_elevations_near_rec_entry_point
+   src.dynamic_boundary_conditions.river.river_inflows.get_min_elevation_river_input_point
+   src.dynamic_boundary_conditions.river.river_inflows.get_rec_inflows_with_input_points
+
+
+
+.. py:function:: get_elevations_near_rec_entry_point(rec_inflows_row: pandas.Series, hydro_dem: xarray.Dataset) -> geopandas.GeoDataFrame
+
+   Extracts elevation values and their corresponding coordinates from the Hydrologically Conditioned DEM in the
+   vicinity of the entry point of the REC river inflow segment.
+
+   :param rec_inflows_row: Represents data pertaining to an individual REC river inflow segment, including its entry point into the
+                           catchment area and the boundary line it aligns with.
+   :type rec_inflows_row: pd.Series
+   :param hydro_dem: Hydrologically Conditioned DEM for the catchment area.
+   :type hydro_dem: xr.Dataset
+
+   :returns: A GeoDataFrame containing elevation values and their corresponding coordinates extracted from the
+             Hydrologically Conditioned DEM in the vicinity of the entry point of the REC river inflow segment.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_min_elevation_river_input_point(rec_inflows_row: pandas.Series, hydro_dem: xarray.Dataset) -> geopandas.GeoDataFrame
+
+   Locate the river input point with the lowest elevation, used for BG-Flood model river input, from the
+   Hydrologically Conditioned DEM for the specific REC river inflow segment.
+
+   :param rec_inflows_row: Represents data pertaining to an individual REC river inflow segment, including its entry point into the
+                           catchment area and the boundary line it aligns with.
+   :type rec_inflows_row: pd.Series
+   :param hydro_dem: Hydrologically Conditioned DEM for the catchment area.
+   :type hydro_dem: xr.Dataset
+
+   :returns: A GeoDataFrame containing the river input point with the lowest elevation, used for BG-Flood model river input,
+             from the Hydrologically Conditioned DEM for the specific REC river inflow segment.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_rec_inflows_with_input_points(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, rec_network_data: geopandas.GeoDataFrame, distance_m: int = 300) -> geopandas.GeoDataFrame
+
+   Obtain data for REC river inflow segments whose boundary points align with the boundary points of
+   OpenStreetMap (OSM) waterways within a specified distance threshold, along with their corresponding
+   river input points used for the BG-Flood model.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param rec_network_data: A GeoDataFrame containing the REC river network data.
+   :type rec_network_data: gpd.GeoDataFrame
+   :param distance_m: Distance threshold in meters for spatial proximity matching. The default value is 300 meters.
+   :type distance_m: int = 300
+
+   :returns: A GeoDataFrame containing data for REC river inflow segments whose boundary points align with the
+             boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold,
+             along with their corresponding river input points used for the BG-Flood model.
+   :rtype: gpd.GeoDataFrame
+
+   :raises NoRiverDataException: If no REC river segment is found crossing the catchment boundary.
+
+

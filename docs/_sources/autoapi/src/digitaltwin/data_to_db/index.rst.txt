@@ -93,13 +93,13 @@ Attributes
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param vector_data: The GeoDataFrame containing the fetched vector data.
+   :param vector_data: A GeoDataFrame containing the fetched vector data.
    :type vector_data: gpd.GeoDataFrame
    :param table_name: The name of the table in the database.
    :type table_name: str
    :param unique_column_name: The name of the unique column in the table.
    :type unique_column_name: str
-   :param area_of_interest: The GeoDataFrame representing the area of interest.
+   :param area_of_interest: A GeoDataFrame representing the area of interest.
    :type area_of_interest: gpd.GeoDataFrame
 
    :returns: The set of IDs from the fetched vector_data that are not present in the specified table in the database.
@@ -113,9 +113,9 @@ Attributes
    :param engine: The engine used to connect to the database.
    :type engine: Engine
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
-   :type crs: int, optional
+   :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
-   :type verbose: bool, optional
+   :type verbose: bool = False
 
    :returns: This function does not return any value.
    :rtype: None
@@ -128,7 +128,7 @@ Attributes
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param catchment_area: The GeoDataFrame representing the catchment area.
+   :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
    :param table_name: The name of the table in the database.
    :type table_name: str
@@ -151,12 +151,12 @@ Attributes
    :type layer_id: int
    :param table_name: The database table name of the geospatial layer.
    :type table_name: str
-   :param area_of_interest: The GeoDataFrame representing the area of interest.
+   :param area_of_interest: A GeoDataFrame representing the area of interest.
    :type area_of_interest: gpd.GeoDataFrame
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
-   :type crs: int, optional
+   :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
-   :type verbose: bool, optional
+   :type verbose: bool = False
 
    :returns: This function does not return any value.
    :rtype: None
@@ -176,12 +176,12 @@ Attributes
    :type table_name: str
    :param unique_column_name: The unique column name used for record identification in the database table.
    :type unique_column_name: str
-   :param area_of_interest: The GeoDataFrame representing the area of interest.
+   :param area_of_interest: A GeoDataFrame representing the area of interest.
    :type area_of_interest: gpd.GeoDataFrame
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
-   :type crs: int, optional
+   :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
-   :type verbose: bool, optional
+   :type verbose: bool = False
 
    :returns: This function does not return any value.
    :rtype: None
@@ -193,12 +193,12 @@ Attributes
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param catchment_area: The GeoDataFrame representing the catchment area.
+   :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
-   :type crs: int, optional
+   :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
-   :type verbose: bool, optional
+   :type verbose: bool = False
 
    :returns: This function does not return any value.
    :rtype: None
@@ -210,12 +210,12 @@ Attributes
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param catchment_area: The GeoDataFrame representing the catchment area.
+   :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
-   :type crs: int, optional
+   :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
-   :type verbose: bool, optional
+   :type verbose: bool = False
 
    :returns: This function does not return any value.
    :rtype: None
@@ -227,7 +227,7 @@ Attributes
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param catchment_area: The GeoDataFrame representing the catchment area.
+   :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
 
    :returns: This function does not return any value.

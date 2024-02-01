@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.digitaltwin.data_to_db &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+  <title>src.digitaltwin.data_to_db &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -33,7 +35,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            Digital Twin for Flood Resilience in Aotearoa New Zealand
+            Flood Resilience Digital Twin (FReDT)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -67,7 +69,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+          <a href="../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -215,10 +217,10 @@ for the area of interest.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>vector_data</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame containing the fetched vector data.</p></li>
+<li><p><strong>vector_data</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the fetched vector data.</p></li>
 <li><p><strong>table_name</strong> (<em>str</em>) – The name of the table in the database.</p></li>
 <li><p><strong>unique_column_name</strong> (<em>str</em>) – The name of the unique column in the table.</p></li>
-<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the area of interest.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the area of interest.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -238,8 +240,8 @@ for the area of interest.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+<li><p><strong>crs</strong> (<em>int = 2193</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool = False</em>) – Whether to print messages. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -260,7 +262,7 @@ for the specified table.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
 <li><p><strong>table_name</strong> (<em>str</em>) – The name of the table in the database.</p></li>
 </ul>
 </dd>
@@ -287,9 +289,9 @@ for the specified table.</p>
 <li><p><strong>data_provider</strong> (<em>str</em>) – The data provider of the geospatial layer.</p></li>
 <li><p><strong>layer_id</strong> (<em>int</em>) – The ID of the geospatial layer.</p></li>
 <li><p><strong>table_name</strong> (<em>str</em>) – The database table name of the geospatial layer.</p></li>
-<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the area of interest.</p></li>
-<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the area of interest.</p></li>
+<li><p><strong>crs</strong> (<em>int = 2193</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool = False</em>) – Whether to print messages. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -313,9 +315,9 @@ for the specified table.</p>
 <li><p><strong>layer_id</strong> (<em>int</em>) – The ID of the geospatial layer.</p></li>
 <li><p><strong>table_name</strong> (<em>str</em>) – The database table name of the geospatial layer.</p></li>
 <li><p><strong>unique_column_name</strong> (<em>str</em>) – The unique column name used for record identification in the database table.</p></li>
-<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the area of interest.</p></li>
-<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the area of interest.</p></li>
+<li><p><strong>crs</strong> (<em>int = 2193</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool = False</em>) – Whether to print messages. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -335,9 +337,9 @@ for the specified table.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
-<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>crs</strong> (<em>int = 2193</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool = False</em>) – Whether to print messages. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -357,9 +359,9 @@ for the specified table.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
-<li><p><strong>crs</strong> (<em>int</em><em>, </em><em>optional</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print messages. Default is False.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>crs</strong> (<em>int = 2193</em>) – The coordinate reference system (CRS) code to use. Default is 2193.</p></li>
+<li><p><strong>verbose</strong> (<em>bool = False</em>) – Whether to print messages. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -379,7 +381,7 @@ for the specified table.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – The GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

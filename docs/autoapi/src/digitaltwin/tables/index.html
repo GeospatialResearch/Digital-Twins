@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.digitaltwin.tables &mdash; Digital Twin for Flood Resilience in Aotearoa New Zealand 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+  <title>src.digitaltwin.tables &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -33,7 +35,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            Digital Twin for Flood Resilience in Aotearoa New Zealand
+            Flood Resilience Digital Twin (FReDT)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -67,7 +69,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">Digital Twin for Flood Resilience in Aotearoa New Zealand</a>
+          <a href="../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -103,10 +105,13 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.tables.UserLogInfo" title="src.digitaltwin.tables.UserLogInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UserLogInfo</span></code></a></p></td>
 <td><p>Class representing the 'user_log_information' table.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.tables.HydroDEM" title="src.digitaltwin.tables.HydroDEM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HydroDEM</span></code></a></p></td>
-<td><p>Class representing the 'hydrological_dem' table.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.tables.RiverNetworkExclusions" title="src.digitaltwin.tables.RiverNetworkExclusions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RiverNetworkExclusions</span></code></a></p></td>
+<td><p>Class representing the 'rec_network_exclusions' table.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.tables.BGFloodModelOutput" title="src.digitaltwin.tables.BGFloodModelOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BGFloodModelOutput</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.tables.RiverNetwork" title="src.digitaltwin.tables.RiverNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RiverNetwork</span></code></a></p></td>
+<td><p>Class representing the 'rec_network' table.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.tables.BGFloodModelOutput" title="src.digitaltwin.tables.BGFloodModelOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BGFloodModelOutput</span></code></a></p></td>
 <td><p>Class representing the 'bg_flood_model_output' table.</p></td>
 </tr>
 </tbody>
@@ -208,7 +213,7 @@
 <dd><p>Name of the unique column in the table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, optional</p>
+<dd class="field-odd"><p>Optional[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -216,10 +221,10 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.digitaltwin.tables.GeospatialLayers.coverage_area">
 <span class="sig-name descname"><span class="pre">coverage_area</span></span><a class="headerlink" href="#src.digitaltwin.tables.GeospatialLayers.coverage_area" title="Link to this definition"></a></dt>
-<dd><p>Coverage area of the geospatial data. It can be either the whole country or NULL.</p>
+<dd><p>Coverage area of the geospatial data, e.g. ‘New Zealand’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, optional</p>
+<dd class="field-odd"><p>Optional[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -275,6 +280,11 @@
 <span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.GeospatialLayers.__table_args__">
+<span class="sig-name descname"><span class="pre">__table_args__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#src.digitaltwin.tables.GeospatialLayers.__table_args__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -310,7 +320,7 @@
 <dd><p>A list of tables (geospatial layers) associated with the log entry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[str]</p>
+<dd class="field-odd"><p>Dict[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -365,13 +375,13 @@
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="src.digitaltwin.tables.HydroDEM">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">HydroDEM</span></span><a class="headerlink" href="#src.digitaltwin.tables.HydroDEM" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetworkExclusions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">RiverNetworkExclusions</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetworkExclusions" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#src.digitaltwin.tables.Base" title="src.digitaltwin.tables.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Base</span></code></a></p>
-<p>Class representing the ‘hydrological_dem’ table.</p>
+<p>Class representing the ‘rec_network_exclusions’ table.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.tables.HydroDEM.__tablename__">
-<span class="sig-name descname"><span class="pre">__tablename__</span></span><a class="headerlink" href="#src.digitaltwin.tables.HydroDEM.__tablename__" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetworkExclusions.__tablename__">
+<span class="sig-name descname"><span class="pre">__tablename__</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetworkExclusions.__tablename__" title="Link to this definition"></a></dt>
 <dd><p>Name of the database table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -381,9 +391,9 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.tables.HydroDEM.unique_id">
-<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#src.digitaltwin.tables.HydroDEM.unique_id" title="Link to this definition"></a></dt>
-<dd><p>Unique identifier for each entry (primary key).</p>
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetworkExclusions.rec_network_id">
+<span class="sig-name descname"><span class="pre">rec_network_id</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetworkExclusions.rec_network_id" title="Link to this definition"></a></dt>
+<dd><p>An identifier for the river network associated with each new run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
@@ -392,9 +402,20 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.tables.HydroDEM.file_name">
-<span class="sig-name descname"><span class="pre">file_name</span></span><a class="headerlink" href="#src.digitaltwin.tables.HydroDEM.file_name" title="Link to this definition"></a></dt>
-<dd><p>Name of the hydrological DEM file.</p>
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetworkExclusions.objectid">
+<span class="sig-name descname"><span class="pre">objectid</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetworkExclusions.objectid" title="Link to this definition"></a></dt>
+<dd><p>An identifier for the REC river object matching from the ‘rec_data’ table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetworkExclusions.exclusion_cause">
+<span class="sig-name descname"><span class="pre">exclusion_cause</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetworkExclusions.exclusion_cause" title="Link to this definition"></a></dt>
+<dd><p>Cause of exclusion, i.e., the reason why the REC river geometry was excluded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -403,9 +424,57 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.tables.HydroDEM.file_path">
-<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#src.digitaltwin.tables.HydroDEM.file_path" title="Link to this definition"></a></dt>
-<dd><p>Path to the hydrological DEM file.</p>
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetworkExclusions.geometry">
+<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetworkExclusions.geometry" title="Link to this definition"></a></dt>
+<dd><p>Geometric representation of the excluded REC river features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>LineString</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">__tablename__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rec_network_exclusions'</span></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">rec_network_id</span></span><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">objectid</span></span><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">exclusion_cause</span></span><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetworkExclusions.__table_args__">
+<span class="sig-name descname"><span class="pre">__table_args__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#src.digitaltwin.tables.RiverNetworkExclusions.__table_args__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">RiverNetwork</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.digitaltwin.tables.Base" title="src.digitaltwin.tables.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Base</span></code></a></p>
+<p>Class representing the ‘rec_network’ table.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetwork.__tablename__">
+<span class="sig-name descname"><span class="pre">__tablename__</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetwork.__tablename__" title="Link to this definition"></a></dt>
+<dd><p>Name of the database table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -414,8 +483,41 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.tables.HydroDEM.created_at">
-<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#src.digitaltwin.tables.HydroDEM.created_at" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetwork.rec_network_id">
+<span class="sig-name descname"><span class="pre">rec_network_id</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetwork.rec_network_id" title="Link to this definition"></a></dt>
+<dd><p>An identifier for the river network associated with each new run (primary key).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetwork.network_path">
+<span class="sig-name descname"><span class="pre">network_path</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetwork.network_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the REC river network file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetwork.network_data_path">
+<span class="sig-name descname"><span class="pre">network_data_path</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetwork.network_data_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the REC river network data file for the AOI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetwork.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetwork.created_at" title="Link to this definition"></a></dt>
 <dd><p>Timestamp indicating when the output was created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -425,44 +527,44 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.tables.HydroDEM.geometry">
-<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#src.digitaltwin.tables.HydroDEM.geometry" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="src.digitaltwin.tables.RiverNetwork.geometry">
+<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#src.digitaltwin.tables.RiverNetwork.geometry" title="Link to this definition"></a></dt>
 <dd><p>Geometric representation of the catchment area coverage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Geometry</p>
+<dd class="field-odd"><p>Polygon</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id13">
-<span class="sig-name descname"><span class="pre">__tablename__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hydrological_dem'</span></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id14">
-<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id15">
-<span class="sig-name descname"><span class="pre">file_name</span></span><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id16">
-<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id17">
-<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="id18">
-<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__tablename__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rec_network'</span></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">rec_network_id</span></span><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">network_path</span></span><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">network_data_path</span></span><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -533,39 +635,39 @@
 <dd><p>Geometric representation of the catchment area coverage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Geometry</p>
+<dd class="field-odd"><p>Polygon</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id19">
-<span class="sig-name descname"><span class="pre">__tablename__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bg_flood_model_output'</span></em><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id20">
-<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id21">
-<span class="sig-name descname"><span class="pre">file_name</span></span><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id22">
-<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id23">
-<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="id24">
-<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__tablename__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bg_flood_model_output'</span></em><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#id25" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">file_name</span></span><a class="headerlink" href="#id26" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#id27" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#id28" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#id29" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -599,7 +701,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
 <li><p><strong>table_name</strong> (<em>str</em>) – The name of the table to check for existence.</p></li>
-<li><p><strong>schema</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the schema where the table resides. Defaults to “public”.</p></li>
+<li><p><strong>schema</strong> (<em>str = &quot;public&quot;</em>) – The name of the schema where the table resides. Defaults to “public”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -1,0 +1,103 @@
+:py:mod:`src.dynamic_boundary_conditions.tide.sea_level_rise_data`
+==================================================================
+
+.. py:module:: src.dynamic_boundary_conditions.tide.sea_level_rise_data
+
+.. autoapi-nested-parse::
+
+   This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
+   storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
+   in the provided tide data.
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.sea_level_rise_data.download_slr_data_files_from_takiwa
+   src.dynamic_boundary_conditions.tide.sea_level_rise_data.read_slr_data_from_files
+   src.dynamic_boundary_conditions.tide.sea_level_rise_data.store_slr_data_to_db
+   src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_closest_slr_data
+   src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_slr_data_from_db
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.sea_level_rise_data.log
+
+
+.. py:data:: log
+
+   
+
+.. py:function:: download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None
+
+   Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
+
+   :param slr_data_dir: The directory where the downloaded sea level rise data files will be saved.
+   :type slr_data_dir: pathlib.Path
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: read_slr_data_from_files(slr_data_dir: pathlib.Path) -> geopandas.GeoDataFrame
+
+   Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
+
+   :param slr_data_dir: The directory containing the downloaded sea level rise data files.
+   :type slr_data_dir: pathlib.Path
+
+   :returns: A GeoDataFrame containing the sea level rise data from the NZ Sea level rise datasets.
+   :rtype: gpd.GeoDataFrame
+
+   :raises FileNotFoundError: If the sea level rise data directory does not exist or if there are no CSV files in the specified directory.
+
+
+.. py:function:: store_slr_data_to_db(engine: sqlalchemy.engine.Engine) -> None
+
+   Store sea level rise data to the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: get_closest_slr_data(engine: sqlalchemy.engine.Engine, single_query_loc: pandas.Series) -> geopandas.GeoDataFrame
+
+   Retrieve the closest sea level rise data for a single query location from the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param single_query_loc: Pandas Series containing the location coordinate and additional information used for retrieval.
+   :type single_query_loc: pd.Series
+
+   :returns: A GeoDataFrame containing the closest sea level rise data for the query location from the database.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_slr_data_from_db(engine: sqlalchemy.engine.Engine, tide_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Retrieve the closest sea level rise data from the database for all locations in the provided tide data.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param tide_data: A GeoDataFrame containing tide data with added time information (seconds, minutes, hours) and location details.
+   :type tide_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the closest sea level rise data for all locations in the tide data.
+   :rtype: gpd.GeoDataFrame
+
+
