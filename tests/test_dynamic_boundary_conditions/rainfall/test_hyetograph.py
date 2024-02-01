@@ -186,10 +186,10 @@ class HyetographTest(unittest.TestCase):
                         time_to_peak_mins=time_to_peak_mins,
                         increment_mins=self.increment_mins,
                         hyeto_method=hyeto_method)
-                    self.assertEqual(
-                        "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
-                        "at least half of 'storm_length_mins' (storm duration).",
-                        str(context.exception))
+                self.assertEqual(
+                    "'time_to_peak_mins' (time in minutes when rainfall is at its greatest) needs to be "
+                    "at least half of 'storm_length_mins' (storm duration).",
+                    str(context.exception))
 
     def test_add_time_information_increment_mins_correct_increment_mins_diff(self):
         """Test to ensure returned data have correct consistent increment minutes difference."""

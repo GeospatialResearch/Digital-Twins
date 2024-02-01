@@ -86,7 +86,7 @@ class RainfallModelInputTest(unittest.TestCase):
             for row_index in range(len(hyetograph_data)):
                 row_hyeto_data = hyetograph_data.iloc[row_index, :-3]
                 row_hyeto_data = row_hyeto_data.to_frame(name="rain_intensity_mmhr").reset_index(names="site_id")
-                row_hyeto_data = pd.merge(row_hyeto_data, site_area_percent, how="left", on="site_id")
+                row_hyeto_data = pd.merge(row_hyeto_data, site_area_percent, how="left", on="site_id", validate="1:1")
                 row_mean_catchment_rain = (row_hyeto_data["rain_intensity_mmhr"] * row_hyeto_data["area_percent"]).sum()
                 self.assertAlmostEqual(
                     row_mean_catchment_rain, mean_catchment_rain["rain_intensity_mmhr"].iloc[row_index])
