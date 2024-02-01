@@ -86,14 +86,6 @@ export default Vue.extend({
       },
     }
   },
-  async mounted() {
-    // Limit scrolling on this page
-    document.body.style.overflow = "hidden"
-  },
-  beforeDestroy() {
-    // Reset scrolling for other pages
-    document.body.style.overflow = ""
-  },
   methods: {
     /**
      * When a task has been posted, loads building outlines for the bbox area.
