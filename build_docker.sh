@@ -14,6 +14,7 @@ echo "Ensuring DATA_DIR_GEOSERVER ($DATA_DIR_GEOSERVER) exists"
 mkdir -p "$DATA_DIR_GEOSERVER"
 
 # Pull docker images from online where available
+docker compose pull lparkinson/bg_flood:v0.9
 docker compose pull
 
 # Build images that are different from the online source
@@ -28,4 +29,5 @@ docker save -o fredt.tar \
   lparkinson/celery-flood-resilience-dt:1.0 \
   docker.osgeo.org/geoserver:2.21.2 \
   lparkinson/www-flood-resilience-dt:1.0 \
-  redis:7
+  redis:7 \
+  lparkinson/bg_flood:v0.9
