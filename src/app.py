@@ -227,7 +227,11 @@ def get_depth_at_point(task_id: str) -> Response:
     model_task_result = result.AsyncResult(task_id, app=tasks.app)
     status = model_task_result.status
     if status != states.SUCCESS:
-        return make_response(f"Task {task_id} has status {status}, not {states.SUCCESS}", BAD_REQUEST)
+        response = make_response(f"Task {task_id} has status {status}, not {states.SUCCESS}", BAD_REQUEST)
+        # Explicitly set content-type because task_id may make browsers visiting this endpoint vulnerable to XSS
+        # For more info: SonarCloud RuleID pythonsecurity:S5131
+        response.mimetype = "text/plain"
+        return response
 
     model_id = model_task_result.get()
     depth_task = tasks.get_depth_by_time_at_point.delay(model_id, lat, lng)
