@@ -70,6 +70,7 @@ jobs:
           environment-file: environment.yml
           auto-activate-base: false
           channels: conda-forge,defaults
+          chanel-priority: strict
           use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
           miniforge-version: latest
           auto-update-conda: true
