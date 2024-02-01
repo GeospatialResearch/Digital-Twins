@@ -13,15 +13,19 @@ set +o allexport
 echo "Ensuring DATA_DIR_GEOSERVER ($DATA_DIR_GEOSERVER) exists"
 mkdir -p "$DATA_DIR_GEOSERVER"
 
-# Check if docker-compose command is available for compatability with different docker CLI versions
-if ! command -v docker-compose &> /dev/null
-then
-  # If the command is not available, create an alias for it
-  alias docker-compose="docker compose --compatibility $@"
-fi
-
 # Pull docker images from online where available
-docker-compose pull
+docker compose pull
 
 # Build images that are different from the online source
-docker-compose build
+docker compose build
+
+
+# Save images to tar for backup in case docker goes down
+echo "Saving images to fredt.tar"
+docker save -o fredt.tar \
+  postgis/postgis:16-3.4 \
+  lparkinson/backend-flood-resilience-dt:1.0 \
+  lparkinson/celery-flood-resilience-dt:1.0 \
+  docker.osgeo.org/geoserver:2.21.2 \
+  lparkinson/www-flood-resilience-dt:1.0 \
+  redis:7
