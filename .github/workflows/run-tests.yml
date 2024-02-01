@@ -44,10 +44,6 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [ 3.11 ]
     steps:
 
       - name: Checkout github repo including lfs files
@@ -64,18 +60,12 @@ jobs:
           key: ${{ runner.os }}-conda-${{ env.cache-name }}-${{ hashFiles('environment.yml') }}
 
       - name: Install package dependencies
-        uses: conda-incubator/setup-miniconda@v3
+        uses: mamba-org/setup-micromamba@v1
         with:
-          activate-environment: digitaltwin
           environment-file: environment.yml
-          auto-activate-base: false
-          channels: conda-forge,defaults
-          chanel-priority: strict
-          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
-          miniforge-version: latest
-          auto-update-conda: true
-          conda-solver: classic
-          python-version: ${{ matrix.python-version }}
+          # only cache environment
+          cache-environment: true
+          cache-downloads: false
       - run: |
           conda info
           conda list
