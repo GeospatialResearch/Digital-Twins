@@ -64,14 +64,16 @@ jobs:
           key: ${{ runner.os }}-conda-${{ env.cache-name }}-${{ hashFiles('environment.yml') }}
 
       - name: Install package dependencies
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: digitaltwin
           environment-file: environment.yml
           auto-activate-base: false
-          channels: defaults,conda-forge
+          channels: conda-forge,defaults
           use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
           miniforge-version: latest
+          auto-update-conda: true
+          conda-solver: classic
           python-version: ${{ matrix.python-version }}
       - run: |
           conda info
