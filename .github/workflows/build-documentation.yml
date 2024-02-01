@@ -12,7 +12,8 @@ jobs:
         working-directory: ./sphinx
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+      token: ${{ secrets.PUSH_PAGES_PAT }}
       with:
         fetch-depth: 0
     - name: Install build dependencies
