@@ -1,10 +1,13 @@
-FROM continuumio/miniconda3 AS build
+FROM continuumio/miniconda3:23.10.0-1 AS build
 # Miniconda layer for building conda environment
 WORKDIR /app
 
+# Install mamba for daster conda solves
+RUN conda install -c conda-forge mamba
+
 # Create Conda environment
 COPY environment.yml .
-RUN conda env create -f environment.yml
+RUN mamba env create -f environment.yml
 
 # Make RUN commands use the new environment:
 SHELL ["conda", "run", "-n", "digitaltwin", "/bin/bash", "-c"]
