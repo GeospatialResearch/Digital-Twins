@@ -123,7 +123,7 @@ def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFram
     crs = area_of_interest.crs.to_epsg()
     # Construct the query to find buildings within the area of interest
     query = f"""
-    SELECT building_outline_id, geometry FROM nz_building_outlines 
+    SELECT building_outline_id, geometry FROM nz_building_outlines
     WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
     """
     # Execute the query and retrieve the result as a GeoDataFrame
