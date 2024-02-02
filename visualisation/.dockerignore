@@ -1,5 +1,6 @@
 # Ignore local environment variables when building with docker
 .env*.local
+.env
 
 ### Node template
 # Logs
