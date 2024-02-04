@@ -13,7 +13,7 @@ The Flood Resilience Digital Twin can provide a better understanding of the degr
 Digital Twin not only represents the current status of the visualised assets but also how they will perform/react to future situations. 
 The build twin when used to run flood models combined with other sources of information can allow us to make predictions.
 
-Data is collected from an open data portal provided by multiple organisations or data providers such as LINZ, StatsNZ, opentopography, NIWA, MFE, and more.
+Data is collected from open data portals provided by multiple organisations or data providers such as LINZ, StatsNZ, opentopography, NIWA, MFE, and more.
 The collected data is stored in the application database using PostgreSQL
 
 The reason for implementing a database are:
@@ -28,7 +28,6 @@ The following list defines the basic steps required to setup and run the digital
 
 ## Requirements
 * [Docker](https://www.docker.com/)
-* [Anaconda](https://www.anaconda.com/download)
 
 
 ## Required Credentials:
@@ -40,26 +39,19 @@ Create API keys for each of these services. You may need to create an account an
 
 
 ## Starting the Digital Twin application (localhost)
-1. Set up Docker and Anaconda to work on your system.
-
-1. Clone this repository to your local machine (may be best to avoid network drives for software development since they are much slower)
-
-1. In the project root, in an Anaconda prompt, run the following commands to initialise the environment:
-   ```bash
-   #!/usr/bin/env bash
-   conda env create -f environment.yml
-   conda activate digitaltwin
-   ```
-   _While the environment is being created, you can continue with the other steps until using the environment._
+1. Clone this repository to your local machine.
    
 1. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields unless a comment says you can leave it blank.
-Blank fields to fill in include things like the POSTGRES_PASSWORD variable.
+Blank fields to fill in include things like the `POSTGRES_PASSWORD` variable and `CESIUM_ACCESS_TOKEN`. You may configure other variables as needed.
+   
+1. Configure `DATA_DIRx` variables in `.env` such that they point to real directories accessible to your file system.
+   We have these mounted on UC network drives, so we can share lidar data between FReDT instances.
 
 1. Create a file called `api_keys.env`, copy the contents of `api_keys.env.template` and fill in the blank values with API credentials.
    
 1. Set any file paths in `.env` if needed. Multiple instances of the digital twin can point to the same directories and share the cached data to improve speed.
     
-1. From project root, run the command `docker-compose up --build -d` to run the database, backend web servers, and helper services.  
+1. From project root, run the command `docker-compose up -d` to run the database, backend web servers, and helper services.  
 **If this fails on a WindowsToastNotification error on windows, just run it again and it should work.**
    
 1. You may inspect the logs of the backend using `docker-compose logs -f backend celery_worker`
@@ -73,6 +65,7 @@ To interact with the application you send calls to the REST API. Example calls a
 
 
 ## Setup for developers
+Set up environment variables as above.
 
 ### Run single Docker service e.g. database
 To run only one isolated service (services defined in `docker-compose.yml`) use the following command:
@@ -88,7 +81,7 @@ docker-compose up --build -d db_postgres
 With the conda environment activated run:
 ```bash
 #!/usr/bin/env bash
-celery -A src.tasks worker --loglevel=INFO --pool=solo
+celery -A src.tasks worker -P threads --loglevel=INFO
 ```
 
 ### Running the backend as a processing script instead of web interface
@@ -99,7 +92,7 @@ To do so:
 #!/usr/bin/env bash
 docker-compose up --build -d db_postgres geoserver
 ```
-2. For local testing, it may be useful to use the `src.run_all.py` script to run the processing.
+2. For local testing, it may be useful to use the `src.run_all.py` script to run the processing. From the project root run
 `python -m src.run_all`
 
 
