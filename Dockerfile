@@ -41,7 +41,7 @@ RUN apt-get update                             \
 USER nonroot
 
 # Copy python virtual environment from build layer
-COPY --chown=nonroot:nonroot --chmod=555 --from=build /venv /venv
+COPY --chown=nonroot:nonroot --chmod=744 --from=build /venv /venv
 
 # Using python virtual environment, preload selenium with firefox so that first runtime is faster.
 SHELL ["/bin/bash", "-c"]
