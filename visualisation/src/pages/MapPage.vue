@@ -26,6 +26,7 @@
       :scenario-options="selectedOption"
       @task-posted="onTaskPosted"
       @task-completed="onTaskCompleted"
+      @task-failed="onTaskFailed"
     />
     <img id="legend" alt="Legend graphic showing how colour relates to depth" src="viridis_legend.png">
   </div>
@@ -111,6 +112,12 @@ export default Vue.extend({
         geoJsonDataSources,
         imageryProviders: [floodRasterProvider]
       }
+    },
+    /**
+     * When a task fails, reset the data sources to blank map
+     */
+    async onTaskFailed() {
+      this.dataSources = {};
     },
     /**
      * Creates ImageryProvider from geoserver WMS for the flood raster.
