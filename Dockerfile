@@ -49,9 +49,9 @@ RUN source /venv/bin/activate && \
     selenium-manager --browser firefox --debug
 
 # Copy source files and essential runtime files
-COPY --chown=nonroot:nonroot --chmod=555 selected_polygon.geojson .
-COPY --chown=nonroot:nonroot --chmod=775 instructions.json .
-COPY --chown=nonroot:nonroot --chmod=555 src/ src/
+COPY --chown=nonroot:nonroot --chmod=644 selected_polygon.geojson .
+COPY --chown=nonroot:nonroot --chmod=744 instructions.json .
+COPY --chown=nonroot:nonroot --chmod=644 src/ src/
 
 
 FROM runtime-base AS backend
