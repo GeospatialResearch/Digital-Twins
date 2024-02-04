@@ -41,7 +41,7 @@ RUN apt-get update                             \
 USER nonroot
 
 # Copy python virtual environment from build layer
-COPY --chown=nonroot:nonroot --from=build /venv /venv
+COPY --chown=nonroot:nonroot --chmod=555 --from=build /venv /venv
 
 # Using python virtual environment, preload selenium with firefox so that first runtime is faster.
 SHELL ["/bin/bash", "-c"]
@@ -49,9 +49,9 @@ RUN source /venv/bin/activate && \
     selenium-manager --browser firefox --debug
 
 # Copy source files and essential runtime files
-COPY --chown=nonroot:nonroot selected_polygon.geojson .
-COPY --chown=nonroot:nonroot instructions.json .
-COPY --chown=nonroot:nonroot src/ src/
+COPY --chown=nonroot:nonroot --chmod=555 selected_polygon.geojson .
+COPY --chown=nonroot:nonroot --chmod=775 instructions.json .
+COPY --chown=nonroot:nonroot --chmod=555 src/ src/
 
 
 FROM runtime-base AS backend
