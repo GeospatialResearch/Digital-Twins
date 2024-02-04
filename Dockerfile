@@ -31,17 +31,27 @@ WORKDIR /app
 
 USER root
 
-# Install firefox browser for use within selenium
-RUN apt-get update                             \
- && apt-get install -y --no-install-recommends ca-certificates curl firefox \
- && rm -fr /var/lib/apt/lists/*                \
+# Install firefox browser .deb (not snap) and driver (geckodriver) for use within selenium
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates curl wget \
+ && wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null \
+ && echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null \
+ && echo $' \n\
+Package: * \n\
+Pin: origin packages.mozilla.org \n\
+Pin-Priority: 1000 \n\
+' | tee /etc/apt/preferences.d/mozilla \
+ && cat /etc/apt/preferences.d/mozilla \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends firefox \
+ && rm -fr /var/lib/apt/lists/* \
  && curl --proto "=https" -L https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz | tar xz -C /usr/local/bin \
  && apt-get purge -y ca-certificates curl
 
 USER nonroot
 
 # Copy python virtual environment from build layer
-COPY --chown=nonroot:nonroot --chmod=744 --from=build /venv /venv
+COPY --chown=nonroot:nonroot --chmod=544 --from=build /venv /venv
 
 # Using python virtual environment, preload selenium with firefox so that first runtime is faster.
 SHELL ["/bin/bash", "-c"]
@@ -49,9 +59,9 @@ RUN source /venv/bin/activate && \
     selenium-manager --browser firefox --debug
 
 # Copy source files and essential runtime files
-COPY --chown=nonroot:nonroot --chmod=644 selected_polygon.geojson .
-COPY --chown=nonroot:nonroot --chmod=744 instructions.json .
-COPY --chown=nonroot:nonroot --chmod=644 src/ src/
+COPY --chown=nonroot:nonroot --chmod=444 selected_polygon.geojson .
+COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
+COPY --chown=nonroot:nonroot --chmod=544 src/ src/
 
 
 FROM runtime-base AS backend
