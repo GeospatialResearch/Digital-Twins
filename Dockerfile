@@ -2,7 +2,7 @@ FROM continuumio/miniconda3:23.10.0-1 AS build
 # Miniconda layer for building conda environment
 WORKDIR /app
 
-# Install mamba for daster conda solves
+# Install mamba for faster conda solves
 RUN conda install -c conda-forge mamba
 
 # Create Conda environment
@@ -29,15 +29,19 @@ FROM lparkinson/bg_flood:v0.9 AS runtime-base
 # BG_Flood stage for running the digital twin. Reduces image size significantly if we use a multi-stage build
 WORKDIR /app
 
+USER root
+
 # Install firefox browser for use within selenium
 RUN apt-get update                             \
  && apt-get install -y --no-install-recommends ca-certificates curl firefox \
  && rm -fr /var/lib/apt/lists/*                \
- && curl -L https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz | tar xz -C /usr/local/bin \
+ && curl --proto "=https" -L https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz | tar xz -C /usr/local/bin \
  && apt-get purge -y ca-certificates curl
 
+USER nonroot
+
 # Copy python virtual environment from build layer
-COPY --from=build /venv /venv
+COPY --chown=nonroot:nonroot --from=build /venv /venv
 
 # Using python virtual environment, preload selenium with firefox so that first runtime is faster.
 SHELL ["/bin/bash", "-c"]
@@ -45,9 +49,9 @@ RUN source /venv/bin/activate && \
     selenium-manager --browser firefox --debug
 
 # Copy source files and essential runtime files
-COPY selected_polygon.geojson .
-COPY instructions.json .
-COPY src/ src/
+COPY --chown=nonroot:nonroot selected_polygon.geojson .
+COPY --chown=nonroot:nonroot instructions.json .
+COPY --chown=nonroot:nonroot src/ src/
 
 
 FROM runtime-base AS backend
