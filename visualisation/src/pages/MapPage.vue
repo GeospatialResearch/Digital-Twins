@@ -11,7 +11,7 @@
       <input
         v-if="column.min && column.max"
         type="number"
-        v-model="selectedOption[column.name]"
+        v-model.number="selectedOption[column.name]"
         :min="column.min"
         :max="column.max"
       >
@@ -67,6 +67,7 @@ export default Vue.extend({
         confidenceLevel: {name: "Confidence Level", data: ['low', 'medium']},
         addVerticalLandMovement: {name: "Add Vertical Land Movement", data: [true, false]}
       },
+      projYear: 2050,
       // Default selected options for parameters
       selectedOption: {
         "Projected Year": 2050,
