@@ -94,16 +94,15 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "log_level": LogLevel.DEBUG
     },
     bg_flood_model: {
-        "output_timestep": 100,
-        "end_time": 900,
+        "output_timestep": 1,
+        "end_time": 2,
         "resolution": None,
         "mask": 9999,
-        "gpu_device": 0,
+        "gpu_device": -1,
         "small_nc": 0,
         "log_level": LogLevel.DEBUG
     }
 }
-
 
 if __name__ == '__main__':
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")

@@ -11,14 +11,14 @@ from typing import Union, Optional, Tuple
 import geopandas as gpd
 import pyproj
 import xarray as xr
-from shapely.geometry import LineString, box
-from sqlalchemy.engine import Engine
 from newzealidar.utils import get_dem_band_and_resolution_by_geometry
+from shapely.geometry import LineString
+from shapely.geometry import box
+from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.river import (
     river_data_to_from_db,
     river_network_for_aoi,
@@ -27,6 +27,7 @@ from src.dynamic_boundary_conditions.river import (
     hydrograph,
     river_model_input
 )
+from src.dynamic_boundary_conditions.river.river_enum import BoundType
 
 log = logging.getLogger(__name__)
 

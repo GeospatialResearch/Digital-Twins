@@ -6,7 +6,7 @@ volumes:
 services:
   db_postgres:
     # Database to store all vector data, states, and links to raster data.
-    image: postgis/postgis
+    image: postgis/postgis:16-3.4
     container_name: db_postgres_digital_twin
     restart: always
     ports:
@@ -22,11 +22,17 @@ services:
 
   backend:
     # Performs analysis, computation, handles web requests, facilitates database interactions
-    build: .
+    build:
+      context: .
+      target: backend
+    image: lparkinson/backend-flood-resilience-dt:1.0
     container_name: backend_digital_twin
     env_file:
       - .env
+      - api_keys.env
       - .env.docker-override
+    volumes:
+      - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
     ports:
       - "5000:5000"
     depends_on:
@@ -34,14 +40,35 @@ services:
       - message_broker
       - geoserver
 
-  # Celery worker removed temporarily because BG_flood has not yet been configured for docker.
+  celery_worker:
+    # Performs tasks such as complex computation asynchronously on behalf of backend
+    build:
+      context: .
+      target: celery_worker
+    image: lparkinson/celery-flood-resilience-dt:1.0
+    container_name: celery_worker_digital_twin
+    restart: always
+    env_file:
+      - .env
+      - api_keys.env
+      - .env.docker-override
+    volumes:
+      # Bind host data directories to container, allowing different instances to share data sources.
+      - ${DATA_DIR}:/stored_data
+      - ${DATA_DIR_REC}:/stored_data/rec_data
+      - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
+      - ${DATA_DIR_GEOSERVER}:/stored_data/geoserver
+    depends_on:
+      - db_postgres
+      - message_broker
+      - geoserver
 
   geoserver:
     # Serves geospatial web data through interactions with files and database
     image: docker.osgeo.org/geoserver:2.21.2
     container_name: geoserver_digital_twin
     volumes:
-      - ./geoserver/geoserver_data:/opt/geoserver_data
+      - ${DATA_DIR_GEOSERVER}:/opt/geoserver_data
     depends_on:
       - db_postgres
     environment:
@@ -56,11 +83,24 @@ services:
       timeout: 10s
       retries: 3
 
-  # WWW removed temporarily because build is failing and more work is needed.
+  www:
+    # Webserver for the website interface
+    image: lparkinson/www-flood-resilience-dt:1.0
+    build:
+      context: ./visualisation
+    container_name: www_digital_twin
+    environment:
+      - VUE_APP_CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
+      - VUE_APP_GEOSERVER_HOST=$GEOSERVER_HOST
+      - VUE_APP_GEOSERVER_PORT=$GEOSERVER_PORT
+      - VUE_APP_POSTGRES_DB=$POSTGRES_DB
+    ports:
+      - "${WWW_PORT}:80"
+
 
   message_broker:
     # Communicates between backend and workers to assign tasks and store state
-    image: redis
+    image: redis:7
     container_name: message_broker_digital_twin
     ports:
       - "6379:6379"

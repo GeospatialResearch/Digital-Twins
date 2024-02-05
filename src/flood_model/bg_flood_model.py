@@ -5,22 +5,27 @@ resulting model output metadata in the database, and incorporates the model outp
 """
 
 import logging
-import pathlib
 import os
+import pathlib
+import platform
 import subprocess
 from datetime import datetime
 from typing import Tuple, Union, Optional, TextIO
 
 import geopandas as gpd
 import xarray as xr
+from newzealidar.utils import get_dem_by_geometry
+from sqlalchemy import insert
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from newzealidar.utils import get_dem_by_geometry
+from sqlalchemy.sql import text
 
 from src import config
 from src.digitaltwin import setup_environment
+from src.digitaltwin.tables import BGFloodModelOutput, create_table
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.digitaltwin.tables import BGFloodModelOutput, create_table, execute_query
+from src.flood_model.flooded_buildings import find_flooded_buildings
+from src.flood_model.flooded_buildings import store_flooded_buildings_in_database
 from src.flood_model.serve_model import add_model_output_to_geoserver
 
 log = logging.getLogger(__name__)
@@ -103,7 +108,7 @@ def get_model_output_metadata(
 def store_model_output_metadata_to_db(
         engine: Engine,
         model_output_path: pathlib.Path,
-        catchment_area: gpd.GeoDataFrame) -> None:
+        catchment_area: gpd.GeoDataFrame) -> int:
     """
     Store metadata related to the BG Flood model output in the database.
 
@@ -118,39 +123,43 @@ def store_model_output_metadata_to_db(
 
     Returns
     -------
-    None
-        This function does not return any value.
+    int
+        Returns the model id of the new flood_model produced
     """
     # Create the 'bg_flood_model_output' table in the database if it doesn't exist
     create_table(engine, BGFloodModelOutput)
     # Get the metadata related to the BG Flood model output
     output_name, output_path, geometry = get_model_output_metadata(model_output_path, catchment_area)
     # Create a new query object representing the BG-Flood model output metadata
-    query = BGFloodModelOutput(file_name=output_name, file_path=output_path, geometry=geometry)
-    # Execute the query to store the BG Flood model output metadata in the database
-    execute_query(engine, query)
+    query = insert(BGFloodModelOutput).values(file_name=output_name, file_path=output_path, geometry=geometry)
+    # Execute the query to store the BG Flood model output metadata in the database while retrieving id
+    with engine.begin() as conn:
+        result = conn.execute(query)
+    model_id = result.inserted_primary_key[0]
     # Log a message indicating the successful storage of BG-Flood model output metadata in the database
     log.info("BG-Flood model output metadata successfully stored in the database.")
+    return model_id
 
 
-def latest_model_output_from_db() -> pathlib.Path:
+def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
     """
-    Retrieve the latest BG Flood model output file path from the database.
+    Retrieves the path to the model output file from the database by model_id
+
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine
+    model_id: int
+        The ID of the flood model output being queried for
 
     Returns
     -------
     pathlib.Path
-        The path to the latest BG Flood model output file.
+        The path to the model output file
     """
-    # Get the database engine for establishing a connection
-    engine = setup_environment.get_database()
-    # Execute a query to get the latest model output record based on the 'created_at' column
-    query = f"""
-    SELECT *
-    FROM {BGFloodModelOutput.__tablename__}
-    ORDER BY created_at DESC
-    LIMIT 1;
-    """
+    # Execute a query to get the model output record based on the 'flood_model_id' column
+    query = text("SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
+        flood_model_id=model_id)
     row = engine.execute(query).fetchone()
     # Extract the file path from the retrieved record
     latest_output_path = pathlib.Path(row["file_path"])
@@ -158,9 +167,39 @@ def latest_model_output_from_db() -> pathlib.Path:
     return latest_output_path
 
 
-def add_crs_to_latest_model_output() -> None:
+def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFrame:
     """
-    Add Coordinate Reference System (CRS) to the latest BG-Flood model output.
+    Finds the extents of a model output in gpd.GeoDataFrame format
+
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine
+    model_id: int
+        The ID of the flood model output being queried for
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        Returns the geometry (extents) of the flood model output.
+    """
+    # Execute a query to get the model output record based on the 'flood_model_id' column
+    query = text("SELECT geometry FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
+        flood_model_id=model_id)
+    return gpd.read_postgis(query, engine, geom_col='geometry')
+
+
+def add_crs_to_model_output(engine: Engine, flood_model_output_id: int) -> None:
+    """
+    Add Coordinate Reference System (CRS) to the BG-Flood model output.
+
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine
+    flood_model_output_id: int
+        The ID of the flood model output being queried for
+
 
     Returns
     -------
@@ -168,12 +207,12 @@ def add_crs_to_latest_model_output() -> None:
         This function does not return any value.
     """
     # Get the path to the latest BG-Flood model output file from the database
-    latest_file = latest_model_output_from_db()
+    model_output_file = model_output_from_db_by_id(engine, flood_model_output_id)
     # Create a temporary file path for saving modifications before replacing the current latest model output file
-    temp_file = latest_file.with_name(f"{latest_file.stem}_temp{latest_file.suffix}")
+    temp_file = model_output_file.with_name(f"{model_output_file.stem}_temp{model_output_file.suffix}")
 
     # Open the latest model output file as a xarray dataset
-    with xr.open_dataset(latest_file, decode_coords="all") as latest_output:
+    with xr.open_dataset(model_output_file, decode_coords="all") as latest_output:
         # Check if the dataset lacks a Coordinate Reference System (CRS)
         if latest_output.rio.crs is None:
             # Add the Coordinate Reference System (CRS) information to the dataset
@@ -186,9 +225,10 @@ def add_crs_to_latest_model_output() -> None:
             latest_output.to_netcdf(temp_file)
 
     # Check if both the original and temporary files exist
-    if latest_file.exists() and temp_file.exists():
+    if model_output_file.exists() and temp_file.exists():
         # Replace the original file with the modified temporary file
-        temp_file.replace(latest_file)
+        temp_file.replace(model_output_file)
+    log.debug(f"Added CRS info to {model_output_file}")
 
 
 def process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None:
@@ -423,10 +463,22 @@ def run_bg_flood_model(
     cwd = pathlib.Path.cwd()
     # Change the current working directory to the BG-Flood Model directory
     os.chdir(bg_flood_dir)
-    # Run the BG-Flood Model executable
-    subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
+    # Run the BG-Flood Model executable, accounting for OS differences
+    operating_system = platform.system()
+    if operating_system == "Windows":
+        # Run the .exe
+        subprocess.run([bg_flood_dir / "BG_flood.exe"], check=True)
+    elif operating_system == "Linux":
+        # Run the executable linux script
+        subprocess.run([bg_flood_dir / "BG_Flood"], check=True)
+    else:
+        # Other OSs are not officially supported, but we can attempt to try the Linux one.
+        log.warning(f"{operating_system} is not officially supported. Only Windows and Linux are officially supported.")
+        log.warning(f"Attempting to run BG_Flood linux script in {operating_system}")
+        subprocess.run([bg_flood_dir / "BG_Flood"], check=True)
     # Change the current working directory back to the original directory (cwd)
     os.chdir(cwd)
+    log.info(f"Saved new flood model to {model_output_path}")
 
 
 def main(
@@ -437,7 +489,7 @@ def main(
         mask: Union[int, float] = 9999,
         gpu_device: int = 0,
         small_nc: int = 0,
-        log_level: LogLevel = LogLevel.DEBUG) -> None:
+        log_level: LogLevel = LogLevel.DEBUG) -> int:
     """
     Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer
     for visualization.
@@ -476,8 +528,8 @@ def main(
 
     Returns
     -------
-    None
-        This function does not return any value.
+    int
+       Returns the model id of the new flood_model produced
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
@@ -502,11 +554,17 @@ def main(
     )
 
     # Store metadata related to the BG Flood model output in the database
-    store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
+    model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
     # Add CRS to the latest BG-Flood model output
-    add_crs_to_latest_model_output()
+    add_crs_to_model_output(engine, model_id)
+    # Find buildings that are flooded to a depth greater than or equal to 0.1m
+    log.info("Analysing flooded buildings")
+    flooded_buildings = find_flooded_buildings(engine, catchment_area, model_output_path, flood_depth_threshold=0.1)
+    log.info("Analysed flooded buildings - adding flooded buildings to database")
+    store_flooded_buildings_in_database(engine, flooded_buildings, model_id)
     # Add the model output to GeoServer for visualization
-    add_model_output_to_geoserver(model_output_path)
+    add_model_output_to_geoserver(model_output_path, model_id)
+    return model_id
 
 
 if __name__ == "__main__":

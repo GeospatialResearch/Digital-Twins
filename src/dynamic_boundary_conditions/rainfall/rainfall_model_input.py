@@ -23,23 +23,23 @@ def sites_voronoi_intersect_catchment(
         sites_in_catchment: gpd.GeoDataFrame,
         catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,
-    i.e. return the overlapped areas.
+    Get the intersection of the rainfall sites coverage areas (Thiessen Polygons) and the catchment area,
+    returning the overlapping areas.
 
     Parameters
     ----------
     sites_in_catchment : gpd.GeoDataFrame
-        Rainfall site coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+        Rainfall sites coverage areas (Thiessen Polygons) that intersect or are within the catchment area.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
-        catchment area.
+        A GeoDataFrame containing the intersection of the rainfall sites coverage areas (Thiessen Polygons) and
+        the catchment area.
     """
-    # Perform overlay operation to find the intersecting areas
+    # Perform overlay operation to find the intersection
     intersections = gpd.overlay(sites_in_catchment, catchment_area, how="intersection")
     return intersections
 
@@ -48,23 +48,23 @@ def sites_coverage_in_catchment(
         sites_in_catchment: gpd.GeoDataFrame,
         catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,
-    and calculate the size and percentage of the area covered by each rainfall site inside the catchment area.
+    Get the intersection of the rainfall sites coverage areas (Thiessen Polygons) and the catchment area,
+    and calculate the size and percentage of the catchment area covered by each rainfall site.
 
     Parameters
     ----------
     sites_in_catchment : gpd.GeoDataFrame
-        Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+        Rainfall sites coverage areas (Thiessen Polygons) that intersect or are within the catchment area.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
-        catchment area, with calculated size and percentage of area covered by each rainfall site.
+        A GeoDataFrame containing the intersection of the rainfall sites coverage areas (Thiessen Polygons) and
+        the catchment area, with calculated size and percentage of the catchment area covered by each rainfall site.
     """
-    # Get the intersecting areas between the rainfall site coverage areas and the catchment area
+    # Get the intersection of the rainfall sites coverage areas (Thiessen Polygons) and the catchment area
     sites_coverage = sites_voronoi_intersect_catchment(sites_in_catchment, catchment_area)
     # Calculate the size of each site's intersecting area in square kilometers
     sites_coverage['area_in_km2'] = sites_coverage.to_crs(3857).area / 1e6
@@ -117,9 +117,8 @@ def spatial_uniform_rain_input(
         sites_coverage: gpd.GeoDataFrame,
         bg_flood_dir: pathlib.Path) -> None:
     """
-    Write the mean catchment rainfall intensities data (i.e., 'seconds' and 'rain_intensity_mmhr' columns)
-    into a text file named 'rain_forcing.txt'. This file can be used as spatially uniform rain input
-    for the BG-Flood model.
+    Write the mean catchment rainfall intensities data (i.e., 'seconds' and 'rain_intensity_mmhr' columns) into a
+    text file named 'rain_forcing.txt'. This file is used as spatially uniform rain input for the BG-Flood model.
 
     Parameters
     ----------
@@ -189,7 +188,7 @@ def spatial_varying_rain_input(
         bg_flood_dir: pathlib.Path) -> None:
     """
     Write the rainfall intensities data cube in NetCDF format (rain_forcing.nc).
-    This file can be used as spatially varying rain input for the BG-Flood model.
+    This file is used as spatially varying rain input for the BG-Flood model.
 
     Parameters
     ----------
@@ -243,8 +242,10 @@ def generate_rain_model_input(
     main_rainfall.remove_existing_rain_inputs(bg_flood_dir)
     # Generate the requested type of rainfall model input
     if input_type == RainInputType.UNIFORM:
+        log.info("Generating the spatially uniform rain model input for BG-Flood.")
         spatial_uniform_rain_input(hyetograph_data, sites_coverage, bg_flood_dir)
         log.info("Successfully generated the spatially uniform rain model input for BG-Flood.")
     elif input_type == RainInputType.VARYING:
+        log.info("Generating the spatially varying rain model input for BG-Flood.")
         spatial_varying_rain_input(hyetograph_data, sites_coverage, bg_flood_dir)
         log.info("Successfully generated the spatially varying rain model input for BG-Flood.")

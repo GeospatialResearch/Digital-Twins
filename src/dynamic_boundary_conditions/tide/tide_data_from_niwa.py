@@ -3,11 +3,12 @@
 Fetch tide data from NIWA using the Tide API based on the specified approach, datum, etc.
 """
 
+import asyncio
+import io
+import logging
 from datetime import date, timedelta
 from math import ceil
 from typing import Dict, List, Tuple, Union, Optional
-import io
-import asyncio
 
 import aiohttp
 import geopandas as gpd
@@ -16,6 +17,8 @@ import pandas as pd
 
 from src import config
 from src.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
+
+log = logging.getLogger(__name__)
 
 # URLs for retrieving tide data from the NIWA Tide API in JSON and CSV formats, respectively
 TIDE_API_URL_DATA = "https://api.niwa.co.nz/tides/data"
@@ -505,7 +508,7 @@ def fetch_tide_data_around_highest_tide(
 
 
 def get_time_mins_to_add(
-        tide_data: gpd.GeoDataFrame,
+        tide_data: pd.DataFrame,
         tide_length_mins: int,
         time_to_peak_mins: Union[int, float],
         interval_mins: int = 10) -> List[Union[float, int]]:
@@ -514,7 +517,7 @@ def get_time_mins_to_add(
 
     Parameters
     ----------
-    tide_data : gpd.GeoDataFrame
+    tide_data : pd.DataFrame
         The tide data for which time values in minutes will be calculated.
     tide_length_mins : int
         The length of the tide event in minutes.
@@ -678,12 +681,15 @@ def get_tide_data(
         - If the 'approach' is KING_TIDE and 'tide_length_mins' is None or 'total_days' is not None.
         - If the 'approach' is PERIOD_TIDE and 'total_days' is None or 'tide_length_mins' is not None.
     """
+    log.info("Fetching 'tide' data from NIWA.")
+
     # Check if 'interval_mins' is None
     if interval_mins is None:
         raise ValueError("'interval_mins' must be provided, and it should not be None.")
 
+    # Check if the selected approach is KING_TIDE or PERIOD_TIDE
     if approach == ApproachType.KING_TIDE:
-        # Check if the approach is KING_TIDE and tide_length_mins is not provided or total_days is not None
+        # If the approach is KING_TIDE: tide_length_mins is not provided or total_days is not None
         if tide_length_mins is None or total_days is not None:
             raise ValueError(
                 "If the 'approach' is KING_TIDE, 'tide_length_mins' must be provided and "
@@ -703,7 +709,7 @@ def get_tide_data(
             approach=approach)
         return tide_data_king
     else:
-        # Check if the approach is PERIOD_TIDE and total_days is not provided or tide_length_mins is not None
+        # If the approach is PERIOD_TIDE: total_days is not provided or tide_length_mins is not None
         if total_days is None or tide_length_mins is not None:
             raise ValueError(
                 "If the 'approach' is PERIOD_TIDE, 'total_days' must be provided and "

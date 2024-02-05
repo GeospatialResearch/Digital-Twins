@@ -6,11 +6,11 @@ This script processes REC data to construct a river network for the defined catc
 import logging
 from typing import Dict, Tuple
 
-import numpy as np
 import geopandas as gpd
+import networkx as nx
+import numpy as np
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
-import networkx as nx
 
 from src.dynamic_boundary_conditions.river import main_river, river_data_to_from_db
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
@@ -485,6 +485,7 @@ def build_rec_river_network(
         A tuple containing the constructed REC river network, represented as a directed graph (DiGraph),
         along with its associated data in the form of a GeoDataFrame.
     """
+    log.info("Building REC river network for the catchment area.")
     # Get REC data from the database for the catchment area
     rec_data_with_sdc = river_data_to_from_db.get_rec_data_with_sdc_from_db(engine, catchment_area, rec_network_id)
     # Prepare network data for construction

@@ -4,6 +4,7 @@ This script handles the task of obtaining data for REC river inflow segments who
 boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold.
 """
 
+import logging
 from typing import Dict, List
 
 import geopandas as gpd
@@ -12,6 +13,8 @@ from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
 from src.dynamic_boundary_conditions.river import main_river, osm_waterways
+
+log = logging.getLogger(__name__)
 
 
 class NoRiverDataException(Exception):
@@ -299,6 +302,7 @@ def get_rec_inflows_on_bbox(
     NoRiverDataException
         If no REC river segment is found crossing the catchment boundary.
     """
+    log.info("Extracting REC river segments that are inflows into the requested catchment area.")
     # Get REC river network segments that intersect with the catchment area boundary
     rec_on_bbox = get_rec_network_data_on_bbox(engine, catchment_area, rec_network_data)
     # Get REC river segments that intersect the catchment boundary once and flow into the catchment area
@@ -315,7 +319,7 @@ def get_osm_waterways_on_bbox(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment area boundary,
+    Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment boundary,
     along with the corresponding intersection points on the boundary.
 
     Parameters
@@ -335,6 +339,8 @@ def get_osm_waterways_on_bbox(
     osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
     # Obtain the spatial extent of the hydro DEM
     _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+
+    log.info("Extracting OpenStreetMap (OSM) waterways that intersect the boundary of the requested catchment area.")
     # Select features that intersect with the hydro DEM extent
     osm_waterways_on_bbox = osm_waterways_data[osm_waterways_data.intersects(hydro_dem_extent)].reset_index(drop=True)
     # Determine the points of intersection along the boundary
@@ -371,6 +377,7 @@ def align_rec_with_osm(
         A GeoDataFrame containing the boundary points of REC river inflow segments aligned with the boundary points of
         OpenStreetMap (OSM) waterways within a specified distance threshold.
     """
+    log.info("Aligning the boundary points of REC river inflow segments with the boundary points of OSM waterways.")
     # Select relevant columns from REC data
     rec_columns = ["objectid", rec_inflows_on_bbox.geometry.name]
     rec_on_bbox = rec_inflows_on_bbox[rec_columns]

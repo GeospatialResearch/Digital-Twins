@@ -6,12 +6,12 @@ This script contains SQLAlchemy models for various database tables and utility f
 from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
-from sqlalchemy import inspect, Column, String, Integer, DateTime
-from sqlalchemy.schema import PrimaryKeyConstraint, CheckConstraint
+from sqlalchemy import Boolean, Column, DateTime, inspect, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
+from sqlalchemy.schema import CheckConstraint, PrimaryKeyConstraint
 
 Base = declarative_base()
 
@@ -164,6 +164,31 @@ class BGFloodModelOutput(Base):
     file_path = Column(String, comment="path to the flood model output file")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="output created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
+
+
+class BuildingFloodStatus(Base):
+    """
+    Class representing the 'building_flood_status' table.
+    Represents if a building is flooded for a given flood model output
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each entry (primary key).
+    building_outline_id : int
+        Foreign key building outline id matching from nz_building_outlines table
+    is_flooded : bool
+        If the building is flooded or not
+    flood_model_id: int.
+        Foreign key mathing the unique_id from bg_flood_model_output table
+    """
+    __tablename__ = "building_flood_status"
+    unique_id = Column(Integer, primary_key=True, autoincrement=True)
+    building_outline_id = Column(Integer, comment="The building outline id matching from nz_building_outlines table")
+    is_flooded = Column(Boolean, comment="If the building is flooded or not")
+    flood_model_id = Column(Integer)
 
 
 def create_table(engine: Engine, table: Base) -> None:

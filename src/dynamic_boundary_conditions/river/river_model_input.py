@@ -31,6 +31,8 @@ def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.
     """
     # Remove any existing river model inputs in the BG-Flood directory
     main_river.remove_existing_river_inputs(bg_flood_dir)
+    # Log that the generation of river model inputs has started
+    log.info("Generating the river model inputs for BG-Flood.")
     # Group the hydrograph data based on specific attributes
     grouped = hydrograph_data.groupby(
         by=["river_input_point_no", hydrograph_data["river_input_point"].to_wkt(), "dem_resolution", "areakm2"],

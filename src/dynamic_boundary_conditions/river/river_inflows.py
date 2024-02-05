@@ -4,6 +4,8 @@ This script handles the task of obtaining REC river inflow data along with the c
 for the BG-Flood model.
 """
 
+import logging
+
 import geopandas as gpd
 import pandas as pd
 import numpy as np
@@ -13,6 +15,8 @@ import pyproj
 from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
 from src.dynamic_boundary_conditions.river import main_river, align_rec_osm
+
+log = logging.getLogger(__name__)
 
 
 def get_elevations_near_rec_entry_point(
@@ -141,6 +145,8 @@ def get_rec_inflows_with_input_points(
     # within a specified distance threshold
     aligned_rec_inflows = align_rec_osm.get_rec_inflows_aligned_to_osm(
         engine, catchment_area, rec_network_data, distance_m)
+
+    log.info("Determining the river input points used for the BG-Flood model.")
     # Get the boundary lines of the Hydrologically Conditioned DEM
     dem_boundary_lines = main_river.get_hydro_dem_boundary_lines(engine, catchment_area)
     # Perform a spatial join between the REC inflow data and the Hydro DEM boundary lines
