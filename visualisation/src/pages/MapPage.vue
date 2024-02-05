@@ -38,6 +38,7 @@ import * as Cesium from "cesium";
 import {MapViewer} from 'geo-visualisation-components/src/components';
 import titleMixin from "@/mixins/title";
 import {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/src/types";
+import {AxiosError} from "axios";
 
 export default Vue.extend({
   name: "MapPage",
@@ -117,8 +118,9 @@ export default Vue.extend({
     /**
      * When a task fails, reset the data sources to blank map
      */
-    async onTaskFailed() {
+    async onTaskFailed(event: {err: AxiosError}) {
       this.dataSources = {};
+      console.log(event)
     },
     /**
      * Creates ImageryProvider from geoserver WMS for the flood raster.

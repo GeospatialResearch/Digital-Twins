@@ -4,7 +4,7 @@ The main web application that serves the Digital Twin to the web through a Rest 
 import logging
 import pathlib
 from functools import wraps
-from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR
+from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE
 from typing import Callable
 
 import requests
@@ -35,7 +35,7 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     Returns
     -------
     Callable[..., Response]
-        Response is INTERNAL_SERVER_ERROR if the celery workers are down, otherwise continue to function f
+        Response is SERVICE_UNAVAILABLE if the celery workers are down, otherwise continue to function f
     """
 
     @wraps(f)
@@ -43,7 +43,7 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
         ping_celery_response = tasks.app.control.ping()
         if len(ping_celery_response) == 0:
             logging.warning("Celery workers not active, may indicate a fault")
-            return make_response("Celery workers not active", INTERNAL_SERVER_ERROR)
+            return make_response("Celery workers not active", SERVICE_UNAVAILABLE)
         return f(*args, **kwargs)
 
     return decorated_function
