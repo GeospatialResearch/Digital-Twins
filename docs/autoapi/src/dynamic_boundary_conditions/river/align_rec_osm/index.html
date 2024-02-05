@@ -123,7 +123,7 @@ boundary points of OpenStreetMap (OSM) waterways within a specified distance thr
 <td><p>Obtain REC river segments that are inflows into the specified catchment area, along with their corresponding</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.align_rec_osm.get_osm_waterways_on_bbox" title="src.dynamic_boundary_conditions.river.align_rec_osm.get_osm_waterways_on_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_osm_waterways_on_bbox</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment area boundary,</p></td>
+<td><p>Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment boundary,</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.align_rec_osm.align_rec_with_osm" title="src.dynamic_boundary_conditions.river.align_rec_osm.align_rec_with_osm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">align_rec_with_osm</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Aligns the boundary points of REC river inflow segments with the boundary points of OpenStreetMap (OSM) waterways</p></td>
@@ -133,6 +133,21 @@ boundary points of OpenStreetMap (OSM) waterways within a specified distance thr
 </tr>
 </tbody>
 </table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.align_rec_osm.log" title="src.dynamic_boundary_conditions.river.align_rec_osm.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.align_rec_osm.log">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.align_rec_osm.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.align_rec_osm.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.align_rec_osm.NoRiverDataException">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.align_rec_osm.</span></span><span class="sig-name descname"><span class="pre">NoRiverDataException</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.align_rec_osm.NoRiverDataException" title="Link to this definition"></a></dt>
@@ -300,7 +315,7 @@ corresponding inflow boundary points.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.align_rec_osm.get_osm_waterways_on_bbox">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.align_rec_osm.</span></span><span class="sig-name descname"><span class="pre">get_osm_waterways_on_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.align_rec_osm.get_osm_waterways_on_bbox" title="Link to this definition"></a></dt>
-<dd><p>Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment area boundary,
+<dd><p>Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment boundary,
 along with the corresponding intersection points on the boundary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -45,8 +45,8 @@ Functions
 
 .. py:function:: get_interpolated_data(transposed_catchment_data: pandas.DataFrame, increment_mins: int, interp_method: str) -> pandas.DataFrame
 
-   Perform temporal interpolation on the transposed scenario data for sites within the catchment area and
-   return it in Pandas DataFrame format.
+   Perform temporal interpolation on the transposed scenario data to the desired time interval
+   for sites within the catchment area.
 
    :param transposed_catchment_data: Transposed scenario data retrieved from the database.
    :type transposed_catchment_data: pd.DataFrame
@@ -56,7 +56,8 @@ Functions
                          One of 'linear', 'nearest', 'nearest-up', 'zero', 'slinear', 'quadratic', 'cubic', 'previous', or 'next'.
    :type interp_method: str
 
-   :returns: A DataFrame containing the interpolated scenario data.
+   :returns: A DataFrame containing the scenario data interpolated at the desired time interval for sites within the
+             catchment area.
    :rtype: pd.DataFrame
 
    :raises ValueError: - If the specified 'increment_mins' is out of range.

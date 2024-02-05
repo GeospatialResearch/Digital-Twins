@@ -22,7 +22,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="src.flood_model.serve_model" href="../serve_model/index.html" />
+    <link rel="next" title="src.flood_model.flooded_buildings" href="../flooded_buildings/index.html" />
     <link rel="prev" title="src.flood_model" href="../index.html" /> 
 </head>
 
@@ -109,31 +109,34 @@ resulting model output metadata in the database, and incorporates the model outp
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.get_model_output_metadata" title="src.flood_model.bg_flood_model.get_model_output_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_output_metadata</span></code></a>(→ Tuple[str, str, str])</p></td>
 <td><p>Get metadata related to the BG Flood model output.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.store_model_output_metadata_to_db" title="src.flood_model.bg_flood_model.store_model_output_metadata_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_model_output_metadata_to_db</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.store_model_output_metadata_to_db" title="src.flood_model.bg_flood_model.store_model_output_metadata_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_model_output_metadata_to_db</span></code></a>(→ int)</p></td>
 <td><p>Store metadata related to the BG Flood model output in the database.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.latest_model_output_from_db" title="src.flood_model.bg_flood_model.latest_model_output_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latest_model_output_from_db</span></code></a>(→ pathlib.Path)</p></td>
-<td><p>Retrieve the latest BG Flood model output file path from the database.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.model_output_from_db_by_id" title="src.flood_model.bg_flood_model.model_output_from_db_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_output_from_db_by_id</span></code></a>(→ pathlib.Path)</p></td>
+<td><p>Retrieves the path to the model output file from the database by model_id</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.add_crs_to_latest_model_output" title="src.flood_model.bg_flood_model.add_crs_to_latest_model_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_crs_to_latest_model_output</span></code></a>(→ None)</p></td>
-<td><p>Add Coordinate Reference System (CRS) to the latest BG-Flood model output.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.model_extents_from_db_by_id" title="src.flood_model.bg_flood_model.model_extents_from_db_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_extents_from_db_by_id</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Finds the extents of a model output in gpd.GeoDataFrame format</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_rain_input_files" title="src.flood_model.bg_flood_model.process_rain_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_rain_input_files</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.add_crs_to_model_output" title="src.flood_model.bg_flood_model.add_crs_to_model_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_crs_to_model_output</span></code></a>(→ None)</p></td>
+<td><p>Add Coordinate Reference System (CRS) to the BG-Flood model output.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_rain_input_files" title="src.flood_model.bg_flood_model.process_rain_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_rain_input_files</span></code></a>(→ None)</p></td>
 <td><p>Process rain input files and write their parameter values to the BG-Flood parameter file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_boundary_input_files" title="src.flood_model.bg_flood_model.process_boundary_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_boundary_input_files</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_boundary_input_files" title="src.flood_model.bg_flood_model.process_boundary_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_boundary_input_files</span></code></a>(→ None)</p></td>
 <td><p>Process uniform boundary input files and write their parameter values to the BG-Flood parameter file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_river_input_files" title="src.flood_model.bg_flood_model.process_river_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_river_input_files</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_river_input_files" title="src.flood_model.bg_flood_model.process_river_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_river_input_files</span></code></a>(→ None)</p></td>
 <td><p>Process river input files, rename them, and write their parameter values to the BG-Flood parameter file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs" title="src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_bg_flood_model_inputs</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs" title="src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_bg_flood_model_inputs</span></code></a>(→ None)</p></td>
 <td><p>Prepare inputs for the BG-Flood Model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.run_bg_flood_model" title="src.flood_model.bg_flood_model.run_bg_flood_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bg_flood_model</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.run_bg_flood_model" title="src.flood_model.bg_flood_model.run_bg_flood_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bg_flood_model</span></code></a>(→ None)</p></td>
 <td><p>Run the BG-Flood Model for the specified catchment area.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.main" title="src.flood_model.bg_flood_model.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.main" title="src.flood_model.bg_flood_model.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ int)</p></td>
 <td><p>Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer</p></td>
 </tr>
 </tbody>
@@ -218,7 +221,7 @@ and the Well-Known Text (WKT) representation of the catchment area’s geometry.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.flood_model.bg_flood_model.store_model_output_metadata_to_db">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">store_model_output_metadata_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.store_model_output_metadata_to_db" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">store_model_output_metadata_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.store_model_output_metadata_to_db" title="Link to this definition"></a></dt>
 <dd><p>Store metadata related to the BG Flood model output in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -229,38 +232,70 @@ and the Well-Known Text (WKT) representation of the catchment area’s geometry.
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the model id of the new flood_model produced</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.model_output_from_db_by_id">
+<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">model_output_from_db_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.model_output_from_db_by_id" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the path to the model output file from the database by model_id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The sqlalchemy database connection engine</p></li>
+<li><p><strong>model_id</strong> (<em>int</em>) – The ID of the flood model output being queried for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The path to the model output file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pathlib.Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.model_extents_from_db_by_id">
+<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">model_extents_from_db_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.model_extents_from_db_by_id" title="Link to this definition"></a></dt>
+<dd><p>Finds the extents of a model output in gpd.GeoDataFrame format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The sqlalchemy database connection engine</p></li>
+<li><p><strong>model_id</strong> (<em>int</em>) – The ID of the flood model output being queried for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the geometry (extents) of the flood model output.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.add_crs_to_model_output">
+<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">add_crs_to_model_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flood_model_output_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.add_crs_to_model_output" title="Link to this definition"></a></dt>
+<dd><p>Add Coordinate Reference System (CRS) to the BG-Flood model output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The sqlalchemy database connection engine</p></li>
+<li><p><strong>flood_model_output_id</strong> (<em>int</em>) – The ID of the flood model output being queried for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>This function does not return any value.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.latest_model_output_from_db">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">latest_model_output_from_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.latest_model_output_from_db" title="Link to this definition"></a></dt>
-<dd><p>Retrieve the latest BG Flood model output file path from the database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The path to the latest BG Flood model output file.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>pathlib.Path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.add_crs_to_latest_model_output">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">add_crs_to_latest_model_output</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.add_crs_to_latest_model_output" title="Link to this definition"></a></dt>
-<dd><p>Add Coordinate Reference System (CRS) to the latest BG-Flood model output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>This function does not return any value.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -391,7 +426,7 @@ Default value is 0.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.flood_model.bg_flood_model.main">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_timestep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu_device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_nc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../digitaltwin/utils/index.html#src.digitaltwin.utils.LogLevel" title="src.digitaltwin.utils.LogLevel"><span class="pre">src.digitaltwin.utils.LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.DEBUG</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.main" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_timestep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu_device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_nc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../digitaltwin/utils/index.html#src.digitaltwin.utils.LogLevel" title="src.digitaltwin.utils.LogLevel"><span class="pre">src.digitaltwin.utils.LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.DEBUG</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.main" title="Link to this definition"></a></dt>
 <dd><p>Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer
 for visualization.</p>
 <dl class="field-list simple">
@@ -421,10 +456,10 @@ The available logging levels and their corresponding numeric values are:
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This function does not return any value.</p>
+<dd class="field-even"><p>Returns the model id of the new flood_model produced</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -443,7 +478,7 @@ The available logging levels and their corresponding numeric values are:
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="src.flood_model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../serve_model/index.html" class="btn btn-neutral float-right" title="src.flood_model.serve_model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../flooded_buildings/index.html" class="btn btn-neutral float-right" title="src.flood_model.flooded_buildings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

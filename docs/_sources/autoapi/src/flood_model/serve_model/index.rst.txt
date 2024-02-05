@@ -3,6 +3,12 @@
 
 .. py:module:: src.flood_model.serve_model
 
+.. autoapi-nested-parse::
+
+   Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
+   or other clients
+
+
 
 Module Contents
 ---------------
@@ -16,7 +22,15 @@ Functions
    src.flood_model.serve_model.convert_nc_to_gtiff
    src.flood_model.serve_model.upload_gtiff_to_store
    src.flood_model.serve_model.create_layer_from_store
+   src.flood_model.serve_model.get_geoserver_url
    src.flood_model.serve_model.add_gtiff_to_geoserver
+   src.flood_model.serve_model.create_workspace_if_not_exists
+   src.flood_model.serve_model.create_datastore_layer
+   src.flood_model.serve_model.create_building_layers
+   src.flood_model.serve_model.create_db_store_if_not_exists
+   src.flood_model.serve_model.create_building_database_views_if_not_exists
+   src.flood_model.serve_model.style_exists
+   src.flood_model.serve_model.create_viridis_style_if_not_exists
    src.flood_model.serve_model.add_model_output_to_geoserver
 
 
@@ -26,26 +40,172 @@ Attributes
 
 .. autoapisummary::
 
-   src.flood_model.serve_model.GEOSERVER_REST_URL
+   src.flood_model.serve_model.log
+   src.flood_model.serve_model._xml_header
 
 
-.. py:data:: GEOSERVER_REST_URL
-   :value: 'http://localhost:8088/geoserver/rest/'
+.. py:data:: log
+
+   
+
+.. py:data:: _xml_header
 
    
 
 .. py:function:: convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path
 
+   Creates a GeoTiff file from a netCDF model output. The Tiff represents the max flood height in the model output.
 
-.. py:function:: upload_gtiff_to_store(geoserver_url: str, gtiff_filepath: pathlib.Path, store_name: str, workspace_name: str)
+   :param nc_file_path: The file path to the netCDF file.
+   :type nc_file_path: pathlib.Path
+
+   :returns: The filepath of the new GeoTiff file.
+   :rtype: pathlib.Path
 
 
-.. py:function:: create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str, workspace_name: str)
+.. py:function:: upload_gtiff_to_store(geoserver_url: str, gtiff_filepath: pathlib.Path, store_name: str, workspace_name: str) -> None
+
+   Uploads a GeoTiff file to a new GeoServer store, to enable serving.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param gtiff_filepath: The filepath to the GeoTiff file to be served.
+   :type gtiff_filepath: pathlib.Path
+   :param store_name: The name of the new Geoserver store to be created.
+   :type store_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+
+   :returns: This function does not return anything
+   :rtype: None
 
 
-.. py:function:: add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str)
+.. py:function:: create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str, workspace_name: str) -> None
+
+   Creates a GeoServer Layer from a GeoServer store, making it ready to serve.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param layer_name: Defines the name of the layer in GeoServer.
+   :type layer_name: str
+   :param native_crs: The WKT form of the CRS of the data being shown in the layer.
+   :type native_crs: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+
+   :returns: This function does not return anything
+   :rtype: None
 
 
-.. py:function:: add_model_output_to_geoserver(model_output_path: pathlib.Path)
+.. py:function:: get_geoserver_url() -> str
+
+   Retrieves full GeoServer URL from environment variables.
+
+   :returns: The full GeoServer URL
+   :rtype: str
+
+
+.. py:function:: add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, model_id: int) -> None
+
+   Uploads a GeoTiff file to GeoServer, ready for serving to clients.
+
+   :param gtiff_filepath: The filepath to the GeoTiff file to be served.
+   :type gtiff_filepath: pathlib.Path
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param model_id: The id of the model being added, to facilitate layer naming.
+   :type model_id: int
+
+   :returns: This function does not return anything
+   :rtype: None
+
+
+.. py:function:: create_workspace_if_not_exists(workspace_name: str) -> None
+
+   Creates a geoserver workspace if it does not currently exist.
+
+   :param workspace_name: The name of the workspace to create if it does not exists.
+   :type workspace_name: str
+
+   :returns: This function does not return anything.
+   :rtype: None
+
+
+.. py:function:: create_datastore_layer(workspace_name, data_store_name: str, layer_name, metadata_elem: str = '') -> None
+
+
+.. py:function:: create_building_layers(workspace_name: str, data_store_name: str) -> None
+
+   Creates dynamic geoserver layers "nz_building_outlines" and "building_flood_status" for the given workspace.
+   If they already exist then does nothing.
+   "building_flood_status" required viewparam=scenario:{model_id} to dynamically fetch correct flood statuses.
+
+   :param workspace_name: The name of the workspace to create views for
+   :type workspace_name: str
+   :param data_store_name: The name of the datastore that the building layer is being created from
+   :type data_store_name: str
+
+   :returns: This function does not return anything
+   :rtype: None
+
+
+.. py:function:: create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_store_name: str) -> None
+
+   Creates PostGIS database store in a geoserver workspace for a given database.
+   If it already exists, does not do anything.
+
+   :param db_name: The name of the connected database, to connect datastore to
+   :type db_name: str
+   :param workspace_name: The name of the workspace to create views for
+   :type workspace_name: str
+   :param new_data_store_name: The name of the new datastore to create
+   :type new_data_store_name: str
+
+   :returns: This function does not return anything
+   :rtype: None
+
+
+.. py:function:: create_building_database_views_if_not_exists() -> None
+
+   Creates a geoserver workspace and building layers using database views if they do not currently exist.
+   These only need to be created once per database.
+
+   :returns: This function does not return anything.
+   :rtype: None
+
+
+.. py:function:: style_exists(style_name: str) -> bool
+
+   Checks if a geoserver style definition already exists for a given style_name.
+   The style definition may be empty.
+
+   :param style_name: The name of the style to check for
+   :type style_name: str
+
+   :returns: True if the style exists, although it may be empty.
+             False if it does not exist.
+   :rtype: bool
+
+
+.. py:function:: create_viridis_style_if_not_exists() -> None
+
+   Creates a geoserver style for rasters using the viridis colour scale
+
+   :returns: This function does not return anything
+   :rtype: None
+
+
+.. py:function:: add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int) -> None
+
+   Adds the model output max depths to GeoServer, ready for serving.
+   The GeoServer layer name will be f"Output_{model_id}" and the workspace name will be "{db_name}-dt-model-outputs"
+
+   :param model_output_path: The file path to the model output to serve.
+   :type model_output_path: pathlib.Path
+   :param model_id: The database id of the model output.
+   :type model_id: int
+
+   :returns: This function does not return anything
+   :rtype: None
 
 

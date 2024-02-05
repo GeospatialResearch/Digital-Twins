@@ -22,6 +22,7 @@ Classes
    src.digitaltwin.tables.RiverNetworkExclusions
    src.digitaltwin.tables.RiverNetwork
    src.digitaltwin.tables.BGFloodModelOutput
+   src.digitaltwin.tables.BuildingFloodStatus
 
 
 
@@ -399,6 +400,66 @@ Attributes
       
 
    .. py:attribute:: geometry
+
+      
+
+
+.. py:class:: BuildingFloodStatus
+
+
+   Bases: :py:obj:`Base`
+
+   Class representing the 'building_flood_status' table.
+   Represents if a building is flooded for a given flood model output
+
+   .. attribute:: __tablename__
+
+      Name of the database table.
+
+      :type: str
+
+   .. attribute:: unique_id
+
+      Unique identifier for each entry (primary key).
+
+      :type: int
+
+   .. attribute:: building_outline_id
+
+      Foreign key building outline id matching from nz_building_outlines table
+
+      :type: int
+
+   .. attribute:: is_flooded
+
+      If the building is flooded or not
+
+      :type: bool
+
+   .. attribute:: flood_model_id
+
+      Foreign key mathing the unique_id from bg_flood_model_output table
+
+      :type: int.
+
+   .. py:attribute:: __tablename__
+      :value: 'building_flood_status'
+
+      
+
+   .. py:attribute:: unique_id
+
+      
+
+   .. py:attribute:: building_outline_id
+
+      
+
+   .. py:attribute:: is_flooded
+
+      
+
+   .. py:attribute:: flood_model_id
 
       
 

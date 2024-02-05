@@ -11,6 +11,7 @@ Submodules
    :maxdepth: 1
 
    bg_flood_model/index.rst
+   flooded_buildings/index.rst
    serve_model/index.rst
 
 
