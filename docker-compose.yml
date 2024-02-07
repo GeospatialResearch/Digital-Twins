@@ -33,6 +33,11 @@ services:
       - .env.docker-override
     volumes:
       - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
+    healthcheck:
+      test: curl --fail -s http://localhost:5000/ || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
     ports:
       - "5000:5000"
     depends_on:
@@ -58,6 +63,13 @@ services:
       - ${DATA_DIR_REC}:/stored_data/rec_data
       - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
       - ${DATA_DIR_GEOSERVER}:/stored_data/geoserver
+    ports:
+      - "5001:5001"
+    healthcheck:
+      test: curl --fail -s http://localhost:5001/ || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
     depends_on:
       - db_postgres
       - message_broker
@@ -74,14 +86,14 @@ services:
     environment:
       - SKIP_DEMO_DATA=true
       - CORS_ENABLED=true
+      - ROOT_WEBAPP_REDIRECT=true
     ports:
       - "${GEOSERVER_PORT}:8080"
     restart: always
     healthcheck:
-      test: curl --fail -s http://localhost:8080/ || exit 1
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
+      test: curl --fail -s http://localhost:8080/geoserver || exit 1
+      timeout: 5s
+      retries: 10
 
   www:
     # Webserver for the website interface
@@ -96,6 +108,10 @@ services:
       - VUE_APP_POSTGRES_DB=$POSTGRES_DB
     ports:
       - "${WWW_PORT}:80"
+    healthcheck:
+      test: curl --fail -s http://localhost:80/ || exit 1
+      timeout: 5s
+      retries: 10
 
 
   message_broker:
@@ -104,4 +120,9 @@ services:
     container_name: message_broker_digital_twin
     ports:
       - "6379:6379"
+    healthcheck:
+      test: redis-cli ping | grep PONG
+      timeout: 1s
+      retries: 10
+
     restart: always

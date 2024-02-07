@@ -31,9 +31,10 @@ WORKDIR /app
 
 USER root
 
-# Install firefox browser .deb (not snap) and driver (geckodriver) for use within selenium
+# Install dependencies
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl wget \
+# Install firefox from mozilla .deb repository, not snap package as is default for ubuntu (snap does not work for docker)
  && wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null \
  && echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null \
  && echo $' \n\
@@ -44,9 +45,15 @@ Pin-Priority: 1000 \n\
  && cat /etc/apt/preferences.d/mozilla \
  && apt-get update \
  && apt-get install -y --no-install-recommends firefox \
- && rm -fr /var/lib/apt/lists/* \
+# Install geckodriver, webdriver for firefox, needed for selenium
  && curl --proto "=https" -L https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz | tar xz -C /usr/local/bin \
- && apt-get purge -y ca-certificates curl
+# Install health-checker tool that allows us to run commands when checking root endpoint to check if service is available
+ && wget -q https://github.com/gruntwork-io/health-checker/releases/download/v0.0.8/health-checker_linux_amd64 -O /usr/local/bin/health-checker \
+ && chmod +x /usr/local/bin/health-checker \
+# Cleanup image and remove junk
+ && rm -fr /var/lib/apt/lists/* \
+# Remove unused packages. Keep curl for health checking in docker-compose
+ && apt-get purge -y ca-certificates wget
 
 USER nonroot
 
@@ -78,6 +85,11 @@ ENTRYPOINT source /venv/bin/activate && \
 FROM runtime-base AS celery_worker
 # Image build target for celery_worker
 
+EXPOSE 5001
+
 SHELL ["/bin/bash", "-c"]
+# Activate environment and run the health-checker in background and celery worker in foreground
 ENTRYPOINT source /venv/bin/activate && \
+           health-checker --listener 0.0.0.0:5001 --script "celery -A src.tasks inspect ping" --script-timeout 10 & \
+           source /venv/bin/activate && \
            celery -A src.tasks worker -P threads --loglevel=INFO
