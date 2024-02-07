@@ -526,12 +526,12 @@ def get_rec_river_network(engine: Engine, catchment_area: gpd.GeoDataFrame) -> T
         A tuple containing the REC river network as a directed graph (DiGraph) and its associated data
         as a GeoDataFrame.
     """
-    # Obtain the identifier for the REC river network associated with each run
-    rec_network_id = get_next_network_id(engine)
     # Retrieve existing REC river network metadata for the specified catchment area from the database
     existing_network_meta = get_existing_network_metadata_from_db(engine, catchment_area)
 
     if existing_network_meta.empty:
+        # Obtain the identifier for the REC river network associated with each run
+        rec_network_id = get_next_network_id(engine)
         # If no existing REC river network metadata is found, build the REC river network
         rec_network, rec_network_data = build_rec_river_network(engine, catchment_area, rec_network_id)
         # Store the newly created REC river network in the database
