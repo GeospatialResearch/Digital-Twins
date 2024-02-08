@@ -41,6 +41,8 @@ def get_env_variable(var_name: str,
     env_var = os.getenv(var_name, default)
     if not allow_empty and env_var in (None, ""):
         raise KeyError(f"Environment variable {var_name} not set, and allow_empty is False")
+    if type(env_var) == cast_to:
+        return env_var
     return _cast_str(env_var, cast_to)
 
 
@@ -69,11 +71,11 @@ def _cast_str(str_to_cast: str, cast_to: Type[T]) -> T:
     if cast_to == bool:
         # For bool we have the problem where bool("False") == True but we want this function to return False
         truth_values = {"true", "t", "1"}
-        false_values = {"false", "f", "0"}
-        if str_to_cast.lower() in truth_values:
-            return True
-        elif str_to_cast.lower() in false_values:
+        false_values = {"false", "f", "0", ""}
+        if str_to_cast is None or str_to_cast.lower() in false_values:
             return False
+        elif str_to_cast.lower() in truth_values:
+            return True
         raise ValueError(f"{str_to_cast} being casted to bool but is not in {truth_values} or {false_values}")
     # General case
     return cast_to(str_to_cast)

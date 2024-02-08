@@ -96,10 +96,16 @@ def get_status(task_id: str) -> Response:
     """
     task_result = result.AsyncResult(task_id, app=tasks.app)
     status = task_result.status
-    task_value = task_result.get() if status == states.SUCCESS else None
     http_status = OK
-    if status == states.FAILURE:
+    if status == states.SUCCESS:
+        task_value = task_result.get()
+    elif status == states.FAILURE:
         http_status = INTERNAL_SERVER_ERROR
+        is_debug_mode = get_env_variable("DEBUG_TRACEBACK", default=False, cast_to=bool)
+        task_value = task_result.traceback if is_debug_mode else None
+    else:
+        task_value = None
+
     return make_response(jsonify({
         "taskId": task_result.id,
         "taskStatus": status,
