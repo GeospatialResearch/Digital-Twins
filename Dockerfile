@@ -33,7 +33,7 @@ USER root
 
 # Install dependencies
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl wget \
+ && apt-get install -y --no-install-recommends ca-certificates curl wget acl \
 # Install firefox from mozilla .deb repository, not snap package as is default for ubuntu (snap does not work for docker)
  && wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null \
  && echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null \
@@ -54,6 +54,9 @@ Pin-Priority: 1000 \n\
  && rm -fr /var/lib/apt/lists/* \
 # Remove unused packages. Keep curl for health checking in docker-compose
  && apt-get purge -y ca-certificates wget
+
+# Create stored data dir inside image, in case it does not get mounted (such as when deploying on AWS)
+RUN mkdir /stored_data && setfacl -R -m u:nonroot:rwx /stored_data
 
 USER nonroot
 
@@ -90,6 +93,7 @@ EXPOSE 5001
 SHELL ["/bin/bash", "-c"]
 # Activate environment and run the health-checker in background and celery worker in foreground
 ENTRYPOINT source /venv/bin/activate && \
-           health-checker --listener 0.0.0.0:5001 --script "celery -A src.tasks inspect ping" --script-timeout 10 & \
+           health-checker --listener 0.0.0.0:5001 --log-level error --script-timeout 10 \
+             --script "celery -A src.tasks inspect ping"  & \
            source /venv/bin/activate && \
            celery -A src.tasks worker -P threads --loglevel=INFO
