@@ -48,7 +48,7 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
         slr_data_dir.mkdir(parents=True, exist_ok=True)
     # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
     log.info("Downloading regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
-    # Create a webdriver, Chrome for windows or Firefox for other.
+    # Create a webdriver, Chrome for windows or Firefox for other
     operating_system = platform.system()
     if operating_system == "Windows":
         # Initialize a ChromeOptions instance to customize the Chrome WebDriver settings
