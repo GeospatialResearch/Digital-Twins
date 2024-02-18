@@ -134,7 +134,7 @@ def get_rec_inflow_scenario_data(
         valid_ari_values = extract_valid_ari_values(rec_inflow_data)
         if ari not in valid_ari_values:
             raise ValueError(f"Invalid 'ari' value: {ari}. Must be one of {valid_ari_values}.")
-        # Extract MAF-based scenario and select specific columns of interest
+        # Extract ARI-based scenario and select specific columns of interest
         sel_columns = ["river_input_point", "dem_resolution", "areakm2", "flow_maf", f"flow_se_{ari}", f"flow_{ari}"]
         scenario_data = rec_inflow_data[sel_columns]
         # Rename columns in the extracted data for clarity
