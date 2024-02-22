@@ -1,78 +1,53 @@
 # -*- coding: utf-8 -*-
 """
-This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
+This script handles the fetching of sea level rise data from the NZ SeaRise Takiwa website,
 storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
 in the provided tide data.
 """
 
 import logging
-import os
-import pathlib
 import platform
 import subprocess
 import time
+from io import StringIO
 
 import geopandas as gpd
 import pandas as pd
-import pyarrow.csv as csv
+import requests
+from requests.structures import CaseInsensitiveDict
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from sqlalchemy.engine import Engine
 
-from src import config
 from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
 
 
-def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
+def initialize_headless_webdriver() -> WebDriver:
     """
-    Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
-
-    Parameters
-    ----------
-    slr_data_dir : pathlib.Path
-        The directory where the downloaded sea level rise data files will be saved.
+    Initializes a headless WebDriver instance based on the operating system.
 
     Returns
     -------
-    None
-        This function does not return any value.
+    WebDriver
+        A headless WebDriver instance (Chrome for Windows, Firefox for other operating system).
     """
-    # Check if the directory exists and, if so, delete all files within it
-    if slr_data_dir.exists():
-        [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
-    # Create the directory if it does not already exist
-    else:
-        slr_data_dir.mkdir(parents=True, exist_ok=True)
-    # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
-    log.info("Downloading regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
-    # Create a webdriver, Chrome for windows or Firefox for other
+    # Create a webdriver, Chrome for windows or Firefox for other operating system
     operating_system = platform.system()
     if operating_system == "Windows":
-        # Initialize a ChromeOptions instance to customize the Chrome WebDriver settings
+        # Create a ChromeOptions object to customize the settings for the Chrome WebDriver
         chrome_options = webdriver.ChromeOptions()
         # Enable headless mode for Chrome (no visible browser window)
         chrome_options.add_argument("--headless")
-        # Define the download directory preference for downloaded files
-        prefs = {"download.default_directory": str(slr_data_dir.resolve())}
-        # Apply the download directory preference to ChromeOptions
-        chrome_options.add_experimental_option("prefs", prefs)
-        # Create the webdriver using Chrome
+        # Initialize a new instance of the Chrome WebDriver using the customized ChromeOptions
         driver = webdriver.Chrome(options=chrome_options)
-
     else:
-        # Initialise a firefox browser since the chrome browser was not successfully being found by selenium in linux
+        # Initialise a Firefox browser since the Chrome browser was not successfully being found by selenium in linux
         firefox_options = webdriver.FirefoxOptions()
-        # Enable headless mode for Chrome (no visible browser window)
+        # Enable headless mode for Firefox (no visible browser window)
         firefox_options.add_argument("--headless")
-        # Define the download directory preference for downloaded files
-        firefox_options.set_preference("browser.download.folderList", 2)
-        firefox_options.set_preference("browser.download.dir", str(slr_data_dir.resolve()))
-        firefox_options.set_preference("browser.download.manager.showWhenStarting", False)
-        # When downloading files, do not ask user for confirmation or location.
-        firefox_options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream")
         # Find driver_location with linux command `which` since selenium did not always find the correct binary
         driver_location = subprocess.check_output("which geckodriver", shell=True,
                                                   stderr=subprocess.STDOUT).decode().strip()
@@ -80,7 +55,22 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
         firefox_service = webdriver.FirefoxService(executable_path=driver_location)
         # Create firefox webdriver
         driver = webdriver.Firefox(options=firefox_options, service=firefox_service)
+    return driver
 
+
+def fetch_slr_data_from_takiwa() -> pd.DataFrame:
+    """
+    Fetch sea level rise (SLR) data from the NZ SeaRise Takiwa website.
+
+    Returns
+    -------
+    pd.DataFrame
+        Sea level rise (SLR) data for New Zealand
+    """
+    # Log that the fetching of sea level rise data from NZ SeaRise Takiwa has started
+    log.info("Fetching 'sea_level_rise' data from NZ SeaRise Takiwa.")
+    # Initializes a headless WebDriver instance based on the operating system
+    driver = initialize_headless_webdriver()
     # Open the specified website in the browser
     driver.get("https://searise.takiwa.co/map/6245144372b819001837b900")
     # Add a 1-second delay to ensure that the website is open before downloading
@@ -93,80 +83,80 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
     # Identify links to all the regional data files on the webpage
     elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
-    # Iterate through the identified links and simulate a click action to trigger the download
+    # Iterate through the identified links and retrieve the CSV content into memory
+    count = 0  # Initialize a count variable to track the number of retrieved files
+    slr_data = pd.DataFrame()  # Create an empty DataFrame to store the SLR data
     for element in elements:
         # Scroll down the div to the link. Required for firefox browser
         driver.execute_script("arguments[0].scrollIntoView(true);", element)
-        # Click the download link
-        ActionChains(driver).move_to_element(element).click().perform()
-        # Wait a short delay before clicking again so that the download starts.
-        time.sleep(0.5)
-    # Add a 3-second delay to ensure all downloads are complete before quitting the browser
-    time.sleep(3)
+        # Get the URL of the CSV file to fetch
+        csv_url = element.get_attribute("href")
+        # Define custom headers to mimic a browser's user-agent
+        headers = CaseInsensitiveDict()
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
+                Chrome/96.0.4664.110 Safari/537.36"
+        # Make a GET request to fetch the CSV content into memory with custom headers
+        response = requests.get(csv_url, headers=headers)
+        # Extract the text content from the response
+        resp_text = response.text
+        # Parse the content into a DataFrame using pandas
+        resp_df = pd.read_csv(StringIO(resp_text))
+        # Extract region name from file name and add it as a new column to the DataFrame
+        # Extract the Content-Disposition header from the response to get the file name
+        content_disposition = response.headers['Content-Disposition']
+        # Find the index where the 'filename=' starts
+        file_name_index = content_disposition.find('filename=')
+        # Extract the file name from the Content-Disposition header
+        file_name = content_disposition[file_name_index + len('filename='):]
+        # Remove any surrounding double quotes from the file name
+        file_name = file_name.strip('"')
+        # Find the starting index of the region name within the file name
+        start_index = file_name.find('projections_') + len('projections_')
+        # Find the ending index of the region name within the file name
+        end_index = file_name.find('_region')
+        # Extract the region name from the file name
+        region_name = file_name[start_index:end_index]
+        # Add the extracted region name as a new column to the DataFrame
+        resp_df['region'] = region_name
+        # Concatenate the retrieved data with the existing SLR data DataFrame
+        slr_data = pd.concat([slr_data, resp_df])
+        # Increment the count of retrieved CSV content
+        count += 1
     # Quit the WebDriver, closing the browser
     driver.quit()
-    # If running this from windows within a WSL directory, Zone.Identifier files are created and must be removed.
-    for zone_identifier_file in slr_data_dir.glob("*Zone.identifier"):
-        os.remove(zone_identifier_file)
-    # Check that the number of downloaded files matches the number of links on the webpage
-    slr_dir_files = list(slr_data_dir.glob("*"))
-    if len(slr_dir_files) != len(elements):
-        logging.debug(f"slr_dir_files = {slr_dir_files}")
+    # Check that the number of files loaded matches the number of links on the webpage
+    if count != len(elements):
+        logging.debug(f"count = {count}")
         logging.debug(f"elements = {elements}")
-        raise ValueError(f"The number of files in slr_data_dir ({len(slr_dir_files)})"
-                         f" does not match the number of datasets found on the web page ({len(elements)})")
-    # Log that the files have been successfully downloaded
-    log.info("Successfully downloaded regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
+        raise ValueError(f"The number of files loaded ({count}) "
+                         f"does not match the number of datasets found on the web page ({len(elements)})")
+    # Log that the data have been successfully loaded
+    log.info("Successfully fetched 'sea_level_rise' data from NZ SeaRise Takiwa.")
+    return slr_data
 
 
-def read_slr_data_from_files(slr_data_dir: pathlib.Path) -> gpd.GeoDataFrame:
+def prep_slr_geo_data(slr_data: pd.DataFrame) -> gpd.GeoDataFrame:
     """
-    Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
+    Enhance sea level rise (SLR) data by incorporating geographical geometry based on longitude and latitude,
+    creating Point geometries, and ensure consistency by converting all column names to lowercase.
 
     Parameters
     ----------
-    slr_data_dir : pathlib.Path
-        The directory containing the downloaded sea level rise data files.
+    slr_data : pd.DataFrame
+        Sea level rise (SLR) data containing columns 'lon' and 'lat' for longitude and latitude respectively.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame containing the sea level rise data from the NZ Sea level rise datasets.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the sea level rise data directory does not exist or if there are no CSV files in the specified directory.
+        A GeoDataFrame containing sea level rise (SLR) data with geometry information.
     """
-    # Check if the sea level rise data directory exists
-    if not slr_data_dir.exists():
-        raise FileNotFoundError(f"'sea_level_rise' data directory not found: '{slr_data_dir}'.")
-    # Check if there are any CSV files in the specified directory
-    if not any(slr_data_dir.glob("*.csv")):
-        raise FileNotFoundError(f"'sea_level_rise' data files not found in: '{slr_data_dir}'")
-    # Create an empty list to store the sea level rise datasets
-    slr_nz_list = []
-    # Loop through each CSV file in the specified directory
-    for file_path in slr_data_dir.glob("*.csv"):
-        # Read the CSV file into a pandas DataFrame using pyarrow
-        slr_region = csv.read_csv(file_path).to_pandas()
-        # Extract the region name from the file name and add it as a new column in the DataFrame
-        file_name = file_path.stem
-        start_index = file_name.find('projections_') + len('projections_')
-        end_index = file_name.find('_region')
-        region_name = file_name[start_index:end_index]
-        slr_region['region'] = region_name
-        # Append the DataFrame to the list
-        slr_nz_list.append(slr_region)
-        # Log that the file has been successfully loaded
-        log.info(f"Successfully loaded the '{file_path.name}' data file.")
-    # Concatenate all the dataframes in the list and add geometry column
-    slr_nz = pd.concat(slr_nz_list, axis=0).reset_index(drop=True)
-    geometry = gpd.points_from_xy(slr_nz['lon'], slr_nz['lat'], crs=4326)
-    slr_nz_with_geom = gpd.GeoDataFrame(slr_nz, geometry=geometry)
+    # Create Point geometries from latitude and longitude
+    geometry = gpd.points_from_xy(slr_data['lon'], slr_data['lat'], crs=4326)
+    # Create a GeoDataFrame from the SLR data and geometry
+    slr_nz = gpd.GeoDataFrame(slr_data, geometry=geometry)
     # Convert all column names to lowercase
-    slr_nz_with_geom.columns = slr_nz_with_geom.columns.str.lower()
-    return slr_nz_with_geom
+    slr_nz.columns = slr_nz.columns.str.lower()
+    return slr_nz
 
 
 def store_slr_data_to_db(engine: Engine) -> None:
@@ -189,12 +179,10 @@ def store_slr_data_to_db(engine: Engine) -> None:
     if tables.check_table_exists(engine, table_name):
         log.info(f"'{table_name}' data already exists in the database.")
     else:
-        # Get the data directory and append "slr_data" to specify the sea level rise data directory
-        slr_data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "slr_data"
-        # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
-        download_slr_data_files_from_takiwa(slr_data_dir)
-        # Read sea level rise data from the NZ Sea level rise datasets
-        slr_nz = read_slr_data_from_files(slr_data_dir)
+        # Fetch sea level rise (SLR) data from the NZ SeaRise Takiwa website
+        slr_data = fetch_slr_data_from_takiwa()
+        # Enhance SLR data by incorporating geographical geometry and converting column names to lowercase
+        slr_nz = prep_slr_geo_data(slr_data)
         # Store the sea level rise data to the database table
         log.info(f"Adding '{table_name}' data to the database.")
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
