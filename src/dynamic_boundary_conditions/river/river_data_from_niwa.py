@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.
+Fetch REC data in New Zealand from NIWA.
 """
 
 import logging
@@ -223,12 +223,13 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
     query_param_list = gen_rec_query_param_list(engine, max_record_count, total_record_count)
     try:
         # Log that the fetching of REC data has started
-        log.info("Fetching 'rec_data' from NIWA.")
+        log.info("Fetching 'rec_data' from NIWA using the ArcGIS REST API.")
         # Iterate over the list of API query parameters to fetch REC data in New Zealand
         rec_data = asyncio.run(fetch_rec_data_for_nz(query_param_list, url))
         # Log that the REC data has been successfully fetched
-        log.info("Successfully fetched 'rec_data'.")
+        log.info("Successfully fetched 'rec_data' from NIWA using the ArcGIS REST API.")
         return rec_data
     except TypeError:
         # Raise a RuntimeError to indicate the failure
-        raise RuntimeError("Failed to fetch 'rec_data'.")
+        raise RuntimeError("Failed to fetch 'rec_data' from NIWA using the ArcGIS REST API.")
+
