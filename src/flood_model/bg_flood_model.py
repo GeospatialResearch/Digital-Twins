@@ -20,7 +20,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import text
 
-from src import config
+from src.config import get_env_variable
 from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import BGFloodModelOutput, create_table
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
@@ -48,7 +48,7 @@ def get_valid_bg_flood_dir() -> pathlib.Path:
         If the BG-Flood Model directory is not found or is not a valid directory.
     """
     # Get the BG-Flood Model directory from the environment variable
-    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    bg_flood_dir = get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # Check if the directory exists and is a valid directory
     if bg_flood_dir.exists() and bg_flood_dir.is_dir():
         return bg_flood_dir
@@ -66,7 +66,7 @@ def get_new_model_output_path() -> pathlib.Path:
         The path to the BG Flood model output file.
     """
     # Get the BG Flood model output directory from the environment variable
-    model_output_dir = config.get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
+    model_output_dir = get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
     # Create the BG Flood model output directory if it does not already exist
     model_output_dir.mkdir(parents=True, exist_ok=True)
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
