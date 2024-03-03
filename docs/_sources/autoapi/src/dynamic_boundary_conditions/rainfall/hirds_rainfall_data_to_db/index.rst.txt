@@ -19,8 +19,8 @@ Functions
 .. autoapisummary::
 
    src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.db_rain_table_name
-   src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_in_catchment
-   src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_sites_id_not_in_db
+   src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_site_ids_in_catchment
+   src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_site_ids_not_in_db
    src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_rainfall_data_to_db
    src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_each_site_rainfall_data
    src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.rainfall_data_to_db
@@ -50,25 +50,25 @@ Attributes
    :rtype: str
 
 
-.. py:function:: get_sites_id_in_catchment(sites_in_catchment: geopandas.GeoDataFrame) -> List[str]
+.. py:function:: get_site_ids_in_catchment(sites_in_catchment: geopandas.GeoDataFrame) -> List[str]
 
    Get the rainfall site IDs within the catchment area.
 
-   :param sites_in_catchment: Rainfall site coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+   :param sites_in_catchment: Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
    :type sites_in_catchment: gpd.GeoDataFrame
 
    :returns: The rainfall site IDs within the catchment area.
    :rtype: List[str]
 
 
-.. py:function:: get_sites_id_not_in_db(engine: sqlalchemy.engine.Engine, sites_id_in_catchment: List[str], idf: bool) -> List[str]
+.. py:function:: get_site_ids_not_in_db(engine: sqlalchemy.engine.Engine, site_ids_in_catchment: List[str], idf: bool) -> List[str]
 
    Get the list of rainfall site IDs that are within the catchment area but not in the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param sites_id_in_catchment: Rainfall site IDs within the catchment area.
-   :type sites_id_in_catchment: List[str]
+   :param site_ids_in_catchment: Rainfall site IDs within the catchment area.
+   :type site_ids_in_catchment: List[str]
    :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
    :type idf: bool
 
@@ -91,14 +91,14 @@ Attributes
    :rtype: None
 
 
-.. py:function:: add_each_site_rainfall_data(engine: sqlalchemy.engine.Engine, sites_id_list: List[str], idf: bool) -> None
+.. py:function:: add_each_site_rainfall_data(engine: sqlalchemy.engine.Engine, site_ids_list: List[str], idf: bool) -> None
 
-   Add rainfall data for each site in the sites_id_list to the database.
+   Add rainfall data for each site in the site_ids_list to the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param sites_id_list: List of rainfall sites' IDs.
-   :type sites_id_list: List[str]
+   :param site_ids_list: List of rainfall sites' IDs.
+   :type site_ids_list: List[str]
    :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
    :type idf: bool
 

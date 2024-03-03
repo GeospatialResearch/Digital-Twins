@@ -26,6 +26,18 @@ Functions
 
 
 
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.hydrograph.log
+
+
+.. py:data:: log
+
+   
+
 .. py:function:: clean_rec_inflow_data(rec_inflows_w_input_points: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
 
    Selects and renames specific columns that represent REC river inflow data from the input GeoDataFrame.

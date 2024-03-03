@@ -104,13 +104,28 @@
 <td><p>Filter the HIRDS rainfall data for a requested duration.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.get_one_site_rainfall_data" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.get_one_site_rainfall_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_one_site_rainfall_data</span></code></a>(→ pandas.DataFrame)</p></td>
-<td><p>Get the HIRDS rainfall data for the requested site from the database and return the required data in</p></td>
+<td><p>Retrieve rainfall data from the database for the requested site based on the user-requested scenario.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.rainfall_data_from_db" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.rainfall_data_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rainfall_data_from_db</span></code></a>(→ pandas.DataFrame)</p></td>
-<td><p>Get rainfall data for the sites within the catchment area and return it as a Pandas DataFrame.</p></td>
+<td><p>Retrieve rainfall data from the database for sites within the catchment area based on the user-requested scenario.</p></td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.log" title="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.log">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.filter_for_duration">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.</span></span><span class="sig-name descname"><span class="pre">filter_for_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rain_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.filter_for_duration" title="Link to this definition"></a></dt>
@@ -135,8 +150,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.get_one_site_rainfall_data">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.</span></span><span class="sig-name descname"><span class="pre">get_one_site_rainfall_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rcp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ari</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.get_one_site_rainfall_data" title="Link to this definition"></a></dt>
-<dd><p>Get the HIRDS rainfall data for the requested site from the database and return the required data in
-Pandas DataFrame format.</p>
+<dd><p>Retrieve rainfall data from the database for the requested site based on the user-requested scenario.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -152,7 +166,7 @@ for historical data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>HIRDS rainfall data for the requested site and parameters.</p>
+<dd class="field-even"><p>Rainfall data for the requested site based on the user-requested scenario.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -166,12 +180,12 @@ for historical data.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.rainfall_data_from_db">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.</span></span><span class="sig-name descname"><span class="pre">rainfall_data_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rcp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ari</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.rainfall_data_from_db" title="Link to this definition"></a></dt>
-<dd><p>Get rainfall data for the sites within the catchment area and return it as a Pandas DataFrame.</p>
+<dd><p>Retrieve rainfall data from the database for sites within the catchment area based on the user-requested scenario.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites coverage areas (Thiessen polygons) within the catchment area.</p></li>
+<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></li>
 <li><p><strong>rcp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Representative Concentration Pathway (RCP) value. Valid options are 2.6, 4.5, 6.0, 8.5, or None
 for historical data.</p></li>
 <li><p><strong>time_period</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Future time period. Valid options are “2031-2050”, “2081-2100”, or None for historical data.</p></li>
@@ -182,7 +196,8 @@ for historical data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A DataFrame containing the rainfall data for the sites within the catchment area.</p>
+<dd class="field-even"><p>A DataFrame containing the rainfall data for sites within the catchment area based on the
+user-requested scenario.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>

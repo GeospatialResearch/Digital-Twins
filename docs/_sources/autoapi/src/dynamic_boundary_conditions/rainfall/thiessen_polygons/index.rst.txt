@@ -69,17 +69,13 @@ Attributes
        - If the provided 'sites_in_aoi' GeoDataFrame does not contain any data.
 
 
-.. py:function:: thiessen_polygons_to_db(engine: sqlalchemy.engine.Engine, area_of_interest: geopandas.GeoDataFrame, sites_in_aoi: geopandas.GeoDataFrame) -> None
+.. py:function:: thiessen_polygons_to_db(engine: sqlalchemy.engine.Engine) -> None
 
    Store the data representing the Thiessen polygons, site information, and the area covered by
    each rainfall site in the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param area_of_interest: A GeoDataFrame representing the area of interest.
-   :type area_of_interest: gpd.GeoDataFrame
-   :param sites_in_aoi: Rainfall sites within the area of interest.
-   :type sites_in_aoi: gpd.GeoDataFrame
 
    :returns: This function does not return any value.
    :rtype: None
@@ -87,15 +83,15 @@ Attributes
 
 .. py:function:: thiessen_polygons_from_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
 
-   Get the coverage areas (Thiessen polygons) of all rainfall sites that intersect or are within the
-   specified catchment area.
+   Get rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
    :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
 
-   :returns: A GeoDataFrame containing the coverage areas (Thiessen polygons) of rainfall sites within the catchment area.
+   :returns: A GeoDataFrame containing the rainfall sites coverage areas (Thiessen polygons) that intersect or
+             are within the catchment area.
    :rtype: gpd.GeoDataFrame
 
 

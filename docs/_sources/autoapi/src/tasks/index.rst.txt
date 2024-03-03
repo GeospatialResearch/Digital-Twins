@@ -3,6 +3,12 @@
 
 .. py:module:: src.tasks
 
+.. autoapi-nested-parse::
+
+   Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
+   Allows the frontend to send tasks and retrieve status later.
+
+
 
 Module Contents
 ---------------
@@ -13,6 +19,7 @@ Classes
 .. autoapisummary::
 
    src.tasks.OnFailureStateTask
+   src.tasks.DepthTimePlot
 
 
 
@@ -22,10 +29,18 @@ Functions
 .. autoapisummary::
 
    src.tasks.create_model_for_area
-   src.tasks.initialise_db_with_region_geometries
+   src.tasks.ensure_lidar_datasets_initialised
+   src.tasks.add_base_data_to_db
+   src.tasks.process_dem
    src.tasks.generate_rainfall_inputs
+   src.tasks.generate_tide_inputs
+   src.tasks.generate_river_inputs
    src.tasks.run_flood_model
+   src.tasks.refresh_lidar_datasets
    src.tasks.wkt_to_gdf
+   src.tasks.get_model_output_filepath_from_model_id
+   src.tasks.get_depth_by_time_at_point
+   src.tasks.get_model_extents_bbox
 
 
 
@@ -36,6 +51,7 @@ Attributes
 
    src.tasks.message_broker_url
    src.tasks.app
+   src.tasks.log
 
 
 .. py:data:: message_broker_url
@@ -43,6 +59,10 @@ Attributes
    
 
 .. py:data:: app
+
+   
+
+.. py:data:: log
 
    
 
@@ -57,20 +77,179 @@ Attributes
 
 
 
-.. py:function:: create_model_for_area(selected_polygon_wkt: str) -> celery.result.GroupResult
-
-   Creates a model for the area using series of chained (sequential) and grouped (parallel) sub-tasks
+.. py:class:: DepthTimePlot
 
 
-.. py:function:: initialise_db_with_region_geometries()
+   Bases: :py:obj:`NamedTuple`
+
+   Represents the depths over time for a particular pixel location in a raster.
+   Uses tuples and lists instead of Arrays or Dataframes because it needs to be easily serializable when communicating
+   over message_broker
+
+   .. attribute:: depths
+
+      A list of all of the depths in m for the pixel. Parallels the times list
+
+      :type: List[float]
+
+   .. attribute:: times
+
+      A list of all of the times in s for the pixel. Parallels the depts list
+
+      :type: List[float]
+
+   .. py:attribute:: depths
+      :type: List[float]
+
+      
+
+   .. py:attribute:: times
+      :type: List[float]
+
+      
+
+
+.. py:function:: create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> celery.result.GroupResult
+
+   Creates a model for the area using series of chained (sequential) sub-tasks.
+
+   :param selected_polygon_wkt: The polygon defining the selected area to run the model for. Defined in WKT form.
+   :type selected_polygon_wkt: str
+
+   :returns: The task result for the long-running group of tasks. The task ID represents the final task in the group.
+   :rtype: result.GroupResult
+
+
+.. py:function:: ensure_lidar_datasets_initialised() -> None
+
+   Task checks if LiDAR datasets table is initialised.
+   This table holds URLs to data sources for LiDAR.
+   If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.
+
+   :returns: This task does not return anything
+   :rtype: None
+
+
+.. py:function:: add_base_data_to_db(selected_polygon_wkt: str) -> None
+
+   Task to ensure static base data for the given area is added to the database
+
+   :param selected_polygon_wkt: The polygon defining the selected area to add base data for. Defined in WKT form.
+   :type selected_polygon_wkt: str
+
+   :returns: This task does not return anything
+   :rtype: None
+
+
+.. py:function:: process_dem(selected_polygon_wkt: str)
+
+   Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.
+
+   :param selected_polygon_wkt: The polygon defining the selected area to process the DEM for. Defined in WKT form.
+   :type selected_polygon_wkt: str
+
+   :returns: This task does not return anything
+   :rtype: None
 
 
 .. py:function:: generate_rainfall_inputs(selected_polygon_wkt: str)
 
+   Task to ensure rainfall input data for the given area is added to the database and model input files are created.
 
-.. py:function:: run_flood_model(selected_polygon_wkt: str)
+   :param selected_polygon_wkt: The polygon defining the selected area to add rainfall data for. Defined in WKT form.
+   :type selected_polygon_wkt: str
+
+   :returns: This task does not return anything
+   :rtype: None
+
+
+.. py:function:: generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict)
+
+   Task to ensure tide input data for the given area is added to the database and model input files are created.
+
+   :param selected_polygon_wkt: The polygon defining the selected area to add tide data for. Defined in WKT form.
+   :type selected_polygon_wkt: str
+
+   :returns: This task does not return anything
+   :rtype: None
+
+
+.. py:function:: generate_river_inputs(selected_polygon_wkt: str)
+
+   Task to ensure river input data for the given area is added to the database and model input files are created.
+
+   :param selected_polygon_wkt: The polygon defining the selected area to add river data for. Defined in WKT form.
+   :type selected_polygon_wkt: str
+
+   :returns: This task does not return anything
+   :rtype: None
+
+
+.. py:function:: run_flood_model(selected_polygon_wkt: str) -> int
+
+   Task to run flood model using input data from previous tasks.
+
+   :param selected_polygon_wkt: The polygon defining the selected area to run the flood model for. Defined in WKT form.
+   :type selected_polygon_wkt: str
+
+   :returns: The database ID of the flood model that has been run.
+   :rtype: int
+
+
+.. py:function:: refresh_lidar_datasets() -> None
+
+   Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
+   Takes a long time to run but needs to be run periodically so that the datasets are up to date
+
+   :returns: This task does not return anything
+   :rtype: None
 
 
 .. py:function:: wkt_to_gdf(wkt: str) -> geopandas.GeoDataFrame
+
+   Transforms a WKT string polygon into a GeoDataFrame
+
+   :param wkt: The WKT form of the polygon to be transformed. In WGS84 CRS (epsg:4326).
+   :type wkt: str
+
+   :returns: The GeoDataFrame form of the polygon after being transformed.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_model_output_filepath_from_model_id(model_id: int) -> str
+
+   Task to query the database and find the filepath for the model output for the model_id.
+
+   :param model_id: The database id of the model output to query.
+   :type model_id: int
+
+   :returns: Serialized posix-style str version of the filepath
+   :rtype: str
+
+
+.. py:function:: get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> DepthTimePlot
+
+   Task to query a point in a flood model output and return the list of depths and times.
+
+   :param model_id: The database id of the model output to query.
+   :type model_id: int
+   :param lat: The latitude of the point to query.
+   :type lat: float
+   :param lng: The longitude of the point to query.
+   :type lng: float
+
+   :returns: Tuple of depths list and times list for the pixel in the output nearest to the point.
+   :rtype: DepthTimePlot
+
+
+.. py:function:: get_model_extents_bbox(model_id: int) -> str
+
+   Task to find the bounding box of a given model output
+
+   :param model_id: The database id of the model output to query.
+   :type model_id: int
+
+   :returns: The bounding box in '[x1],[y1],[x2],[y2]' format
+   :rtype: str
 
 

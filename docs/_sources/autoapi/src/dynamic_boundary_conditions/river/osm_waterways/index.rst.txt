@@ -24,6 +24,18 @@ Functions
 
 
 
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.osm_waterways.log
+
+
+.. py:data:: log
+
+   
+
 .. py:function:: configure_osm_cache() -> None
 
    Change the directory for storing the OSM cache files.

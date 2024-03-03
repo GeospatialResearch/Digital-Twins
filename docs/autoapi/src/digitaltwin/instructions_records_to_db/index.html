@@ -92,7 +92,7 @@
              
   <section id="module-src.digitaltwin.instructions_records_to_db">
 <span id="src-digitaltwin-instructions-records-to-db"></span><h1><a class="reference internal" href="#module-src.digitaltwin.instructions_records_to_db" title="src.digitaltwin.instructions_records_to_db"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin.instructions_records_to_db</span></code></a><a class="headerlink" href="#module-src.digitaltwin.instructions_records_to_db" title="Link to this heading"></a></h1>
-<p>This script processes ‘static_vector_instructions’ records, validates URLs and instruction fields, and stores them in
+<p>This script processes ‘static_boundary_instructions’ records, validates URLs and instruction fields, and stores them in
 the ‘geospatial_layers’ table of the database.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
@@ -107,16 +107,16 @@ the ‘geospatial_layers’ table of the database.</p>
 <td><p>Validate the fields of an instruction.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file" title="src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_and_check_instructions_file</span></code></a>(→ pandas.DataFrame)</p></td>
-<td><p>Read and check the static_vector_instructions file, validating URLs and instruction fields.</p></td>
+<td><p>Read and check the static_boundary_instructions file, validating URLs and instruction fields.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers" title="src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_geospatial_layers</span></code></a>(→ pandas.DataFrame)</p></td>
 <td><p>Retrieve existing geospatial layers from the 'geospatial_layers' table.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.get_non_existing_records" title="src.digitaltwin.instructions_records_to_db.get_non_existing_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_non_existing_records</span></code></a>(→ pandas.DataFrame)</p></td>
-<td><p>Get 'static_vector_instructions' records that are not available in the database.</p></td>
+<td><p>Get 'static_boundary_instructions' records that are not available in the database.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db" title="src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_instructions_records_to_db</span></code></a>(→ None)</p></td>
-<td><p>Store 'static_vector_instructions' records in the 'geospatial_layers' table in the database.</p></td>
+<td><p>Store 'static_boundary_instructions' records in the 'geospatial_layers' table in the database.</p></td>
 </tr>
 </tbody>
 </table>
@@ -193,7 +193,7 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
 <dl class="py function">
 <dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file">
 <span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">read_and_check_instructions_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file" title="Link to this definition"></a></dt>
-<dd><p>Read and check the static_vector_instructions file, validating URLs and instruction fields.</p>
+<dd><p>Read and check the static_boundary_instructions file, validating URLs and instruction fields.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The processed instructions DataFrame.</p>
@@ -224,16 +224,16 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
 <dl class="py function">
 <dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.get_non_existing_records">
 <span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">get_non_existing_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_layers_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.get_non_existing_records" title="Link to this definition"></a></dt>
-<dd><p>Get ‘static_vector_instructions’ records that are not available in the database.</p>
+<dd><p>Get ‘static_boundary_instructions’ records that are not available in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>instructions_df</strong> (<em>pd.DataFrame</em>) – Data frame containing the ‘static_vector_instructions’ records.</p></li>
-<li><p><strong>existing_layers_df</strong> (<em>pd.DataFrame</em>) – Data frame containing the existing ‘static_vector_instructions’ records from the database.</p></li>
+<li><p><strong>instructions_df</strong> (<em>pd.DataFrame</em>) – Data frame containing the ‘static_boundary_instructions’ records.</p></li>
+<li><p><strong>existing_layers_df</strong> (<em>pd.DataFrame</em>) – Data frame containing the existing ‘static_boundary_instructions’ records from the database.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Data frame containing the ‘static_vector_instructions’ records that are not available in the database.</p>
+<dd class="field-even"><p>Data frame containing the ‘static_boundary_instructions’ records that are not available in the database.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -244,7 +244,7 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
 <dl class="py function">
 <dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db">
 <span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">store_instructions_records_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db" title="Link to this definition"></a></dt>
-<dd><p>Store ‘static_vector_instructions’ records in the ‘geospatial_layers’ table in the database.</p>
+<dd><p>Store ‘static_boundary_instructions’ records in the ‘geospatial_layers’ table in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p>
