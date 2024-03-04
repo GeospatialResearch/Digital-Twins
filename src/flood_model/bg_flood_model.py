@@ -478,7 +478,7 @@ def run_bg_flood_model(
         subprocess.run([bg_flood_dir / "BG_Flood"], check=True)
     # Change the current working directory back to the original directory (cwd)
     os.chdir(cwd)
-    log.info(f"Saved new flood model to {model_output_path}")
+    log.info(f"Saved the new flood model to {model_output_path}")
 
 
 def main(
