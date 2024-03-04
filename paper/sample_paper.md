@@ -1,55 +1,53 @@
 ---
-title: 'Flood Resilience Digital Twin'
+title: 'Gala: A Python package for galactic dynamics'
 tags:
   - Python
-  - flooding
-  - hydrology
-  - digital twin
-  - resilience
-  - disaster
-  - hazard
-  - risk assessment
-
+  - astronomy
+  - dynamics
+  - galactic dynamics
+  - milky way
 authors:
-  - name: Luke Parkinson
-    orcid: 0000-0003-3130-3445
-    equal-contrib: true 
-    affiliation: 1
-    
-  - name: Casey Li
-    orcid: 0009-0009-1707-8289
-    equal-contrib: true 
-    affiliation: 1
-
+  - name: Adrian M. Price-Whelan
+    orcid: 0000-0000-0000-0000
+    equal-contrib: true
+    affiliation: "1, 2" # (Multiple affiliations must be quoted)
+  - name: Author Without ORCID
+    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
+    affiliation: 2
+  - name: Author with no affiliation
+    corresponding: true # (This is how to denote the corresponding author)
+    affiliation: 3
+  - given-names: Ludwig
+    dropping-particle: van
+    surname: Beethoven
+    affiliation: 3
 affiliations:
-  - name: Geospatial Developer, Geospatial Research Institute | Toi Hangarau, New Zealand
-    index: 1
+ - name: Lyman Spitzer, Jr. Fellow, Princeton University, USA
+   index: 1
+ - name: Institution Name, Country
+   index: 2
+ - name: Independent Researcher, Country
+   index: 3
+date: 13 August 2017
+bibliography: paper.bib
+
+# Optional fields if submitting to a AAS journal too, see this blog post:
+# https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
+aas-doi: 10.3847/xxxxx <- update this with the DOI from AAS once you know it.
+aas-journal: Astrophysical Journal <- The name of the AAS journal.
 ---
 
 # Summary
 
-According to the National Emergency Management Agency, flooding is the greatest hazard in New Zealand, in terms of
-frequency, losses and civil defence emergencies. With major flood events occurring on average every 8
-months [(New Zealand – FloodList)](https://floodlist.com/tag/new-zealand), it is necessary to produce high precision
-flood models and in order to do better planning, risk assessment and response to flood events, making plans in advance
-can make all the difference, not just to property owners at risks, it will also help insurance companies who make
-underwriting decisions on properties, the banks supplying the property finance, the telecommunications and utilities
-companies providing vital services to homes and offices, and the government agencies tasked with protecting communities
-and their assets.
-
-The Flood Resilience Digital Twin can provide a better understanding of the degree of impact flood events can have on
-physical assets like buildings, roads, railways, transmission lines, etc. Digital Twin not only represents the current
-status of the visualised assets but also how they will perform/react to future situations. The build twin when used to
-run flood models combined with other sources of information can allow us to make predictions.
-
-Data is collected from open data portals provided by multiple organisations or data providers such as LINZ, StatsNZ,
-opentopography, NIWA, MFE, and more. The collected data is stored in the application database using PostgreSQL
-
-The reason for implementing a database are:
-
-1. Reusing data that has been processed by the digital twin that may have taken a long time to process
-1. Avoid unnecessary network overhead on the data providers
-1. To avoid delays in fetching the same data from the API when required again and again to run the models.
+The forces on stars, galaxies, and dark matter under external gravitational
+fields lead to the dynamical evolution of structures in the universe. The orbits
+of these bodies are therefore key to understanding the formation, history, and
+future state of galaxies. The field of "galactic dynamics," which aims to model
+the gravitating components of galaxies to study their structure and evolution,
+is now well-established, commonly taught, and frequently used in astronomy.
+Aside from toy problems and demonstrations, the majority of problems require
+efficient numerical tools, many of which require the same base code (e.g., for
+performing numerical orbit integration).
 
 # Statement of need
 
