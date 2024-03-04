@@ -19,103 +19,50 @@ authors:
   - name: Casey Li
     orcid: 0009-0009-1707-8289
     equal-contrib: true 
-    affiliation: 1
+    affiliation: 2
 
 affiliations:
-  - name: Geospatial Developer, Geospatial Research Institute | Toi Hangarau, New Zealand
+  - name: Geospatial Software Developer, Geospatial Research Institute | Toi Hangarau, New Zealand
     index: 1
+  - name: Geospatial Developer, Building Innovation Partnership, New Zealand
+    index: 2
 ---
 
 # Summary
+A Digital twin is...
+Takes data [@dt-stormwater] from external sources and computes flood map...
 
-According to the National Emergency Management Agency, flooding is the greatest hazard in New Zealand, in terms of
-frequency, losses and civil defence emergencies. With major flood events occurring on average every 8
-months [(New Zealand – FloodList)](https://floodlist.com/tag/new-zealand), it is necessary to produce high precision
-flood models and in order to do better planning, risk assessment and response to flood events, making plans in advance
-can make all the difference, not just to property owners at risks, it will also help insurance companies who make
-underwriting decisions on properties, the banks supplying the property finance, the telecommunications and utilities
-companies providing vital services to homes and offices, and the government agencies tasked with protecting communities
-and their assets.
-
-The Flood Resilience Digital Twin can provide a better understanding of the degree of impact flood events can have on
-physical assets like buildings, roads, railways, transmission lines, etc. Digital Twin not only represents the current
-status of the visualised assets but also how they will perform/react to future situations. The build twin when used to
-run flood models combined with other sources of information can allow us to make predictions.
-
-Data is collected from open data portals provided by multiple organisations or data providers such as LINZ, StatsNZ,
-opentopography, NIWA, MFE, and more. The collected data is stored in the application database using PostgreSQL
-
-The reason for implementing a database are:
-
-1. Reusing data that has been processed by the digital twin that may have taken a long time to process
-1. Avoid unnecessary network overhead on the data providers
-1. To avoid delays in fetching the same data from the API when required again and again to run the models.
+Select area and give parameters...
+Identify flood level at different times during the flood event...
+Identify buildings flooded past a certain threshold...
+3D Visualisation front-end...
+API...
+Kaiapoi, New Zealand...
 
 # Statement of need
+New Zealand communities are at risk of flood inundation...
 
-`Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for `Gala` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. `Gala` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the `Astropy` package [@astropy] (`astropy.units` and
-`astropy.coordinates`).
+Analysing flood inundation risk and effects is hard...
+Automating analysis...
 
-`Gala` was designed to be used by both astronomical researchers and by
-students in courses on gravitational dynamics or astronomy. It has already been
-used in a number of scientific publications [@Pearson:2017] and has also been
-used in graduate courses on Galactic dynamics to, e.g., provide interactive
-visualizations of textbook material [@Binney:2008]. The combination of speed,
-design, and support for Astropy functionality in `Gala` will enable exciting
-scientific explorations of forthcoming data releases from the *Gaia* mission
-[@gaia] by students and experts alike.
+Small communities are affected by flooding and have less support for analysis compared to cities...
+Small teams repeating their own work can instead build on the analysis our tool does...
 
-# Mathematics
 
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
 
-Double dollars make self-standing equations:
+We share an open-source system for a digital twin for flood analysis...
 
-$$\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.$$
+How we have helped flood resilience...
 
-You can also use plain \LaTeX for equations
-\begin{equation}\label{eq:fourier}
-\hat f(\omega) = \int_{-\infty}^{\infty} f(x) e^{i\omega x} dx
-\end{equation}
-and refer to \autoref{eq:fourier} from text.
+# Further work?...
+Feedback wanted...
+Extensive testing of areas outside main case study area...
+Environmental pollution digital twin...
+Save and reload scenarios UI...
 
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for @fidgit.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Figures
-
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
 
 # Acknowledgements
+frontiersi, BIP, GRI, NIWA, LINZ, pooja...
 
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
 
 # References
