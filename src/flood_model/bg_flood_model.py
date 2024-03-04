@@ -58,20 +58,20 @@ def get_valid_bg_flood_dir() -> pathlib.Path:
 
 def get_new_model_output_path() -> pathlib.Path:
     """
-    Get a new file path for saving the BG Flood model output with the current timestamp included in the filename.
+    Get a new file path for saving the BG-Flood model output with the current timestamp included in the filename.
 
     Returns
     -------
     pathlib.Path
-        The path to the BG Flood model output file.
+        The path to the BG-Flood model output file.
     """
-    # Get the BG Flood model output directory from the environment variable
+    # Get the BG-Flood model output directory from the environment variable
     model_output_dir = get_env_variable("DATA_DIR_MODEL_OUTPUT", cast_to=pathlib.Path)
-    # Create the BG Flood model output directory if it does not already exist
+    # Create the BG-Flood model output directory if it does not already exist
     model_output_dir.mkdir(parents=True, exist_ok=True)
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    # Create the BG Flood model output path with the current timestamp
+    # Create the BG-Flood model output path with the current timestamp
     model_output_path = (model_output_dir / f"output_{dt_string}.nc")
     return model_output_path
 
@@ -80,24 +80,24 @@ def get_model_output_metadata(
         model_output_path: pathlib.Path,
         catchment_area: gpd.GeoDataFrame) -> Tuple[str, str, str]:
     """
-    Get metadata related to the BG Flood model output.
+    Get metadata related to the BG-Flood model output.
 
     Parameters
     ----------
     model_output_path : pathlib.Path
-        The path to the BG Flood model output file.
+        The path to the BG-Flood model output file.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     Tuple[str, str, str]
-        A tuple containing three elements: the name of the BG Flood model output file, its absolute path as a string,
+        A tuple containing three elements: the name of the BG-Flood model output file, its absolute path as a string,
         and the Well-Known Text (WKT) representation of the catchment area's geometry.
     """
-    # Get the name of the BG Flood model output file
+    # Get the name of the BG-Flood model output file
     output_name = model_output_path.name
-    # Get the absolute path of the BG Flood model output file as a string
+    # Get the absolute path of the BG-Flood model output file as a string
     output_path = model_output_path.as_posix()
     # Get the WKT representation of the catchment area's geometry
     catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
@@ -110,29 +110,29 @@ def store_model_output_metadata_to_db(
         model_output_path: pathlib.Path,
         catchment_area: gpd.GeoDataFrame) -> int:
     """
-    Store metadata related to the BG Flood model output in the database.
+    Store metadata related to the BG-Flood model output in the database.
 
     Parameters
     ----------
     engine : Engine
         The engine used to connect to the database.
     model_output_path : pathlib.Path
-        The path to the BG Flood model output file.
+        The path to the BG-Flood model output file.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     int
-        Returns the model id of the new flood_model produced
+        Returns the model id of the new flood model produced
     """
     # Create the 'bg_flood_model_output' table in the database if it doesn't exist
     create_table(engine, BGFloodModelOutput)
-    # Get the metadata related to the BG Flood model output
+    # Get the metadata related to the BG-Flood model output
     output_name, output_path, geometry = get_model_output_metadata(model_output_path, catchment_area)
     # Create a new query object representing the BG-Flood model output metadata
     query = insert(BGFloodModelOutput).values(file_name=output_name, file_path=output_path, geometry=geometry)
-    # Execute the query to store the BG Flood model output metadata in the database while retrieving id
+    # Execute the query to store the BG-Flood model output metadata in the database while retrieving id
     with engine.begin() as conn:
         result = conn.execute(query)
     model_id = result.inserted_primary_key[0]
@@ -341,7 +341,7 @@ def prepare_bg_flood_model_inputs(
     bg_flood_dir : pathlib.Path
         The BG-Flood Model directory.
     model_output_path : pathlib.Path
-        The new file path for saving the BG Flood model output with the current timestamp included in the filename.
+        The new file path for saving the BG-Flood model output with the current timestamp included in the filename.
     hydro_dem_path : pathlib.Path,
         The file path of the Hydrologically conditioned DEM (Hydro DEM) for the specified catchment area.
     resolution : Union[int, float]
@@ -414,7 +414,7 @@ def run_bg_flood_model(
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     model_output_path : pathlib.Path
-        The new file path for saving the BG Flood model output with the current timestamp included in the filename.
+        The new file path for saving the BG-Flood model output with the current timestamp included in the filename.
     output_timestep : Union[int, float]
         Time step between model outputs in seconds. If the value is set to 0 then no output is generated.
     end_time : Union[int, float]
@@ -537,7 +537,7 @@ def main(
     engine = setup_environment.get_database()
     # Get catchment area
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
-    # Get a new file path for saving the BG Flood model output with the current timestamp included in the filename
+    # Get a new file path for saving the BG-Flood model output with the current timestamp included in the filename
     model_output_path = get_new_model_output_path()
 
     # Run the BG-Flood Model for the specified catchment area
