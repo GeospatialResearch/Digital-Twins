@@ -15,7 +15,7 @@ from typing import Tuple, Union, Optional, TextIO
 import geopandas as gpd
 import xarray as xr
 from newzealidar.utils import get_dem_by_geometry
-from sqlalchemy import insert
+from sqlalchemy import insert, inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import text
@@ -160,7 +160,11 @@ def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
     # Execute a query to get the model output record based on the 'flood_model_id' column
     query = text("SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
         flood_model_id=model_id)
+    if not inspect(engine).has_table("bg_flood_model_output"):
+        raise FileNotFoundError(f"bg_flood_model_output table does not exist")
     row = engine.execute(query).fetchone()
+    if row is None:
+        raise FileNotFoundError(f"bg_flood_model_output table does not contain row with unique_id: {model_id}")
     # Extract the file path from the retrieved record
     latest_output_path = pathlib.Path(row["file_path"])
     # Extract the file path from the retrieved record

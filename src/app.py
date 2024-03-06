@@ -4,7 +4,7 @@ The main web application that serves the Digital Twin to the web through a Rest 
 import logging
 import pathlib
 from functools import wraps
-from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE
+from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE
 from typing import Callable
 
 import requests
@@ -310,8 +310,11 @@ def retrieve_building_flood_status(model_id: int) -> Response:
 @app.route('/models/<int:model_id>', methods=['GET'])
 @check_celery_alive
 def serve_model_output(model_id: int):
-    model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()
-    return send_file(pathlib.Path(model_filepath))
+    try:
+        model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()
+        return send_file(pathlib.Path(model_filepath))
+    except FileNotFoundError:
+        return make_response(f"Could not find flood model output {model_id}", NOT_FOUND)
 
 
 @app.route('/datasets/update', methods=["POST"])
