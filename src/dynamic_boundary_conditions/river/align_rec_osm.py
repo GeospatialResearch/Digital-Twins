@@ -335,10 +335,10 @@ def get_osm_waterways_on_bbox(
         A GeoDataFrame containing OpenStreetMap (OSM) waterway data that intersects with the catchment boundary,
         along with the corresponding intersection points on the boundary.
     """
-    # Fetch OSM waterway data for the catchment area
-    osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
     # Obtain the spatial extent of the hydro DEM
     _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+    # Fetch OSM waterway data for the catchment area
+    osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
 
     log.info("Extracting OpenStreetMap (OSM) waterways that intersect the boundary of the requested catchment area.")
     # Select features that intersect with the hydro DEM extent
@@ -347,7 +347,7 @@ def get_osm_waterways_on_bbox(
     osm_waterways_on_bbox["osm_boundary_point"] = osm_waterways_on_bbox["geometry"].intersection(hydro_dem_extent)
     # Rename the 'geometry' column to 'osm_river_line' and set the geometry to 'osm_boundary_point'
     osm_waterways_on_bbox = osm_waterways_on_bbox.rename_geometry("osm_river_line").set_geometry("osm_boundary_point")
-    # Explode multi-part geometries into multiple single geometries
+    # Explode multi-point geometries into multiple single geometries
     osm_waterways_on_bbox = osm_waterways_on_bbox.explode(ignore_index=True)
     return osm_waterways_on_bbox
 

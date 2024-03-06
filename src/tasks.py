@@ -4,6 +4,7 @@ Allows the frontend to send tasks and retrieve status later.
 """
 import json
 import logging
+import traceback
 from typing import List, NamedTuple
 
 import geopandas as gpd
@@ -33,8 +34,12 @@ log = logging.getLogger(__name__)
 class OnFailureStateTask(app.Task):
     """Task that switches state to FAILURE if an exception occurs"""
 
-    def on_failure(self, _exc, _task_id, _args, _kwargs, _einfo):
-        self.update_state(state=states.FAILURE)
+    def on_failure(self, exc, _task_id, _args, _kwargs, _einfo):
+        self.update_state(state=states.FAILURE, meta={
+            "exc_type": type(exc).__name__,
+            "exc_message": traceback.format_exc().split('\n'),
+            "extra": None
+        })
 
 
 class DepthTimePlot(NamedTuple):

@@ -183,7 +183,7 @@ def main(
         rec_inflows_data = river_inflows.get_rec_inflows_with_input_points(
             engine, catchment_area, rec_network_data, distance_m=300)
 
-        # Generate hydrograph data for the requested REC river inflow scenario
+        # Generate hydrograph data for the requested REC river scenario
         hydrograph_data = hydrograph.get_hydrograph_data(
             rec_inflows_data,
             flow_length_mins=flow_length_mins,

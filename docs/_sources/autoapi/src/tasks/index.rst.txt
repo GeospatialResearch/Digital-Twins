@@ -73,7 +73,7 @@ Attributes
 
    Task that switches state to FAILURE if an exception occurs
 
-   .. py:method:: on_failure(_exc, _task_id, _args, _kwargs, _einfo)
+   .. py:method:: on_failure(exc, _task_id, _args, _kwargs, _einfo)
 
 
 

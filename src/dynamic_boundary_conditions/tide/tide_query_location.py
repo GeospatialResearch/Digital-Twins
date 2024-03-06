@@ -202,12 +202,12 @@ def get_non_intersection_centroid_position(
         lines. The GeoDataFrame includes the 'position' column denoting the relative position and the 'geometry' column
         representing the centroid points of the non-intersection areas.
     """
-    # Get the boundary lines of the catchment area
-    boundary_lines = get_catchment_boundary_lines(catchment_area)
     # Explode the non-intersection area to ensure each geometry is a single part
     non_intersections = non_intersection_area.explode(index_parts=False, ignore_index=True)
     # Calculate the centroid for each non-intersection geometry
     non_intersections['centroid'] = non_intersections.centroid
+    # Get the boundary lines of the catchment area
+    boundary_lines = get_catchment_boundary_lines(catchment_area)
     # Identify the closest boundary line for each non-intersection centroid point
     non_intersections['position'] = non_intersections['centroid'].apply(
         lambda centroid: boundary_lines.loc[boundary_lines['geometry'].distance(centroid).idxmin(), 'line_position']
