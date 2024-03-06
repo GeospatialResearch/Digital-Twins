@@ -19,9 +19,10 @@ from src.config import get_env_variable
 
 # Initialise flask server object
 app = Flask(__name__)
+CORS(app)
+
 WWW_HOST = get_env_variable('WWW_HOST', default="http://localhost")
 WWW_PORT = get_env_variable('WWW_port', default="8080")
-CORS(app, origins=[f"{WWW_HOST}:{WWW_PORT}"])
 
 
 def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
