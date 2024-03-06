@@ -4,6 +4,7 @@ Allows the frontend to send tasks and retrieve status later.
 """
 import json
 import logging
+import traceback
 from typing import List, NamedTuple
 
 import geopandas as gpd
@@ -33,8 +34,12 @@ log = logging.getLogger(__name__)
 class OnFailureStateTask(app.Task):
     """Task that switches state to FAILURE if an exception occurs"""
 
-    def on_failure(self, _exc, _task_id, _args, _kwargs, _einfo):
-        self.update_state(state=states.FAILURE)
+    def on_failure(self, exc, _task_id, _args, _kwargs, _einfo):
+        self.update_state(state=states.FAILURE, meta={
+            "exc_type": type(exc).__name__,
+            "exc_message": traceback.format_exc().split('\n'),
+            "extra": None
+        })
 
 
 class DepthTimePlot(NamedTuple):
@@ -287,7 +292,8 @@ def get_model_output_filepath_from_model_id(model_id: int) -> str:
     str
         Serialized posix-style str version of the filepath
     """
-    return bg_flood_model.model_output_from_db_by_id(model_id).as_posix()
+    engine = setup_environment.get_connection_from_profile()
+    return bg_flood_model.model_output_from_db_by_id(engine, model_id).as_posix()
 
 
 @app.task(base=OnFailureStateTask)
@@ -335,11 +341,11 @@ def get_model_extents_bbox(model_id: int) -> str:
     Returns
     -------
     str:
-        The bounding box in '[x1],[y1],[x2],[y2]' format
+        The bounding box in 'x1,y1,x2,y2' format
     """
     engine = setup_environment.get_connection_from_profile()
     extents = bg_flood_model.model_extents_from_db_by_id(engine, model_id).geometry[0]
     # Retrieve a tuple of the corners of the extents
     bbox_corners = extents.bounds
-    # Convert the tuple into a string in [x1],[y1],[x2],[y2]
+    # Convert the tuple into a string in x1,y1,x2,y2 form
     return ",".join(map(str, bbox_corners))
