@@ -12,6 +12,7 @@ from celery import result, states
 from flask import Flask, Response, jsonify, make_response, send_file, request
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
+from kombu.exceptions import OperationalError
 from shapely import box
 
 from src import tasks
@@ -42,8 +43,12 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
 
     @wraps(f)
     def decorated_function(*args, **kwargs) -> Response:
-        ping_celery_response = tasks.app.control.ping()
-        if len(ping_celery_response) == 0:
+        try:
+            ping_celery_response = tasks.app.control.ping()
+            if len(ping_celery_response) == 0:
+                logging.warning("Celery workers not active, may indicate a fault")
+                return make_response("Celery workers not active", SERVICE_UNAVAILABLE)
+        except OperationalError:
             logging.warning("Celery workers not active, may indicate a fault")
             return make_response("Celery workers not active", SERVICE_UNAVAILABLE)
         return f(*args, **kwargs)
@@ -57,7 +62,7 @@ API_URL = "/static/api_documentation.yml"
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
-    config={"app_name": "Flood Resilience Digital Twin (FReDT"}
+    config={"app_name": "Flood Resilience Digital Twin (FReDT)"}
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
