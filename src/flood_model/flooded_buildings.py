@@ -4,9 +4,11 @@ import geopandas as gpd
 import pandas as pd
 import rasterio as rio
 import shapely
-import xarray
+import xarray as xr
 from sqlalchemy.engine import Engine
 
+from src.config import get_env_variable
+from src.digitaltwin.s3_connection import S3Manager
 from src.flood_model.serve_model import create_building_database_views_if_not_exists
 
 
@@ -19,7 +21,7 @@ def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame,
     engine: Engine
         The sqlalchemy database connection engine
     buildings : pd.DataFrame
-        DataFrame containing a mapping of building_ids to their flood status for the current model run
+        A DataFrame containing a mapping of building_ids to their flood status for the current model run
     flood_model_id : float
         The id of the current flood model run, to associate with the building flood data.
 
@@ -52,7 +54,7 @@ def find_flooded_buildings(engine: Engine,
     area_of_interest : gpd.GeoDataFrame
         A GeoDataFrame with a polygon specifying the area to get buildings for.
     flood_model_output_path : pathlib.Path
-        Path to the flood model output file to be read.
+        The path to the flood model output file to be read.
     flood_depth_threshold : float
         The minimum depth required to designate a pixel in the raster as flooded.
 
@@ -61,9 +63,15 @@ def find_flooded_buildings(engine: Engine,
     pd.DataFrame
         A pd.DataFrame specifying if each building is flooded or not.
     """
+    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
+    use_aws_s3_bucket = get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
     # Open flood output and read the maximum depth raster
-    with xarray.open_dataset(flood_model_output_path, decode_coords="all") as ds:
+    if use_aws_s3_bucket:
+        ds = S3Manager().retrieve_object(flood_model_output_path)
         max_depth_raster = ds["hmax_P0"]
+    else:
+        with xr.open_dataset(flood_model_output_path, decode_coords="all") as ds:
+            max_depth_raster = ds["hmax_P0"]
     # Find areas flooded in a polygon format, if they are deeper than flood_depth_threshold
     thresholded_flood_polygons = polygonize_flooded_area(max_depth_raster, flood_depth_threshold)
     # Get building outlines from database
@@ -131,7 +139,7 @@ def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFram
     return gdf
 
 
-def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshold: float) -> gpd.GeoDataFrame:
+def polygonize_flooded_area(flood_raster: xr.DataArray, flood_depth_threshold: float) -> gpd.GeoDataFrame:
     """
     Takes a flood depth raster and applies depth thresholding on it so that only areas
     flooded deeper than or equal to flood_depth_threshold are represented.
@@ -139,7 +147,7 @@ def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshol
 
     Parameters
     ----------
-    flood_raster : xarray.DataArray
+    flood_raster : xr.DataArray
         Raster with each pixel representing flood depth at the point
     flood_depth_threshold : float
         The minimum depth specified to consider a pixel in the raster flooded

@@ -5,6 +5,8 @@ from io import BytesIO
 import boto3
 import geopandas as gpd
 import networkx as nx
+import xarray as xr
+from pyproj import CRS
 
 from src import config
 
@@ -54,16 +56,29 @@ class S3Manager:
         self.s3.put_object(Bucket=self.bucket_name, Key=s3_object_key, Body=body)
 
     def retrieve_object(self, s3_object_key):
+        if isinstance(s3_object_key, pathlib.Path):
+            s3_object_key = s3_object_key.as_posix()
         resp = self.s3.get_object(Bucket=self.bucket_name, Key=s3_object_key)
         body = resp["Body"].read()
         if s3_object_key.endswith(".pickle"):
             data = pickle.loads(body)
+        elif s3_object_key.endswith(".nc"):
+            with BytesIO(body) as body_object:
+                data = xr.load_dataset(body_object, engine="h5netcdf")
+                if data.rio.crs is None:
+                    epsg_code = CRS.from_string(data.crs.spatial_ref).to_epsg()
+                    data.rio.write_crs(epsg_code, inplace=True)
         else:
             data = gpd.read_file(BytesIO(body))
         return data
 
     def remove_object(self, s3_object_key):
         self.s3.delete_object(Bucket=self.bucket_name, Key=s3_object_key)
+
+    def store_file(self, s3_object_key, file_name):
+        if isinstance(s3_object_key, pathlib.Path):
+            s3_object_key = s3_object_key.as_posix()
+        self.s3.upload_file(Bucket=self.bucket_name, Key=s3_object_key, Filename=file_name)
 
     def clear_bucket(self):
         """

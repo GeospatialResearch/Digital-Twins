@@ -22,6 +22,7 @@ from sqlalchemy.sql import text
 
 from src.config import get_env_variable
 from src.digitaltwin import setup_environment
+from src.digitaltwin.s3_connection import S3Manager
 from src.digitaltwin.tables import BGFloodModelOutput, create_table
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.flood_model.flooded_buildings import find_flooded_buildings
@@ -103,6 +104,37 @@ def get_model_output_metadata(
     catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
     # Return the metadata as a tuple
     return output_name, output_path, catchment_geom
+
+
+def store_model_output_to_s3(model_output_path: pathlib.Path) -> pathlib.Path:
+    """
+    Stores the BG-Flood model output located at the provided local `model_output_path` in the AWS S3 bucket.
+
+    Parameters
+    ----------
+    model_output_path : pathlib.Path
+        The path to the BG-Flood model output file.
+
+    Returns
+    -------
+    pathlib.Path
+        The path where the model output is stored, either locally or in the AWS S3 bucket.
+    """
+    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
+    use_aws_s3_bucket = get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
+    # If using S3 bucket, store the BG-Flood model output in the S3 bucket, and return its path
+    if use_aws_s3_bucket:
+        # Define the S3 directory for storing the BG-Flood model output
+        model_output_dir = pathlib.Path("stored_data/model_output")
+        # Create the file path for storing the BG-Flood model output in the S3 bucket
+        s3_model_output_path = model_output_dir / model_output_path.name
+        # Store the BG-Flood model output in the S3 bucket
+        S3Manager().store_file(s3_model_output_path, model_output_path)
+        log.info("Saved the new flood model to the S3 bucket.")
+        # Return the S3 path for the BG-Flood model output
+        return s3_model_output_path
+    # If not using the S3 bucket, return the local path for the BG-Flood model output
+    return model_output_path
 
 
 def store_model_output_metadata_to_db(
@@ -189,30 +221,25 @@ def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFra
     return gpd.read_postgis(query, engine, geom_col='geometry')
 
 
-def add_crs_to_model_output(engine: Engine, flood_model_output_id: int) -> None:
+def add_crs_to_model_output(model_output_path: pathlib.Path) -> None:
     """
-    Add Coordinate Reference System (CRS) to the BG-Flood model output.
+    Add Coordinate Reference System (CRS) to the latest BG-Flood model output.
 
     Parameters
     ----------
-    engine: Engine
-        The sqlalchemy database connection engine
-    flood_model_output_id: int
-        The ID of the flood model output being queried for
-
+    model_output_path : pathlib.Path
+        The path to the BG-Flood model output file.
 
     Returns
     -------
     None
         This function does not return any value.
     """
-    # Get the path to the latest BG-Flood model output file from the database
-    model_output_file = model_output_from_db_by_id(engine, flood_model_output_id)
     # Create a temporary file path for saving modifications before replacing the current latest model output file
-    temp_file = model_output_file.with_name(f"{model_output_file.stem}_temp{model_output_file.suffix}")
+    temp_file = model_output_path.with_name(f"{model_output_path.stem}_temp{model_output_path.suffix}")
 
     # Open the latest model output file as a xarray dataset
-    with xr.open_dataset(model_output_file, decode_coords="all") as latest_output:
+    with xr.open_dataset(model_output_path, decode_coords="all") as latest_output:
         # Check if the dataset lacks a Coordinate Reference System (CRS)
         if latest_output.rio.crs is None:
             # Add the Coordinate Reference System (CRS) information to the dataset
@@ -225,10 +252,10 @@ def add_crs_to_model_output(engine: Engine, flood_model_output_id: int) -> None:
             latest_output.to_netcdf(temp_file)
 
     # Check if both the original and temporary files exist
-    if model_output_file.exists() and temp_file.exists():
+    if model_output_path.exists() and temp_file.exists():
         # Replace the original file with the modified temporary file
-        temp_file.replace(model_output_file)
-    log.debug(f"Added CRS info to {model_output_file}")
+        temp_file.replace(model_output_path)
+        log.debug(f"Added CRS info to {model_output_path}")
 
 
 def process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None:
@@ -552,11 +579,14 @@ def main(
         gpu_device=gpu_device,
         small_nc=small_nc
     )
-
-    # Store metadata related to the BG Flood model output in the database
-    model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
     # Add CRS to the latest BG-Flood model output
-    add_crs_to_model_output(engine, model_id)
+    add_crs_to_model_output(model_output_path)
+
+    # If using S3 Bucket, then store the BG-Flood model output in the S3 bucket
+    model_output_path = store_model_output_to_s3(model_output_path)
+    # Store metadata related to the BG-Flood model output in the database
+    model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
+
     # Find buildings that are flooded to a depth greater than or equal to 0.1m
     log.info("Analysing flooded buildings")
     flooded_buildings = find_flooded_buildings(engine, catchment_area, model_output_path, flood_depth_threshold=0.1)

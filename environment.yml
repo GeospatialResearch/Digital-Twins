@@ -29,6 +29,7 @@ dependencies:
   - flask-cors==4.0.0
   - redis-py==5.0.1
   - botocore>=1.33.10 # Minimum version that is compatable with python >= 3.10 is botocore>=1.13.0
+  - h5netcdf
   - pip:
     - geovoronoi==0.4.0
     - geoapis==0.3.2
