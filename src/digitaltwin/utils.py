@@ -97,7 +97,7 @@ def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
     # List of loggers to prevent messages from reaching the root logger
     loggers_to_exclude = [
         "urllib3", "fiona", "botocore", "pyproj", "asyncio", "rasterio", "scrapy", "distributed", "selenium",
-        "charset_normalizer"
+        "charset_normalizer", "s3transfer"
     ]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:
