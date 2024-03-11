@@ -3,9 +3,9 @@
 This script provides utility functions for logging configuration and geospatial data manipulation.
 """
 
+import inspect
 import logging
 import pathlib
-import inspect
 import warnings
 from enum import IntEnum
 
