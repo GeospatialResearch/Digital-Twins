@@ -30,7 +30,7 @@ Attributes
 
    
 
-.. py:function:: get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: type = str) -> T
+.. py:function:: get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: Type[T] = str) -> T
 
    Reads an environment variable, with settings to allow defaults, empty values, and type casting
    To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
@@ -42,7 +42,7 @@ Attributes
    :param allow_empty: If False then a KeyError will be raised if the environment variable is empty.
    :type allow_empty: bool
    :param cast_to: The type to cast to e.g. str, int, or bool
-   :type cast_to: Callable[[str], T]
+   :type cast_to: Type[T]
 
    :rtype: The environment variable, or default if it does not exist, as type T.
 
@@ -50,16 +50,16 @@ Attributes
    :raises ValueError: If cast_to is not compatible with the value stored.
 
 
-.. py:function:: _cast_str(str_to_cast: str, cast_to: T) -> T
+.. py:function:: _cast_str(str_to_cast: str, cast_to: Type[T]) -> T
 
    Takes a string and casts it to necessary primitive builtin types. Tested with int, float, and bool.
-   For bools, this detects if the value is in the case-insensitive sets {"True", "T", "1"} or {"False", "F", "0"}
+   For bool, this detects if the value is in the case-insensitive sets {"True", "T", "1"} or {"False", "F", "0"}
    and raises a ValueError if not. For example _cast_str("False", bool) -> False
 
    :param str_to_cast: The string that is going to be casted to the type
    :type str_to_cast: str
    :param cast_to: The type to cast to e.g. bool
-   :type cast_to: Callable[[str], T]
+   :type cast_to: Type[T]
 
    :rtype: The string casted to type T defined by cast_to.
 

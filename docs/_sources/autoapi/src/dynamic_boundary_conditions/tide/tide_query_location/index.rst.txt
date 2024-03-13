@@ -6,7 +6,6 @@
 .. autoapi-nested-parse::
 
    Get the locations used to fetch tide data from NIWA using the tide API.
-   sli229
 
 
 
@@ -28,6 +27,18 @@ Functions
    src.dynamic_boundary_conditions.tide.tide_query_location.get_tide_query_locations
 
 
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.tide_query_location.log
+
+
+.. py:data:: log
+
+   
 
 .. py:exception:: NoTideDataException
 

@@ -32,6 +32,18 @@ Functions
 
 
 
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.align_rec_osm.log
+
+
+.. py:data:: log
+
+   
+
 .. py:exception:: NoRiverDataException
 
 
@@ -154,7 +166,7 @@ Functions
 
 .. py:function:: get_osm_waterways_on_bbox(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
 
-   Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment area boundary,
+   Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment boundary,
    along with the corresponding intersection points on the boundary.
 
    :param engine: The engine used to connect to the database.

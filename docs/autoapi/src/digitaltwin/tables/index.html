@@ -114,6 +114,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.tables.BGFloodModelOutput" title="src.digitaltwin.tables.BGFloodModelOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BGFloodModelOutput</span></code></a></p></td>
 <td><p>Class representing the 'bg_flood_model_output' table.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.tables.BuildingFloodStatus" title="src.digitaltwin.tables.BuildingFloodStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuildingFloodStatus</span></code></a></p></td>
+<td><p>Class representing the 'building_flood_status' table.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -668,6 +671,94 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id29">
 <span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#id29" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.BuildingFloodStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">BuildingFloodStatus</span></span><a class="headerlink" href="#src.digitaltwin.tables.BuildingFloodStatus" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.digitaltwin.tables.Base" title="src.digitaltwin.tables.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Base</span></code></a></p>
+<p>Class representing the ‘building_flood_status’ table.
+Represents if a building is flooded for a given flood model output</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.BuildingFloodStatus.__tablename__">
+<span class="sig-name descname"><span class="pre">__tablename__</span></span><a class="headerlink" href="#src.digitaltwin.tables.BuildingFloodStatus.__tablename__" title="Link to this definition"></a></dt>
+<dd><p>Name of the database table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.BuildingFloodStatus.unique_id">
+<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#src.digitaltwin.tables.BuildingFloodStatus.unique_id" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier for each entry (primary key).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.BuildingFloodStatus.building_outline_id">
+<span class="sig-name descname"><span class="pre">building_outline_id</span></span><a class="headerlink" href="#src.digitaltwin.tables.BuildingFloodStatus.building_outline_id" title="Link to this definition"></a></dt>
+<dd><p>Foreign key building outline id matching from nz_building_outlines table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.BuildingFloodStatus.is_flooded">
+<span class="sig-name descname"><span class="pre">is_flooded</span></span><a class="headerlink" href="#src.digitaltwin.tables.BuildingFloodStatus.is_flooded" title="Link to this definition"></a></dt>
+<dd><p>If the building is flooded or not</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.tables.BuildingFloodStatus.flood_model_id">
+<span class="sig-name descname"><span class="pre">flood_model_id</span></span><a class="headerlink" href="#src.digitaltwin.tables.BuildingFloodStatus.flood_model_id" title="Link to this definition"></a></dt>
+<dd><p>Foreign key mathing the unique_id from bg_flood_model_output table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">__tablename__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'building_flood_status'</span></em><a class="headerlink" href="#id30" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#id31" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">building_outline_id</span></span><a class="headerlink" href="#id32" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">is_flooded</span></span><a class="headerlink" href="#id33" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">flood_model_id</span></span><a class="headerlink" href="#id34" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

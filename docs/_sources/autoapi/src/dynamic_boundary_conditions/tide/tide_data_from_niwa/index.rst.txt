@@ -40,9 +40,14 @@ Attributes
 
 .. autoapisummary::
 
+   src.dynamic_boundary_conditions.tide.tide_data_from_niwa.log
    src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA
    src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA_CSV
 
+
+.. py:data:: log
+
+   
 
 .. py:data:: TIDE_API_URL_DATA
    :value: 'https://api.niwa.co.nz/tides/data'
@@ -237,12 +242,12 @@ Attributes
    :rtype: gpd.GeoDataFrame
 
 
-.. py:function:: get_time_mins_to_add(tide_data: geopandas.GeoDataFrame, tide_length_mins: int, time_to_peak_mins: Union[int, float], interval_mins: int = 10) -> List[Union[float, int]]
+.. py:function:: get_time_mins_to_add(tide_data: pandas.DataFrame, tide_length_mins: int, time_to_peak_mins: Union[int, float], interval_mins: int = 10) -> List[Union[float, int]]
 
    Get the time values in minutes to add to the tide data.
 
    :param tide_data: The tide data for which time values in minutes will be calculated.
-   :type tide_data: gpd.GeoDataFrame
+   :type tide_data: pd.DataFrame
    :param tide_length_mins: The length of the tide event in minutes.
    :type tide_length_mins: int
    :param time_to_peak_mins: The time in minutes when the tide is at its greatest (reaches maximum).

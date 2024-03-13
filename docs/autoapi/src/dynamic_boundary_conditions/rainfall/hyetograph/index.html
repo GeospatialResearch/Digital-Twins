@@ -104,7 +104,7 @@
 <td><p>Clean and transpose the retrieved scenario data from the database for sites within the catchment area and</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.get_interpolated_data" title="src.dynamic_boundary_conditions.rainfall.hyetograph.get_interpolated_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interpolated_data</span></code></a>(→ pandas.DataFrame)</p></td>
-<td><p>Perform temporal interpolation on the transposed scenario data for sites within the catchment area and</p></td>
+<td><p>Perform temporal interpolation on the transposed scenario data to the desired time interval</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.get_interp_incremental_data" title="src.dynamic_boundary_conditions.rainfall.hyetograph.get_interp_incremental_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interp_incremental_data</span></code></a>(→ pandas.DataFrame)</p></td>
 <td><p>Get the incremental rainfall depths (difference between current and preceding cumulative rainfall)</p></td>
@@ -153,8 +153,8 @@ return it in transposed Pandas DataFrame format.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hyetograph.get_interpolated_data">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hyetograph.</span></span><span class="sig-name descname"><span class="pre">get_interpolated_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transposed_catchment_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.get_interpolated_data" title="Link to this definition"></a></dt>
-<dd><p>Perform temporal interpolation on the transposed scenario data for sites within the catchment area and
-return it in Pandas DataFrame format.</p>
+<dd><p>Perform temporal interpolation on the transposed scenario data to the desired time interval
+for sites within the catchment area.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -165,7 +165,8 @@ One of ‘linear’, ‘nearest’, ‘nearest-up’, ‘zero’, ‘slinear’,
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A DataFrame containing the interpolated scenario data.</p>
+<dd class="field-even"><p>A DataFrame containing the scenario data interpolated at the desired time interval for sites within the
+catchment area.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>

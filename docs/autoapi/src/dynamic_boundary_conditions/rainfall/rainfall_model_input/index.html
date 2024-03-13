@@ -103,16 +103,16 @@ spatially varying rain input (‘rain_forcing.nc’ NetCDF file).</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites_voronoi_intersect_catchment</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,</p></td>
+<td><p>Get the intersection of the rainfall sites coverage areas (Thiessen Polygons) and the catchment area,</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites_coverage_in_catchment</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,</p></td>
+<td><p>Get the intersection of the rainfall sites coverage areas (Thiessen Polygons) and the catchment area,</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.mean_catchment_rainfall" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.mean_catchment_rainfall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_catchment_rainfall</span></code></a>(→ pandas.DataFrame)</p></td>
 <td><p>Calculate the mean catchment rainfall intensities (weighted average of gauge measurements)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spatial_uniform_rain_input</span></code></a>(→ None)</p></td>
-<td><p>Write the mean catchment rainfall intensities data (i.e., 'seconds' and 'rain_intensity_mmhr' columns)</p></td>
+<td><p>Write the mean catchment rainfall intensities data (i.e., 'seconds' and 'rain_intensity_mmhr' columns) into a</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.create_rain_data_cube" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.create_rain_data_cube"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_rain_data_cube</span></code></a>(→ xarray.Dataset)</p></td>
 <td><p>Create rainfall intensities data cube (xarray data) for the catchment area across all durations,</p></td>
@@ -143,18 +143,18 @@ spatially varying rain input (‘rain_forcing.nc’ NetCDF file).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">sites_voronoi_intersect_catchment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment" title="Link to this definition"></a></dt>
-<dd><p>Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,
-i.e. return the overlapped areas.</p>
+<dd><p>Get the intersection of the rainfall sites coverage areas (Thiessen Polygons) and the catchment area,
+returning the overlapping areas.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall site coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></li>
+<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites coverage areas (Thiessen Polygons) that intersect or are within the catchment area.</p></li>
 <li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
-catchment area.</p>
+<dd class="field-even"><p>A GeoDataFrame containing the intersection of the rainfall sites coverage areas (Thiessen Polygons) and
+the catchment area.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>gpd.GeoDataFrame</p>
@@ -165,18 +165,18 @@ catchment area.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">sites_coverage_in_catchment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_coverage_in_catchment" title="Link to this definition"></a></dt>
-<dd><p>Get the intersecting areas between the rainfall site coverage areas (Thiessen polygons) and the catchment area,
-and calculate the size and percentage of the area covered by each rainfall site inside the catchment area.</p>
+<dd><p>Get the intersection of the rainfall sites coverage areas (Thiessen Polygons) and the catchment area,
+and calculate the size and percentage of the catchment area covered by each rainfall site.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></li>
+<li><p><strong>sites_in_catchment</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites coverage areas (Thiessen Polygons) that intersect or are within the catchment area.</p></li>
 <li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A GeoDataFrame containing the intersecting areas between the rainfall site coverage areas and the
-catchment area, with calculated size and percentage of area covered by each rainfall site.</p>
+<dd class="field-even"><p>A GeoDataFrame containing the intersection of the rainfall sites coverage areas (Thiessen Polygons) and
+the catchment area, with calculated size and percentage of the catchment area covered by each rainfall site.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>gpd.GeoDataFrame</p>
@@ -209,9 +209,8 @@ including the size and percentage of the catchment area covered by each site.</p
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">spatial_uniform_rain_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hyetograph_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_coverage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_uniform_rain_input" title="Link to this definition"></a></dt>
-<dd><p>Write the mean catchment rainfall intensities data (i.e., ‘seconds’ and ‘rain_intensity_mmhr’ columns)
-into a text file named ‘rain_forcing.txt’. This file can be used as spatially uniform rain input
-for the BG-Flood model.</p>
+<dd><p>Write the mean catchment rainfall intensities data (i.e., ‘seconds’ and ‘rain_intensity_mmhr’ columns) into a
+text file named ‘rain_forcing.txt’. This file is used as spatially uniform rain input for the BG-Flood model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -256,7 +255,7 @@ including the size and percentage of the catchment area covered by each site.</p
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_varying_rain_input">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">spatial_varying_rain_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hyetograph_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_coverage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.spatial_varying_rain_input" title="Link to this definition"></a></dt>
 <dd><p>Write the rainfall intensities data cube in NetCDF format (rain_forcing.nc).
-This file can be used as spatially varying rain input for the BG-Flood model.</p>
+This file is used as spatially varying rain input for the BG-Flood model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

@@ -23,8 +23,9 @@ Functions
    src.flood_model.bg_flood_model.get_new_model_output_path
    src.flood_model.bg_flood_model.get_model_output_metadata
    src.flood_model.bg_flood_model.store_model_output_metadata_to_db
-   src.flood_model.bg_flood_model.latest_model_output_from_db
-   src.flood_model.bg_flood_model.add_crs_to_latest_model_output
+   src.flood_model.bg_flood_model.model_output_from_db_by_id
+   src.flood_model.bg_flood_model.model_extents_from_db_by_id
+   src.flood_model.bg_flood_model.add_crs_to_model_output
    src.flood_model.bg_flood_model.process_rain_input_files
    src.flood_model.bg_flood_model.process_boundary_input_files
    src.flood_model.bg_flood_model.process_river_input_files
@@ -84,7 +85,7 @@ Attributes
    :rtype: Tuple[str, str, str]
 
 
-.. py:function:: store_model_output_metadata_to_db(engine: sqlalchemy.engine.Engine, model_output_path: pathlib.Path, catchment_area: geopandas.GeoDataFrame) -> None
+.. py:function:: store_model_output_metadata_to_db(engine: sqlalchemy.engine.Engine, model_output_path: pathlib.Path, catchment_area: geopandas.GeoDataFrame) -> int
 
    Store metadata related to the BG Flood model output in the database.
 
@@ -95,21 +96,44 @@ Attributes
    :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
 
-   :returns: This function does not return any value.
-   :rtype: None
+   :returns: Returns the model id of the new flood_model produced
+   :rtype: int
 
 
-.. py:function:: latest_model_output_from_db() -> pathlib.Path
+.. py:function:: model_output_from_db_by_id(engine: sqlalchemy.engine.Engine, model_id: int) -> pathlib.Path
 
-   Retrieve the latest BG Flood model output file path from the database.
+   Retrieves the path to the model output file from the database by model_id
 
-   :returns: The path to the latest BG Flood model output file.
+   :param engine: The sqlalchemy database connection engine
+   :type engine: Engine
+   :param model_id: The ID of the flood model output being queried for
+   :type model_id: int
+
+   :returns: The path to the model output file
    :rtype: pathlib.Path
 
 
-.. py:function:: add_crs_to_latest_model_output() -> None
+.. py:function:: model_extents_from_db_by_id(engine: sqlalchemy.engine.Engine, model_id: int) -> geopandas.GeoDataFrame
 
-   Add Coordinate Reference System (CRS) to the latest BG-Flood model output.
+   Finds the extents of a model output in gpd.GeoDataFrame format
+
+   :param engine: The sqlalchemy database connection engine
+   :type engine: Engine
+   :param model_id: The ID of the flood model output being queried for
+   :type model_id: int
+
+   :returns: Returns the geometry (extents) of the flood model output.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: add_crs_to_model_output(engine: sqlalchemy.engine.Engine, flood_model_output_id: int) -> None
+
+   Add Coordinate Reference System (CRS) to the BG-Flood model output.
+
+   :param engine: The sqlalchemy database connection engine
+   :type engine: Engine
+   :param flood_model_output_id: The ID of the flood model output being queried for
+   :type flood_model_output_id: int
 
    :returns: This function does not return any value.
    :rtype: None
@@ -218,7 +242,7 @@ Attributes
    :rtype: None
 
 
-.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, output_timestep: Union[int, float], end_time: Union[int, float], resolution: Optional[Union[int, float]] = None, mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, output_timestep: Union[int, float], end_time: Union[int, float], resolution: Optional[Union[int, float]] = None, mask: Union[int, float] = 9999, gpu_device: int = 0, small_nc: int = 0, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> int
 
    Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer
    for visualization.
@@ -253,8 +277,8 @@ Attributes
                      - LogLevel.NOTSET (0)
    :type log_level: LogLevel = LogLevel.DEBUG
 
-   :returns: This function does not return any value.
-   :rtype: None
+   :returns: Returns the model id of the new flood_model produced
+   :rtype: int
 
 
 .. py:data:: sample_polygon
