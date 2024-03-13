@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This script handles the fetching of sea level rise data from the NZ SeaRise Takiwa website,
-storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
-in the provided tide data.
+This script handles the fetching of sea level rise data from the NZ SeaRise Takiwa website, storing the data in the
+database, and retrieving the closest sea level rise data from the database for all locations in the provided tide data.
 """
 
 import logging
