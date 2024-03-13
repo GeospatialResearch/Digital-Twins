@@ -125,10 +125,8 @@ def fetch_slr_data_from_takiwa() -> pd.DataFrame:
     driver.quit()
     # Check that the number of files loaded matches the number of links on the webpage
     if count != len(elements):
-        logging.debug(f"count = {count}")
-        logging.debug(f"elements = {elements}")
-        raise ValueError(f"The number of files loaded ({count}) "
-                         f"does not match the number of datasets found on the web page ({len(elements)})")
+        raise ValueError(f"The number of files loaded ({count}) does not match the "
+                         f"number of datasets found on the web page ({len(elements)}).")
     # Log that the data have been successfully loaded
     log.info("Successfully fetched 'sea_level_rise' data from NZ SeaRise Takiwa.")
     return slr_data
