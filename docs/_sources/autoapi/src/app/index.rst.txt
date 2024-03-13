@@ -18,13 +18,17 @@ Functions
 
 .. autoapisummary::
 
+   src.app.check_celery_alive
+   src.app.index
    src.app.health_check
    src.app.get_status
    src.app.remove_task
    src.app.generate_model
-   src.app.get_wfs_layer_latest_model
    src.app.create_wkt_from_coords
    src.app.get_depth_at_point
+   src.app.retrieve_building_flood_status
+   src.app.serve_model_output
+   src.app.refresh_lidar_data_sources
    src.app.valid_coordinates
 
 
@@ -35,12 +39,42 @@ Attributes
 .. autoapisummary::
 
    src.app.app
+   src.app.WWW_HOST
+   src.app.WWW_PORT
    src.app.gunicorn_logger
 
 
 .. py:data:: app
 
    
+
+.. py:data:: WWW_HOST
+
+   
+
+.. py:data:: WWW_PORT
+
+   
+
+.. py:function:: check_celery_alive(f: Callable[Ellipsis, flask.Response]) -> Callable[Ellipsis, flask.Response]
+
+   Function decorator to check if the Celery workers are running and return INTERNAL_SERVER_ERROR if they are down.
+
+   :param f: The view function that is being decorated
+   :type f: Callable[..., Response]
+
+   :returns: Response is SERVICE_UNAVAILABLE if the celery workers are down, otherwise continue to function f
+   :rtype: Callable[..., Response]
+
+
+.. py:function:: index() -> flask.Response
+
+   Ping this endpoint to check that the flask app is running
+   Supported methods: GET
+
+   :returns: The HTTP Response. Expect OK if health check is successful
+   :rtype: Response
+
 
 .. py:function:: health_check() -> flask.Response
 
@@ -63,7 +97,7 @@ Attributes
    :rtype: Response
 
 
-.. py:function:: remove_task(task_id) -> flask.Response
+.. py:function:: remove_task(task_id: str) -> flask.Response
 
    Deletes and stops a particular Celery backend task.
    Supported methods: DELETE
@@ -85,9 +119,6 @@ Attributes
    :rtype: Response
 
 
-.. py:function:: get_wfs_layer_latest_model(model_id)
-
-
 .. py:function:: create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str
 
    Takes two points and creates a wkt bbox string from them
@@ -105,7 +136,45 @@ Attributes
    :rtype: str
 
 
-.. py:function:: get_depth_at_point() -> flask.Response
+.. py:function:: get_depth_at_point(task_id: str) -> flask.Response
+
+   Finds the depths and times at a particular point for a given completed model output task.
+   Supported methods: GET
+   Required query param values: "lat": float, "lng": float
+
+   :param task_id: The id of the completed task for generating a flood model.
+   :type task_id: str
+
+   :returns: Returns JSON response in the form {"depth": Array<number>,  "time": Array<number>} representing the values
+             for the given point.
+   :rtype: Response
+
+
+.. py:function:: retrieve_building_flood_status(model_id: int) -> flask.Response
+
+   Retrieves information on building flood status, for a given flood model output id.
+   It is recommended to use the geoserver API if it is possible, since this is a proxy around that.
+
+   :param model_id: The ID of the flood output model to be queried
+   :type model_id: int
+
+   :returns: Returns GeoJSON building layer for the area of the flood model output.
+             Has a property "is_flooded" to designate if a building is flooded in that scenario or not
+   :rtype: Response
+
+
+.. py:function:: serve_model_output(model_id: int)
+
+
+.. py:function:: refresh_lidar_data_sources()
+
+   Updates LiDAR data sources to the most recent.
+   Web-scrapes OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
+   Takes a long time to run but needs to be run periodically so that the datasets are up to date.
+   Supported methods: POST
+
+   :returns: ACCEPTED is the expected response. Response body contains Celery taskId
+   :rtype: Response
 
 
 .. py:function:: valid_coordinates(latitude: float, longitude: float) -> bool

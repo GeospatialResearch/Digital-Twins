@@ -27,6 +27,18 @@ Functions
 
 
 
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.tide_slr_combine.log
+
+
+.. py:data:: log
+
+   
+
 .. py:function:: split_slr_measurementname_column(slr_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
 
    Split the 'measurementname' column in the sea level rise data to extract and add additional information.

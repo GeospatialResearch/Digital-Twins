@@ -111,7 +111,7 @@ Retrieve the coverage areas (Thiessen polygons) for all rainfall sites located w
 <td><p>Store the data representing the Thiessen polygons, site information, and the area covered by</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Get the coverage areas (Thiessen polygons) of all rainfall sites that intersect or are within the</p></td>
+<td><p>Get rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></td>
 </tr>
 </tbody>
 </table>
@@ -181,16 +181,12 @@ rainfall site.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db">
-<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">thiessen_polygons_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites_in_aoi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">thiessen_polygons_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db" title="Link to this definition"></a></dt>
 <dd><p>Store the data representing the Thiessen polygons, site information, and the area covered by
 each rainfall site in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the area of interest.</p></li>
-<li><p><strong>sites_in_aoi</strong> (<em>gpd.GeoDataFrame</em>) – Rainfall sites within the area of interest.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>This function does not return any value.</p>
@@ -204,8 +200,7 @@ each rainfall site in the database.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">thiessen_polygons_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db" title="Link to this definition"></a></dt>
-<dd><p>Get the coverage areas (Thiessen polygons) of all rainfall sites that intersect or are within the
-specified catchment area.</p>
+<dd><p>Get rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -214,7 +209,8 @@ specified catchment area.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A GeoDataFrame containing the coverage areas (Thiessen polygons) of rainfall sites within the catchment area.</p>
+<dd class="field-even"><p>A GeoDataFrame containing the rainfall sites coverage areas (Thiessen polygons) that intersect or
+are within the catchment area.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>gpd.GeoDataFrame</p>

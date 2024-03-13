@@ -24,6 +24,18 @@ Functions
 
 
 
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_from_db.log
+
+
+.. py:data:: log
+
+   
+
 .. py:function:: filter_for_duration(rain_data: pandas.DataFrame, duration: str) -> pandas.DataFrame
 
    Filter the HIRDS rainfall data for a requested duration.
@@ -40,8 +52,7 @@ Functions
 
 .. py:function:: get_one_site_rainfall_data(engine: sqlalchemy.engine.Engine, site_id: str, rcp: Optional[float], time_period: Optional[str], ari: float, duration: str, idf: bool) -> pandas.DataFrame
 
-   Get the HIRDS rainfall data for the requested site from the database and return the required data in
-   Pandas DataFrame format.
+   Retrieve rainfall data from the database for the requested site based on the user-requested scenario.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
@@ -60,7 +71,7 @@ Functions
    :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
    :type idf: bool
 
-   :returns: HIRDS rainfall data for the requested site and parameters.
+   :returns: Rainfall data for the requested site based on the user-requested scenario.
    :rtype: pd.DataFrame
 
    :raises ValueError: If rcp and time_period arguments are inconsistent.
@@ -68,11 +79,11 @@ Functions
 
 .. py:function:: rainfall_data_from_db(engine: sqlalchemy.engine.Engine, sites_in_catchment: geopandas.GeoDataFrame, rcp: Optional[float], time_period: Optional[str], ari: float, idf: bool = False, duration: str = 'all') -> pandas.DataFrame
 
-   Get rainfall data for the sites within the catchment area and return it as a Pandas DataFrame.
+   Retrieve rainfall data from the database for sites within the catchment area based on the user-requested scenario.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-   :param sites_in_catchment: Rainfall sites coverage areas (Thiessen polygons) within the catchment area.
+   :param sites_in_catchment: Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
    :type sites_in_catchment: gpd.GeoDataFrame
    :param rcp: Representative Concentration Pathway (RCP) value. Valid options are 2.6, 4.5, 6.0, 8.5, or None
                for historical data.
@@ -87,7 +98,8 @@ Functions
                     '96h', '120h', or 'all'. Default is 'all'.
    :type duration: str = "all"
 
-   :returns: A DataFrame containing the rainfall data for the sites within the catchment area.
+   :returns: A DataFrame containing the rainfall data for sites within the catchment area based on the
+             user-requested scenario.
    :rtype: pd.DataFrame
 
 
