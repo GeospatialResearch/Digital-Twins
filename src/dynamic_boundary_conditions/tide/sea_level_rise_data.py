@@ -101,8 +101,8 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
         ActionChains(driver).move_to_element(element).click().perform()
         # Wait a short delay before clicking again so that the download starts.
         time.sleep(0.5)
-    # Add a 3-second delay to ensure all downloads are complete before quitting the browser
-    time.sleep(3)
+    # Add a 5-second delay to ensure all downloads are complete before quitting the browser
+    time.sleep(5)
     # Quit the WebDriver, closing the browser
     driver.quit()
     # If running this from windows within a WSL directory, Zone.Identifier files are created and must be removed.
