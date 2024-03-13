@@ -63,11 +63,6 @@ USER nonroot
 # Copy python virtual environment from build layer
 COPY --chown=nonroot:nonroot --chmod=544 --from=build /venv /venv
 
-# Using python virtual environment, preload selenium with firefox so that first runtime is faster.
-SHELL ["/bin/bash", "-c"]
-RUN source /venv/bin/activate && \
-    selenium-manager --browser firefox --debug
-
 # Copy source files and essential runtime files
 COPY --chown=nonroot:nonroot --chmod=444 selected_polygon.geojson .
 COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
