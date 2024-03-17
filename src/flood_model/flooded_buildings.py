@@ -7,8 +7,6 @@ import shapely
 import xarray as xr
 from sqlalchemy.engine import Engine
 
-from src.config import get_env_variable
-from src.digitaltwin.s3_connection import S3Manager
 from src.flood_model.serve_model import create_building_database_views_if_not_exists
 
 
@@ -63,15 +61,9 @@ def find_flooded_buildings(engine: Engine,
     pd.DataFrame
         A pd.DataFrame specifying if each building is flooded or not.
     """
-    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
     # Open flood output and read the maximum depth raster
-    if use_aws_s3_bucket:
-        ds = S3Manager().retrieve_object(flood_model_output_path)
+    with xr.open_dataset(flood_model_output_path, decode_coords="all") as ds:
         max_depth_raster = ds["hmax_P0"]
-    else:
-        with xr.open_dataset(flood_model_output_path, decode_coords="all") as ds:
-            max_depth_raster = ds["hmax_P0"]
     # Find areas flooded in a polygon format, if they are deeper than flood_depth_threshold
     thresholded_flood_polygons = polygonize_flooded_area(max_depth_raster, flood_depth_threshold)
     # Get building outlines from database

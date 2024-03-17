@@ -583,9 +583,9 @@ def main(
     add_crs_to_model_output(model_output_path)
 
     # If using S3 Bucket, then store the BG-Flood model output in the S3 bucket
-    model_output_path = store_model_output_to_s3(model_output_path)
+    db_model_output_path = store_model_output_to_s3(model_output_path)
     # Store metadata related to the BG-Flood model output in the database
-    model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
+    model_id = store_model_output_metadata_to_db(engine, db_model_output_path, catchment_area)
 
     # Find buildings that are flooded to a depth greater than or equal to 0.1m
     log.info("Analysing flooded buildings")

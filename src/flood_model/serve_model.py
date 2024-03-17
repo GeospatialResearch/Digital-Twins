@@ -40,17 +40,9 @@ def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
     # Create temporary storage folder if it does not already exist
     temp_dir.mkdir(parents=True, exist_ok=True)
     gtiff_filepath = temp_dir / new_name
-
-    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
-    # Open flood output and convert the max depths to geo tiff
-    if use_aws_s3_bucket:
-        ds = S3Manager().retrieve_object(nc_file_path)
-        ds['hmax_P0'].attrs.pop('grid_mapping', None)
+    # Convert the max depths to geo tiff
+    with xr.open_dataset(nc_file_path, decode_coords="all") as ds:
         ds['hmax_P0'][0].rio.to_raster(gtiff_filepath)
-    else:
-        with xr.open_dataset(nc_file_path, decode_coords="all") as ds:
-            ds['hmax_P0'][0].rio.to_raster(gtiff_filepath)
     return pathlib.Path(os.getcwd()) / gtiff_filepath
 
 
