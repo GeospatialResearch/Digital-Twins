@@ -109,7 +109,7 @@ def get_model_output_metadata(
     return output_name, output_path, catchment_geom
 
 
-def store_model_output_to_s3(model_output_path: pathlib.Path) -> pathlib.Path:
+def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
     """
     Stores the BG-Flood model output located at the provided local `model_output_path` in the AWS S3 bucket.
 
@@ -120,24 +120,15 @@ def store_model_output_to_s3(model_output_path: pathlib.Path) -> pathlib.Path:
 
     Returns
     -------
-    pathlib.Path
-        The path where the model output is stored, either locally or in the AWS S3 bucket.
+    None
+        This function does not return any value.
     """
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
     use_aws_s3_bucket = get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
-    # If using S3 bucket, store the BG-Flood model output in the S3 bucket, and return its path
+    # If using S3 bucket, store the BG-Flood model output in the S3 bucket
     if use_aws_s3_bucket:
-        # Define the S3 directory for storing the BG-Flood model output
-        model_output_dir = pathlib.Path("stored_data/model_output")
-        # Create the file path for storing the BG-Flood model output in the S3 bucket
-        s3_model_output_path = model_output_dir / model_output_path.name
-        # Store the BG-Flood model output in the S3 bucket
-        S3Manager().store_file(s3_model_output_path, model_output_path)
+        S3Manager().store_file(model_output_path, model_output_path)
         log.info("Saved the new flood model to the S3 bucket.")
-        # Return the S3 path for the BG-Flood model output
-        return s3_model_output_path
-    # If not using the S3 bucket, return the local path for the BG-Flood model output
-    return model_output_path
 
 
 def store_model_output_metadata_to_db(
@@ -586,9 +577,9 @@ def main(
     add_crs_to_model_output(model_output_path)
 
     # If using S3 Bucket, then store the BG-Flood model output in the S3 bucket
-    db_model_output_path = store_model_output_to_s3(model_output_path)
+    store_model_output_to_s3(model_output_path)
     # Store metadata related to the BG-Flood model output in the database
-    model_id = store_model_output_metadata_to_db(engine, db_model_output_path, catchment_area)
+    model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
 
     # Find buildings that are flooded to a depth greater than or equal to 0.1m
     log.info("Analysing flooded buildings")
