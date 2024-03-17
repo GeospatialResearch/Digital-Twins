@@ -108,29 +108,21 @@ def get_new_network_output_paths() -> Tuple[pathlib.Path, pathlib.Path]:
     Tuple[pathlib.Path, pathlib.Path]
         A tuple containing the file path to the REC Network and the file path to the REC Network data.
     """
-    # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
-    dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
     use_aws_s3_bucket = get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
-
-    if use_aws_s3_bucket is True:
-        # Define the directory for storing the REC Network and its associated data
-        network_dir = pathlib.Path(f"stored_data/rec_network/{dt_string}")
-        # Create the file path for the REC Network with the current timestamp
-        network_path = network_dir / f"{dt_string}_network.pickle"
-        # Create the file path for the REC Network data with the current timestamp
-        network_data_path = network_dir / f"{dt_string}_network_data.geojson"
-    else:
-        # Get the data directory from the environment variable
-        data_dir = get_env_variable("DATA_DIR", cast_to=pathlib.Path)
-        # Define the directory for storing the REC Network and its associated data
-        network_dir = data_dir / "rec_network" / dt_string
-        # Create the REC Network directory if it does not already exist
+    # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
+    dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    # Get the data directory from the environment variable
+    data_dir = get_env_variable("DATA_DIR", cast_to=pathlib.Path)
+    # Define the directory for storing the REC Network and its associated data
+    network_dir = data_dir / "rec_network" / dt_string
+    # If not using S3, create the REC Network directory if it does not already exist
+    if not use_aws_s3_bucket:
         network_dir.mkdir(parents=True, exist_ok=True)
-        # Create the file path for the REC Network with the current timestamp
-        network_path = (network_dir / f"{dt_string}_network.pickle")
-        # Create the file path for the REC Network data with the current timestamp
-        network_data_path = (network_dir / f"{dt_string}_network_data.geojson")
+    # Create the file path for the REC Network with the current timestamp
+    network_path = (network_dir / f"{dt_string}_network.pickle")
+    # Create the file path for the REC Network data with the current timestamp
+    network_data_path = (network_dir / f"{dt_string}_network_data.geojson")
     return network_path, network_data_path
 
 
