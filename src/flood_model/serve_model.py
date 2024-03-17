@@ -14,7 +14,6 @@ import requests
 import xarray as xr
 
 from src.config import get_env_variable
-from src.digitaltwin.s3_connection import S3Manager
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}
