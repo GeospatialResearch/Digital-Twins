@@ -1,5 +1,5 @@
 ---
-title: 'Flood Resilience Digital Twin'
+title: 'Flood Resilience Digital Twin: A system to enable flood risk analysis and prediction'
 tags:
   - Python
   - flooding
@@ -58,7 +58,7 @@ bibliography: paper.bib
 ---
 
 # Summary
-The Flood Resilience Digital Twin (FReDT) is an open-source geospatial system to improve flood risk management in Aotearoa New Zealand. Analysis for flood risk management requires processing large amounts of data to identify risky areas or effects that inundation may cause to people, property and infrastructure.
+The Flood Resilience Digital Twin (FReDT) is an open-source geospatial system to improve flood risk management in Aotearoa New Zealand [@fredt]. Analysis for flood risk management requires processing large amounts of data to identify risky areas or effects that inundation may cause to people, property and infrastructure.
 
 The FReDT simplifies this process by automatically ingesting data from external sources and producing data useful for risk assessment and decision-making. The system is composed of a processing server and a front-end visualisation web application. The processing server handles the data ingestion and processing. The web application allows for convenient control of processing and visualisation. The processing server can be directly interacted with independently of the front end using a web API, allowing for other tools to programmatically interact with the digital twin to process new scenarios or retrieve data.
 
