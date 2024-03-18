@@ -127,7 +127,7 @@ def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
     use_aws_s3_bucket = get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
     # If using S3 bucket, store the BG-Flood model output in the S3 bucket
     if use_aws_s3_bucket:
-        S3Manager().store_file(model_output_path, model_output_path)
+        S3Manager().store_file(s3_object_key=model_output_path, file_path=model_output_path)
         log.info("Saved the new flood model to the S3 bucket.")
 
 
@@ -596,7 +596,7 @@ if __name__ == "__main__":
     main(
         selected_polygon_gdf=sample_polygon,
         output_timestep=100,
-        end_time=900,
+        end_time=200,
         resolution=None,
         mask=9999,
         gpu_device=0,
