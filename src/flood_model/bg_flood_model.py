@@ -80,6 +80,28 @@ def get_new_model_output_path() -> pathlib.Path:
     return model_output_path
 
 
+def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
+    """
+    Stores the BG-Flood model output located at the provided local `model_output_path` in the AWS S3 bucket.
+
+    Parameters
+    ----------
+    model_output_path : pathlib.Path
+        The path to the BG-Flood model output file.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
+    use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
+    # If using S3 bucket, store the BG-Flood model output in the S3 bucket
+    if use_aws_s3_bucket:
+        S3Manager().store_file(s3_object_key=model_output_path, file_path=model_output_path)
+        log.info("Saved the new flood model to the S3 bucket.")
+
+
 def get_model_output_metadata(
         model_output_path: pathlib.Path,
         catchment_area: gpd.GeoDataFrame) -> Tuple[str, str, str]:
@@ -107,28 +129,6 @@ def get_model_output_metadata(
     catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
     # Return the metadata as a tuple
     return output_name, output_path, catchment_geom
-
-
-def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
-    """
-    Stores the BG-Flood model output located at the provided local `model_output_path` in the AWS S3 bucket.
-
-    Parameters
-    ----------
-    model_output_path : pathlib.Path
-        The path to the BG-Flood model output file.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
-    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
-    # If using S3 bucket, store the BG-Flood model output in the S3 bucket
-    if use_aws_s3_bucket:
-        S3Manager().store_file(s3_object_key=model_output_path, file_path=model_output_path)
-        log.info("Saved the new flood model to the S3 bucket.")
 
 
 def store_model_output_metadata_to_db(
