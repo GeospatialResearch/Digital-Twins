@@ -1,3 +1,4 @@
+import logging
 import pathlib
 import pickle
 from io import BytesIO
@@ -9,6 +10,8 @@ import xarray as xr
 from pyproj import CRS
 
 from src import config
+
+log = logging.getLogger(__name__)
 
 
 class S3Manager:
@@ -73,6 +76,8 @@ class S3Manager:
             body = data.to_json(drop_id=True)
         # Upload the data to the S3 bucket using the provided object key
         self.s3.put_object(Bucket=self.bucket_name, Key=s3_object_key, Body=body)
+        # Log a message confirming successful storage in the S3 bucket
+        log.info(f"Successfully stored `{s3_object_key}` in the S3 bucket.")
 
     def retrieve_object(self, s3_object_key):
         """
@@ -107,6 +112,8 @@ class S3Manager:
         else:
             # Read the content of the retrieved object using geopandas
             data = gpd.read_file(BytesIO(body))
+        # Log a message confirming successful retrieval from the S3 bucket
+        log.info(f"Successfully retrieved '{s3_object_key}' from the S3 bucket.")
         return data
 
     def remove_object(self, s3_object_key):
@@ -115,6 +122,8 @@ class S3Manager:
         """
         # Delete the object with the provided object key from the S3 bucket
         self.s3.delete_object(Bucket=self.bucket_name, Key=s3_object_key)
+        # Log a message confirming successful deletion from the S3 bucket
+        log.info(f"Successfully deleted '{s3_object_key}' from the S3 bucket.")
 
     def store_file(self, s3_object_key, file_path):
         """
@@ -126,6 +135,8 @@ class S3Manager:
             s3_object_key = s3_object_key.as_posix()
         # Upload the file at 'file_path' to the S3 bucket with the provided object key
         self.s3.upload_file(Bucket=self.bucket_name, Key=s3_object_key, Filename=file_path)
+        # Log a message confirming successful storage in the S3 bucket
+        log.info(f"Successfully stored `{s3_object_key}` in the S3 bucket.")
 
     def clear_bucket(self):
         """
@@ -135,3 +146,5 @@ class S3Manager:
         bucket = self.s3.Bucket(self.bucket_name)
         # Delete all objects within the bucket
         bucket.objects.all().delete()
+        # Log a message confirming successful removal of all objects from the S3 bucket
+        log.info("Successfully removed all objects from the S3 bucket.")
