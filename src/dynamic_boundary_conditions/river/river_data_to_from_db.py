@@ -5,53 +5,16 @@ information from the database.
 """
 
 import logging
-import pathlib
 
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
 
-from src import config
 from src.digitaltwin.tables import check_table_exists
 from src.dynamic_boundary_conditions.river import river_data_from_niwa
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import add_network_exclusions_to_db
 
 log = logging.getLogger(__name__)
-
-
-def load_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
-    """
-    Loads REC data from the NIWA REC dataset.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the REC data from the NZ REC dataset.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the REC data directory does not exist or if there are no Shapefiles in the specified directory.
-    """
-    # Get the REC data directory from the environment variable
-    rec_data_dir = config.get_env_variable("DATA_DIR_REC", cast_to=pathlib.Path)
-    # Check if the REC data directory exists
-    if not rec_data_dir.exists():
-        raise FileNotFoundError(f"'rec_data' directory not found: {rec_data_dir}")
-    # Check if there are any Shapefiles in the specified directory
-    if not any(rec_data_dir.glob("*.shp")):
-        raise FileNotFoundError(f"'rec_data' file not found: {rec_data_dir}")
-    # Find the path of the first file in `rec_data_dir` that ends with .shp
-    rec_file_path = next(rec_data_dir.glob("*.shp"))
-    # Log indicating the start of loading backup REC data
-    log.info("Loading the backup 'rec_data'.")
-    # Read the Shapefile into a GeoDataFrame
-    rec_data = gpd.read_file(rec_file_path)
-    # Convert column names to lowercase for consistency
-    rec_data.columns = rec_data.columns.str.lower()
-    # Log that the backup REC data has been successfully loaded
-    log.info("Successfully loaded the backup 'rec_data'.")
-    return rec_data
 
 
 def store_rec_data_to_db(engine: Engine) -> None:
@@ -75,13 +38,13 @@ def store_rec_data_to_db(engine: Engine) -> None:
         log.info(f"'{table_name}' already exists in the database.")
     else:
         try:
-            # Retrieve REC data from NIWA
+            # Retrieve REC data from NIWA using the ArcGIS REST API
             rec_data = river_data_from_niwa.fetch_rec_data_from_niwa(engine)
         except RuntimeError as error:
             # Log a warning message to indicate that a runtime error occurred while fetching REC data
             log.warning(error)
-            # Load REC data from the backup NIWA REC dataset
-            rec_data = load_backup_rec_data_from_niwa()
+            # Retrieve backup REC data from NIWA OpenData
+            rec_data = river_data_from_niwa.fetch_backup_rec_data_from_niwa()
         # Store the REC data to the database table
         log.info(f"Adding '{table_name}' to the database.")
         rec_data.to_postgis(table_name, engine, index=False, if_exists="replace")
