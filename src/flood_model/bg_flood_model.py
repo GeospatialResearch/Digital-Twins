@@ -592,11 +592,11 @@ if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     main(
         selected_polygon_gdf=sample_polygon,
-        output_timestep=100,
-        end_time=200,
+        output_timestep=1,
+        end_time=2,
         resolution=None,
         mask=9999,
-        gpu_device=0,
+        gpu_device=-1,
         small_nc=0,
         log_level=LogLevel.DEBUG
     )
