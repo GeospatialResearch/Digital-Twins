@@ -199,8 +199,10 @@ def store_rec_network_to_db(
         # Save the REC river network to the specified file
         with open(network_path, "wb") as file:
             pickle.dump(rec_network, file)
+        log.info(f"Saved the REC river network to {network_path}")
         # Save the REC river network data to the specified file
         network_data.to_file(network_data_path, driver="GeoJSON")
+        log.info(f"Saved the REC river network data to {network_data_path}")
 
     # Create the REC Network table in the database if it doesn't exist
     create_table(engine, RiverNetwork)
@@ -308,6 +310,5 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     # Replace NaN values with None in the 'node_intersect_aoi' column
     rec_network_data["node_intersect_aoi"] = rec_network_data["node_intersect_aoi"].replace(np.nan, None)
     # Log a message indicating the successful retrieval of REC river network and its associated data from the database
-    log.info("Successfully retrieved the existing REC river network and its associated data "
-             "for the requested catchment area from the database.")
+    log.info("Successfully retrieved the existing REC river network and its associated data for the catchment area.")
     return rec_network, rec_network_data
