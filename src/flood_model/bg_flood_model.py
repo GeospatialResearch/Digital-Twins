@@ -66,13 +66,10 @@ def get_new_model_output_path() -> pathlib.Path:
     pathlib.Path
         The path to the BG-Flood model output file.
     """
-    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
     # Get the BG-Flood model output directory from the environment variable
     model_output_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "model_output"
-    # If not using S3, create the BG-Flood model output directory if it does not already exist
-    if not use_aws_s3_bucket:
-        model_output_dir.mkdir(parents=True, exist_ok=True)
+    # Create the BG-Flood model output directory if it does not already exist
+    model_output_dir.mkdir(parents=True, exist_ok=True)
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     # Create the BG-Flood model output path with the current timestamp
