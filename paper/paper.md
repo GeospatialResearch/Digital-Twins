@@ -93,9 +93,9 @@ The following list shows various data providers and datasets ingested by the FRe
     * Sea Draining Catchments
 
 # Data outputs
-On the first scenario run for an area of interest, hydrologically conditioned DEMS are created from LiDAR data using the GeoFabrics package [@geofabrics]. These are reused for subsequent scenarios until the LiDAR data is updated, in which case they are regenerated. These hydrologically conditioned DEMs are generated using the same process as the NIWA-led national flood research program, Mā te haumaru ō te wai. These are an input for the BG-Flood model, but can also be downloaded through the web API to be used for further analysis.
+On the first scenario run for an area of interest, hydrologically conditioned DEMs are created from LiDAR data using the GeoFabrics package [@geofabrics]. These are reused for subsequent scenarios until the LiDAR data is updated, in which case they are regenerated. These hydrologically conditioned DEMs are generated using the same process as the NIWA-led national flood research program, Mā te haumaru ō te wai. These form part of the inputs for the BG-Flood model, but can also be downloaded through the web API to be used for further analysis.
 
-On every scenario run, we create multiple data outputs specific to the scenario. The primary data output is the flood model output, created using the shallow water hydrodynamic model BG-Flood [@bg-flood]., which contains time-series geospatial rasters of inundation depths, water surface elevation, ground surface elevation, and water flow velocities in NetCDF format. In addition, we perform further analysis incorporating building footprint data to create a building flood status dataset that specifies whether each building is inundated past a threshold of 0.1m
+On every scenario run, we create multiple data outputs specific to the scenario. The primary data output is the flood model output, created using the shallow water hydrodynamic model BG-Flood [@bg-flood], which contains time-series geospatial rasters of inundation depths, water surface elevation, ground surface elevation, and water flow velocities in NetCDF format. In addition, we perform further analysis incorporating building footprint data to create a building flood status dataset that specifies whether each building is inundated past a threshold of 0.1m.
 
 
 # Statement of need
