@@ -57,6 +57,7 @@ Pin-Priority: 1000 \n\
 
 # Create stored data dir inside image, in case it does not get mounted (such as when deploying on AWS)
 RUN mkdir /stored_data && setfacl -R -m u:nonroot:rwx /stored_data
+RUN mkdir /stored_data/geoserver && setfacl -R -d -m u:nonroot:rwx /stored_data/geoserver
 
 USER nonroot
 
@@ -92,3 +93,14 @@ ENTRYPOINT source /venv/bin/activate && \
              --script "celery -A src.tasks inspect ping"  & \
            source /venv/bin/activate && \
            celery -A src.tasks worker -P threads --loglevel=INFO
+
+FROM docker.osgeo.org/geoserver:2.21.2 as geoserver
+
+RUN addgroup --system nonroot \
+    && adduser --system --group nonroot \
+    && chgrp -R nonroot $GEOSERVER_DATA_DIR \
+    && chmod -R g+rwx $GEOSERVER_DATA_DIR
+
+SHELL ["/bin/sh", "-c"]
+ENTRYPOINT /opt/startup.sh
+
