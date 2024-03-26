@@ -62,7 +62,7 @@ def log_execution_info() -> None:
     log.debug(f"Executing {function_name}() in {script_name}")
 
 
-def setup_logging(log_level: LogLevel = LogLevel.DEBUG) -> None:
+def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
     """
     Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
     loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
