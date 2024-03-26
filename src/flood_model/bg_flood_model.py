@@ -162,7 +162,7 @@ def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
         flood_model_id=model_id)
     # Check table exists before querying
     bg_flood_table = "bg_flood_model_output"
-    if check_table_exists(engine, bg_flood_table):
+    if not check_table_exists(engine, bg_flood_table):
         raise FileNotFoundError(f"{bg_flood_table} table does not exist")
     row = engine.execute(query).fetchone()
     # If the row is empty then we could not find the model output
