@@ -194,7 +194,7 @@ def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFra
     bg_flood_table = "bg_flood_model_output"
     if not check_table_exists(engine, bg_flood_table):
         raise FileNotFoundError(f"{bg_flood_table} table does not exist")
-    query = text(f"SELECT geometry FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
+    query = text("SELECT geometry FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
         flood_model_id=model_id)
     geometry = gpd.read_postgis(query, engine, geom_col='geometry')
     if len(geometry) == 0:
