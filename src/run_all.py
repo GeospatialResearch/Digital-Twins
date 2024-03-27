@@ -55,13 +55,13 @@ def main(
 
 DEFAULT_MODULES_TO_PARAMETERS = {
     retrieve_static_boundaries: {
-        "log_level": LogLevel.DEBUG
+        "log_level": LogLevel.INFO
     },
     datasets: {
-        "log_level": LogLevel.DEBUG  # only need to run it one time to initiate db.dataset table
+        "log_level": LogLevel.INFO  # only need to run it one time to initiate db.dataset table
     },
     process: {
-        "log_level": LogLevel.DEBUG
+        "log_level": LogLevel.INFO
     },
     main_rainfall: {
         "rcp": 2.6,
@@ -72,7 +72,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "increment_mins": 10,
         "hyeto_method": HyetoMethod.ALT_BLOCK,
         "input_type": RainInputType.UNIFORM,
-        "log_level": LogLevel.DEBUG
+        "log_level": LogLevel.INFO
     },
     main_tide_slr: {
         "tide_length_mins": 2880,
@@ -83,7 +83,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "ssp_scenario": "SSP1-2.6",
         "add_vlm": False,
         "percentile": 50,
-        "log_level": LogLevel.DEBUG
+        "log_level": LogLevel.INFO
     },
     main_river: {
         "flow_length_mins": 2880,
@@ -91,7 +91,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "maf": True,
         "ari": None,
         "bound": BoundType.MIDDLE,
-        "log_level": LogLevel.DEBUG
+        "log_level": LogLevel.INFO
     },
     bg_flood_model: {
         "output_timestep": 1,
@@ -100,7 +100,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "mask": 9999,
         "gpu_device": -1,
         "small_nc": 0,
-        "log_level": LogLevel.DEBUG
+        "log_level": LogLevel.INFO
     }
 }
 

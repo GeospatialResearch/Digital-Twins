@@ -57,8 +57,13 @@ Pin-Priority: 1000 \n\
 
 # Create stored data dir inside image, in case it does not get mounted (such as when deploying on AWS)
 RUN mkdir /stored_data && setfacl -R -m u:nonroot:rwx /stored_data
+RUN mkdir /stored_data/geoserver && setfacl -R -d -m u:nonroot:rwx /stored_data/geoserver
 
 USER nonroot
+
+# Copy Rec1 dataset shapefiless.
+# Accessible at https://data-niwa.opendata.arcgis.com/datasets/ae4316ef6bc842c4aed6a76b10b0c39e_2/explore
+COPY --chown=nonroot:nonroot --chmod=444 ./build_data/rec_data/ /stored_data/rec_data
 
 # Copy python virtual environment from build layer
 COPY --chown=nonroot:nonroot --chmod=544 --from=build /venv /venv
@@ -92,3 +97,14 @@ ENTRYPOINT source /venv/bin/activate && \
              --script "celery -A src.tasks inspect ping"  & \
            source /venv/bin/activate && \
            celery -A src.tasks worker -P threads --loglevel=INFO
+
+FROM docker.osgeo.org/geoserver:2.21.2 as geoserver
+
+RUN addgroup --system nonroot \
+    && adduser --system --group nonroot \
+    && chgrp -R nonroot $GEOSERVER_DATA_DIR \
+    && chmod -R g+rwx $GEOSERVER_DATA_DIR
+
+SHELL ["/bin/sh", "-c"]
+ENTRYPOINT /opt/startup.sh
+
