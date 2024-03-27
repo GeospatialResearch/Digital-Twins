@@ -1,0 +1,28 @@
+# Definitions of services using local data_directory bind mounts for development use only.
+# Merges with the primary `docker-compose.yml`
+# Use with `docker compose -f docker-compose.yml docker-compose-dev.yml`
+volumes:
+  # Separate the database volume from the base services because this one will contain local file paths
+  postgres_db_vol_dev:
+
+services:
+  db_postgres:
+    volumes:
+      - postgres_db_vol_dev:/var/lib/postgresql/data
+
+  backend:
+    volumes:
+      - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
+
+  celery_worker:
+    volumes:
+      # Bind host data directories to container, allowing different instances to share data sources.
+      - ${DATA_DIR}:/stored_data
+      - ${DATA_DIR_REC}:/stored_data/rec_data
+      - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
+      - ${DATA_DIR_GEOSERVER}:/stored_data/geoserver
+      - ${FLOOD_MODEL_DIR}:/bg_flood
+
+  geoserver:
+    volumes:
+      - ${DATA_DIR_GEOSERVER}:/opt/geoserver_data
