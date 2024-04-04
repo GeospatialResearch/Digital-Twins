@@ -53,7 +53,7 @@ affiliations:
   - name: Land Information New Zealand | Toitū Te Whenua, New Zealand
     index: 4
 
-date: 7 March 2024
+date: 5 April 2024
 bibliography: paper.bib
 ---
 
@@ -72,14 +72,14 @@ scenarios or retrieve data.
 
 Flood risk managers can select an area of interest and enter parameters such as sea level rise and the FReDT will
 produce a raster map of the maximum flood depth reached for each cell during the flood scenario, and highlight buildings
-that the model has determined as flooded over a given threshold (default 0.1m).
+that are flooded in the specified scenario by more a threshold (default 0.1m).
 
 In designing the digital twin, we utilised methods developed in another research program, the NIWA-led Mā te haumaru ō
 te wai
 ^[https://niwa.co.nz/natural-hazards/research-projects/mā-te-haumaru-ō-te-wai-increasing-flood-resilience-across-aotearoa]
 . To process LiDAR point cloud data from LINZ into a form ready to use for modelling the flow of water over the terrain
 surface we use GeoFabrics [@geofabrics]. The hydrologically-conditioned DEMs produced by GeoFabrics, along with
-additional data sources such as rainfall estimation from NIWA's High-Intensity Rainfall Design System and river network
+additional data sources such as rainfall estimation from NIWA's High-Intensity Rainfall Design System (HIRDS) and river network
 data from their River Environment Classification, are used as inputs to the flood modelling stage. The FReDT currently
 uses BG-Flood [@bg-flood] as underlying the hydrodynamic model for simulating flood events. BG-Flood was chosen because
 it aligns with Mā te haumaru ō te wai and has support from the NIWA authors. By using the methods developed for Mā te
@@ -94,7 +94,7 @@ The following list shows various data providers and datasets ingested by the FRe
 
 * LINZ
     * LiDAR Digital Surface Models
-    * DEMs
+    * Digital Elevation Models (DEMs)
     * Building Outlines
     * Coastlines
     * Roads
@@ -114,21 +114,21 @@ The following list shows various data providers and datasets ingested by the FRe
 # Data outputs
 
 On the first scenario run for an area of interest, hydrologically conditioned DEMs are created from LiDAR data using the
-GeoFabrics package [@geofabrics]. These are reused for subsequent scenarios until the LiDAR data is updated, in which
-case they are regenerated. These hydrologically conditioned DEMs are generated using the same process as the NIWA-led
-national flood research program, Mā te haumaru ō te wai. These form part of the inputs for the BG-Flood model, but can
-also be downloaded through the web API to be used for further analysis.
+GeoFabrics package [@geofabrics]. These are reused for subsequent scenarios until the LiDAR data or other geospatial
+input data are updated, in which case they are regenerated. These hydrologically conditioned DEMs are generated using
+the same process as the NIWA-led national flood research program, Mā te haumaru ō te wai. These form part of the inputs
+for the BG Flood model, but can also be downloaded through the web API to be used for further analysis.
 
 On every scenario run, we create multiple data outputs specific to the scenario. The primary data output is the flood
-model output, created using the shallow water hydrodynamic model BG-Flood [@bg-flood], which contains time-series
+model output, created using the shallow water hydrodynamic model BG-Flood [@bg-flood] which models time-series
 geospatial rasters of inundation depths, water surface elevation, ground surface elevation, and water flow velocities in
 NetCDF format. In addition, we perform further analysis incorporating building footprint data to create a building flood
-status dataset that specifies whether each building is inundated past a threshold of 0.1m.
+status dataset that specifies whether each building is inundated past a threshold (default of 0.1m).
 
 # Statement of need
 
 Flooding, occurring approximately every eight months on average in Aotearoa New Zealand, stands as the most frequent,
-destructive, and financially burdensome natural disaster in the country [@ijerph18083952]. Worldwide, for the period of
+destructive, and financially burdensome natural hazard in the country [@ijerph18083952]. Worldwide, for the period of
 1900-2015, hydrological disasters like floods and landslides were responsible for approximately 21.5% of all natural
 disaster-related deaths [@guoqiang2019].
 
@@ -144,7 +144,7 @@ frequency and sea level rise brought on by climate change, the risk of flooding 
 few decades [@collins2018; @serrao-neumann2024; @McDermott2022]. Effective communication and management of flood risks
 are critical in mitigating flood impacts, and planning must take these growing risks into account.
 
-Currently, the challenges for flood risk management and mitigation lie in the substantial amounts of spatial data
+Currently, a major challenge for flood risk management and mitigation is managing the substantial amounts of spatial data
 related to infrastructure and the environment. Acquiring and processing these data in a timely manner becomes a
 formidable task when entrusted to individuals or small teams, particularly challenging when the information needs to be
 quickly compiled for rapid decision-making, resulting in high costs for developing suitable risk assessments or
