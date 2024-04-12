@@ -68,23 +68,28 @@ risk assessment and decision-making. The system is composed of a processing serv
 application. The processing server handles the data ingestion and processing. The web application allows for convenient
 control of processing and visualisation. The processing server can be directly interacted with independently of the
 front end using a web API, allowing for other tools to programmatically interact with the digital twin to process new
-scenarios or retrieve data.
+scenarios or retrieve data. Information on how to start and access the web application and web API are both documented
+in the project README.md [@fredt].
 
 Flood risk managers can select an area of interest and enter parameters such as sea level rise and the FReDT will
 produce a raster map of the maximum flood depth reached for each cell during the flood scenario, and highlight buildings
 that are flooded in the specified scenario by more a threshold (default 0.1m).
 
 In designing the digital twin, we utilised methods developed in another research program, the NIWA-led Mā te haumaru ō
-te wai
-^[https://niwa.co.nz/natural-hazards/research-projects/mā-te-haumaru-ō-te-wai-increasing-flood-resilience-across-aotearoa]
-. To process LiDAR point cloud data from LINZ into a form ready to use for modelling the flow of water over the terrain
-surface we use GeoFabrics [@geofabrics]. The hydrologically-conditioned DEMs produced by GeoFabrics, along with
-additional data sources such as rainfall estimation from NIWA's High-Intensity Rainfall Design System (HIRDS) and river network
-data from their River Environment Classification, are used as inputs to the flood modelling stage. The FReDT currently
-uses BG-Flood [@bg-flood] as underlying the hydrodynamic model for simulating flood events. BG-Flood was chosen because
-it aligns with Mā te haumaru ō te wai and has support from the NIWA authors. By using the methods developed for Mā te
-haumaru ō te wai, we intend to share scenarios created in the digital twin with NIWA, and ingest scenarios created
-externally into our tool.
+te
+wai^[https://niwa.co.nz/natural-hazards/research-projects/mā-te-haumaru-ō-te-wai-increasing-flood-resilience-across-aotearoa]
+. To process elevation LiDAR point cloud data from LINZ into a form ready to use for modelling the flow of water over
+the terrain surface we use GeoFabrics [@geofabrics]. The hydrologically-conditioned DEMs produced by GeoFabrics, along
+with additional data sources such as rainfall estimation from NIWA's High-Intensity Rainfall Design System
+(HIRDS)^[https://hirds.niwa.co.nz/] [@hirds] and river network data from their River Environment Classification, are
+used as inputs to the flood modelling stage. The FReDT currently uses BG-Flood [@bg-flood] as underlying the
+hydrodynamic model for simulating flood events. BG-Flood was chosen because it aligns with Mā te haumaru ō te wai and
+has support from the NIWA authors. By using the methods developed for Mā te haumaru ō te wai, we intend to share
+scenarios created in the digital twin with NIWA, and ingest scenarios created externally into our tool.
+
+Multiple improvements to the FReDT are being considered. These could include UI improvements and more options for data
+visualisation to make it easier to use as a flood risk research tool. Other additions we are considering include
+additional modelling such as the RiskScape risk model [@riskscape], which could estimate damage and exposure.
 
 ![Screenshot of a FReDT scenario, showing flooded areas with buildings highlighted in red if they are inundated.](Capture2024.png)
 
@@ -127,10 +132,9 @@ status dataset that specifies whether each building is inundated past a threshol
 
 # Statement of need
 
-Flooding, occurring approximately every eight months on average in Aotearoa New Zealand, stands as the most frequent,
-destructive, and financially burdensome natural hazard in the country [@ijerph18083952]. Worldwide, for the period of
-1900-2015, hydrological disasters like floods and landslides were responsible for approximately 21.5% of all natural
-disaster-related deaths [@guoqiang2019].
+Flooding, stands as the most frequent, destructive, and financially burdensome natural hazard in the
+country [@ijerph18083952]. Worldwide, for the period of 1900-2015, hydrological disasters like floods and landslides
+were responsible for approximately 21.5% of all natural disaster-related deaths [@guoqiang2019].
 
 Floods are primarily caused by heavy or prolonged rainfall and can lead to direct and indirect damages to housing,
 infrastructure, farmland, and the community. With approximately two-thirds of the population living in flood-prone
