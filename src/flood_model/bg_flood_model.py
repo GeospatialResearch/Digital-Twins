@@ -95,7 +95,8 @@ def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
     use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
     # If using S3 bucket, store the BG-Flood model output in the S3 bucket
     if use_aws_s3_bucket:
-        S3Manager().store_file(s3_object_key=model_output_path, file_path=model_output_path)
+        s3_manager = S3Manager()
+        s3_manager.store_file(s3_object_key=model_output_path, file_path=model_output_path)
 
 
 def get_model_output_metadata(

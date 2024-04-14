@@ -192,8 +192,9 @@ def store_rec_network_to_db(
     use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
     # If True, store REC river network and its associated data in S3 bucket
     if use_aws_s3_bucket:
-        S3Manager().store_object(s3_object_key=network_path, data=rec_network)
-        S3Manager().store_object(s3_object_key=network_data_path, data=network_data)
+        s3_manager = S3Manager()
+        s3_manager.store_object(s3_object_key=network_path, data=rec_network)
+        s3_manager.store_object(s3_object_key=network_data_path, data=network_data)
     # If False, store REC river network and its associated data locally
     else:
         # Save the REC river network to the specified file
@@ -295,8 +296,9 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
     # If True, retrieve REC river network and its associated data from S3 bucket
     if use_aws_s3_bucket:
-        rec_network = S3Manager().retrieve_object(s3_object_key=existing_network_series["network_path"])
-        rec_network_data = S3Manager().retrieve_object(s3_object_key=existing_network_series["network_data_path"])
+        s3_manager = S3Manager()
+        rec_network = s3_manager.retrieve_object(s3_object_key=existing_network_series["network_path"])
+        rec_network_data = s3_manager.retrieve_object(s3_object_key=existing_network_series["network_data_path"])
     # If False, retrieve REC river network and its associated data from local storage
     else:
         # Load the REC river network graph
