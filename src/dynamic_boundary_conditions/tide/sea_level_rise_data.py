@@ -57,14 +57,14 @@ def initialize_headless_webdriver() -> WebDriver:
     return driver
 
 
-def fetch_slr_data_from_takiwa() -> pd.DataFrame:
+def fetch_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     """
     Fetch sea level rise (SLR) data from the NZ SeaRise Takiwa website.
 
     Returns
     -------
-    pd.DataFrame
-        Sea level rise (SLR) data for New Zealand
+    gpd.GeoDataFrame
+        Sea level rise (SLR) data for New Zealand.
     """
     # Log that the fetching of sea level rise data from NZ SeaRise Takiwa has started
     log.info("Fetching 'sea_level_rise' data from NZ SeaRise Takiwa.")
@@ -129,7 +129,9 @@ def fetch_slr_data_from_takiwa() -> pd.DataFrame:
                          f"number of datasets found on the web page ({len(elements)}).")
     # Log that the data have been successfully loaded
     log.info("Successfully fetched 'sea_level_rise' data from NZ SeaRise Takiwa.")
-    return slr_data
+    # Enhance SLR data by incorporating geographical geometry and converting column names to lowercase
+    slr_nz = prep_slr_geo_data(slr_data)
+    return slr_nz
 
 
 def prep_slr_geo_data(slr_data: pd.DataFrame) -> gpd.GeoDataFrame:
@@ -177,9 +179,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
         log.info(f"'{table_name}' data already exists in the database.")
     else:
         # Fetch sea level rise (SLR) data from the NZ SeaRise Takiwa website
-        slr_data = fetch_slr_data_from_takiwa()
-        # Enhance SLR data by incorporating geographical geometry and converting column names to lowercase
-        slr_nz = prep_slr_geo_data(slr_data)
+        slr_nz = fetch_slr_data_from_takiwa()
         # Store the sea level rise data to the database table
         log.info(f"Adding '{table_name}' data to the database.")
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
