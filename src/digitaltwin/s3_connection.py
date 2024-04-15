@@ -5,7 +5,6 @@ from io import BytesIO
 from typing import List, Union
 
 import boto3
-import botocore.exceptions
 import geopandas as gpd
 import networkx as nx
 import xarray as xr
