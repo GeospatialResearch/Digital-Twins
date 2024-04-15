@@ -13,6 +13,7 @@ from io import StringIO
 import geopandas as gpd
 import pandas as pd
 import requests
+from requests.models import Response
 from requests.structures import CaseInsensitiveDict
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -96,27 +97,10 @@ def fetch_slr_data_from_takiwa() -> gpd.GeoDataFrame:
                 Chrome/96.0.4664.110 Safari/537.36"
         # Make a GET request to fetch the CSV content into memory with custom headers
         response = requests.get(csv_url, headers=headers)
-        # Extract the text content from the response
-        resp_text = response.text
-        # Parse the content into a DataFrame using pandas
-        resp_df = pd.read_csv(StringIO(resp_text))
+        # Extract the text content from the response and parse it into a DataFrame using pandas
+        resp_df = pd.read_csv(StringIO(response.text))
         # Extract region name from file name and add it as a new column to the DataFrame
-        # Extract the Content-Disposition header from the response to get the file name
-        content_disposition = response.headers['Content-Disposition']
-        # Find the index where the 'filename=' starts
-        file_name_index = content_disposition.find('filename=')
-        # Extract the file name from the Content-Disposition header
-        file_name = content_disposition[file_name_index + len('filename='):]
-        # Remove any surrounding double quotes from the file name
-        file_name = file_name.strip('"')
-        # Find the starting index of the region name within the file name
-        start_index = file_name.find('projections_') + len('projections_')
-        # Find the ending index of the region name within the file name
-        end_index = file_name.find('_region')
-        # Extract the region name from the file name
-        region_name = file_name[start_index:end_index]
-        # Add the extracted region name as a new column to the DataFrame
-        resp_df['region'] = region_name
+        resp_df['region'] = extract_region_name(response)
         # Concatenate the retrieved data with the existing SLR data DataFrame
         slr_data = pd.concat([slr_data, resp_df])
         # Increment the count of retrieved CSV content
@@ -132,6 +116,37 @@ def fetch_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     # Enhance SLR data by incorporating geographical geometry and converting column names to lowercase
     slr_nz = prep_slr_geo_data(slr_data)
     return slr_nz
+
+
+def extract_region_name(response: Response) -> str:
+    """
+    Extracts the region name from the filename specified in the Content-Disposition header of the provided response.
+
+    Parameters
+    ----------
+    response : Response
+        The HTTP response object containing the Content-Disposition header.
+
+    Returns
+    -------
+    str
+        The extracted region name from the filename.
+    """
+    # Extract the Content-Disposition header from the response to get the file name
+    content_disposition = response.headers['Content-Disposition']
+    # Find the index where the 'filename=' starts
+    file_name_index = content_disposition.find('filename=')
+    # Extract the file name from the Content-Disposition header
+    file_name = content_disposition[file_name_index + len('filename='):]
+    # Remove any surrounding double quotes from the file name
+    file_name = file_name.strip('"')
+    # Find the starting index of the region name within the file name
+    start_index = file_name.find('projections_') + len('projections_')
+    # Find the ending index of the region name within the file name
+    end_index = file_name.find('_region')
+    # Extract the region name from the file name
+    region_name = file_name[start_index:end_index]
+    return region_name
 
 
 def prep_slr_geo_data(slr_data: pd.DataFrame) -> gpd.GeoDataFrame:
