@@ -140,7 +140,7 @@ class S3Manager:
             # Convert the pathlib.Path object to a string representation
             s3_object_key = s3_object_key.as_posix()
         # Upload the file at 'file_path' to the S3 bucket with the provided object key
-        self.s3_client.upload_file(Bucket=self.bucket_name, Key=s3_object_key, Filename=file_path.as_posix())
+        self.s3_client.upload_file(Bucket=self.bucket_name, Key=s3_object_key, Filename=file_path)
         # Log a message confirming successful storage in the S3 bucket
         log.info(f"Successfully stored `{s3_object_key}` in the S3 bucket.")
 
