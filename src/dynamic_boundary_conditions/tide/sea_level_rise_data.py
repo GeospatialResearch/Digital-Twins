@@ -83,9 +83,9 @@ def fetch_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
     # Identify links to all the regional data files on the webpage
     elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
+    # Create an empty DataFrame to store the SLR data
+    slr_data = pd.DataFrame()
     # Iterate through the identified links and retrieve the CSV content into memory
-    count = 0  # Initialize a count variable to track the number of retrieved files
-    slr_data = pd.DataFrame()  # Create an empty DataFrame to store the SLR data
     for element in elements:
         # Scroll down the div to the link. Required for firefox browser
         driver.execute_script("arguments[0].scrollIntoView(true);", element)
@@ -103,14 +103,8 @@ def fetch_slr_data_from_takiwa() -> gpd.GeoDataFrame:
         resp_df['region'] = extract_region_name(response)
         # Concatenate the retrieved data with the existing SLR data DataFrame
         slr_data = pd.concat([slr_data, resp_df])
-        # Increment the count of retrieved CSV content
-        count += 1
     # Quit the WebDriver, closing the browser
     driver.quit()
-    # Check that the number of files loaded matches the number of links on the webpage
-    if count != len(elements):
-        raise ValueError(f"The number of files loaded ({count}) does not match the "
-                         f"number of datasets found on the web page ({len(elements)}).")
     # Log that the data have been successfully loaded
     log.info("Successfully fetched 'sea_level_rise' data from NZ SeaRise Takiwa.")
     # Enhance SLR data by incorporating geographical geometry and converting column names to lowercase
