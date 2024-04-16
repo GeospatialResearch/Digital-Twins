@@ -37,9 +37,14 @@ class S3Manager:
 
     def _create_session(self) -> boto3.session.Session:
         """
-        Create a boto3 session using the provided AWS credentials.
+        Creates a boto3 session using the provided AWS credentials.
+
+        Returns
+        -------
+        boto3.session.Session
+            A boto3 session that allows interaction with AWS services.
         """
-        # Create a boto3 session object for interacting with AWS services
+        # Create a boto3 session for interacting with AWS services
         session = boto3.Session(
             aws_access_key_id=self.access_key_id,
             aws_secret_access_key=self.secret_access_key)
@@ -47,7 +52,12 @@ class S3Manager:
 
     def list_objects(self) -> List[str]:
         """
-        List objects in the S3 bucket.
+        Retrieves a list of keys for objects stored in the S3 bucket.
+
+        Returns
+        -------
+        List[str]
+            A list containing the keys of objects stored in the S3 bucket.
         """
         # Retrieve a list of objects from the S3 bucket
         resp = self.s3_client.list_objects_v2(Bucket=self.bucket_name)
@@ -64,7 +74,15 @@ class S3Manager:
     def store_object(
             self, s3_object_key: Union[str, pathlib.Path], data: Union[nx.DiGraph, gpd.GeoDataFrame]) -> None:
         """
-        Store an object in the S3 bucket.
+        Stores an object in the S3 bucket.
+
+        Parameters
+        ----------
+        s3_object_key : Union[str, pathlib.Path]
+            The key under which to store the object in the S3 bucket. If a pathlib.Path object is provided,
+            it will be converted to a string representation.
+        data : Union[nx.DiGraph, gpd.GeoDataFrame]
+            The object or data to be stored.
         """
         # Check if the provided s3_object_key is a pathlib.Path object
         if isinstance(s3_object_key, pathlib.Path):
@@ -85,7 +103,18 @@ class S3Manager:
     def retrieve_object(
             self, s3_object_key: Union[str, pathlib.Path]) -> Union[nx.DiGraph, xr.Dataset, gpd.GeoDataFrame]:
         """
-        Retrieve an object from the S3 bucket.
+        Retrieves an object from the S3 bucket.
+
+        Parameters
+        ----------
+        s3_object_key : Union[str, pathlib.Path]
+            The key of the object to be retrieved from the S3 bucket. If a pathlib.Path object is provided,
+            it will be converted to a string representation.
+
+        Returns
+        -------
+        Union[nx.DiGraph, xr.Dataset, gpd.GeoDataFrame]
+            The retrieved object or data.
         """
         # Check if the provided s3_object_key is a pathlib.Path object
         if isinstance(s3_object_key, pathlib.Path):
@@ -122,7 +151,13 @@ class S3Manager:
 
     def remove_object(self, s3_object_key: Union[str, pathlib.Path]) -> None:
         """
-        Remove an object from the S3 bucket.
+        Removes an object from the S3 bucket.
+
+        Parameters
+        ----------
+        s3_object_key : Union[str, pathlib.Path]
+            The key of the object to be removed from the S3 bucket. If a pathlib.Path object is provided,
+            it will be converted to a string representation.
         """
         # Check if the provided s3_object_key is a pathlib.Path object
         if isinstance(s3_object_key, pathlib.Path):
@@ -135,7 +170,15 @@ class S3Manager:
 
     def store_file(self, s3_object_key: Union[str, pathlib.Path], file_path: Union[str, pathlib.Path]) -> None:
         """
-        Upload a file to the S3 bucket.
+        Uploads a file to the S3 bucket.
+
+        Parameters
+        ----------
+        s3_object_key : Union[str, pathlib.Path]
+            The key under which to store the file in the S3 bucket. If a pathlib.Path object is provided,
+            it will be converted to a string representation.
+        file_path : Union[str, pathlib.Path]
+            The local file path of the file to be uploaded.
         """
         # Check if the provided s3_object_key is a pathlib.Path object
         if isinstance(s3_object_key, pathlib.Path):
@@ -148,7 +191,7 @@ class S3Manager:
 
     def clear_bucket(self) -> None:
         """
-        Clear the entire S3 bucket by removing all objects.
+        Clears the entire S3 bucket by removing all objects.
         """
         # Access the S3 bucket
         bucket = self.s3_resource.Bucket(self.bucket_name)
