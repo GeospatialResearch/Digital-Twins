@@ -10,7 +10,7 @@ import logging
 import pathlib
 import pickle
 from datetime import datetime
-from typing import Tuple
+from typing import Tuple, NamedTuple
 
 import geopandas as gpd
 import networkx as nx
@@ -30,6 +30,24 @@ from src.digitaltwin.tables import (
 )
 
 log = logging.getLogger(__name__)
+
+
+class NetworkMetadata(NamedTuple):
+    """
+    Represents metadata associated with the REC Network.
+
+    Attributes
+    ----------
+    network_path : str
+        The path to the REC Network file.
+    network_data_path : str
+        The path to the REC Network data file.
+    catchment_geom : str
+        The Well-Known Text (WKT) representation of the catchment area's geometry.
+    """
+    network_path: str
+    network_data_path: str
+    catchment_geom: str
 
 
 def get_next_network_id(engine: Engine) -> int:
@@ -126,7 +144,7 @@ def get_new_network_output_paths() -> Tuple[pathlib.Path, pathlib.Path]:
     return network_path, network_data_path
 
 
-def get_network_output_metadata(catchment_area: gpd.GeoDataFrame) -> Tuple[str, str, str]:
+def get_network_output_metadata(catchment_area: gpd.GeoDataFrame) -> NetworkMetadata:
     """
     Get metadata associated with the REC Network.
 
@@ -137,9 +155,9 @@ def get_network_output_metadata(catchment_area: gpd.GeoDataFrame) -> Tuple[str, 
 
     Returns
     -------
-    Tuple[str, str, str]
-        A tuple containing the absolute path to the REC Network file as a string, the absolute path to the REC Network
-        data file as a string, and the Well-Known Text (WKT) representation of the catchment area's geometry.
+    NetworkMetadata
+        A named tuple containing the path to the REC Network file, the path to the REC Network data file, and
+        the Well-Known Text (WKT) representation of the catchment area's geometry.
     """
     # Generate timestamped file paths for REC river network and associated data storage
     network_path, network_data_path = get_new_network_output_paths()
@@ -149,8 +167,8 @@ def get_network_output_metadata(catchment_area: gpd.GeoDataFrame) -> Tuple[str, 
     network_data_path = network_data_path.as_posix()
     # Get the WKT representation of the catchment area's geometry
     catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
-    # Return the metadata as a tuple
-    return network_path, network_data_path, catchment_geom
+    # Return the metadata associated with the REC Network output
+    return NetworkMetadata(network_path, network_data_path, catchment_geom)
 
 
 def store_rec_network_to_db(
