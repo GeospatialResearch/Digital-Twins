@@ -150,13 +150,13 @@ def prepare_network_data_for_construction(
     return prepared_network_data
 
 
-def add_nodes_to_network(rec_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> None:
+def add_nodes_to_network(rec_network: nx.DiGraph, prepared_network_data: gpd.GeoDataFrame) -> None:
     """
     Add nodes to the REC river network along with their attributes.
 
     Parameters
     ----------
-    rec_network : nx.Graph
+    rec_network : nx.DiGraph
         The REC river network, a directed graph, to which nodes will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
@@ -176,13 +176,13 @@ def add_nodes_to_network(rec_network: nx.Graph, prepared_network_data: gpd.GeoDa
         rec_network.add_node(last_node, geometry=last_coord)
 
 
-def add_initial_edges_to_network(rec_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> None:
+def add_initial_edges_to_network(rec_network: nx.DiGraph, prepared_network_data: gpd.GeoDataFrame) -> None:
     """
     Add initial edges to the REC river network along with their attributes.
 
     Parameters
     ----------
-    rec_network : nx.Graph
+    rec_network : nx.DiGraph
         The REC river network, a directed graph, to which initial edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
@@ -237,13 +237,13 @@ def add_initial_edges_to_network(rec_network: nx.Graph, prepared_network_data: g
                     )
 
 
-def identify_absent_edges_to_add(rec_network: nx.Graph, prepared_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def identify_absent_edges_to_add(rec_network: nx.DiGraph, prepared_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Identify edges that are absent from the REC river network and require addition.
 
     Parameters
     ----------
-    rec_network : nx.Graph
+    rec_network : nx.DiGraph
         The REC river network, a directed graph.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
@@ -271,7 +271,7 @@ def identify_absent_edges_to_add(rec_network: nx.Graph, prepared_network_data: g
 def add_absent_edges_to_network(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
-        rec_network: nx.Graph,
+        rec_network: nx.DiGraph,
         prepared_network_data: gpd.GeoDataFrame) -> None:
     """
     Add absent edges that are required for the current river network construction to the REC river network along with
@@ -283,7 +283,7 @@ def add_absent_edges_to_network(
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame,
         A GeoDataFrame representing the catchment area.
-    rec_network : nx.Graph
+    rec_network : nx.DiGraph
         The REC river network, a directed graph, to which absent edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
@@ -348,7 +348,7 @@ def add_absent_edges_to_network(
 def add_edge_directions_to_network_data(
         engine: Engine,
         rec_network_id: int,
-        rec_network: nx.Graph,
+        rec_network: nx.DiGraph,
         prepared_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Add edge directions to the river network data based on the provided REC river network.
@@ -361,7 +361,7 @@ def add_edge_directions_to_network_data(
         The engine used to connect to the database.
     rec_network_id : int
         An identifier for the river network associated with the current run.
-    rec_network : nx.Graph
+    rec_network : nx.DiGraph
         The REC river network, a directed graph, used to determine the edge directions.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
@@ -404,7 +404,7 @@ def add_edge_directions_to_network_data(
 def remove_unconnected_edges_from_network(
         engine: Engine,
         rec_network_id: int,
-        rec_network: nx.Graph,
+        rec_network: nx.DiGraph,
         rec_network_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Remove REC river network edges that are not connected to their respective sea-draining catchment's end nodes.
@@ -415,7 +415,7 @@ def remove_unconnected_edges_from_network(
         The engine used to connect to the database.
     rec_network_id : int
         An identifier for the river network associated with the current run.
-    rec_network : nx.Graph
+    rec_network : nx.DiGraph
         The REC river network, a directed graph, used to identify edges that are connected to the end nodes of their
         respective sea-draining catchments.
     rec_network_data : gpd.GeoDataFrame

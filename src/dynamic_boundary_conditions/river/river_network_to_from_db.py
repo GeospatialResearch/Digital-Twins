@@ -157,7 +157,7 @@ def store_rec_network_to_db(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
         rec_network_id: int,
-        rec_network: nx.Graph,
+        rec_network: nx.DiGraph,
         rec_network_data: gpd.GeoDataFrame) -> None:
     """
     Store both the REC river network and its associated data in files, and their metadata in the database.
@@ -170,7 +170,7 @@ def store_rec_network_to_db(
         A GeoDataFrame representing the catchment area.
     rec_network_id : int
         An identifier for the river network associated with the current run.
-    rec_network : nx.Graph
+    rec_network : nx.DiGraph
         The constructed REC river network, represented as a directed graph (DiGraph).
     rec_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the REC river network data.
