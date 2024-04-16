@@ -61,7 +61,8 @@ class S3Manager:
                 object_keys.append(obj["Key"])
         return object_keys
 
-    def store_object(self, s3_object_key: Union[str, pathlib.Path], data: Union[nx.Graph, gpd.GeoDataFrame]) -> None:
+    def store_object(
+            self, s3_object_key: Union[str, pathlib.Path], data: Union[nx.DiGraph, gpd.GeoDataFrame]) -> None:
         """
         Store an object in the S3 bucket.
         """
@@ -70,7 +71,7 @@ class S3Manager:
             # Convert the pathlib.Path object to a string representation
             s3_object_key = s3_object_key.as_posix()
         # Check if the provided data is a NetworkX DiGraph object
-        if isinstance(data, nx.Graph):
+        if isinstance(data, nx.DiGraph):
             # Serialize the DiGraph object into a byte string using the pickle module
             body = pickle.dumps(data)
         else:
@@ -81,7 +82,8 @@ class S3Manager:
         # Log a message confirming successful storage in the S3 bucket
         log.info(f"Successfully stored `{s3_object_key}` in the S3 bucket.")
 
-    def retrieve_object(self, s3_object_key: Union[str, pathlib.Path]) -> Union[nx.Graph, xr.Dataset, gpd.GeoDataFrame]:
+    def retrieve_object(
+            self, s3_object_key: Union[str, pathlib.Path]) -> Union[nx.DiGraph, xr.Dataset, gpd.GeoDataFrame]:
         """
         Retrieve an object from the S3 bucket.
         """
