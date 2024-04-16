@@ -25,8 +25,8 @@ class S3Manager:
     def __init__(self) -> None:
         """
         Initialize an S3Manager instance.
-        Sets up the S3Manager with the necessary AWS credentials obtained from environment variables and creates
-        a boto3 session and S3 client for interacting with an Amazon Simple Storage Service (Amazon S3) bucket.
+        Sets up the S3Manager with the necessary AWS credentials obtained from environment variables and creates a boto3
+        session, S3 client, and S3 resource for interacting with an Amazon Simple Storage Service (Amazon S3) bucket.
         """
         self.access_key_id = config.get_env_variable("AWS_ACCESS_KEY_ID")
         self.secret_access_key = config.get_env_variable("AWS_SECRET_ACCESS_KEY")
