@@ -81,7 +81,7 @@ class S3Manager:
         # Log a message confirming successful storage in the S3 bucket
         log.info(f"Successfully stored `{s3_object_key}` in the S3 bucket.")
 
-    def retrieve_object(self, s3_object_key: Union[str, pathlib.Path]):
+    def retrieve_object(self, s3_object_key: Union[str, pathlib.Path]) -> Union[nx.Graph, xr.Dataset, gpd.GeoDataFrame]:
         """
         Retrieve an object from the S3 bucket.
         """
