@@ -73,13 +73,13 @@ in the project README.md [@fredt].
 
 Flood analysts can select an area of interest and enter parameters such as sea level rise. FReDT will
 produce a raster map of the maximum flood depth reached for each cell during the flood scenario, and highlight flooded buildings
-that are  exceed a specified depth (default 0.1m).
+that exceed a specified depth (default 0.1m).
 
 Designing the digital twin, we utilised methods developed in another research program, the NIWA-led Mā te haumaru ō
 te
 wai^[https://niwa.co.nz/natural-hazards/research-projects/mā-te-haumaru-ō-te-wai-increasing-flood-resilience-across-aotearoa]
 . To process elevation LiDAR point cloud data from LINZ into a form ready to use for modelling the flow of water over
-the terrain surface we use GeoFabrics [@geofabrics]. The hydrologically-conditioned DEMs produced by GeoFabrics, along
+the terrain surface we use GeoFabrics [@geofabrics]. These hydrologically-conditioned DEMs, along
 with additional data sources such as rainfall estimation from NIWA's High-Intensity Rainfall Design System
 (HIRDS)^[https://hirds.niwa.co.nz/] [@hirds] and flood statistics from their Flood Frequency
 Tool^[https://niwa.maps.arcgis.com/apps/webappviewer/index.html?id=933e8f24fe9140f99dfb57173087f27d] [@flood-frequency1]
