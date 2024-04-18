@@ -83,8 +83,8 @@ the terrain surface we use GeoFabrics [@geofabrics]. The hydrologically-conditio
 with additional data sources such as rainfall estimation from NIWA's High-Intensity Rainfall Design System
 (HIRDS)^[https://hirds.niwa.co.nz/] [@hirds] and flood statistics from their Flood Frequency
 Tool^[https://niwa.maps.arcgis.com/apps/webappviewer/index.html?id=933e8f24fe9140f99dfb57173087f27d] [@flood-frequency1]
-[@flood-frequency2] are used as inputs to the flood modelling stage. The FReDT currently uses BG-Flood [@bg-flood] as
-underlying the hydrodynamic model for simulating flood events. BG-Flood was chosen because it aligns with Mā te haumaru
+[@flood-frequency2] are used as inputs to the flood modelling stage. The FReDT currently uses BG-Flood [@bg-flood] as the
+underlying hydrodynamic model for simulating flood events. BG-Flood was chosen because it aligns with Mā te haumaru
 ō te wai and has support from the NIWA authors. By using the methods developed for Mā te haumaru ō te wai, we intend to
 share scenarios created in the digital twin with NIWA, and ingest scenarios created externally into our tool.
 
