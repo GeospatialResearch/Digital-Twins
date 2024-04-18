@@ -81,11 +81,12 @@ wai^[https://niwa.co.nz/natural-hazards/research-projects/mā-te-haumaru-ō-te-w
 . To process elevation LiDAR point cloud data from LINZ into a form ready to use for modelling the flow of water over
 the terrain surface we use GeoFabrics [@geofabrics]. The hydrologically-conditioned DEMs produced by GeoFabrics, along
 with additional data sources such as rainfall estimation from NIWA's High-Intensity Rainfall Design System
-(HIRDS)^[https://hirds.niwa.co.nz/] [@hirds] and river network data from their River Environment Classification, are
-used as inputs to the flood modelling stage. The FReDT currently uses BG-Flood [@bg-flood] as underlying the
-hydrodynamic model for simulating flood events. BG-Flood was chosen because it aligns with Mā te haumaru ō te wai and
-has support from the NIWA authors. By using the methods developed for Mā te haumaru ō te wai, we intend to share
-scenarios created in the digital twin with NIWA, and ingest scenarios created externally into our tool.
+(HIRDS)^[https://hirds.niwa.co.nz/] [@hirds] and flood statistics from their Flood Frequency
+Tool^[https://niwa.maps.arcgis.com/apps/webappviewer/index.html?id=933e8f24fe9140f99dfb57173087f27d] [@flood-frequency1]
+[@flood-frequency2] are used as inputs to the flood modelling stage. The FReDT currently uses BG-Flood [@bg-flood] as
+underlying the hydrodynamic model for simulating flood events. BG-Flood was chosen because it aligns with Mā te haumaru
+ō te wai and has support from the NIWA authors. By using the methods developed for Mā te haumaru ō te wai, we intend to
+share scenarios created in the digital twin with NIWA, and ingest scenarios created externally into our tool.
 
 Multiple improvements to the FReDT are being considered. These could include UI improvements and more options for data
 visualisation to make it easier to use as a flood risk research tool. Other additions we are considering include
@@ -104,7 +105,7 @@ The following list shows various data providers and datasets ingested by the FRe
     * Coastlines
     * Roads
 * NIWA
-    * River Environment Classification
+    * Flood Frequency Statistics
     * High-Intensity Rainfall Design System
     * Tide
 * Takiwā
@@ -147,6 +148,15 @@ country [@doi:10.1080/17477891.2022.2142500]. With the country’s extreme heavy
 frequency and sea level rise brought on by climate change, the risk of flooding is expected to escalate over the next
 few decades [@collins2018; @serrao-neumann2024; @McDermott2022]. Effective communication and management of flood risks
 are critical in mitigating flood impacts, and planning must take these growing risks into account.
+
+In 2022, we conducted a workshop to review needs of our key stakeholders, including representatives from local
+councils, utility companies, Crown Research Institutes, and other organisations interested in flood
+management [@stormwater2022]. We identified that it was crucial to facilitate flood risk managers combining our tool 
+into their existing toolsets of GIS software and data pipelines. To allow this, we designed an API 
+that allows users to request data from the tool using Open Geospatial Consortium standards such as Web Feature Service
+and also allows or downloading of the raw output files for direct analysis.
+Early prototypes of the FREDT were a standalone application but after feedback from this
+workshop it is now a tool that can be used standalone or as a data service to be used with other tooling.
 
 Currently, a major challenge for flood risk management and mitigation is managing the substantial amounts of spatial data
 related to infrastructure and the environment. Acquiring and processing these data in a timely manner becomes a
