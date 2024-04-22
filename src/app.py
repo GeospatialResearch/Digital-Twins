@@ -4,13 +4,15 @@ The main web application that serves the Digital Twin to the web through a Rest 
 import logging
 import pathlib
 from functools import wraps
-from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE
+from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE
 from typing import Callable
 
 import requests
 from celery import result, states
 from flask import Flask, Response, jsonify, make_response, send_file, request
 from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
+from kombu.exceptions import OperationalError
 from shapely import box
 
 from src import tasks
@@ -18,9 +20,10 @@ from src.config import get_env_variable
 
 # Initialise flask server object
 app = Flask(__name__)
+CORS(app)
+
 WWW_HOST = get_env_variable('WWW_HOST', default="http://localhost")
 WWW_PORT = get_env_variable('WWW_port', default="8080")
-CORS(app, origins=[f"{WWW_HOST}:{WWW_PORT}"])
 
 
 def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
@@ -40,13 +43,28 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
 
     @wraps(f)
     def decorated_function(*args, **kwargs) -> Response:
-        ping_celery_response = tasks.app.control.ping()
-        if len(ping_celery_response) == 0:
+        try:
+            ping_celery_response = tasks.app.control.ping()
+            if len(ping_celery_response) == 0:
+                logging.warning("Celery workers not active, may indicate a fault")
+                return make_response("Celery workers not active", SERVICE_UNAVAILABLE)
+        except OperationalError:
             logging.warning("Celery workers not active, may indicate a fault")
             return make_response("Celery workers not active", SERVICE_UNAVAILABLE)
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+# Serve API documentation
+SWAGGER_URL = "/swagger"
+API_URL = "/static/api_documentation.yml"
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={"app_name": "Flood Resilience Digital Twin (FReDT)"}
+)
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 
 @app.route('/')
@@ -60,7 +78,11 @@ def index() -> Response:
     Response
         The HTTP Response. Expect OK if health check is successful
     """
-    return Response("Backend is receiving requests. GET /health-check to check if celery workers active.", OK)
+    return Response("""
+    Backend is receiving requests.
+    GET /health-check to check if celery workers active.
+    GET /swagger to get API documentation.
+    """, OK)
 
 
 @app.route('/health-check')
@@ -270,8 +292,11 @@ def retrieve_building_flood_status(model_id: int) -> Response:
     # Set output crs argument from request args
     crs = request.args.get("crs", type=int, default=4326)
 
-    # Get bounding box of model output to filter vector data to that area
-    bbox = tasks.get_model_extents_bbox.delay(model_id).get()
+    try:
+        # Get bounding box of model output to filter vector data to that area
+        bbox = tasks.get_model_extents_bbox.delay(model_id).get()
+    except FileNotFoundError:
+        return make_response(f"Could not find flood model output {model_id}", NOT_FOUND)
 
     # Geoserver workspace is dependant on environment variables
     db_name = get_env_variable("POSTGRES_DB")
@@ -294,14 +319,21 @@ def retrieve_building_flood_status(model_id: int) -> Response:
     # Request building statuses from geoserver
     geoserver_response = requests.get(request_url, params)
     # Serve those building statuses
-    return make_response(geoserver_response.json(), OK)
+    return Response(
+        geoserver_response.text,
+        status=geoserver_response.status_code,
+        content_type=geoserver_response.headers['content-type']
+    )
 
 
 @app.route('/models/<int:model_id>', methods=['GET'])
 @check_celery_alive
 def serve_model_output(model_id: int):
-    model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()
-    return send_file(pathlib.Path(model_filepath))
+    try:
+        model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()
+        return send_file(pathlib.Path(model_filepath))
+    except FileNotFoundError:
+        return make_response(f"Could not find flood model output {model_id}", NOT_FOUND)
 
 
 @app.route('/datasets/update', methods=["POST"])
