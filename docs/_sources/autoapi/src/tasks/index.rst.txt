@@ -249,7 +249,7 @@ Attributes
    :param model_id: The database id of the model output to query.
    :type model_id: int
 
-   :returns: The bounding box in '[x1],[y1],[x2],[y2]' format
+   :returns: The bounding box in 'x1,y1,x2,y2' format
    :rtype: str
 
 

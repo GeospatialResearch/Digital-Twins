@@ -41,6 +41,9 @@ Attributes
    src.app.app
    src.app.WWW_HOST
    src.app.WWW_PORT
+   src.app.SWAGGER_URL
+   src.app.API_URL
+   src.app.swagger_ui_blueprint
    src.app.gunicorn_logger
 
 
@@ -66,6 +69,20 @@ Attributes
    :returns: Response is SERVICE_UNAVAILABLE if the celery workers are down, otherwise continue to function f
    :rtype: Callable[..., Response]
 
+
+.. py:data:: SWAGGER_URL
+   :value: '/swagger'
+
+   
+
+.. py:data:: API_URL
+   :value: '/static/api_documentation.yml'
+
+   
+
+.. py:data:: swagger_ui_blueprint
+
+   
 
 .. py:function:: index() -> flask.Response
 
