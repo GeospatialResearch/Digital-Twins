@@ -9,7 +9,7 @@ from typing import Callable
 
 import requests
 from celery import result, states
-from flask import Flask, Response, jsonify, make_response, send_file, redirect, request
+from flask import Flask, Response, jsonify, make_response, send_file, request
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 from kombu.exceptions import OperationalError

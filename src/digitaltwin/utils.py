@@ -3,9 +3,9 @@
 This script provides utility functions for logging configuration and geospatial data manipulation.
 """
 
+import inspect
 import logging
 import pathlib
-import inspect
 import warnings
 from enum import IntEnum
 
@@ -96,7 +96,16 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
     warnings.simplefilter("ignore")
     # List of loggers to prevent messages from reaching the root logger
     loggers_to_exclude = [
-        "urllib3", "fiona", "botocore", "pyproj", "asyncio", "rasterio", "scrapy", "distributed", "selenium", "s3transfer"
+        "urllib3",
+        "fiona",
+        "botocore",
+        "pyproj",
+        "asyncio",
+        "rasterio",
+        "scrapy",
+        "distributed",
+        "selenium",
+        "s3transfer"
     ]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:
