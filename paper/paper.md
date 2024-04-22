@@ -53,7 +53,7 @@ affiliations:
   - name: Land Information New Zealand | Toitū Te Whenua, New Zealand
     index: 4
 
-date: 5 April 2024
+date: 22 April 2024
 bibliography: paper.bib
 ---
 
