@@ -11,7 +11,7 @@ import geopandas as gpd
 from newzealidar import datasets, process
 
 from src.digitaltwin import retrieve_static_boundaries
-from src.digitaltwin.utils import LogLevel
+from src.digitaltwin.utils import LogLevel, setup_logging
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions.river import main_river
@@ -49,6 +49,10 @@ def main(
     """
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
+        # If the module is datasets or process, configure logging with the specified log level
+        if module in [datasets, process]:
+            # Set up logging with the specified log level, defaulting to DEBUG if not specified
+            setup_logging(parameters.get("log_level", LogLevel.DEBUG))
         # Call the main function of each module with the selected polygon and specified parameters
         module.main(selected_polygon_gdf, **parameters)
 
