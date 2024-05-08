@@ -18,7 +18,6 @@ dependencies:
   - pytest>=7.4.3
   - psycopg2==2.9.3 # Needed for Linux environments
   - validators==0.22.0  # Try remove in future
-  - selenium==4.16.0
   - sqlalchemy==1.4.49 # To migrate to sqlalchemy 2 some db connection code needs to change
   - geoalchemy2>=0.14.2
   - plotly==5.18.0
