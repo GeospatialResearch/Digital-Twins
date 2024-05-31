@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.osm_waterways`
-=============================================================
+src.dynamic_boundary_conditions.river.osm_waterways
+===================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.osm_waterways
 
@@ -9,12 +9,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.osm_waterways.log
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -23,18 +27,10 @@ Functions
    src.dynamic_boundary_conditions.river.osm_waterways.get_osm_waterways_data
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.osm_waterways.log
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: configure_osm_cache() -> None
 

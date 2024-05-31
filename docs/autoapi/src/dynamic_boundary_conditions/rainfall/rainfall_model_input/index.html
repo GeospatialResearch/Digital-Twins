@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,10 +79,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input</span></code></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src.dynamic_boundary_conditions</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.dynamic_boundary_conditions.rainfall</a></li>
+      <li class="breadcrumb-item active">src.dynamic_boundary_conditions.rainfall.rainfall_model_input</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/rainfall/rainfall_model_input/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,14 +93,32 @@
            <div itemprop="articleBody">
              
   <section id="module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input">
-<span id="src-dynamic-boundary-conditions-rainfall-rainfall-model-input"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input" title="Link to this heading"></a></h1>
+<span id="src-dynamic-boundary-conditions-rainfall-rainfall-model-input"></span><h1>src.dynamic_boundary_conditions.rainfall.rainfall_model_input<a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input" title="Link to this heading"></a></h1>
 <p>Generate the requested rainfall model input for BG-Flood, which can be either
 spatially uniform rain input (‘rain_forcing.txt’ text file) or
 spatially varying rain input (‘rain_forcing.nc’ NetCDF file).</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RainInputType</span></code></a></p></td>
+<td><p>Enum class representing different types of rain input used in the BG-Flood Model.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites_voronoi_intersect_catchment</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
@@ -126,15 +145,47 @@ spatially varying rain input (‘rain_forcing.nc’ NetCDF file).</p>
 </tbody>
 </table>
 </section>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">RainInputType</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.StrEnum</span></code></p>
+<p>Enum class representing different types of rain input used in the BG-Flood Model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType.UNIFORM">
+<span class="sig-name descname"><span class="pre">UNIFORM</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType.UNIFORM" title="Link to this definition"></a></dt>
+<dd><p>Spatially uniform rain input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType.VARYING">
+<span class="sig-name descname"><span class="pre">VARYING</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType.VARYING" title="Link to this definition"></a></dt>
+<dd><p>Spatially varying rain input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">UNIFORM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'uniform'</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">VARYING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'varying'</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py data">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log" title="Link to this definition"></a></dt>
@@ -286,7 +337,7 @@ including the size and percentage of the catchment area covered by each site.</p
 <li><p><strong>sites_coverage</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing information about the coverage area of each rainfall site within the catchment area,
 including the size and percentage of the catchment area covered by each site.</p></li>
 <li><p><strong>bg_flood_dir</strong> (<em>pathlib.Path</em>) – BG-Flood model directory.</p></li>
-<li><p><strong>input_type</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType"><em>RainInputType</em></a>) – The type of rainfall model input to be generated. Valid options are ‘uniform’ or ‘varying’,
+<li><p><strong>input_type</strong> (<a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType"><em>RainInputType</em></a>) – The type of rainfall model input to be generated. Valid options are ‘uniform’ or ‘varying’,
 representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).</p></li>
 </ul>
 </dd>
@@ -299,7 +350,6 @@ representing spatially uniform rain input (text file) or spatially varying rain 
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 

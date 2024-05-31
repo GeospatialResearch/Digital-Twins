@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../dynamic_boundary_conditions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dynamic_boundary_conditions/index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,9 +79,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model.serve_model</span></code></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.flood_model</a></li>
+      <li class="breadcrumb-item active">src.flood_model.serve_model</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/autoapi/src/flood_model/serve_model/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,59 +92,11 @@
            <div itemprop="articleBody">
              
   <section id="module-src.flood_model.serve_model">
-<span id="src-flood-model-serve-model"></span><h1><a class="reference internal" href="#module-src.flood_model.serve_model" title="src.flood_model.serve_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model.serve_model</span></code></a><a class="headerlink" href="#module-src.flood_model.serve_model" title="Link to this heading"></a></h1>
+<span id="src-flood-model-serve-model"></span><h1>src.flood_model.serve_model<a class="headerlink" href="#module-src.flood_model.serve_model" title="Link to this heading"></a></h1>
 <p>Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
 or other clients</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.convert_nc_to_gtiff" title="src.flood_model.serve_model.convert_nc_to_gtiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_nc_to_gtiff</span></code></a>(→ pathlib.Path)</p></td>
-<td><p>Creates a GeoTiff file from a netCDF model output. The Tiff represents the max flood height in the model output.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.upload_gtiff_to_store" title="src.flood_model.serve_model.upload_gtiff_to_store"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_gtiff_to_store</span></code></a>(→ None)</p></td>
-<td><p>Uploads a GeoTiff file to a new GeoServer store, to enable serving.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_layer_from_store" title="src.flood_model.serve_model.create_layer_from_store"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_layer_from_store</span></code></a>(→ None)</p></td>
-<td><p>Creates a GeoServer Layer from a GeoServer store, making it ready to serve.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.get_geoserver_url" title="src.flood_model.serve_model.get_geoserver_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geoserver_url</span></code></a>(→ str)</p></td>
-<td><p>Retrieves full GeoServer URL from environment variables.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.add_gtiff_to_geoserver" title="src.flood_model.serve_model.add_gtiff_to_geoserver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_gtiff_to_geoserver</span></code></a>(→ None)</p></td>
-<td><p>Uploads a GeoTiff file to GeoServer, ready for serving to clients.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_workspace_if_not_exists" title="src.flood_model.serve_model.create_workspace_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_workspace_if_not_exists</span></code></a>(→ None)</p></td>
-<td><p>Creates a geoserver workspace if it does not currently exist.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_datastore_layer" title="src.flood_model.serve_model.create_datastore_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_datastore_layer</span></code></a>(→ None)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_building_layers" title="src.flood_model.serve_model.create_building_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_layers</span></code></a>(→ None)</p></td>
-<td><p>Creates dynamic geoserver layers &quot;nz_building_outlines&quot; and &quot;building_flood_status&quot; for the given workspace.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_db_store_if_not_exists" title="src.flood_model.serve_model.create_db_store_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_db_store_if_not_exists</span></code></a>(→ None)</p></td>
-<td><p>Creates PostGIS database store in a geoserver workspace for a given database.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_building_database_views_if_not_exists" title="src.flood_model.serve_model.create_building_database_views_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_database_views_if_not_exists</span></code></a>(→ None)</p></td>
-<td><p>Creates a geoserver workspace and building layers using database views if they do not currently exist.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.style_exists" title="src.flood_model.serve_model.style_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">style_exists</span></code></a>(→ bool)</p></td>
-<td><p>Checks if a geoserver style definition already exists for a given style_name.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_viridis_style_if_not_exists" title="src.flood_model.serve_model.create_viridis_style_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_viridis_style_if_not_exists</span></code></a>(→ None)</p></td>
-<td><p>Creates a geoserver style for rasters using the viridis colour scale</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.add_model_output_to_geoserver" title="src.flood_model.serve_model.add_model_output_to_geoserver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_output_to_geoserver</span></code></a>(→ None)</p></td>
-<td><p>Adds the model output max depths to GeoServer, ready for serving.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.log" title="src.flood_model.serve_model.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
@@ -154,6 +107,84 @@ or other clients</p>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.get_env_variable" title="src.flood_model.serve_model.get_env_variable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_env_variable</span></code></a>(→ T)</p></td>
+<td><p>Reads an environment variable, with settings to allow defaults, empty values, and type casting</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.convert_nc_to_gtiff" title="src.flood_model.serve_model.convert_nc_to_gtiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_nc_to_gtiff</span></code></a>(→ pathlib.Path)</p></td>
+<td><p>Creates a GeoTiff file from a netCDF model output. The Tiff represents the max flood height in the model output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.upload_gtiff_to_store" title="src.flood_model.serve_model.upload_gtiff_to_store"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_gtiff_to_store</span></code></a>(→ None)</p></td>
+<td><p>Uploads a GeoTiff file to a new GeoServer store, to enable serving.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_layer_from_store" title="src.flood_model.serve_model.create_layer_from_store"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_layer_from_store</span></code></a>(→ None)</p></td>
+<td><p>Creates a GeoServer Layer from a GeoServer store, making it ready to serve.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.get_geoserver_url" title="src.flood_model.serve_model.get_geoserver_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geoserver_url</span></code></a>(→ str)</p></td>
+<td><p>Retrieves full GeoServer URL from environment variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.add_gtiff_to_geoserver" title="src.flood_model.serve_model.add_gtiff_to_geoserver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_gtiff_to_geoserver</span></code></a>(→ None)</p></td>
+<td><p>Uploads a GeoTiff file to GeoServer, ready for serving to clients.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_workspace_if_not_exists" title="src.flood_model.serve_model.create_workspace_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_workspace_if_not_exists</span></code></a>(→ None)</p></td>
+<td><p>Creates a geoserver workspace if it does not currently exist.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_datastore_layer" title="src.flood_model.serve_model.create_datastore_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_datastore_layer</span></code></a>(→ None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_building_layers" title="src.flood_model.serve_model.create_building_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_layers</span></code></a>(→ None)</p></td>
+<td><p>Creates dynamic geoserver layers &quot;nz_building_outlines&quot; and &quot;building_flood_status&quot; for the given workspace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_db_store_if_not_exists" title="src.flood_model.serve_model.create_db_store_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_db_store_if_not_exists</span></code></a>(→ None)</p></td>
+<td><p>Creates PostGIS database store in a geoserver workspace for a given database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_building_database_views_if_not_exists" title="src.flood_model.serve_model.create_building_database_views_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_database_views_if_not_exists</span></code></a>(→ None)</p></td>
+<td><p>Creates a geoserver workspace and building layers using database views if they do not currently exist.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.style_exists" title="src.flood_model.serve_model.style_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">style_exists</span></code></a>(→ bool)</p></td>
+<td><p>Checks if a geoserver style definition already exists for a given style_name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.create_viridis_style_if_not_exists" title="src.flood_model.serve_model.create_viridis_style_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_viridis_style_if_not_exists</span></code></a>(→ None)</p></td>
+<td><p>Creates a geoserver style for rasters using the viridis colour scale</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model.add_model_output_to_geoserver" title="src.flood_model.serve_model.add_model_output_to_geoserver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_output_to_geoserver</span></code></a>(→ None)</p></td>
+<td><p>Adds the model output max depths to GeoServer, ready for serving.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.flood_model.serve_model.get_env_variable">
+<span class="sig-prename descclassname"><span class="pre">src.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">get_env_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#src.flood_model.serve_model.get_env_variable" title="Link to this definition"></a></dt>
+<dd><p>Reads an environment variable, with settings to allow defaults, empty values, and type casting
+To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable(“EXAMPLE_ENV_VAR”, cast_to=bool)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var_name</strong> (<em>str</em>) – The name of the environment variable to retrieve.</p></li>
+<li><p><strong>default</strong> (<em>T = None</em>) – Default return value if the environment variable does not exist. Doesn’t override empty string vars.</p></li>
+<li><p><strong>allow_empty</strong> (<em>bool</em>) – If False then a KeyError will be raised if the environment variable is empty.</p></li>
+<li><p><strong>cast_to</strong> (<em>Type</em><em>[</em><em>T</em><em>]</em>) – The type to cast to e.g. str, int, or bool</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>The environment variable, or default if it does not exist, as type T.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>KeyError</strong> – If allow_empty is False and the environment variable is empty string or None</p></li>
+<li><p><strong>ValueError</strong> – If cast_to is not compatible with the value stored.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py data">
 <dt class="sig sig-object py" id="src.flood_model.serve_model.log">
 <span class="sig-prename descclassname"><span class="pre">src.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.flood_model.serve_model.log" title="Link to this definition"></a></dt>
@@ -395,7 +426,6 @@ The GeoServer layer name will be f”Output_{model_id}” and the workspace name
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 

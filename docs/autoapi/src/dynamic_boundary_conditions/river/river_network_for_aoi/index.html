@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,10 +79,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.river_network_for_aoi</span></code></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src.dynamic_boundary_conditions</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.dynamic_boundary_conditions.river</a></li>
+      <li class="breadcrumb-item active">src.dynamic_boundary_conditions.river.river_network_for_aoi</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/river/river_network_for_aoi/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,55 +93,10 @@
            <div itemprop="articleBody">
              
   <section id="module-src.dynamic_boundary_conditions.river.river_network_for_aoi">
-<span id="src-dynamic-boundary-conditions-river-river-network-for-aoi"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.river.river_network_for_aoi" title="src.dynamic_boundary_conditions.river.river_network_for_aoi"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.river_network_for_aoi</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.river.river_network_for_aoi" title="Link to this heading"></a></h1>
+<span id="src-dynamic-boundary-conditions-river-river-network-for-aoi"></span><h1>src.dynamic_boundary_conditions.river.river_network_for_aoi<a class="headerlink" href="#module-src.dynamic_boundary_conditions.river.river_network_for_aoi" title="Link to this heading"></a></h1>
 <p>This script processes REC data to construct a river network for the defined catchment area.</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_unique_nodes_dict" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_unique_nodes_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_unique_nodes_dict</span></code></a>(→ Dict[shapely.geometry.Point, int])</p></td>
-<td><p>Generates a dictionary that contains the unique node coordinates in the REC data for the catchment area.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_rec" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_rec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_nodes_to_rec</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Add columns for the first and last coordinates/nodes of each LineString in the REC data within the catchment area.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_intersection_type" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_intersection_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_nodes_intersection_type</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Calculate and add an 'intersection_type' column to the GeoDataFrame that contains REC data with node information.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.prepare_network_data_for_construction" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.prepare_network_data_for_construction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_network_data_for_construction</span></code></a>(...)</p></td>
-<td><p>Prepares the necessary data for constructing the river network for the catchment area using the REC data.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_nodes_to_network</span></code></a>(→ None)</p></td>
-<td><p>Add nodes to the REC river network along with their attributes.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_initial_edges_to_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_initial_edges_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_initial_edges_to_network</span></code></a>(→ None)</p></td>
-<td><p>Add initial edges to the REC river network along with their attributes.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.identify_absent_edges_to_add" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.identify_absent_edges_to_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identify_absent_edges_to_add</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Identify edges that are absent from the REC river network and require addition.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_absent_edges_to_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_absent_edges_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_absent_edges_to_network</span></code></a>(→ None)</p></td>
-<td><p>Add absent edges that are required for the current river network construction to the REC river network along with</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_edge_directions_to_network_data" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_edge_directions_to_network_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_edge_directions_to_network_data</span></code></a>(...)</p></td>
-<td><p>Add edge directions to the river network data based on the provided REC river network.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.remove_unconnected_edges_from_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.remove_unconnected_edges_from_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_unconnected_edges_from_network</span></code></a>(...)</p></td>
-<td><p>Remove REC river network edges that are not connected to their respective sea-draining catchment's end nodes.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.build_rec_river_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.build_rec_river_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_rec_river_network</span></code></a>(→ Tuple[networkx.DiGraph, ...)</p></td>
-<td><p>Builds a river network for the catchment area using the REC data.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_rec_river_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_rec_river_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rec_river_network</span></code></a>(→ Tuple[networkx.Graph, ...)</p></td>
-<td><p>Retrieve or create REC river network for the specified catchment area.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.log" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
@@ -148,6 +104,170 @@
 </tr>
 </tbody>
 </table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_next_network_id" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_next_network_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_next_network_id</span></code></a>(→ int)</p></td>
+<td><p>Get the next available REC River Network ID from the River Network Exclusions table.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_network_exclusions_to_db" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_network_exclusions_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_network_exclusions_to_db</span></code></a>(→ None)</p></td>
+<td><p>Add REC geometries that are excluded from the river network for the current run in the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.store_rec_network_to_db" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.store_rec_network_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_rec_network_to_db</span></code></a>(→ None)</p></td>
+<td><p>Store both the REC river network and its associated data in files, and their metadata in the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_existing_network_metadata_from_db" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_existing_network_metadata_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_network_metadata_from_db</span></code></a>(...)</p></td>
+<td><p>Retrieve existing REC river network metadata for the specified catchment area from the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_existing_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_existing_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_network</span></code></a>(→ Tuple[networkx.Graph, ...)</p></td>
+<td><p>Retrieve existing REC river network and its associated data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_unique_nodes_dict" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_unique_nodes_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_unique_nodes_dict</span></code></a>(→ Dict[shapely.geometry.Point, int])</p></td>
+<td><p>Generates a dictionary that contains the unique node coordinates in the REC data for the catchment area.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_rec" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_rec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_nodes_to_rec</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Add columns for the first and last coordinates/nodes of each LineString in the REC data within the catchment area.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_intersection_type" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_intersection_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_nodes_intersection_type</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Calculate and add an 'intersection_type' column to the GeoDataFrame that contains REC data with node information.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.prepare_network_data_for_construction" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.prepare_network_data_for_construction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_network_data_for_construction</span></code></a>(...)</p></td>
+<td><p>Prepares the necessary data for constructing the river network for the catchment area using the REC data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_nodes_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_nodes_to_network</span></code></a>(→ None)</p></td>
+<td><p>Add nodes to the REC river network along with their attributes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_initial_edges_to_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_initial_edges_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_initial_edges_to_network</span></code></a>(→ None)</p></td>
+<td><p>Add initial edges to the REC river network along with their attributes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.identify_absent_edges_to_add" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.identify_absent_edges_to_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identify_absent_edges_to_add</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Identify edges that are absent from the REC river network and require addition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_absent_edges_to_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_absent_edges_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_absent_edges_to_network</span></code></a>(→ None)</p></td>
+<td><p>Add absent edges that are required for the current river network construction to the REC river network along with</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_edge_directions_to_network_data" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_edge_directions_to_network_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_edge_directions_to_network_data</span></code></a>(...)</p></td>
+<td><p>Add edge directions to the river network data based on the provided REC river network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.remove_unconnected_edges_from_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.remove_unconnected_edges_from_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_unconnected_edges_from_network</span></code></a>(...)</p></td>
+<td><p>Remove REC river network edges that are not connected to their respective sea-draining catchment's end nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.build_rec_river_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.build_rec_river_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_rec_river_network</span></code></a>(→ Tuple[networkx.DiGraph, ...)</p></td>
+<td><p>Builds a river network for the catchment area using the REC data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_rec_river_network" title="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_rec_river_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rec_river_network</span></code></a>(→ Tuple[networkx.Graph, ...)</p></td>
+<td><p>Retrieve or create REC river network for the specified catchment area.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_next_network_id">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_network_for_aoi.</span></span><span class="sig-name descname"><span class="pre">get_next_network_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_next_network_id" title="Link to this definition"></a></dt>
+<dd><p>Get the next available REC River Network ID from the River Network Exclusions table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An identifier for the river network associated with each run, representing the next available River Network ID.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_network_for_aoi.add_network_exclusions_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_network_for_aoi.</span></span><span class="sig-name descname"><span class="pre">add_network_exclusions_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec_network_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec_network_exclusions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclusion_cause</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.add_network_exclusions_to_db" title="Link to this definition"></a></dt>
+<dd><p>Add REC geometries that are excluded from the river network for the current run in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>rec_network_id</strong> (<em>int</em>) – An identifier for the river network associated with the current run.</p></li>
+<li><p><strong>rec_network_exclusions</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the REC geometries that are excluded from the river network for the current run.</p></li>
+<li><p><strong>exclusion_cause</strong> (<em>str</em>) – Cause of exclusion, i.e., the reason why the REC river geometry was excluded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_network_for_aoi.store_rec_network_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_network_for_aoi.</span></span><span class="sig-name descname"><span class="pre">store_rec_network_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec_network_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec_network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">networkx.Graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec_network_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.store_rec_network_to_db" title="Link to this definition"></a></dt>
+<dd><p>Store both the REC river network and its associated data in files, and their metadata in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>rec_network_id</strong> (<em>int</em>) – An identifier for the river network associated with the current run.</p></li>
+<li><p><strong>rec_network</strong> (<em>nx.Graph</em>) – The constructed REC river network, represented as a directed graph (DiGraph).</p></li>
+<li><p><strong>rec_network_data</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the REC river network data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_existing_network_metadata_from_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_network_for_aoi.</span></span><span class="sig-name descname"><span class="pre">get_existing_network_metadata_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_existing_network_metadata_from_db" title="Link to this definition"></a></dt>
+<dd><p>Retrieve existing REC river network metadata for the specified catchment area from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the existing REC river network metadata for the specified catchment area.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_network_for_aoi.get_existing_network">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_network_for_aoi.</span></span><span class="sig-name descname"><span class="pre">get_existing_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_network_meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">networkx.Graph</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">geopandas.GeoDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.get_existing_network" title="Link to this definition"></a></dt>
+<dd><p>Retrieve existing REC river network and its associated data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>existing_network_meta</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the metadata for the existing REC river network.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the existing REC river network as a directed graph (DiGraph) and its associated data
+as a GeoDataFrame.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[nx.Graph, gpd.GeoDataFrame]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py data">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_network_for_aoi.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_network_for_aoi.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_network_for_aoi.log" title="Link to this definition"></a></dt>
@@ -406,7 +526,6 @@ as a GeoDataFrame.</p>
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 

@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,10 +79,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall</span></code></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src.dynamic_boundary_conditions</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.dynamic_boundary_conditions.rainfall</a></li>
+      <li class="breadcrumb-item active">src.dynamic_boundary_conditions.rainfall.main_rainfall</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/rainfall/main_rainfall/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,15 +93,45 @@
            <div itemprop="articleBody">
              
   <section id="module-src.dynamic_boundary_conditions.rainfall.main_rainfall">
-<span id="src-dynamic-boundary-conditions-rainfall-main-rainfall"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rainfall.main_rainfall" title="src.dynamic_boundary_conditions.rainfall.main_rainfall"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.main_rainfall" title="Link to this heading"></a></h1>
+<span id="src-dynamic-boundary-conditions-rainfall-main-rainfall"></span><h1>src.dynamic_boundary_conditions.rainfall.main_rainfall<a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.main_rainfall" title="Link to this heading"></a></h1>
 <p>Main rainfall script used to fetch and store rainfall data in the database, and to generate the requested
 rainfall model input for BG-Flood, etc.</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_polygon</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LogLevel</span></code></a></p></td>
+<td><p>Enum class representing different logging levels mapped to their corresponding numeric values from the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RainInputType</span></code></a></p></td>
+<td><p>Enum class representing different types of rain input used in the BG-Flood Model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HyetoMethod</span></code></a></p></td>
+<td><p>Enum class representing different hyetograph methods.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.setup_logging" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.setup_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_logging</span></code></a>(→ None)</p></td>
+<td><p>Configures the root logger with the specified log level and formats, captures warnings, and excludes specific</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.get_catchment_area" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.get_catchment_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_catchment_area</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_existing_rain_inputs</span></code></a>(→ None)</p></td>
 <td><p>Remove existing rain input files from the specified directory.</p></td>
 </tr>
@@ -110,15 +141,236 @@ rainfall model input for BG-Flood, etc.</p>
 </tbody>
 </table>
 </section>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_polygon</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">LogLevel</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>Enum class representing different logging levels mapped to their corresponding numeric values from the
+logging library.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.CRITICAL">
+<span class="sig-name descname"><span class="pre">CRITICAL</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.CRITICAL" title="Link to this definition"></a></dt>
+<dd><p>The critical logging level. Corresponds to logging.CRITICAL (50).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.ERROR" title="Link to this definition"></a></dt>
+<dd><p>The error logging level. Corresponds to logging.ERROR (40).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.WARNING">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.WARNING" title="Link to this definition"></a></dt>
+<dd><p>The warning logging level. Corresponds to logging.WARNING (30).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.INFO">
+<span class="sig-name descname"><span class="pre">INFO</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.INFO" title="Link to this definition"></a></dt>
+<dd><p>The info logging level. Corresponds to logging.INFO (20).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.DEBUG">
+<span class="sig-name descname"><span class="pre">DEBUG</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.DEBUG" title="Link to this definition"></a></dt>
+<dd><p>The debug logging level. Corresponds to logging.DEBUG (10).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.NOTSET">
+<span class="sig-name descname"><span class="pre">NOTSET</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel.NOTSET" title="Link to this definition"></a></dt>
+<dd><p>The not-set logging level. Corresponds to logging.NOTSET (0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">CRITICAL</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">INFO</span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">DEBUG</span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">NOTSET</span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.setup_logging">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.setup_logging" title="Link to this definition"></a></dt>
+<dd><p>Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
+loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
+execution of the function in the script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>log_level</strong> (<em>LogLevel = LogLevel.DEBUG</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+The available logging levels and their corresponding numeric values are:
+- LogLevel.CRITICAL (50)
+- LogLevel.ERROR (40)
+- LogLevel.WARNING (30)
+- LogLevel.INFO (20)
+- LogLevel.DEBUG (10)
+- LogLevel.NOTSET (0)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.get_catchment_area">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">get_catchment_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.get_catchment_area" title="Link to this definition"></a></dt>
+<dd><p>Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+<li><p><strong>to_crs</strong> (<em>int = 2193</em>) – Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame representing the catchment area with the transformed CRS.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">RainInputType</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.StrEnum</span></code></p>
+<p>Enum class representing different types of rain input used in the BG-Flood Model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType.UNIFORM">
+<span class="sig-name descname"><span class="pre">UNIFORM</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType.UNIFORM" title="Link to this definition"></a></dt>
+<dd><p>Spatially uniform rain input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType.VARYING">
+<span class="sig-name descname"><span class="pre">VARYING</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType.VARYING" title="Link to this definition"></a></dt>
+<dd><p>Spatially varying rain input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">UNIFORM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'uniform'</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">VARYING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'varying'</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">HyetoMethod</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.StrEnum</span></code></p>
+<p>Enum class representing different hyetograph methods.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod.ALT_BLOCK">
+<span class="sig-name descname"><span class="pre">ALT_BLOCK</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod.ALT_BLOCK" title="Link to this definition"></a></dt>
+<dd><p>Alternating Block Method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod.CHICAGO">
+<span class="sig-name descname"><span class="pre">CHICAGO</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod.CHICAGO" title="Link to this definition"></a></dt>
+<dd><p>Chicago Method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">ALT_BLOCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'alt_block'</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">CHICAGO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'chicago'</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">remove_existing_rain_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.remove_existing_rain_inputs" title="Link to this definition"></a></dt>
@@ -151,8 +403,8 @@ for historical data.</p></li>
 <li><p><strong>storm_length_mins</strong> (<em>int</em>) – Storm duration in minutes.</p></li>
 <li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when rainfall is at its greatest (reaches maximum).</p></li>
 <li><p><strong>increment_mins</strong> (<em>int</em>) – Time interval in minutes.</p></li>
-<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used. Valid options are HyetoMethod.ALT_BLOCK or HyetoMethod.CHICAGO.</p></li>
-<li><p><strong>input_type</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.RainInputType"><em>RainInputType</em></a>) – The type of rainfall model input to be generated. Valid options are ‘uniform’ or ‘varying’,
+<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used. Valid options are HyetoMethod.ALT_BLOCK or HyetoMethod.CHICAGO.</p></li>
+<li><p><strong>input_type</strong> (<a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType" title="src.dynamic_boundary_conditions.rainfall.main_rainfall.RainInputType"><em>RainInputType</em></a>) – The type of rainfall model input to be generated. Valid options are ‘uniform’ or ‘varying’,
 representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).</p></li>
 <li><p><strong>log_level</strong> (<em>LogLevel = LogLevel.DEBUG</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
 The available logging levels and their corresponding numeric values are:
@@ -178,7 +430,6 @@ The available logging levels and their corresponding numeric values are:
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.main_rainfall.</span></span><span class="sig-name descname"><span class="pre">sample_polygon</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-</section>
 </section>
 </section>
 

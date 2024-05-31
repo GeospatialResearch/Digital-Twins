@@ -1,24 +1,32 @@
-:py:mod:`src.flood_model.flooded_buildings`
-===========================================
+src.flood_model.flooded_buildings
+=================================
 
 .. py:module:: src.flood_model.flooded_buildings
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
+   src.flood_model.flooded_buildings.create_building_database_views_if_not_exists
    src.flood_model.flooded_buildings.store_flooded_buildings_in_database
    src.flood_model.flooded_buildings.find_flooded_buildings
    src.flood_model.flooded_buildings.categorise_buildings_as_flooded
    src.flood_model.flooded_buildings.retrieve_building_outlines
    src.flood_model.flooded_buildings.polygonize_flooded_area
 
+
+Module Contents
+---------------
+
+.. py:function:: create_building_database_views_if_not_exists() -> None
+
+   Creates a geoserver workspace and building layers using database views if they do not currently exist.
+   These only need to be created once per database.
+
+   :returns: This function does not return anything.
+   :rtype: None
 
 
 .. py:function:: store_flooded_buildings_in_database(engine: sqlalchemy.engine.Engine, buildings: pandas.DataFrame, flood_model_id: int) -> None
