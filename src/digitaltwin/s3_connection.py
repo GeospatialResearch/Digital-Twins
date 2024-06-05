@@ -137,8 +137,12 @@ class S3Manager:
                 data = xr.load_dataset(body_object, engine="h5netcdf")
                 # Check if the dataset does not have a Coordinate Reference System (CRS) defined
                 if data.rio.crs is None:
-                    # Extract and convert dataset's CRS spatial reference to EPSG code
-                    epsg_code = CRS.from_string(data.crs.spatial_ref).to_epsg()
+                    try:
+                        # Extract and convert dataset's CRS spatial reference to EPSG code
+                        epsg_code = CRS.from_string(data.crs.spatial_ref).to_epsg()
+                    except AttributeError:
+                        # Extract and convert dataset's CRS spatial reference to EPSG code
+                        epsg_code = CRS.from_string(data.spatial_ref.crs_wkt).to_epsg()
                     # Write the EPSG code as the Coordinate Reference System (CRS) for the dataset
                     data.rio.write_crs(epsg_code, inplace=True)
         # If the file extension is neither ".pickle" nor ".nc"
