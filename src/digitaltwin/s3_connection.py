@@ -193,6 +193,25 @@ class S3Manager:
         # Log a message confirming successful storage in the S3 bucket
         log.info(f"Successfully stored `{s3_object_key}` in the S3 bucket.")
 
+    def retrieve_file(self, s3_object_key, file_path):
+        """
+        Downloads a S3 object to a local file.
+
+        ----------
+        s3_object_key : Union[str, pathlib.Path]
+            They key of the object to download from the S3 bucket. If a pathlib.Path object is provided,
+            it will be converted to a string representation.
+        file_path : Union[str, pathlib.Path]
+            The local file path where the downloaded S3 object will be saved.
+        """
+        # Check if the provided s3_object_key is a pathlib.Path object
+        if isinstance(s3_object_key, pathlib.Path):
+            # Convert the pathlib.Path object to a string representation
+            s3_object_key = s3_object_key.as_posix()
+        self.s3_client.download_file(Bucket=self.bucket_name, Key=s3_object_key, Filename=file_path)
+        # Log a message confirming successful download from the S3 bucket
+        log.info(f"Successfully downloaded `{s3_object_key}` from the S3 bucket.")
+
     def clear_bucket(self) -> None:
         """
         Clears the entire S3 bucket by removing all objects.
