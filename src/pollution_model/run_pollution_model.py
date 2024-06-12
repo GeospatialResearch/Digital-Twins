@@ -1,0 +1,340 @@
+"""
+This script takes in appropriate datasets as input and runs the MEDUSA2.0 model to calculate
+TSS (total suspended solids), TCu (total copper), DCu  (dissolved copper), TZn (total zinc), and DZn (dissolved zinc).
+"""
+
+import logging
+import math
+import os
+import pathlib
+import platform
+import subprocess
+from datetime import datetime
+from typing import Tuple, Union, Optional, TextIO
+from enum import Enum
+
+import geopandas as gpd
+import xarray as xr
+from newzealidar.utils import get_dem_by_geometry
+from sqlalchemy import insert
+from sqlalchemy.engine import Engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql import text
+
+from src import config
+from src.digitaltwin import setup_environment
+from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
+from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
+from src.flood_model.flooded_buildings import find_flooded_buildings
+from src.flood_model.flooded_buildings import store_flooded_buildings_in_database
+from src.flood_model.serve_model import add_model_output_to_geoserver
+
+log = logging.getLogger(__name__)
+
+Base = declarative_base()
+
+
+class SurfaceType(Enum):
+    ConcreteRoof = 1
+    CopperRoof = 2
+    GalvanisedRoof = 3
+    AsphaltRoad = 4
+    CarPark = 5
+
+
+def compute_tss_roof_road(surface_area,
+                          antecedent_dry_days,
+                          average_rain_intensity,
+                          event_duration,
+                          surface_type):
+    """
+    Calculates the total suspended solids (TSS) given the following parameters;
+
+    Parameters
+    ----------
+    surface_area: float
+        surface area of the given surface type
+    antecedent_dry_days: float
+        length of antecedent dry period (days)
+    average_rain_intensity: float
+        average rainfall intensity of the event (mm/h)
+    event_duration: float
+        duration of the rainfall event (h)
+    surface_type: int
+        the type of surface we are computing the TSS for
+
+    Returns
+    -------
+    float
+       Returns the TSS value from the given parameters
+    """
+    # Check to make sure we're working with a road or roof
+    if surface_type <= 0 or surface_type > 4:
+        log.error(
+            f"Surface type Road or Roof expected for TSS calculation, but received {SurfaceType(surface_type).name}.")
+
+    # Define the constants (Cf is the capacity factor).
+    # Values a1 to a3 are empirically derived coefficient values.
+    Cf = 0.25 if surface_type == 1 else 0.75
+    a1, a2, a3 = 0, 0, 0
+
+    first_term = surface_area * a1 * (antecedent_dry_days ** a2) * Cf
+    second_term = (1 - math.exp(a3 * average_rain_intensity * event_duration))
+
+    return first_term * second_term
+
+
+def total_metal_load_roof(surface_area,
+                          antecedent_dry_days,
+                          average_rain_intensity,
+                          event_duration,
+                          rainfall_ph,
+                          surface_type):
+    """
+    Calculates the total metal load for a given roof;
+
+    Parameters
+    ----------
+    surface_area: float
+        surface area of the given surface type
+    antecedent_dry_days: float
+        length of antecedent dry period (days)
+    average_rain_intensity: float
+        average rainfall intensity of the event (mm/h)
+    event_duration: float
+        duration of the rainfall event (h)
+    rainfall_ph: float
+        the acidity level of the rainfall
+    surface_type: int
+        the type of roof we are calculating the metal load for. Some coefficients depend on this.
+
+    Returns
+    -------
+    (float, float)
+       Returns the total copper and zinc loads from the given parameters (micrograms)
+    """
+    # Define constants in a list
+    b = []
+    c = []
+
+    match surface_type:
+        case 1:
+            b = [2, -2.8, 0.5, 0.217, 3.57, -0.09, 7, -3.73]
+            c = [50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
+        case 2:
+            b = [100, -2.8, 1.372, 0.217, 3.57, -1, 275, -3.3]
+            c = [-0.1, 2, 0.1, 0.01, 0.8, -1.3, -0.007, 0.056]
+        case 3:
+            b = [2, -2.8, 0.5, 0.217, 3.57, -0.09, 7, -3.73]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.990]
+        case _:
+            log.error(
+                f"Given surface type is not valid for computing total metal load. Needed a roof, but got {SurfaceType(surface_type).name}.")
+    # Define the initial and second stage metal concentrations (X_0 and X_est)
+    initial_copper_concentration = (b[0] * rainfall_ph ** b[1]) * (b[2] * antecedent_dry_days ** b[3]) * (
+            b[4] * average_rain_intensity ** b[5])
+    second_stage_copper = b[6] * rainfall_ph ** b[7]
+
+    initial_zinc_concentration = (c[0] * rainfall_ph + c[1]) * (c[2] * antecedent_dry_days ** c[3]) * (
+            c[4] * average_rain_intensity ** c[5])
+    second_stage_zinc = c[6] * rainfall_ph + c[7]
+
+    # Define Z as per experimental data
+    z = 0.75
+
+    # Define K, the wash off coefficient. TODO: find out what the k parameter should be
+    k = 1
+
+    # Initialise total copper and zinc loads as a guaranteed common factor
+    total_copper_load = initial_copper_concentration * surface_area * (1 / k)
+    total_zinc_load = initial_zinc_concentration * surface_area * (1 / k)
+
+    # Calculate total metal loads, where the method depends on if Z is less than event_duration
+    if event_duration <= z:
+        factor = (1 - math.exp(k * average_rain_intensity * event_duration))
+        total_zinc_load *= factor
+        total_copper_load *= factor
+    else:
+        factor = (1 - math.exp(k * average_rain_intensity * z))
+        bias_factor = average_rain_intensity * (event_duration - z)
+        total_zinc_load = total_zinc_load * factor + second_stage_zinc * surface_area * bias_factor
+        total_copper_load *= total_copper_load * factor + second_stage_copper * surface_area * bias_factor
+
+    return total_copper_load, total_zinc_load
+
+
+def total_metal_load_road_carpark(tss_surface):
+    """
+    Calculate the total metal load for car parks and roads from their total suspended solids.
+
+    Parameters
+    ----------
+    tss_surface: float
+        total suspended solids of this surface
+
+    Returns
+    -------
+    float, float
+       Returns the total copper and zinc loads for this surface
+    """
+    # Define constants
+    d = 0.441
+    e = 1.96
+    # Return total copper load, total zinc load
+    return tss_surface * d, tss_surface * e
+
+
+def dissolved_metal_load(total_copper_load, total_zinc_load, surface_type):
+    """
+        Calculate the dissolved metal load for all surfaces from their total suspended solids.
+
+        Parameters
+        ----------
+        total_copper_load: float
+            total copper load for the surface
+        total_zinc_load: float
+            total zinc load for the surface
+        surface_type: int
+            The type of surface that we are calculating this for
+
+        Returns
+        -------
+        float, float
+           Returns the dissolved copper and zinc loads for this surface
+        """
+    # Declare constants
+    f = 1
+    g = 1
+    # Set constant values based on surface type
+    match surface_type:
+        case 1:
+            f = 0.46
+            g = 0.67
+        case 2:
+            f = 0.77
+            g = 0.72
+        case 3:
+            f = 0.28
+            g = 0.43
+        case 4:
+            f = 0.28
+            g = 0.43
+        # TODO: Check that it is valid for car parks and asphalt roads to share parameters
+        case 5:
+            f = 0.28
+            g = 0.43
+        case _:
+            log.error(
+                f"Given surface type is not valid for computing dissolved metal load. {SurfaceType(surface_type).name}.")
+
+    return f * total_copper_load, g * total_zinc_load
+
+
+def run_pollution_model(
+        engine: Engine,
+        area_of_interest: gpd.GeoDataFrame) -> None:
+    """
+    Runs the pollution model for buildings (roofs), roads, and car parks. For each of these it calculates the TSS,
+    total metal load, and dissolved metal load.
+
+    Parameters
+    ----------
+    engine: Engine
+       The sqlalchemy database connection engine
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
+    all_buildings = []
+    all_roads = []
+    all_car_parks = []
+    # TODO: Get these values from a dataset
+    antecedent_dry_days = 1
+    average_rain_intensity = 1
+    event_duration = 1
+    rainfall_ph = 1
+
+    # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
+    # TODO: change forloop to something meaningful. For the time being, it is simply a placeholder.
+    for building in all_buildings:
+        surface_area = 1
+        surface_type = 1
+        curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
+                                         average_rain_intensity=average_rain_intensity, event_duration=event_duration,
+                                         surface_type=surface_type)
+        curr_total_copper, curr_total_zinc = total_metal_load_roof(surface_area=surface_area,
+                                                                   antecedent_dry_days=antecedent_dry_days,
+                                                                   average_rain_intensity=average_rain_intensity,
+                                                                   event_duration=event_duration,
+                                                                   rainfall_ph=rainfall_ph, surface_type=surface_type)
+        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
+                                                                          total_zinc_load=curr_total_zinc,
+                                                                          surface_type=surface_type)
+    # Run through all the roads and calculate TSS, total metal loads, and dissolved metal loads
+    for road in all_roads:
+        surface_area = 1
+        surface_type = 4
+        curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
+                                         average_rain_intensity=average_rain_intensity, event_duration=event_duration,
+                                         surface_type=surface_type)
+        curr_total_copper, curr_total_zinc = total_metal_load_road_carpark(curr_tss)
+        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
+                                                                          total_zinc_load=curr_total_zinc,
+                                                                          surface_type=surface_type)
+    # Run through all car parks and calculate TSS, total metal loads, and dissolved metal loads
+    for car_park in all_car_parks:
+        # TODO: Check if this is the appropriate way to calculate TSS for car parks
+        surface_area = 1
+        surface_type = 5
+        curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
+                                         average_rain_intensity=average_rain_intensity, event_duration=event_duration,
+                                         surface_type=surface_type)
+        curr_total_copper, curr_total_zinc = total_metal_load_road_carpark(curr_tss)
+        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
+                                                                          total_zinc_load=curr_total_zinc,
+                                                                          surface_type=surface_type)
+
+
+def main(selected_polygon_gdf: gpd.GeoDataFrame,
+         log_level: LogLevel = LogLevel.DEBUG):
+    """
+    Generate pollution model output for the requested catchment area, and incorporate the model output to GeoServer
+    for visualization.
+
+    Parameters
+    ----------
+    selected_polygon_gdf : gpd.GeoDataFrame
+        A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+    log_level : LogLevel = LogLevel.DEBUG
+        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+        The available logging levels and their corresponding numeric values are:
+        - LogLevel.CRITICAL (50)
+        - LogLevel.ERROR (40)
+        - LogLevel.WARNING (30)
+        - LogLevel.INFO (20)
+        - LogLevel.DEBUG (10)
+        - LogLevel.NOTSET (0)
+
+    Returns
+    -------
+    int
+       Returns the model id of the new flood_model produced
+    """
+    # Set up logging with the specified log level
+    setup_logging(log_level)
+    # Connect to the database
+    engine = setup_environment.get_database()
+    # Get catchment area
+    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
+
+    # Run the pollution model
+    run_pollution_model(engine=engine, area_of_interest=catchment_area)
+    return log_level
+
+
+if __name__ == "__main__":
+    main(log_level=LogLevel.DEBUG)
