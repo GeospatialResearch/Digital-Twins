@@ -14,6 +14,7 @@ from typing import Tuple, Union, Optional, TextIO
 from enum import Enum
 
 import geopandas as gpd
+import sqlalchemy
 import xarray as xr
 from newzealidar.utils import get_dem_by_geometry
 from sqlalchemy import insert
@@ -39,7 +40,7 @@ class SurfaceType(Enum):
     CopperRoof = 2
     GalvanisedRoof = 3
     AsphaltRoad = 4
-    CarPark = 5
+    #CarPark = 5 - CarParks are classified the same as roads
 
 
 def compute_tss_roof_road(surface_area,
@@ -219,10 +220,6 @@ def dissolved_metal_load(total_copper_load, total_zinc_load, surface_type):
         case 4:
             f = 0.28
             g = 0.43
-        # TODO: Check that it is valid for car parks and asphalt roads to share parameters
-        case 5:
-            f = 0.28
-            g = 0.43
         case _:
             log.error(
                 f"Given surface type is not valid for computing dissolved metal load. {SurfaceType(surface_type).name}.")
@@ -230,12 +227,31 @@ def dissolved_metal_load(total_copper_load, total_zinc_load, surface_type):
     return f * total_copper_load, g * total_zinc_load
 
 
-def run_pollution_model(
+def get_building_information(engine: Engine):
+    # Select all relevant information from the appropriate table
+    # TODO: Update this when the database has been created
+    query = text("SELECT building_id FROM nz_building_outlines")
+    # Execute the SQL query
+    result = engine.execute(query).fetchall()
+    new_result = []
+    for item in result:
+        # TODO: Update this when the real database has been created
+        # Append appropriate dimensional data to the list
+        new_result.append([item[0], 1, 1])
+    print(new_result)
+    # Return the relevant data
+    return xr.DataArray(new_result, dims=("BuildingID", "SurfaceArea", "SurfaceType"))
+
+def run_pollution_model_rain_event(
         engine: Engine,
-        area_of_interest: gpd.GeoDataFrame) -> None:
+        area_of_interest: gpd.GeoDataFrame,
+        antecedent_dry_days: float,
+        average_rain_intensity: float,
+        event_duration: float,
+        rainfall_ph: float) -> None:
     """
     Runs the pollution model for buildings (roofs), roads, and car parks. For each of these it calculates the TSS,
-    total metal load, and dissolved metal load.
+    total metal load, and dissolved metal load. This runs for one rain event.
 
     Parameters
     ----------
@@ -243,20 +259,25 @@ def run_pollution_model(
        The sqlalchemy database connection engine
     area_of_interest : gpd.GeoDataFrame
         A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
+    antecedent_dry_days: float
+        The number of dry days between rainfall events.
+    average_rain_intensity: float
+        The intensity of the rainfall event in mm/h.
+    event_duration: float
+        The number of hours of the rainfall event.
+    rainfall_ph: float
+        The pH level of the rainfall, a measure of acidity.
 
     Returns
     -------
     None
         This function does not return any value.
     """
-    all_buildings = []
+    building_data = []
+    # TODO: Get these values from a dataset
+    all_buildings = xr.DataArray(dims=("BuildingID", "SurfaceArea", "SurfaceType"))
     all_roads = []
     all_car_parks = []
-    # TODO: Get these values from a dataset
-    antecedent_dry_days = 1
-    average_rain_intensity = 1
-    event_duration = 1
-    rainfall_ph = 1
 
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
     # TODO: change forloop to something meaningful. For the time being, it is simply a placeholder.
@@ -287,7 +308,7 @@ def run_pollution_model(
                                                                           surface_type=surface_type)
     # Run through all car parks and calculate TSS, total metal loads, and dissolved metal loads
     for car_park in all_car_parks:
-        # TODO: Check if this is the appropriate way to calculate TSS for car parks
+        # Note: car parks are simply treated as roads.
         surface_area = 1
         surface_type = 5
         curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
@@ -300,7 +321,11 @@ def run_pollution_model(
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
-         log_level: LogLevel = LogLevel.DEBUG):
+         log_level: LogLevel = LogLevel.DEBUG,
+         antecedent_dry_days: float = 1,
+         average_rain_intensity: float = 1,
+         event_duration: float = 1,
+         rainfall_ph: float = 7):
     """
     Generate pollution model output for the requested catchment area, and incorporate the model output to GeoServer
     for visualization.
@@ -318,6 +343,14 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
+    antecedent_dry_days: float
+        The number of dry days between rainfall events.
+    average_rain_intensity: float
+        The intensity of the rainfall event in mm/h.
+    event_duration: float
+        The number of hours of the rainfall event.
+    rainfall_ph: float
+        The pH level of the rainfall, a measure of acidity.
 
     Returns
     -------
@@ -331,10 +364,24 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Get catchment area
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
 
+    # DEBUGGING:
+    print(get_building_information(engine))
+
     # Run the pollution model
-    run_pollution_model(engine=engine, area_of_interest=catchment_area)
+    run_pollution_model_rain_event(engine=engine, area_of_interest=catchment_area,
+                                   antecedent_dry_days=antecedent_dry_days,
+                                   average_rain_intensity=average_rain_intensity, event_duration=event_duration,
+                                   rainfall_ph=rainfall_ph)
     return log_level
 
 
 if __name__ == "__main__":
-    main(log_level=LogLevel.DEBUG)
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    main(
+        selected_polygon_gdf=sample_polygon,
+        log_level=LogLevel.DEBUG,
+        antecedent_dry_days=1,
+        average_rain_intensity=1,
+        event_duration=1,
+        rainfall_ph=7
+    )
