@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.river_inflows`
-=============================================================
+src.dynamic_boundary_conditions.river.river_inflows
+===================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.river_inflows
 
@@ -10,12 +10,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_inflows.log
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -24,18 +28,10 @@ Functions
    src.dynamic_boundary_conditions.river.river_inflows.get_rec_inflows_with_input_points
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.river_inflows.log
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: get_elevations_near_rec_entry_point(rec_inflows_row: pandas.Series, hydro_dem: xarray.Dataset) -> geopandas.GeoDataFrame
 

@@ -1,30 +1,38 @@
-:py:mod:`src`
-=============
+src
+===
 
 .. py:module:: src
 
 
 Subpackages
 -----------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 3
 
-   digitaltwin/index.rst
-   dynamic_boundary_conditions/index.rst
-   flood_model/index.rst
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/src/digitaltwin/index
+   /autoapi/src/dynamic_boundary_conditions/index
+   /autoapi/src/flood_model/index
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   app/index.rst
-   config/index.rst
-   run_all/index.rst
-   tasks/index.rst
+   /autoapi/src/app/index
+   /autoapi/src/config/index
+   /autoapi/src/run_all/index
+   /autoapi/src/tasks/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.__version__
 
 
 Package Contents
@@ -33,5 +41,4 @@ Package Contents
 .. py:data:: __version__
    :value: '0.1.0'
 
-   
 

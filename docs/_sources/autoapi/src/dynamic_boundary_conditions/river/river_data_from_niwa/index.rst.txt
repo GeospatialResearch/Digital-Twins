@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.river_data_from_niwa`
-====================================================================
+src.dynamic_boundary_conditions.river.river_data_from_niwa
+==========================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.river_data_from_niwa
 
@@ -9,33 +9,8 @@
 
 
 
-Module Contents
----------------
-
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts
-
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa
-
-
-
 Attributes
-~~~~~~~~~~
+----------
 
 .. autoapisummary::
 
@@ -43,19 +18,53 @@ Attributes
    src.dynamic_boundary_conditions.river.river_data_from_niwa.REC_API_URL
 
 
-.. py:data:: log
+Classes
+-------
 
-   
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.get_nz_boundary
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa
+
+
+Module Contents
+---------------
+
+.. py:function:: get_nz_boundary(engine: sqlalchemy.engine.Engine, to_crs: int = 2193) -> geopandas.GeoDataFrame
+
+   Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param to_crs: Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.
+   :type to_crs: int = 2193
+
+   :returns: A GeoDataFrame representing the boundary of New Zealand in the specified CRS.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:data:: log
 
 .. py:data:: REC_API_URL
    :value: 'https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2'
 
-   
 
 .. py:class:: RecordCounts
 
-
    Bases: :py:obj:`NamedTuple`
+
 
    Represents the record counts of the REC feature layer.
 
@@ -71,15 +80,13 @@ Attributes
 
       :type: int
 
-   .. py:attribute:: max_record_count
-      :type: int
 
-      
+   .. py:attribute:: max_record_count
+      :type:  int
+
 
    .. py:attribute:: total_record_count
-      :type: int
-
-      
+      :type:  int
 
 
 .. py:function:: get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts
@@ -111,6 +118,7 @@ Attributes
 .. py:function:: fetch_rec_data(session: aiohttp.ClientSession, query_param: Dict[str, Union[str, int]], url: str = f'{REC_API_URL}/query') -> geopandas.GeoDataFrame
    :async:
 
+
    Fetch REC data using the provided query parameters within a single API call.
 
    :param session: An instance of `aiohttp.ClientSession` used for making HTTP requests.
@@ -126,6 +134,7 @@ Attributes
 
 .. py:function:: fetch_rec_data_for_nz(query_param_list: List[Dict[str, Union[str, int]]], url: str = REC_API_URL) -> geopandas.GeoDataFrame
    :async:
+
 
    Iterate over the list of API query parameters to fetch REC data in New Zealand.
 

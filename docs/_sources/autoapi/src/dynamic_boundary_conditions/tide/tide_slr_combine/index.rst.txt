@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.tide.tide_slr_combine`
-===============================================================
+src.dynamic_boundary_conditions.tide.tide_slr_combine
+=====================================================
 
 .. py:module:: src.dynamic_boundary_conditions.tide.tide_slr_combine
 
@@ -10,12 +10,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.tide_slr_combine.log
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -26,18 +30,10 @@ Functions
    src.dynamic_boundary_conditions.tide.tide_slr_combine.get_combined_tide_slr_data
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.tide.tide_slr_combine.log
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: split_slr_measurementname_column(slr_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
 

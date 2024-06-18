@@ -1,5 +1,5 @@
-:py:mod:`src.flood_model.bg_flood_model`
-========================================
+src.flood_model.bg_flood_model
+==============================
 
 .. py:module:: src.flood_model.bg_flood_model
 
@@ -10,15 +10,37 @@
 
 
 
-Module Contents
----------------
-
-
-Functions
-~~~~~~~~~
+Attributes
+----------
 
 .. autoapisummary::
 
+   src.flood_model.bg_flood_model.log
+   src.flood_model.bg_flood_model.Base
+   src.flood_model.bg_flood_model.sample_polygon
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.flood_model.bg_flood_model.BGFloodModelOutput
+   src.flood_model.bg_flood_model.LogLevel
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.flood_model.bg_flood_model.create_table
+   src.flood_model.bg_flood_model.check_table_exists
+   src.flood_model.bg_flood_model.setup_logging
+   src.flood_model.bg_flood_model.get_catchment_area
+   src.flood_model.bg_flood_model.find_flooded_buildings
+   src.flood_model.bg_flood_model.store_flooded_buildings_in_database
+   src.flood_model.bg_flood_model.add_model_output_to_geoserver
    src.flood_model.bg_flood_model.get_valid_bg_flood_dir
    src.flood_model.bg_flood_model.get_new_model_output_path
    src.flood_model.bg_flood_model.get_model_output_metadata
@@ -34,24 +56,248 @@ Functions
    src.flood_model.bg_flood_model.main
 
 
+Module Contents
+---------------
 
-Attributes
-~~~~~~~~~~
+.. py:class:: BGFloodModelOutput
 
-.. autoapisummary::
+   Bases: :py:obj:`Base`
 
-   src.flood_model.bg_flood_model.log
-   src.flood_model.bg_flood_model.Base
-   src.flood_model.bg_flood_model.sample_polygon
+
+   Class representing the 'bg_flood_model_output' table.
+
+   .. attribute:: __tablename__
+
+      Name of the database table.
+
+      :type: str
+
+   .. attribute:: unique_id
+
+      Unique identifier for each entry (primary key).
+
+      :type: int
+
+   .. attribute:: file_name
+
+      Name of the flood model output file.
+
+      :type: str
+
+   .. attribute:: file_path
+
+      Path to the flood model output file.
+
+      :type: str
+
+   .. attribute:: created_at
+
+      Timestamp indicating when the output was created.
+
+      :type: datetime
+
+   .. attribute:: geometry
+
+      Geometric representation of the catchment area coverage.
+
+      :type: Polygon
+
+
+   .. py:attribute:: __tablename__
+      :value: 'bg_flood_model_output'
+
+
+
+   .. py:attribute:: unique_id
+
+
+   .. py:attribute:: file_name
+
+
+   .. py:attribute:: file_path
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: geometry
+
+
+.. py:function:: create_table(engine: sqlalchemy.engine.Engine, table: Base) -> None
+
+   Create a table in the database if it doesn't already exist, using the provided engine.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param table: Class representing the table to create.
+   :type table: Base
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: check_table_exists(engine: sqlalchemy.engine.Engine, table_name: str, schema: str = 'public') -> bool
+
+   Check if a table exists in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param table_name: The name of the table to check for existence.
+   :type table_name: str
+   :param schema: The name of the schema where the table resides. Defaults to "public".
+   :type schema: str = "public"
+
+   :returns: True if the table exists, False otherwise.
+   :rtype: bool
+
+
+.. py:class:: LogLevel
+
+   Bases: :py:obj:`enum.IntEnum`
+
+
+   Enum class representing different logging levels mapped to their corresponding numeric values from the
+   logging library.
+
+   .. attribute:: CRITICAL
+
+      The critical logging level. Corresponds to logging.CRITICAL (50).
+
+      :type: int
+
+   .. attribute:: ERROR
+
+      The error logging level. Corresponds to logging.ERROR (40).
+
+      :type: int
+
+   .. attribute:: WARNING
+
+      The warning logging level. Corresponds to logging.WARNING (30).
+
+      :type: int
+
+   .. attribute:: INFO
+
+      The info logging level. Corresponds to logging.INFO (20).
+
+      :type: int
+
+   .. attribute:: DEBUG
+
+      The debug logging level. Corresponds to logging.DEBUG (10).
+
+      :type: int
+
+   .. attribute:: NOTSET
+
+      The not-set logging level. Corresponds to logging.NOTSET (0).
+
+      :type: int
+
+
+   .. py:attribute:: CRITICAL
+
+
+   .. py:attribute:: ERROR
+
+
+   .. py:attribute:: WARNING
+
+
+   .. py:attribute:: INFO
+
+
+   .. py:attribute:: DEBUG
+
+
+   .. py:attribute:: NOTSET
+
+
+.. py:function:: setup_logging(log_level: LogLevel = LogLevel.INFO) -> None
+
+   Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
+   loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
+   execution of the function in the script.
+
+   :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+                     The available logging levels and their corresponding numeric values are:
+                     - LogLevel.CRITICAL (50)
+                     - LogLevel.ERROR (40)
+                     - LogLevel.WARNING (30)
+                     - LogLevel.INFO (20)
+                     - LogLevel.DEBUG (10)
+                     - LogLevel.NOTSET (0)
+   :type log_level: LogLevel = LogLevel.DEBUG
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:function:: get_catchment_area(catchment_area: geopandas.GeoDataFrame, to_crs: int = 2193) -> geopandas.GeoDataFrame
+
+   Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param to_crs: Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
+   :type to_crs: int = 2193
+
+   :returns: A GeoDataFrame representing the catchment area with the transformed CRS.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: find_flooded_buildings(engine: sqlalchemy.engine.Engine, area_of_interest: geopandas.GeoDataFrame, flood_model_output_path: pathlib.Path, flood_depth_threshold: float) -> pandas.DataFrame
+
+   Creates a building DataFrame with attribute "is_flooded",
+   depending on if the area for each building is flooded to a depth greater than or equal to flood_depth_threshold.
+   the index, building_outline_id, matches building_outline_id from nz_building_outline table.
+
+   :param engine: The sqlalchemy database connection engine
+   :type engine: Engine
+   :param area_of_interest: A GeoDataFrame with a polygon specifying the area to get buildings for.
+   :type area_of_interest: gpd.GeoDataFrame
+   :param flood_model_output_path: Path to the flood model output file to be read.
+   :type flood_model_output_path: pathlib.Path
+   :param flood_depth_threshold: The minimum depth required to designate a pixel in the raster as flooded.
+   :type flood_depth_threshold: float
+
+   :returns: A pd.DataFrame specifying if each building is flooded or not.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: store_flooded_buildings_in_database(engine: sqlalchemy.engine.Engine, buildings: pandas.DataFrame, flood_model_id: int) -> None
+
+   Appends the details of which buildings are flooded for a given flood_model_id to the database
+
+   :param engine: The sqlalchemy database connection engine
+   :type engine: Engine
+   :param buildings: DataFrame containing a mapping of building_ids to their flood status for the current model run
+   :type buildings: pd.DataFrame
+   :param flood_model_id: The id of the current flood model run, to associate with the building flood data.
+   :type flood_model_id: float
+
+   :returns: This function does not return anything
+   :rtype: None
+
+
+.. py:function:: add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int) -> None
+
+   Adds the model output max depths to GeoServer, ready for serving.
+   The GeoServer layer name will be f"Output_{model_id}" and the workspace name will be "{db_name}-dt-model-outputs"
+
+   :param model_output_path: The file path to the model output to serve.
+   :type model_output_path: pathlib.Path
+   :param model_id: The database id of the model output.
+   :type model_id: int
+
+   :returns: This function does not return anything
+   :rtype: None
 
 
 .. py:data:: log
 
-   
-
 .. py:data:: Base
-
-   
 
 .. py:function:: get_valid_bg_flood_dir() -> pathlib.Path
 
@@ -282,6 +528,4 @@ Attributes
 
 
 .. py:data:: sample_polygon
-
-   
 

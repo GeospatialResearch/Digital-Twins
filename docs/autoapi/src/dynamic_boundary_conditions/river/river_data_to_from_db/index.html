@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,10 +79,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.river_data_to_from_db</span></code></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src.dynamic_boundary_conditions</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.dynamic_boundary_conditions.river</a></li>
+      <li class="breadcrumb-item active">src.dynamic_boundary_conditions.river.river_data_to_from_db</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/river/river_data_to_from_db/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,15 +93,29 @@
            <div itemprop="articleBody">
              
   <section id="module-src.dynamic_boundary_conditions.river.river_data_to_from_db">
-<span id="src-dynamic-boundary-conditions-river-river-data-to-from-db"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.river.river_data_to_from_db" title="src.dynamic_boundary_conditions.river.river_data_to_from_db"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.river.river_data_to_from_db</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.river.river_data_to_from_db" title="Link to this heading"></a></h1>
+<span id="src-dynamic-boundary-conditions-river-river-data-to-from-db"></span><h1>src.dynamic_boundary_conditions.river.river_data_to_from_db<a class="headerlink" href="#module-src.dynamic_boundary_conditions.river.river_data_to_from_db" title="Link to this heading"></a></h1>
 <p>This script handles storing REC data in the database, and retrieving REC data enriched with sea-draining catchment
 information from the database.</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.log" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.check_table_exists" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.check_table_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_table_exists</span></code></a>(→ bool)</p></td>
+<td><p>Check if a table exists in the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.add_network_exclusions_to_db" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.add_network_exclusions_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_network_exclusions_to_db</span></code></a>(→ None)</p></td>
+<td><p>Add REC geometries that are excluded from the river network for the current run in the database.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_backup_rec_data_from_niwa</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Loads REC data from the NIWA REC dataset.</p></td>
 </tr>
@@ -116,15 +131,51 @@ information from the database.</p>
 </tbody>
 </table>
 </section>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.log" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_to_from_db.check_table_exists">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_to_from_db.</span></span><span class="sig-name descname"><span class="pre">check_table_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'public'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.check_table_exists" title="Link to this definition"></a></dt>
+<dd><p>Check if a table exists in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table to check for existence.</p></li>
+<li><p><strong>schema</strong> (<em>str = &quot;public&quot;</em>) – The name of the schema where the table resides. Defaults to “public”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the table exists, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_to_from_db.add_network_exclusions_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_to_from_db.</span></span><span class="sig-name descname"><span class="pre">add_network_exclusions_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec_network_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec_network_exclusions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclusion_cause</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.add_network_exclusions_to_db" title="Link to this definition"></a></dt>
+<dd><p>Add REC geometries that are excluded from the river network for the current run in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>rec_network_id</strong> (<em>int</em>) – An identifier for the river network associated with the current run.</p></li>
+<li><p><strong>rec_network_exclusions</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame containing the REC geometries that are excluded from the river network for the current run.</p></li>
+<li><p><strong>exclusion_cause</strong> (<em>str</em>) – Cause of exclusion, i.e., the reason why the REC river geometry was excluded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py data">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_to_from_db.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_to_from_db.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.log" title="Link to this definition"></a></dt>
@@ -209,7 +260,6 @@ that identifies the associated sea-draining catchment for each REC geometry.</p>
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 

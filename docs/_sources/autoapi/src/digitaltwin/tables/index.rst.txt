@@ -1,5 +1,5 @@
-:py:mod:`src.digitaltwin.tables`
-================================
+src.digitaltwin.tables
+======================
 
 .. py:module:: src.digitaltwin.tables
 
@@ -9,11 +9,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.digitaltwin.tables.Base
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -25,9 +30,8 @@ Classes
    src.digitaltwin.tables.BuildingFloodStatus
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -36,23 +40,15 @@ Functions
    src.digitaltwin.tables.execute_query
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.digitaltwin.tables.Base
-
+Module Contents
+---------------
 
 .. py:data:: Base
 
-   
-
 .. py:class:: GeospatialLayers
 
-
    Bases: :py:obj:`Base`
+
 
    Class representing the 'geospatial_layers' table.
 
@@ -104,49 +100,40 @@ Attributes
 
       :type: str
 
+
    .. py:attribute:: __tablename__
       :value: 'geospatial_layers'
 
-      
+
 
    .. py:attribute:: unique_id
 
-      
 
    .. py:attribute:: data_provider
 
-      
 
    .. py:attribute:: layer_id
 
-      
 
    .. py:attribute:: table_name
 
-      
 
    .. py:attribute:: unique_column_name
 
-      
 
    .. py:attribute:: coverage_area
 
-      
 
    .. py:attribute:: url
 
-      
 
    .. py:attribute:: __table_args__
-      :value: ()
-
-      
 
 
 .. py:class:: UserLogInfo
 
-
    Bases: :py:obj:`Base`
+
 
    Class representing the 'user_log_information' table.
 
@@ -180,32 +167,28 @@ Attributes
 
       :type: Polygon
 
+
    .. py:attribute:: __tablename__
       :value: 'user_log_information'
 
-      
+
 
    .. py:attribute:: unique_id
 
-      
 
    .. py:attribute:: source_table_list
 
-      
 
    .. py:attribute:: created_at
 
-      
 
    .. py:attribute:: geometry
-
-      
 
 
 .. py:class:: RiverNetworkExclusions
 
-
    Bases: :py:obj:`Base`
+
 
    Class representing the 'rec_network_exclusions' table.
 
@@ -239,37 +222,31 @@ Attributes
 
       :type: LineString
 
+
    .. py:attribute:: __tablename__
       :value: 'rec_network_exclusions'
 
-      
+
 
    .. py:attribute:: rec_network_id
 
-      
 
    .. py:attribute:: objectid
 
-      
 
    .. py:attribute:: exclusion_cause
 
-      
 
    .. py:attribute:: geometry
 
-      
 
    .. py:attribute:: __table_args__
-      :value: ()
-
-      
 
 
 .. py:class:: RiverNetwork
 
-
    Bases: :py:obj:`Base`
+
 
    Class representing the 'rec_network' table.
 
@@ -309,36 +286,31 @@ Attributes
 
       :type: Polygon
 
+
    .. py:attribute:: __tablename__
       :value: 'rec_network'
 
-      
+
 
    .. py:attribute:: rec_network_id
 
-      
 
    .. py:attribute:: network_path
 
-      
 
    .. py:attribute:: network_data_path
 
-      
 
    .. py:attribute:: created_at
 
-      
 
    .. py:attribute:: geometry
-
-      
 
 
 .. py:class:: BGFloodModelOutput
 
-
    Bases: :py:obj:`Base`
+
 
    Class representing the 'bg_flood_model_output' table.
 
@@ -378,36 +350,31 @@ Attributes
 
       :type: Polygon
 
+
    .. py:attribute:: __tablename__
       :value: 'bg_flood_model_output'
 
-      
+
 
    .. py:attribute:: unique_id
 
-      
 
    .. py:attribute:: file_name
 
-      
 
    .. py:attribute:: file_path
 
-      
 
    .. py:attribute:: created_at
 
-      
 
    .. py:attribute:: geometry
-
-      
 
 
 .. py:class:: BuildingFloodStatus
 
-
    Bases: :py:obj:`Base`
+
 
    Class representing the 'building_flood_status' table.
    Represents if a building is flooded for a given flood model output
@@ -442,26 +409,22 @@ Attributes
 
       :type: int.
 
+
    .. py:attribute:: __tablename__
       :value: 'building_flood_status'
 
-      
+
 
    .. py:attribute:: unique_id
 
-      
 
    .. py:attribute:: building_outline_id
 
-      
 
    .. py:attribute:: is_flooded
 
-      
 
    .. py:attribute:: flood_model_id
-
-      
 
 
 .. py:function:: create_table(engine: sqlalchemy.engine.Engine, table: Base) -> None

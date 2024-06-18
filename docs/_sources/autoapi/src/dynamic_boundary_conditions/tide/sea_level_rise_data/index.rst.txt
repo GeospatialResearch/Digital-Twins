@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.tide.sea_level_rise_data`
-==================================================================
+src.dynamic_boundary_conditions.tide.sea_level_rise_data
+========================================================
 
 .. py:module:: src.dynamic_boundary_conditions.tide.sea_level_rise_data
 
@@ -11,12 +11,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.sea_level_rise_data.log
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -27,18 +31,10 @@ Functions
    src.dynamic_boundary_conditions.tide.sea_level_rise_data.get_slr_data_from_db
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.tide.sea_level_rise_data.log
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None
 

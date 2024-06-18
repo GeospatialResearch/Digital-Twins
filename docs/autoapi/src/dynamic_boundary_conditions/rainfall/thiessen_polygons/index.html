@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,10 +79,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons</span></code></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src.dynamic_boundary_conditions</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.dynamic_boundary_conditions.rainfall</a></li>
+      <li class="breadcrumb-item active">src.dynamic_boundary_conditions.rainfall.thiessen_polygons</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/rainfall/thiessen_polygons/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,32 +93,11 @@
            <div itemprop="articleBody">
              
   <section id="module-src.dynamic_boundary_conditions.rainfall.thiessen_polygons">
-<span id="src-dynamic-boundary-conditions-rainfall-thiessen-polygons"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rainfall.thiessen_polygons" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.thiessen_polygons" title="Link to this heading"></a></h1>
+<span id="src-dynamic-boundary-conditions-rainfall-thiessen-polygons"></span><h1>src.dynamic_boundary_conditions.rainfall.thiessen_polygons<a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.thiessen_polygons" title="Link to this heading"></a></h1>
 <p>Calculate the area covered by each rainfall site throughout New Zealand and store it in the database.
 Retrieve the coverage areas (Thiessen polygons) for all rainfall sites located within the catchment area.</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_sites_within_aoi" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_sites_within_aoi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_within_aoi</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Get all rainfall sites within the area of interest from the database and return the required data as a</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_calculator" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_calculator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_calculator</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Create Thiessen polygons for rainfall sites within the area of interest and calculate the area covered by each</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_to_db</span></code></a>(→ None)</p></td>
-<td><p>Store the data representing the Thiessen polygons, site information, and the area covered by</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Get rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.log" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
@@ -125,6 +105,51 @@ Retrieve the coverage areas (Thiessen polygons) for all rainfall sites located w
 </tr>
 </tbody>
 </table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_nz_boundary" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_nz_boundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nz_boundary</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_sites_within_aoi" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_sites_within_aoi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_within_aoi</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get all rainfall sites within the area of interest from the database and return the required data as a</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_calculator" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_calculator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_calculator</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Create Thiessen polygons for rainfall sites within the area of interest and calculate the area covered by each</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_to_db</span></code></a>(→ None)</p></td>
+<td><p>Store the data representing the Thiessen polygons, site information, and the area covered by</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db" title="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.thiessen_polygons_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thiessen_polygons_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_nz_boundary">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">get_nz_boundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.get_nz_boundary" title="Link to this definition"></a></dt>
+<dd><p>Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>to_crs</strong> (<em>int = 2193</em>) – Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame representing the boundary of New Zealand in the specified CRS.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py data">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.thiessen_polygons.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.thiessen_polygons.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.thiessen_polygons.log" title="Link to this definition"></a></dt>
@@ -218,7 +243,6 @@ are within the catchment area.</p>
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 

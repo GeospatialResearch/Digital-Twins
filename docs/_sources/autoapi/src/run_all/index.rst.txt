@@ -1,5 +1,5 @@
-:py:mod:`src.run_all`
-=====================
+src.run_all
+===========
 
 .. py:module:: src.run_all
 
@@ -9,26 +9,199 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.run_all.DEFAULT_MODULES_TO_PARAMETERS
+   src.run_all.sample_polygon
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.run_all.LogLevel
+   src.run_all.RainInputType
+   src.run_all.HyetoMethod
+   src.run_all.BoundType
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    src.run_all.main
 
 
+Module Contents
+---------------
 
-Attributes
-~~~~~~~~~~
+.. py:class:: LogLevel
 
-.. autoapisummary::
+   Bases: :py:obj:`enum.IntEnum`
 
-   src.run_all.DEFAULT_MODULES_TO_PARAMETERS
-   src.run_all.sample_polygon
+
+   Enum class representing different logging levels mapped to their corresponding numeric values from the
+   logging library.
+
+   .. attribute:: CRITICAL
+
+      The critical logging level. Corresponds to logging.CRITICAL (50).
+
+      :type: int
+
+   .. attribute:: ERROR
+
+      The error logging level. Corresponds to logging.ERROR (40).
+
+      :type: int
+
+   .. attribute:: WARNING
+
+      The warning logging level. Corresponds to logging.WARNING (30).
+
+      :type: int
+
+   .. attribute:: INFO
+
+      The info logging level. Corresponds to logging.INFO (20).
+
+      :type: int
+
+   .. attribute:: DEBUG
+
+      The debug logging level. Corresponds to logging.DEBUG (10).
+
+      :type: int
+
+   .. attribute:: NOTSET
+
+      The not-set logging level. Corresponds to logging.NOTSET (0).
+
+      :type: int
+
+
+   .. py:attribute:: CRITICAL
+
+
+   .. py:attribute:: ERROR
+
+
+   .. py:attribute:: WARNING
+
+
+   .. py:attribute:: INFO
+
+
+   .. py:attribute:: DEBUG
+
+
+   .. py:attribute:: NOTSET
+
+
+.. py:class:: RainInputType
+
+   Bases: :py:obj:`enum.StrEnum`
+
+
+   Enum class representing different types of rain input used in the BG-Flood Model.
+
+   .. attribute:: UNIFORM
+
+      Spatially uniform rain input.
+
+      :type: str
+
+   .. attribute:: VARYING
+
+      Spatially varying rain input.
+
+      :type: str
+
+
+   .. py:attribute:: UNIFORM
+      :value: 'uniform'
+
+
+
+   .. py:attribute:: VARYING
+      :value: 'varying'
+
+
+
+.. py:class:: HyetoMethod
+
+   Bases: :py:obj:`enum.StrEnum`
+
+
+   Enum class representing different hyetograph methods.
+
+   .. attribute:: ALT_BLOCK
+
+      Alternating Block Method.
+
+      :type: str
+
+   .. attribute:: CHICAGO
+
+      Chicago Method.
+
+      :type: str
+
+
+   .. py:attribute:: ALT_BLOCK
+      :value: 'alt_block'
+
+
+
+   .. py:attribute:: CHICAGO
+      :value: 'chicago'
+
+
+
+.. py:class:: BoundType
+
+   Bases: :py:obj:`enum.StrEnum`
+
+
+   Enum class representing different types of estimates used in river flow scenarios.
+
+   .. attribute:: LOWER
+
+      Lower bound of a confidence interval.
+
+      :type: str
+
+   .. attribute:: MIDDLE
+
+      Point estimate or sample mean.
+
+      :type: str
+
+   .. attribute:: UPPER
+
+      Upper bound of a confidence interval.
+
+      :type: str
+
+
+   .. py:attribute:: LOWER
+      :value: 'lower'
+
+
+
+   .. py:attribute:: MIDDLE
+      :value: 'middle'
+
+
+
+   .. py:attribute:: UPPER
+      :value: 'upper'
+
 
 
 .. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, modules_to_parameters: Dict[types.ModuleType, Dict[str, Union[str, int, float, bool, None, enum.Enum]]]) -> None
@@ -55,9 +228,5 @@ Attributes
 
 .. py:data:: DEFAULT_MODULES_TO_PARAMETERS
 
-   
-
 .. py:data:: sample_polygon
-
-   
 

@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.hydrograph`
-==========================================================
+src.dynamic_boundary_conditions.river.hydrograph
+================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.hydrograph
 
@@ -10,12 +10,24 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.hydrograph.log
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.hydrograph.BoundType
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -25,18 +37,51 @@ Functions
    src.dynamic_boundary_conditions.river.hydrograph.get_hydrograph_data
 
 
+Module Contents
+---------------
 
-Attributes
-~~~~~~~~~~
+.. py:class:: BoundType
 
-.. autoapisummary::
+   Bases: :py:obj:`enum.StrEnum`
 
-   src.dynamic_boundary_conditions.river.hydrograph.log
+
+   Enum class representing different types of estimates used in river flow scenarios.
+
+   .. attribute:: LOWER
+
+      Lower bound of a confidence interval.
+
+      :type: str
+
+   .. attribute:: MIDDLE
+
+      Point estimate or sample mean.
+
+      :type: str
+
+   .. attribute:: UPPER
+
+      Upper bound of a confidence interval.
+
+      :type: str
+
+
+   .. py:attribute:: LOWER
+      :value: 'lower'
+
+
+
+   .. py:attribute:: MIDDLE
+      :value: 'middle'
+
+
+
+   .. py:attribute:: UPPER
+      :value: 'upper'
+
 
 
 .. py:data:: log
-
-   
 
 .. py:function:: clean_rec_inflow_data(rec_inflows_w_input_points: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
 

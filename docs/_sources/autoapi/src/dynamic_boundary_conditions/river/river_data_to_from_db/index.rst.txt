@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.river_data_to_from_db`
-=====================================================================
+src.dynamic_boundary_conditions.river.river_data_to_from_db
+===========================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.river_data_to_from_db
 
@@ -10,33 +10,63 @@
 
 
 
-Module Contents
----------------
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa
-   src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db
-   src.dynamic_boundary_conditions.river.river_data_to_from_db.get_sdc_data_from_db
-   src.dynamic_boundary_conditions.river.river_data_to_from_db.get_rec_data_with_sdc_from_db
-
-
-
 Attributes
-~~~~~~~~~~
+----------
 
 .. autoapisummary::
 
    src.dynamic_boundary_conditions.river.river_data_to_from_db.log
 
 
-.. py:data:: log
+Functions
+---------
 
-   
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.check_table_exists
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.add_network_exclusions_to_db
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.get_sdc_data_from_db
+   src.dynamic_boundary_conditions.river.river_data_to_from_db.get_rec_data_with_sdc_from_db
+
+
+Module Contents
+---------------
+
+.. py:function:: check_table_exists(engine: sqlalchemy.engine.Engine, table_name: str, schema: str = 'public') -> bool
+
+   Check if a table exists in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param table_name: The name of the table to check for existence.
+   :type table_name: str
+   :param schema: The name of the schema where the table resides. Defaults to "public".
+   :type schema: str = "public"
+
+   :returns: True if the table exists, False otherwise.
+   :rtype: bool
+
+
+.. py:function:: add_network_exclusions_to_db(engine: sqlalchemy.engine.Engine, rec_network_id: int, rec_network_exclusions: geopandas.GeoDataFrame, exclusion_cause: str) -> None
+
+   Add REC geometries that are excluded from the river network for the current run in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param rec_network_id: An identifier for the river network associated with the current run.
+   :type rec_network_id: int
+   :param rec_network_exclusions: A GeoDataFrame containing the REC geometries that are excluded from the river network for the current run.
+   :type rec_network_exclusions: gpd.GeoDataFrame
+   :param exclusion_cause: Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
+   :type exclusion_cause: str
+
+   :returns: This function does not return any value.
+   :rtype: None
+
+
+.. py:data:: log
 
 .. py:function:: load_backup_rec_data_from_niwa() -> geopandas.GeoDataFrame
 
