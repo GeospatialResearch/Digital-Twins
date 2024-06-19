@@ -14,6 +14,7 @@ from typing import Tuple, Union, Optional, TextIO
 from enum import Enum
 
 import geopandas as gpd
+import numpy as np
 import sqlalchemy
 import xarray as xr
 from newzealidar.utils import get_dem_by_geometry
@@ -228,6 +229,21 @@ def dissolved_metal_load(total_copper_load, total_zinc_load, surface_type):
 
 
 def get_building_information(engine: Engine):
+    """
+    Extracts relevant information about buildings from the database and formats them such that they are easy to use for
+    pollution modeling purposes.
+
+    Parameters
+    ----------
+    engine: Engine
+      The sqlalchemy database connection engine
+
+    Returns
+    -------
+    xr.DataArray
+        A DataArray containing rows corresponding to buildings, and columns corresponding to
+        attributes (Index, SurfaceArea, SurfaceType)
+    """
     # Select all relevant information from the appropriate table
     # TODO: Update this when the database has been created
     query = text("SELECT building_id FROM nz_building_outlines")
@@ -236,11 +252,53 @@ def get_building_information(engine: Engine):
     new_result = []
     for item in result:
         # TODO: Update this when the real database has been created
-        # Append appropriate dimensional data to the list
-        new_result.append([item[0], 1, 1])
-    print(new_result)
-    # Return the relevant data
-    return xr.DataArray(new_result, dims=("BuildingID", "SurfaceArea", "SurfaceType"))
+        # Append appropriate attribute data to the list. The attributes are Index, SurfaceArea, and SurfaceType.
+        # Additionally, a placeholder for TSS, TCu, TZn, DCu, and DZn are included and set to "None". These will be
+        # edited later.
+        new_result.append([item[0], 1, 1, None, None, None, None, None])
+    # Convert the list into a numpy array
+    np_data = np.array(new_result)
+    # Define the names of columns in the xarray
+    col_names = ["Index", "SurfaceArea", "SurfaceType", "TSS", "TCu", "TZn", "DCu", "DZn"]
+    # return the xarray containing the relevant data about buildings
+    return xr.DataArray(new_result, dims=("row", "col"), coords={'row': range(np_data.shape[0]), 'col': col_names})
+
+
+def get_road_information(engine: Engine):
+    """
+    Extracts relevant information about roads and car parks from the database and formats them such that they are easy
+    to use for pollution modeling purposes.
+
+    Parameters
+    ----------
+    engine: Engine
+      The sqlalchemy database connection engine
+
+    Returns
+    -------
+    xr.DataArray
+        A DataArray containing rows corresponding to roads, and columns corresponding to
+        attributes (Index, SurfaceArea, SurfaceType)
+    """
+    # Select all relevant information from the appropriate table
+    # TODO: Update this when the database has been created -- Need to update the name of the table!
+    query = text("SELECT road_id FROM nz_roads")
+    # Execute the SQL query
+    result = engine.execute(query).fetchall()
+    new_result = []
+    for item in result:
+        # TODO: Update this when the real database has been created
+        # Append appropriate attribute data to the list. The attributes are Index, SurfaceArea, and SurfaceType.
+        # Additionally, a placeholder for TSS, TCu, TZn, DCu, and DZn are included and set to "None". These will be
+        # edited later.
+        new_result.append([item[0], 1, 1, None, None, None, None, None])
+    # Convert the list into a numpy array
+    np_data = np.array(new_result)
+    # Define the names of columns in the xarray
+    col_names = ["Index", "SurfaceArea", "SurfaceType", "TSS", "TCu", "TZn", "DCu", "DZn"]
+    # return the xarray containing the relevant data about buildings
+    return xr.DataArray(new_result, dims=("row", "col"), coords={'row': range(np_data.shape[0]), 'col': col_names})
+
 
 def run_pollution_model_rain_event(
         engine: Engine,
@@ -275,18 +333,21 @@ def run_pollution_model_rain_event(
     """
     building_data = []
     # TODO: Get these values from a dataset
-    all_buildings = xr.DataArray(dims=("BuildingID", "SurfaceArea", "SurfaceType"))
-    all_roads = []
-    all_car_parks = []
+    all_buildings = get_building_information(engine)
+    all_roads = get_road_information(engine)
+    all_buildings.load()
+    all_roads.load()
 
+    print("START LOOPING...")
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
     # TODO: change forloop to something meaningful. For the time being, it is simply a placeholder.
-    for building in all_buildings:
-        surface_area = 1
-        surface_type = 1
+    for i in range(len(all_buildings)):
+        surface_area = float(all_buildings.sel(row=i, col="SurfaceArea"))
+        surface_type = int(all_buildings.sel(row=i, col="SurfaceType"))
         curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
                                          average_rain_intensity=average_rain_intensity, event_duration=event_duration,
                                          surface_type=surface_type)
+
         curr_total_copper, curr_total_zinc = total_metal_load_roof(surface_area=surface_area,
                                                                    antecedent_dry_days=antecedent_dry_days,
                                                                    average_rain_intensity=average_rain_intensity,
@@ -295,30 +356,35 @@ def run_pollution_model_rain_event(
         curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
                                                                           total_zinc_load=curr_total_zinc,
                                                                           surface_type=surface_type)
-    # Run through all the roads and calculate TSS, total metal loads, and dissolved metal loads
-    for road in all_roads:
-        surface_area = 1
-        surface_type = 4
+        all_buildings.loc[{'row': i}] = [all_buildings.loc[{'row': i}][0], surface_area, surface_type, curr_tss, curr_total_copper, curr_total_zinc, curr_dissolved_copper, curr_dissolved_zinc]
+        # print(all_buildings.loc[{'row': i, 'col': "TSS"}])
+        # all_buildings.loc[{'row': i, 'col': 'TSS'}] = curr_tss
+        # all_buildings.loc[{'row': i, 'col': 'TCu'}] = curr_total_copper
+        # all_buildings.loc[{'row': i, 'col': 'TZn'}] = curr_total_zinc
+        # all_buildings.loc[{'row': i, 'col': 'DCu'}] = curr_dissolved_copper
+        # all_buildings.loc[{'row': i, 'col': 'DZn'}] = curr_dissolved_zinc
+    print(all_buildings)
+    # Run through all the roads/car parks, and calculate TSS, total metal loads, and dissolved metal loads
+    for i in range(len(all_roads)):
+        surface_area = float(all_buildings.sel(row=i, col="SurfaceArea"))
+        surface_type = int(all_buildings.sel(row=i, col="SurfaceType"))
         curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
                                          average_rain_intensity=average_rain_intensity, event_duration=event_duration,
                                          surface_type=surface_type)
-        curr_total_copper, curr_total_zinc = total_metal_load_road_carpark(curr_tss)
-        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
-                                                                          total_zinc_load=curr_total_zinc,
-                                                                          surface_type=surface_type)
-    # Run through all car parks and calculate TSS, total metal loads, and dissolved metal loads
-    for car_park in all_car_parks:
-        # Note: car parks are simply treated as roads.
-        surface_area = 1
-        surface_type = 5
-        curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
-                                         average_rain_intensity=average_rain_intensity, event_duration=event_duration,
-                                         surface_type=surface_type)
+
         curr_total_copper, curr_total_zinc = total_metal_load_road_carpark(curr_tss)
         curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
                                                                           total_zinc_load=curr_total_zinc,
                                                                           surface_type=surface_type)
 
+        all_roads.loc[{'row': i, 'col': 'TSS'}] = curr_tss
+        all_roads.loc[{'row': i, 'col': 'TCu'}] = curr_total_copper
+        all_roads.loc[{'row': i, 'col': 'TZn'}] = curr_total_zinc
+        all_roads.loc[{'row': i, 'col': 'DCu'}] = curr_dissolved_copper
+        all_roads.loc[{'row': i, 'col': 'DZn'}] = curr_dissolved_zinc
+    print(all_roads)
+
+    all_result = xr.merge(all_roads, all_buildings)
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
          log_level: LogLevel = LogLevel.DEBUG,
@@ -365,7 +431,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
 
     # DEBUGGING:
-    print(get_building_information(engine))
+    #print(get_building_information(engine).sel(row=0, col="Index"))
 
     # Run the pollution model
     run_pollution_model_rain_event(engine=engine, area_of_interest=catchment_area,
