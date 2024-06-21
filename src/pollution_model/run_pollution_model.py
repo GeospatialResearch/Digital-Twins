@@ -35,6 +35,7 @@ log = logging.getLogger(__name__)
 
 Base = declarative_base()
 
+# Testing to commit
 
 class SurfaceType(Enum):
     ConcreteRoof = 1
