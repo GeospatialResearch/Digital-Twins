@@ -11,7 +11,7 @@ import platform
 import subprocess
 from datetime import datetime
 from typing import Tuple, Union, Optional, TextIO
-from enum import Enum
+from enum import StrEnum
 
 import geopandas as gpd
 import numpy as np
@@ -35,14 +35,14 @@ log = logging.getLogger(__name__)
 
 Base = declarative_base()
 
-# Testing to commit
 
-class SurfaceType(Enum):
-    ConcreteRoof = 1
-    CopperRoof = 2
-    GalvanisedRoof = 3
-    AsphaltRoad = 4
-    #CarPark = 5 - CarParks are classified the same as roads
+# Enum strings are assigned as they are described in the original paper
+class SurfaceType(StrEnum):
+    CONCRETE_ROOF = "Cr"
+    COPPER_ROOF = "Cu"
+    GALVANISED_ROOF = "Gv"
+    ASPHALT_ROAD = "Rd"
+    CAR_PARK = "CrP"  # CarParks are classified the same as roads
 
 
 def compute_tss_roof_road(surface_area,
@@ -71,17 +71,26 @@ def compute_tss_roof_road(surface_area,
     float
        Returns the TSS value from the given parameters
     """
-    # Check to make sure we're working with a road or roof
-    if surface_type <= 0 or surface_type > 4:
-        log.error(
-            f"Surface type Road or Roof expected for TSS calculation, but received {SurfaceType(surface_type).name}.")
 
     # Define the constants (Cf is the capacity factor).
     # Values a1 to a3 are empirically derived coefficient values.
-    Cf = 0.25 if surface_type == 1 else 0.75
+    capacity_factor = 0.25 if surface_type == 1 else 0.75
     a1, a2, a3 = 0, 0, 0
-
-    first_term = surface_area * a1 * (antecedent_dry_days ** a2) * Cf
+    match surface_type:
+        case "Cr":
+            a1, a2, a3 = 0.6, 0.25, 0.00933
+        case "Cu":
+            a1, a2, a3 = 2.5, 0.95, 0.00933
+        case "Gv":
+            a1, a2, a3 = 0.6, 0.5, 0.00933
+        case "Rd" | "CrP":
+            a1, a2, a3 = 2.9, 0.16, 0.0008
+        case _:
+            log.error(
+                f"Given surface type is not valid for computing total suspended solids. Needed a roof or road, but got {SurfaceType(surface_type).name}.")
+            raise ValueError(f"Given surface type is not valid for computing total suspended solids. Needed a roof or "
+                             f"road, but got {SurfaceType(surface_type).name}.")
+    first_term = surface_area * a1 * (antecedent_dry_days ** a2) * capacity_factor
     second_term = (1 - math.exp(a3 * average_rain_intensity * event_duration))
 
     return first_term * second_term
@@ -121,18 +130,20 @@ def total_metal_load_roof(surface_area,
     c = []
 
     match surface_type:
-        case 1:
+        case "Cr":
             b = [2, -2.8, 0.5, 0.217, 3.57, -0.09, 7, -3.73]
             c = [50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
-        case 2:
+        case "Cu":
             b = [100, -2.8, 1.372, 0.217, 3.57, -1, 275, -3.3]
             c = [-0.1, 2, 0.1, 0.01, 0.8, -1.3, -0.007, 0.056]
-        case 3:
+        case "Gv":
             b = [2, -2.8, 0.5, 0.217, 3.57, -0.09, 7, -3.73]
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.990]
         case _:
             log.error(
                 f"Given surface type is not valid for computing total metal load. Needed a roof, but got {SurfaceType(surface_type).name}.")
+            raise ValueError(f"Given surface type is not valid for computing total metal load. Needed a roof, "
+                             f"but got {SurfaceType(surface_type).name}.")
     # Define the initial and second stage metal concentrations (X_0 and X_est)
     initial_copper_concentration = (b[0] * rainfall_ph ** b[1]) * (b[2] * antecedent_dry_days ** b[3]) * (
             b[4] * average_rain_intensity ** b[5])
@@ -181,10 +192,10 @@ def total_metal_load_road_carpark(tss_surface):
        Returns the total copper and zinc loads for this surface
     """
     # Define constants
-    d = 0.441
-    e = 1.96
+    proportionality_constant_cu = 0.441
+    proportionality_constant_zn = 1.96
     # Return total copper load, total zinc load
-    return tss_surface * d, tss_surface * e
+    return tss_surface * proportionality_constant_cu, tss_surface * proportionality_constant_zn
 
 
 def dissolved_metal_load(total_copper_load, total_zinc_load, surface_type):
@@ -210,22 +221,23 @@ def dissolved_metal_load(total_copper_load, total_zinc_load, surface_type):
     g = 1
     # Set constant values based on surface type
     match surface_type:
-        case 1:
+        case "Cr":
             f = 0.46
             g = 0.67
-        case 2:
+        case "Cu":
             f = 0.77
             g = 0.72
-        case 3:
+        case "Gv":
             f = 0.28
             g = 0.43
-        case 4:
+        case "Rd" | "CrP":
             f = 0.28
             g = 0.43
         case _:
             log.error(
                 f"Given surface type is not valid for computing dissolved metal load. {SurfaceType(surface_type).name}.")
-
+            raise ValueError(f"Given surface type is not valid for computing dissolved metal load. Needed a roof or "
+                             f"road, but got {SurfaceType(surface_type).name}.")
     return f * total_copper_load, g * total_zinc_load
 
 
@@ -357,7 +369,8 @@ def run_pollution_model_rain_event(
         curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
                                                                           total_zinc_load=curr_total_zinc,
                                                                           surface_type=surface_type)
-        all_buildings.loc[{'row': i}] = [all_buildings.loc[{'row': i}][0], surface_area, surface_type, curr_tss, curr_total_copper, curr_total_zinc, curr_dissolved_copper, curr_dissolved_zinc]
+        all_buildings.loc[{'row': i}] = [all_buildings.loc[{'row': i}][0], surface_area, surface_type, curr_tss,
+                                         curr_total_copper, curr_total_zinc, curr_dissolved_copper, curr_dissolved_zinc]
         # print(all_buildings.loc[{'row': i, 'col': "TSS"}])
         # all_buildings.loc[{'row': i, 'col': 'TSS'}] = curr_tss
         # all_buildings.loc[{'row': i, 'col': 'TCu'}] = curr_total_copper
@@ -386,6 +399,7 @@ def run_pollution_model_rain_event(
     print(all_roads)
 
     all_result = xr.merge(all_roads, all_buildings)
+
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
          log_level: LogLevel = LogLevel.DEBUG,
