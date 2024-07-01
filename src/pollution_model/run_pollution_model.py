@@ -5,31 +5,17 @@ TSS (total suspended solids), TCu (total copper), DCu  (dissolved copper), TZn (
 
 import logging
 import math
-import os
-import pathlib
-import platform
-import subprocess
-from datetime import datetime
-from typing import Tuple, Union, Optional, TextIO
 from enum import StrEnum
 
 import geopandas as gpd
 import numpy as np
-import sqlalchemy
 import xarray as xr
-from newzealidar.utils import get_dem_by_geometry
-from sqlalchemy import insert
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import text
 
-from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.flood_model.flooded_buildings import find_flooded_buildings
-from src.flood_model.flooded_buildings import store_flooded_buildings_in_database
-from src.flood_model.serve_model import add_model_output_to_geoserver
 
 log = logging.getLogger(__name__)
 
@@ -87,7 +73,7 @@ def compute_tss_roof_road(surface_area,
             a1, a2, a3 = 2.9, 0.16, 0.0008
         case _:
             log.error(
-                f"Given surface type is not valid for computing total suspended solids. Needed a roof or road, but got {SurfaceType(surface_type).name}.")
+                f"Given surface is not valid for computing TSS. Got {SurfaceType(surface_type).name}.")
             raise ValueError(f"Given surface type is not valid for computing total suspended solids. Needed a roof or "
                              f"road, but got {SurfaceType(surface_type).name}.")
     first_term = surface_area * a1 * (antecedent_dry_days ** a2) * capacity_factor
@@ -141,7 +127,7 @@ def total_metal_load_roof(surface_area,
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.990]
         case _:
             log.error(
-                f"Given surface type is not valid for computing total metal load. Needed a roof, but got {SurfaceType(surface_type).name}.")
+                f"Given surface is not valid for computing total metal load. Got {SurfaceType(surface_type).name}.")
             raise ValueError(f"Given surface type is not valid for computing total metal load. Needed a roof, "
                              f"but got {SurfaceType(surface_type).name}.")
     # Define the initial and second stage metal concentrations (X_0 and X_est)
@@ -235,7 +221,7 @@ def dissolved_metal_load(total_copper_load, total_zinc_load, surface_type):
             g = 0.43
         case _:
             log.error(
-                f"Given surface type is not valid for computing dissolved metal load. {SurfaceType(surface_type).name}.")
+                f"Given surface is not valid for computing dissolved metal load. {SurfaceType(surface_type).name}.")
             raise ValueError(f"Given surface type is not valid for computing dissolved metal load. Needed a roof or "
                              f"road, but got {SurfaceType(surface_type).name}.")
     return f * total_copper_load, g * total_zinc_load
@@ -344,7 +330,7 @@ def run_pollution_model_rain_event(
     None
         This function does not return any value.
     """
-    building_data = []
+    # building_data = []
     # TODO: Get these values from a dataset
     all_buildings = get_building_information(engine)
     all_roads = get_road_information(engine)
@@ -398,7 +384,7 @@ def run_pollution_model_rain_event(
         all_roads.loc[{'row': i, 'col': 'DZn'}] = curr_dissolved_zinc
     print(all_roads)
 
-    all_result = xr.merge(all_roads, all_buildings)
+    # all_result = xr.merge(all_roads, all_buildings)
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
@@ -446,7 +432,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
 
     # DEBUGGING:
-    #print(get_building_information(engine).sel(row=0, col="Index"))
+    # print(get_building_information(engine).sel(row=0, col="Index"))
 
     # Run the pollution model
     run_pollution_model_rain_event(engine=engine, area_of_interest=catchment_area,
