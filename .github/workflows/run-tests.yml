@@ -51,14 +51,6 @@ jobs:
         with:
           lfs: true
 
-      - name: Cache conda
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-conda-env
-        with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.cache-name }}-${{ hashFiles('environment.yml') }}
-
       - name: Install package dependencies
         uses: mamba-org/setup-micromamba@v1
         with:
