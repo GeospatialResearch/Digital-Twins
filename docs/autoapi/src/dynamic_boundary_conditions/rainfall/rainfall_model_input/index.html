@@ -7,7 +7,7 @@
   <title>src.dynamic_boundary_conditions.rainfall.rainfall_model_input &mdash; Flood Resilience Digital Twin (FReDT) 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
 
   
   <!--[if lt IE 9]>
@@ -17,7 +17,7 @@
         <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../../../../../_static/documentation_options.js?v=01f34227"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,10 +79,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input</span></code></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src.dynamic_boundary_conditions</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.dynamic_boundary_conditions.rainfall</a></li>
+      <li class="breadcrumb-item active">src.dynamic_boundary_conditions.rainfall.rainfall_model_input</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/rainfall/rainfall_model_input/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,14 +93,22 @@
            <div itemprop="articleBody">
              
   <section id="module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input">
-<span id="src-dynamic-boundary-conditions-rainfall-rainfall-model-input"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input" title="Link to this heading"></a></h1>
+<span id="src-dynamic-boundary-conditions-rainfall-rainfall-model-input"></span><h1>src.dynamic_boundary_conditions.rainfall.rainfall_model_input<a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.rainfall_model_input" title="Link to this heading"></a></h1>
 <p>Generate the requested rainfall model input for BG-Flood, which can be either
 spatially uniform rain input (‘rain_forcing.txt’ text file) or
 spatially varying rain input (‘rain_forcing.nc’ NetCDF file).</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.sites_voronoi_intersect_catchment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites_voronoi_intersect_catchment</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
@@ -126,15 +135,8 @@ spatially varying rain input (‘rain_forcing.nc’ NetCDF file).</p>
 </tbody>
 </table>
 </section>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log" title="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <dl class="py data">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.rainfall_model_input.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log" title="Link to this definition"></a></dt>
@@ -299,7 +301,6 @@ representing spatially uniform rain input (text file) or spatially varying rain 
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 

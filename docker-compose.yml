@@ -2,6 +2,8 @@ version: '3.8'
 
 volumes:
   postgres_db_vol:
+  stored_data:
+  geoserver_data:
 
 services:
   db_postgres:
@@ -32,7 +34,7 @@ services:
       - api_keys.env
       - .env.docker-override
     volumes:
-      - ${DATA_DIR}:/stored_data
+      - stored_data:/stored_data
     healthcheck:
       test: curl --fail -s http://localhost:5000/ || exit 1
       interval: 10s
@@ -59,8 +61,8 @@ services:
       - .env.docker-override
     volumes:
       # Bind host data directories to container, allowing different instances to share data sources.
-      - ${DATA_DIR}:/stored_data
-      - ${DATA_DIR_GEOSERVER}:/stored_data/geoserver
+      - stored_data:/stored_data
+      - geoserver_data:/stored_data/geoserver
     ports:
       - "5001:5001"
     healthcheck:
@@ -75,10 +77,13 @@ services:
 
   geoserver:
     # Serves geospatial web data through interactions with files and database
-    image: docker.osgeo.org/geoserver:2.21.2
+    build:
+      context: .
+      target: geoserver
+    image: lparkinson/geoserver-flood-resilience-dt:1.1
     container_name: geoserver_digital_twin
     volumes:
-      - ${DATA_DIR_GEOSERVER}:/opt/geoserver_data
+      - geoserver_data:/opt/geoserver_data
     depends_on:
       - db_postgres
     environment:

@@ -1,17 +1,17 @@
-:py:mod:`src.dynamic_boundary_conditions`
-=========================================
+src.dynamic_boundary_conditions
+===============================
 
 .. py:module:: src.dynamic_boundary_conditions
 
 
 Subpackages
 -----------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 3
 
-   rainfall/index.rst
-   river/index.rst
-   tide/index.rst
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/src/dynamic_boundary_conditions/rainfall/index
+   /autoapi/src/dynamic_boundary_conditions/river/index
+   /autoapi/src/dynamic_boundary_conditions/tide/index
 
 

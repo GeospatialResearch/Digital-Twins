@@ -1,5 +1,5 @@
-:py:mod:`src.run_all`
-=====================
+src.run_all
+===========
 
 .. py:module:: src.run_all
 
@@ -9,27 +9,25 @@
 
 
 
-Module Contents
----------------
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   src.run_all.main
-
-
-
 Attributes
-~~~~~~~~~~
+----------
 
 .. autoapisummary::
 
    src.run_all.DEFAULT_MODULES_TO_PARAMETERS
    src.run_all.sample_polygon
 
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.run_all.main
+
+
+Module Contents
+---------------
 
 .. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, modules_to_parameters: Dict[types.ModuleType, Dict[str, Union[str, int, float, bool, None, enum.Enum]]]) -> None
 
@@ -55,9 +53,5 @@ Attributes
 
 .. py:data:: DEFAULT_MODULES_TO_PARAMETERS
 
-   
-
 .. py:data:: sample_polygon
-
-   
 

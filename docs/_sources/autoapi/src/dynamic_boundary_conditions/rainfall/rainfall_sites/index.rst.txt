@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.rainfall.rainfall_sites`
-=================================================================
+src.dynamic_boundary_conditions.rainfall.rainfall_sites
+=======================================================
 
 .. py:module:: src.dynamic_boundary_conditions.rainfall.rainfall_sites
 
@@ -9,12 +9,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.rainfall_sites.log
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -23,18 +27,10 @@ Functions
    src.dynamic_boundary_conditions.rainfall.rainfall_sites.rainfall_sites_to_db
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.rainfall.rainfall_sites.log
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: get_rainfall_sites_data() -> str
 

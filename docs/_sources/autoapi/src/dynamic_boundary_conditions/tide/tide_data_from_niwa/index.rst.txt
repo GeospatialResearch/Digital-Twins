@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.tide.tide_data_from_niwa`
-==================================================================
+src.dynamic_boundary_conditions.tide.tide_data_from_niwa
+========================================================
 
 .. py:module:: src.dynamic_boundary_conditions.tide.tide_data_from_niwa
 
@@ -9,12 +9,18 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.tide_data_from_niwa.log
+   src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA
+   src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA_CSV
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -34,30 +40,18 @@ Functions
    src.dynamic_boundary_conditions.tide.tide_data_from_niwa.get_tide_data
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.tide.tide_data_from_niwa.log
-   src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA
-   src.dynamic_boundary_conditions.tide.tide_data_from_niwa.TIDE_API_URL_DATA_CSV
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:data:: TIDE_API_URL_DATA
    :value: 'https://api.niwa.co.nz/tides/data'
 
-   
 
 .. py:data:: TIDE_API_URL_DATA_CSV
    :value: 'https://api.niwa.co.nz/tides/data.csv'
 
-   
 
 .. py:function:: get_query_loc_coords_position(query_loc_row: geopandas.GeoDataFrame) -> Tuple[float, float, str]
 
@@ -119,6 +113,7 @@ Attributes
 .. py:function:: fetch_tide_data(session: aiohttp.ClientSession, query_param: Dict[str, Union[str, int]], url: str = TIDE_API_URL_DATA) -> geopandas.GeoDataFrame
    :async:
 
+
    Fetch tide data using the provided query parameters within a single API call.
 
    :param session: An instance of `aiohttp.ClientSession` used for making HTTP requests.
@@ -135,6 +130,7 @@ Attributes
 
 .. py:function:: fetch_tide_data_for_requested_period(query_param_list: List[Dict[str, Union[str, int]]], url: str = TIDE_API_URL_DATA) -> geopandas.GeoDataFrame
    :async:
+
 
    Iterate over the list of API query parameters to fetch tide data for the requested period.
 

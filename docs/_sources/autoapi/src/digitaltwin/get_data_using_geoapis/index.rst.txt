@@ -1,5 +1,5 @@
-:py:mod:`src.digitaltwin.get_data_using_geoapis`
-================================================
+src.digitaltwin.get_data_using_geoapis
+======================================
 
 .. py:module:: src.digitaltwin.get_data_using_geoapis
 
@@ -11,20 +11,16 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    src.digitaltwin.get_data_using_geoapis.MFE
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -32,11 +28,13 @@ Functions
    src.digitaltwin.get_data_using_geoapis.fetch_vector_data_using_geoapis
 
 
+Module Contents
+---------------
 
 .. py:class:: MFE
 
-
    Bases: :py:obj:`geoapis.vector.WfsQueryBase`
+
 
    A class to manage fetching Vector data from MFE.
 
@@ -46,15 +44,15 @@ Functions
    Note that the 'GEOMETRY_NAMES' used when making WFS 'cql_filter' queries varies between layers.
    The MFE generally follows the LINZ LDS but uses 'Shape' in place of 'shape'. It still uses 'GEOMETRY'.
 
+
    .. py:attribute:: NETLOC_API
       :value: 'data.mfe.govt.nz'
 
-      
+
 
    .. py:attribute:: GEOMETRY_NAMES
       :value: ['GEOMETRY', 'Shape']
 
-      
 
 
 .. py:function:: clean_fetched_vector_data(fetched_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame

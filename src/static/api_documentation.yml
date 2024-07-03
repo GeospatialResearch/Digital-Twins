@@ -1,0 +1,420 @@
+---
+openapi: 3.0.0
+info:
+  title: Flood Resilience Digital Twin (FReDT)
+  version: 1.0.0
+paths:
+  "/":
+    get:
+      summary: Returns message showing app is up
+      responses:
+        '200':
+          description: OK - Backend is receiving requests
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: |-
+                  Backend is receiving requests.
+                  GET /health-check to check if celery workers active.
+                  GET /swagger to get API documentation.
+  "/health-check":
+    get:
+      summary: Checks that the API service can access the celery workers
+      responses:
+        '200 - OK':
+          description: Celery workers are active and connections between services are working.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Healthy"
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
+
+  "/models/generate":
+    post:
+      summary: Starts generating a scenario model output.
+      description: |-
+        Starts generating a scenario model output according to the given scenario paramaters.
+        The task will run in the background. Use GET /tasks/{task_id} to get status about the task.
+      parameters:
+        - $ref: '#/components/parameters/GenerateScenarioParameters'
+      responses:
+        '202 - Accepted':
+          $ref: '#/components/responses/TaskStarted'
+        '400 - Bad Request':
+          $ref: '#/components/responses/BadRequest'
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
+
+  "/models/{scenarioId}":
+    get:
+      summary: Serves the output of a previously run flood model scenario.
+      parameters:
+        - $ref: '#/components/parameters/ScenarioId'
+      responses:
+        '200 - OK':
+          $ref: '#/components/responses/ModelOutput'
+        '404 - Not Found':
+          $ref: '#/components/responses/ScenarioNotFound'
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
+
+
+
+  "/models/{scenarioId}/buildings":
+    get:
+      summary: Retrieves information on building flood status, for a given flood model output id.
+      description: |-
+        It is recommended to use the geoserver API if it is possible, since this is a proxy around that to expose the functionality to all users.
+      parameters:
+        - $ref: '#/components/parameters/ScenarioId'
+      responses:
+        '200 - OK':
+          $ref: '#/components/responses/BuildingFloodStatus'
+        '404 - Not Found':
+          $ref: '#/components/responses/ScenarioNotFound'
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
+
+  "/tasks/{taskId}":
+    get:
+      summary: Retrieves information on the status of a given task.
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200 - OK':
+          description: The status of the task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '500 - Internal Server Error':
+          description: Something has gone wrong in the execution of the task. If the `DEBUG_TRACEBACK` environmnet variable is set to `true` you can get a traceback in `taskValue`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedTask'
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
+    delete:
+      summary: Requests the Celery task controller to stop the task.
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '202 - Task Removed':
+          description: The task will stop
+
+  "/tasks/{taskId}/model/depth":
+    get:
+      summary: Finds the depth values and corresponding time values for a particular point for a given model output task.
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/Point'
+      responses:
+        '200 - OK':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PointDepths'
+        '400 - Bad Request':
+          $ref: '#/components/responses/BadRequest'
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
+
+
+  "/datasets/update":
+    post:
+      summary: Manually triggers the update of LiDAR data sources to the most recent.
+      description: |-
+        Starts a task to web-scrape OpenTopography metadata to update the list of LiDAR data sources. Takes a long time to run but needs to be run periodically so that the datasets are up to date.
+      responses:
+        '202 - Accepted':
+          $ref: '#/components/responses/TaskStarted'
+
+
+components:
+  responses:
+    NoCeleryWorkers:
+      description: There is some kind of fault with the celery workers. Perhaps the Celery service is not running.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: "Celery workers not active"
+
+    TaskStarted:
+      description: Accepted, the task is started
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              taskId:
+                $ref: '#/components/schemas/TaskId'
+
+    BuildingFloodStatus:
+      description: The building polygons in GeoJson format with a boolean attribute "is_flooded".
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BuildingFloodStatus'
+
+    ScenarioNotFound:
+      description: The scenario with that scenarioId could not be found
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Could not find flood model output 17
+
+    ModelOutput:
+      description: The BG-Flood model output NetCDF file for the given scenario.
+      content:
+        application/x-netcdf:
+          schema:
+            type: file
+            format: binary
+            example: output_2024-03-06-20-56-11.nc
+
+    BadRequest:
+      description: The parameters sent were incomplete or invalid in some way. The response details what is wrong.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: lat & lng must fall in the range -90 < lat <= 90, -180 < lng <= 180
+
+  parameters:
+    Point:
+      in: query
+      name: point
+      description: Geographical point being queried.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              lat:
+                $ref: '#/components/schemas/Lat'
+              lng:
+                $ref: '#/components/schemas/Lng'
+
+    ScenarioId:
+      in: path
+      name: scenarioId
+      schema:
+        type: integer
+      required: true
+      description: ID of the flood scenario to retireve.
+      example: 17
+
+    TaskId:
+      in: path
+      name: taskId
+      schema:
+        type: string
+        example: 5b8fb106-dcac-45a6-4ff3-24a527a7445ff
+      description: The id of the celery task you are requesting.
+      required: true
+
+    GenerateScenarioParameters:
+      in: query
+      description: The parameters to be fed into the flood model
+      name: ScenarioParameters
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              lat1:
+                $ref: '#/components/schemas/Lat'
+              lng1:
+                $ref: '#/components/schemas/Lng'
+              lat2:
+                $ref: '#/components/schemas/Lat'
+              lng2:
+                $ref: '#/components/schemas/Lng'
+              scenarioOptions:
+                type: object
+                properties:
+                  "Projected Year":
+                    type: number
+                    minimum: 2023
+                    maximum: 2300
+                    example: 2025
+                  "SSP Scenario":
+                    type: string
+                    example: SSP1-1.9
+                    enum:
+                      - 'SSP1-1.9'
+                      - 'SSP1-2.6'
+                      - 'SSP2-4.5'
+                      - 'SSP3-7.0'
+                      - 'SSP5-8.5'
+                  "Confidence Level":
+                    type: string
+                    example: medium
+                    enum:
+                      - low
+                      - medium
+                  "Add Vertical Land Movement":
+                    type: boolean
+                    example: true
+
+
+
+  schemas:
+    Task:
+      type: object
+      properties:
+        taskId:
+          $ref: '#/components/schemas/TaskId'
+        taskStatus:
+          type: string
+          description: The celery.State of the task. Eg. 'SUCCESS', 'PENDING', 'FAILURE'
+          example: SUCCESS
+        taskValue:
+          description: The value returned from the completed task. For example, if it is a task for creating a new scenario, `taskValue` will be the scenario id.
+          example: 17
+
+    FailedTask:
+      type: object
+      properties:
+        taskId:
+          $ref: '#/components/schemas/TaskId'
+        taskStatus:
+          type: string
+          description: If there is an internal server error and this object is being returned, then the status should be "FAILURE"
+          example: 'FAILURE'
+        taskValue:
+          type: string
+          description: Will contain a traceback if the environment variable `DEBUG_TRACEBACK` is `True`
+          example: |-
+            sqlalchemy.exc.OperationalError (psycopg2.OperationalError) connection to server at localhost (1), port 1234 failed Connection refused
+
+    PointDepths:
+      type: object
+      properties:
+        depths:
+          type: array
+          items:
+            type: number
+          example: [ 0, 0.1, 0.15, 0.2, 0.3, 0.4, 0.3, 0.2, 0.1, 0.0 ]
+        times:
+          type: array
+          items:
+            type: number
+          example: [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
+
+    TaskId:
+      type: string
+      description: The assigned celery task id to track status.
+      example: 5b8fb106-dcac-45a6-4ff3-24a527a7445ff
+
+    Lat:
+      type: number
+      example: -43.37660781
+      minimum: -90
+      maximum: 90
+    Lng:
+      type: number
+      example: 172.6644084
+      minimum: -180
+      maximum: 180
+
+    BuildingFloodStatus:
+      type: object
+      properties:
+        type:
+          type: string
+          example: FeatureCollection
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: Feature
+              id:
+                type: string
+                example: building_flood_status.fid-30e8de35_18e117d7e39_-330c
+              geometry:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: Polygon
+                  coordinates:
+                    type: array
+                    example: [ [ [ 172.6644084, -43.37660781 ], [ 172.66427505, -43.37659527 ], [ 172.66427906, -43.37657259 ], [ 172.66441241, -43.37658513 ], [ 172.6644084, -43.37660781 ] ] ]
+                    items:
+                      type: array
+                      items:
+                        type: array
+                        items:
+                          type: number
+                  properties:
+                    type: object
+                    properties:
+                      building_outline_id:
+                        type: number
+                        example: 5765335,
+                      building_id:
+                        type: number
+                        example: 5016864
+                      name:
+                        type: string
+                        example: Kaiapoi North School
+                      use:
+                        type: string
+                        example: School
+                      suburb_locality:
+                        type: string
+                        example: Kaiapoi
+                      town_city:
+                        type: string
+                        example: Kaiapoi
+                      territorial_authority:
+                        type: string
+                        example: "Waimakariri District"
+                      capture_method:
+                        type: string
+                        example: "Feature Extraction"
+                      capture_source_group:
+                        type: string
+                        example: "NZ Aerial Imagery"
+                      capture_source_id:
+                        type: number
+                        example: 1218
+                      capture_source_name:
+                        type: string
+                        example: "Canterbury 0.3m Rural Aerial Photos (2020)"
+                      capture_source_from:
+                        type: string
+                        example: "2020-10-24Z"
+                      capture_source_to:
+                        type: string
+                        example: "2020-11-13Z"
+                      building_outline_lifecycle:
+                        type: string
+                        example: "Current"
+                      begin_lifespan:
+                        type: string
+                        example: "2022-10-31Z"
+                      end_lifespan:
+                        type: string
+                        example: null
+                      last_modified:
+                        type: string
+                        example: "2022-10-31Z"
+                      is_flooded:
+                        type: boolean
+                        example: true
+                      flood_model_id:
+                        type: number
+                        example: 17

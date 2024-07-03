@@ -1,5 +1,5 @@
-:py:mod:`src.tasks`
-===================
+src.tasks
+=========
 
 .. py:module:: src.tasks
 
@@ -10,11 +10,18 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.tasks.message_broker_url
+   src.tasks.app
+   src.tasks.log
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -22,9 +29,8 @@ Classes
    src.tasks.DepthTimePlot
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -43,44 +49,30 @@ Functions
    src.tasks.get_model_extents_bbox
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.tasks.message_broker_url
-   src.tasks.app
-   src.tasks.log
-
+Module Contents
+---------------
 
 .. py:data:: message_broker_url
 
-   
-
 .. py:data:: app
-
-   
 
 .. py:data:: log
 
-   
-
 .. py:class:: OnFailureStateTask
-
 
    Bases: :py:obj:`app`
 
+
    Task that switches state to FAILURE if an exception occurs
+
 
    .. py:method:: on_failure(exc, _task_id, _args, _kwargs, _einfo)
 
 
-
 .. py:class:: DepthTimePlot
 
-
    Bases: :py:obj:`NamedTuple`
+
 
    Represents the depths over time for a particular pixel location in a raster.
    Uses tuples and lists instead of Arrays or Dataframes because it needs to be easily serializable when communicating
@@ -98,15 +90,13 @@ Attributes
 
       :type: List[float]
 
-   .. py:attribute:: depths
-      :type: List[float]
 
-      
+   .. py:attribute:: depths
+      :type:  List[float]
+
 
    .. py:attribute:: times
-      :type: List[float]
-
-      
+      :type:  List[float]
 
 
 .. py:function:: create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> celery.result.GroupResult
@@ -249,7 +239,7 @@ Attributes
    :param model_id: The database id of the model output to query.
    :type model_id: int
 
-   :returns: The bounding box in '[x1],[y1],[x2],[y2]' format
+   :returns: The bounding box in 'x1,y1,x2,y2' format
    :rtype: str
 
 

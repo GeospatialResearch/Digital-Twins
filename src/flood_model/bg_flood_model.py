@@ -24,6 +24,7 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.s3_connection import S3Manager
 from src.digitaltwin.tables import BGFloodModelOutput, create_table
+from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.flood_model.flooded_buildings import find_flooded_buildings
 from src.flood_model.flooded_buildings import store_flooded_buildings_in_database
@@ -183,7 +184,14 @@ def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
     # Execute a query to get the model output record based on the 'flood_model_id' column
     query = text("SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
         flood_model_id=model_id)
+    # Check table exists before querying
+    bg_flood_table = "bg_flood_model_output"
+    if not check_table_exists(engine, bg_flood_table):
+        raise FileNotFoundError(f"{bg_flood_table} table does not exist")
     row = engine.execute(query).fetchone()
+    # If the row is empty then we could not find the model output
+    if row is None:
+        raise FileNotFoundError(f"bg_flood_model_output table does not contain row with unique_id: {model_id}")
     # Extract the file path from the retrieved record
     latest_output_path = pathlib.Path(row["file_path"])
     # Extract the file path from the retrieved record
@@ -207,9 +215,15 @@ def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFra
         Returns the geometry (extents) of the flood model output.
     """
     # Execute a query to get the model output record based on the 'flood_model_id' column
+    bg_flood_table = "bg_flood_model_output"
+    if not check_table_exists(engine, bg_flood_table):
+        raise FileNotFoundError(f"{bg_flood_table} table does not exist")
     query = text("SELECT geometry FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
         flood_model_id=model_id)
-    return gpd.read_postgis(query, engine, geom_col='geometry')
+    geometry = gpd.read_postgis(query, engine, geom_col='geometry')
+    if len(geometry) == 0:
+        raise FileNotFoundError(f"{bg_flood_table} table does not have any rows with unique_id = {model_id}")
+    return geometry
 
 
 def add_crs_to_model_output(model_output_path: pathlib.Path) -> None:

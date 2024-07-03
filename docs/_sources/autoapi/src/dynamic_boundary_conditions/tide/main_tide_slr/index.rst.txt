@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.tide.main_tide_slr`
-============================================================
+src.dynamic_boundary_conditions.tide.main_tide_slr
+==================================================
 
 .. py:module:: src.dynamic_boundary_conditions.tide.main_tide_slr
 
@@ -10,22 +10,8 @@
 
 
 
-Module Contents
----------------
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs
-   src.dynamic_boundary_conditions.tide.main_tide_slr.main
-
-
-
 Attributes
-~~~~~~~~~~
+----------
 
 .. autoapisummary::
 
@@ -33,9 +19,19 @@ Attributes
    src.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon
 
 
-.. py:data:: log
+Functions
+---------
 
-   
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs
+   src.dynamic_boundary_conditions.tide.main_tide_slr.main
+
+
+Module Contents
+---------------
+
+.. py:data:: log
 
 .. py:function:: remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None
 
@@ -89,6 +85,4 @@ Attributes
 
 
 .. py:data:: sample_polygon
-
-   
 

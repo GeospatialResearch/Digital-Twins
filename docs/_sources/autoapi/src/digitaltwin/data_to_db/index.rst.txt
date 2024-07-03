@@ -1,5 +1,5 @@
-:py:mod:`src.digitaltwin.data_to_db`
-====================================
+src.digitaltwin.data_to_db
+==========================
 
 .. py:module:: src.digitaltwin.data_to_db
 
@@ -10,12 +10,24 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.digitaltwin.data_to_db.log
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   src.digitaltwin.data_to_db.NoNonIntersectionError
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -32,23 +44,15 @@ Functions
    src.digitaltwin.data_to_db.user_log_info_to_db
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.digitaltwin.data_to_db.log
-
+Module Contents
+---------------
 
 .. py:data:: log
 
-   
-
 .. py:exception:: NoNonIntersectionError
 
-
    Bases: :py:obj:`Exception`
+
 
    Exception raised when no non-intersecting area is found.
 
