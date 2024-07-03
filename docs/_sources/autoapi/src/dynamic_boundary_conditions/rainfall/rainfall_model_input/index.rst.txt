@@ -19,14 +19,6 @@ Attributes
    src.dynamic_boundary_conditions.rainfall.rainfall_model_input.log
 
 
-Classes
--------
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.rainfall.rainfall_model_input.RainInputType
-
-
 Functions
 ---------
 
@@ -43,36 +35,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:class:: RainInputType
-
-   Bases: :py:obj:`enum.StrEnum`
-
-
-   Enum class representing different types of rain input used in the BG-Flood Model.
-
-   .. attribute:: UNIFORM
-
-      Spatially uniform rain input.
-
-      :type: str
-
-   .. attribute:: VARYING
-
-      Spatially varying rain input.
-
-      :type: str
-
-
-   .. py:attribute:: UNIFORM
-      :value: 'uniform'
-
-
-
-   .. py:attribute:: VARYING
-      :value: 'varying'
-
-
 
 .. py:data:: log
 

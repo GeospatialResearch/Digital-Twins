@@ -18,14 +18,6 @@ Attributes
    src.dynamic_boundary_conditions.river.hydrograph.log
 
 
-Classes
--------
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.hydrograph.BoundType
-
-
 Functions
 ---------
 
@@ -39,47 +31,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:class:: BoundType
-
-   Bases: :py:obj:`enum.StrEnum`
-
-
-   Enum class representing different types of estimates used in river flow scenarios.
-
-   .. attribute:: LOWER
-
-      Lower bound of a confidence interval.
-
-      :type: str
-
-   .. attribute:: MIDDLE
-
-      Point estimate or sample mean.
-
-      :type: str
-
-   .. attribute:: UPPER
-
-      Upper bound of a confidence interval.
-
-      :type: str
-
-
-   .. py:attribute:: LOWER
-      :value: 'lower'
-
-
-
-   .. py:attribute:: MIDDLE
-      :value: 'middle'
-
-
-
-   .. py:attribute:: UPPER
-      :value: 'upper'
-
-
 
 .. py:data:: log
 

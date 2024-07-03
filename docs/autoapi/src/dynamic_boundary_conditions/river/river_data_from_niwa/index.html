@@ -122,22 +122,19 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.get_nz_boundary" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.get_nz_boundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nz_boundary</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_layer_record_counts</span></code></a>(→ RecordCounts)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_layer_record_counts</span></code></a>(→ RecordCounts)</p></td>
 <td><p>Retrieves the maximum and total record counts from the REC feature layer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_rec_query_param_list</span></code></a>(→ List[Dict[str, Union[str, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_rec_query_param_list</span></code></a>(→ List[Dict[str, Union[str, ...)</p></td>
 <td><p>Generate a list of API query parameters used to retrieve REC data in New Zealand.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Fetch REC data using the provided query parameters within a single API call.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data_for_nz</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data_for_nz</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Iterate over the list of API query parameters to fetch REC data in New Zealand.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data_from_niwa</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa" title="src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_rec_data_from_niwa</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Retrieve REC data in New Zealand from NIWA using the ArcGIS REST API.</p></td>
 </tr>
 </tbody>
@@ -145,26 +142,6 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.get_nz_boundary">
-<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">get_nz_boundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.get_nz_boundary" title="Link to this definition"></a></dt>
-<dd><p>Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>to_crs</strong> (<em>int = 2193</em>) – Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A GeoDataFrame representing the boundary of New Zealand in the specified CRS.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>gpd.GeoDataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py data">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_from_niwa.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_from_niwa.log" title="Link to this definition"></a></dt>

@@ -19,22 +19,11 @@ Attributes
    src.dynamic_boundary_conditions.river.main_river.sample_polygon
 
 
-Classes
--------
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.main_river.LogLevel
-   src.dynamic_boundary_conditions.river.main_river.BoundType
-
-
 Functions
 ---------
 
 .. autoapisummary::
 
-   src.dynamic_boundary_conditions.river.main_river.setup_logging
-   src.dynamic_boundary_conditions.river.main_river.get_catchment_area
    src.dynamic_boundary_conditions.river.main_river.retrieve_hydro_dem_info
    src.dynamic_boundary_conditions.river.main_river.get_hydro_dem_boundary_lines
    src.dynamic_boundary_conditions.river.main_river.remove_existing_river_inputs
@@ -43,143 +32,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:class:: LogLevel
-
-   Bases: :py:obj:`enum.IntEnum`
-
-
-   Enum class representing different logging levels mapped to their corresponding numeric values from the
-   logging library.
-
-   .. attribute:: CRITICAL
-
-      The critical logging level. Corresponds to logging.CRITICAL (50).
-
-      :type: int
-
-   .. attribute:: ERROR
-
-      The error logging level. Corresponds to logging.ERROR (40).
-
-      :type: int
-
-   .. attribute:: WARNING
-
-      The warning logging level. Corresponds to logging.WARNING (30).
-
-      :type: int
-
-   .. attribute:: INFO
-
-      The info logging level. Corresponds to logging.INFO (20).
-
-      :type: int
-
-   .. attribute:: DEBUG
-
-      The debug logging level. Corresponds to logging.DEBUG (10).
-
-      :type: int
-
-   .. attribute:: NOTSET
-
-      The not-set logging level. Corresponds to logging.NOTSET (0).
-
-      :type: int
-
-
-   .. py:attribute:: CRITICAL
-
-
-   .. py:attribute:: ERROR
-
-
-   .. py:attribute:: WARNING
-
-
-   .. py:attribute:: INFO
-
-
-   .. py:attribute:: DEBUG
-
-
-   .. py:attribute:: NOTSET
-
-
-.. py:function:: setup_logging(log_level: LogLevel = LogLevel.INFO) -> None
-
-   Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
-   loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
-   execution of the function in the script.
-
-   :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
-                     The available logging levels and their corresponding numeric values are:
-                     - LogLevel.CRITICAL (50)
-                     - LogLevel.ERROR (40)
-                     - LogLevel.WARNING (30)
-                     - LogLevel.INFO (20)
-                     - LogLevel.DEBUG (10)
-                     - LogLevel.NOTSET (0)
-   :type log_level: LogLevel = LogLevel.DEBUG
-
-   :returns: This function does not return any value.
-   :rtype: None
-
-
-.. py:function:: get_catchment_area(catchment_area: geopandas.GeoDataFrame, to_crs: int = 2193) -> geopandas.GeoDataFrame
-
-   Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.
-
-   :param catchment_area: A GeoDataFrame representing the catchment area.
-   :type catchment_area: gpd.GeoDataFrame
-   :param to_crs: Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
-   :type to_crs: int = 2193
-
-   :returns: A GeoDataFrame representing the catchment area with the transformed CRS.
-   :rtype: gpd.GeoDataFrame
-
-
-.. py:class:: BoundType
-
-   Bases: :py:obj:`enum.StrEnum`
-
-
-   Enum class representing different types of estimates used in river flow scenarios.
-
-   .. attribute:: LOWER
-
-      Lower bound of a confidence interval.
-
-      :type: str
-
-   .. attribute:: MIDDLE
-
-      Point estimate or sample mean.
-
-      :type: str
-
-   .. attribute:: UPPER
-
-      Upper bound of a confidence interval.
-
-      :type: str
-
-
-   .. py:attribute:: LOWER
-      :value: 'lower'
-
-
-
-   .. py:attribute:: MIDDLE
-      :value: 'middle'
-
-
-
-   .. py:attribute:: UPPER
-      :value: 'upper'
-
-
 
 .. py:data:: log
 

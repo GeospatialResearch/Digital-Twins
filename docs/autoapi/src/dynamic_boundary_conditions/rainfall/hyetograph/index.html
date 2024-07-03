@@ -95,16 +95,6 @@
   <section id="module-src.dynamic_boundary_conditions.rainfall.hyetograph">
 <span id="src-dynamic-boundary-conditions-rainfall-hyetograph"></span><h1>src.dynamic_boundary_conditions.rainfall.hyetograph<a class="headerlink" href="#module-src.dynamic_boundary_conditions.rainfall.hyetograph" title="Link to this heading"></a></h1>
 <p>Get hyetograph data and generate interactive hyetograph plots for sites located within the catchment area.</p>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HyetoMethod</span></code></a></p></td>
-<td><p>Enum class representing different hyetograph methods.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
@@ -144,45 +134,6 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hyetograph.</span></span><span class="sig-name descname"><span class="pre">HyetoMethod</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.StrEnum</span></code></p>
-<p>Enum class representing different hyetograph methods.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod.ALT_BLOCK">
-<span class="sig-name descname"><span class="pre">ALT_BLOCK</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod.ALT_BLOCK" title="Link to this definition"></a></dt>
-<dd><p>Alternating Block Method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod.CHICAGO">
-<span class="sig-name descname"><span class="pre">CHICAGO</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod.CHICAGO" title="Link to this definition"></a></dt>
-<dd><p>Chicago Method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">ALT_BLOCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'alt_block'</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">CHICAGO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'chicago'</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.rainfall.hyetograph.get_transposed_data">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.rainfall.hyetograph.</span></span><span class="sig-name descname"><span class="pre">get_transposed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rain_depth_in_catchment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.get_transposed_data" title="Link to this definition"></a></dt>
@@ -285,7 +236,7 @@ selected hyetograph method.</p>
 <li><p><strong>storm_length_mins</strong> (<em>int</em>) – Storm duration in minutes.</p></li>
 <li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when rainfall is at its greatest (reaches maximum).</p></li>
 <li><p><strong>increment_mins</strong> (<em>int</em>) – Time interval in minutes.</p></li>
-<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used.</p></li>
+<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -313,7 +264,7 @@ in Pandas DataFrame format.</p>
 <li><p><strong>storm_length_mins</strong> (<em>int</em>) – Storm duration in minutes.</p></li>
 <li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when rainfall is at its greatest (reaches maximum).</p></li>
 <li><p><strong>increment_mins</strong> (<em>int</em>) – Time interval in minutes.</p></li>
-<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used.</p></li>
+<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -334,7 +285,7 @@ in Pandas DataFrame format.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hyetograph_depth</strong> (<em>pd.DataFrame</em>) – Hyetograph depths data for sites within the catchment area.</p></li>
 <li><p><strong>increment_mins</strong> (<em>int</em>) – Time interval in minutes.</p></li>
-<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used.</p></li>
+<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -359,7 +310,7 @@ in Pandas DataFrame format.</p>
 <li><p><strong>increment_mins</strong> (<em>int</em>) – Time interval in minutes.</p></li>
 <li><p><strong>interp_method</strong> (<em>str</em>) – Temporal interpolation method to be used. Refer to ‘scipy.interpolate.interp1d()’ for available methods.
 One of ‘linear’, ‘nearest’, ‘nearest-up’, ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’, ‘previous’, or ‘next’.</p></li>
-<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="#src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used.</p></li>
+<li><p><strong>hyeto_method</strong> (<a class="reference internal" href="../rainfall_enum/index.html#src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod" title="src.dynamic_boundary_conditions.rainfall.rainfall_enum.HyetoMethod"><em>HyetoMethod</em></a>) – Hyetograph method to be used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

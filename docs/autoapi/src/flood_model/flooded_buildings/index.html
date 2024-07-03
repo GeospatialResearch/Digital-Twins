@@ -97,22 +97,19 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.create_building_database_views_if_not_exists" title="src.flood_model.flooded_buildings.create_building_database_views_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_database_views_if_not_exists</span></code></a>(→ None)</p></td>
-<td><p>Creates a geoserver workspace and building layers using database views if they do not currently exist.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.store_flooded_buildings_in_database" title="src.flood_model.flooded_buildings.store_flooded_buildings_in_database"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_flooded_buildings_in_database</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.store_flooded_buildings_in_database" title="src.flood_model.flooded_buildings.store_flooded_buildings_in_database"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_flooded_buildings_in_database</span></code></a>(→ None)</p></td>
 <td><p>Appends the details of which buildings are flooded for a given flood_model_id to the database</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.find_flooded_buildings" title="src.flood_model.flooded_buildings.find_flooded_buildings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_flooded_buildings</span></code></a>(→ pandas.DataFrame)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.find_flooded_buildings" title="src.flood_model.flooded_buildings.find_flooded_buildings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_flooded_buildings</span></code></a>(→ pandas.DataFrame)</p></td>
 <td><p>Creates a building DataFrame with attribute &quot;is_flooded&quot;,</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.categorise_buildings_as_flooded" title="src.flood_model.flooded_buildings.categorise_buildings_as_flooded"><code class="xref py py-obj docutils literal notranslate"><span class="pre">categorise_buildings_as_flooded</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.categorise_buildings_as_flooded" title="src.flood_model.flooded_buildings.categorise_buildings_as_flooded"><code class="xref py py-obj docutils literal notranslate"><span class="pre">categorise_buildings_as_flooded</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Identifies all buildings in building_polygons that intersect with areas in flooded_polygons.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.retrieve_building_outlines" title="src.flood_model.flooded_buildings.retrieve_building_outlines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retrieve_building_outlines</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.retrieve_building_outlines" title="src.flood_model.flooded_buildings.retrieve_building_outlines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retrieve_building_outlines</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Retrieve building outlines for an area of interest from the database</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.polygonize_flooded_area" title="src.flood_model.flooded_buildings.polygonize_flooded_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polygonize_flooded_area</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.flooded_buildings.polygonize_flooded_area" title="src.flood_model.flooded_buildings.polygonize_flooded_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polygonize_flooded_area</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Takes a flood depth raster and applies depth thresholding on it so that only areas</p></td>
 </tr>
 </tbody>
@@ -120,21 +117,6 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.flooded_buildings.create_building_database_views_if_not_exists">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.flooded_buildings.</span></span><span class="sig-name descname"><span class="pre">create_building_database_views_if_not_exists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.flooded_buildings.create_building_database_views_if_not_exists" title="Link to this definition"></a></dt>
-<dd><p>Creates a geoserver workspace and building layers using database views if they do not currently exist.
-These only need to be created once per database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>This function does not return anything.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="src.flood_model.flooded_buildings.store_flooded_buildings_in_database">
 <span class="sig-prename descclassname"><span class="pre">src.flood_model.flooded_buildings.</span></span><span class="sig-name descname"><span class="pre">store_flooded_buildings_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flood_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.flooded_buildings.store_flooded_buildings_in_database" title="Link to this definition"></a></dt>

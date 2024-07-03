@@ -105,39 +105,26 @@ the ‘geospatial_layers’ table of the database.</p>
 </tbody>
 </table>
 </section>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers" title="src.digitaltwin.instructions_records_to_db.GeospatialLayers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeospatialLayers</span></code></a></p></td>
-<td><p>Class representing the 'geospatial_layers' table.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.create_table" title="src.digitaltwin.instructions_records_to_db.create_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_table</span></code></a>(→ None)</p></td>
-<td><p>Create a table in the database if it doesn't already exist, using the provided engine.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.validate_url_reachability" title="src.digitaltwin.instructions_records_to_db.validate_url_reachability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_url_reachability</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.validate_url_reachability" title="src.digitaltwin.instructions_records_to_db.validate_url_reachability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_url_reachability</span></code></a>(→ None)</p></td>
 <td><p>Validate the URL by checking its format and reachability.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.validate_instruction_fields" title="src.digitaltwin.instructions_records_to_db.validate_instruction_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_instruction_fields</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.validate_instruction_fields" title="src.digitaltwin.instructions_records_to_db.validate_instruction_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_instruction_fields</span></code></a>(→ None)</p></td>
 <td><p>Validate the fields of an instruction.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file" title="src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_and_check_instructions_file</span></code></a>(→ pandas.DataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file" title="src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_and_check_instructions_file</span></code></a>(→ pandas.DataFrame)</p></td>
 <td><p>Read and check the static_boundary_instructions file, validating URLs and instruction fields.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers" title="src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_geospatial_layers</span></code></a>(→ pandas.DataFrame)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers" title="src.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_geospatial_layers</span></code></a>(→ pandas.DataFrame)</p></td>
 <td><p>Retrieve existing geospatial layers from the 'geospatial_layers' table.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.get_non_existing_records" title="src.digitaltwin.instructions_records_to_db.get_non_existing_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_non_existing_records</span></code></a>(→ pandas.DataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.get_non_existing_records" title="src.digitaltwin.instructions_records_to_db.get_non_existing_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_non_existing_records</span></code></a>(→ pandas.DataFrame)</p></td>
 <td><p>Get 'static_boundary_instructions' records that are not available in the database.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db" title="src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_instructions_records_to_db</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db" title="src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_instructions_records_to_db</span></code></a>(→ None)</p></td>
 <td><p>Store 'static_boundary_instructions' records in the 'geospatial_layers' table in the database.</p></td>
 </tr>
 </tbody>
@@ -145,166 +132,6 @@ the ‘geospatial_layers’ table of the database.</p>
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">GeospatialLayers</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Class representing the ‘geospatial_layers’ table.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.__tablename__">
-<span class="sig-name descname"><span class="pre">__tablename__</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.__tablename__" title="Link to this definition"></a></dt>
-<dd><p>Name of the database table.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.unique_id">
-<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.unique_id" title="Link to this definition"></a></dt>
-<dd><p>Unique identifier for each geospatial layer entry (primary key).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.data_provider">
-<span class="sig-name descname"><span class="pre">data_provider</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.data_provider" title="Link to this definition"></a></dt>
-<dd><p>Name of the data provider.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.layer_id">
-<span class="sig-name descname"><span class="pre">layer_id</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.layer_id" title="Link to this definition"></a></dt>
-<dd><p>Identifier for the layer.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.table_name">
-<span class="sig-name descname"><span class="pre">table_name</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.table_name" title="Link to this definition"></a></dt>
-<dd><p>Name of the table containing the data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.unique_column_name">
-<span class="sig-name descname"><span class="pre">unique_column_name</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.unique_column_name" title="Link to this definition"></a></dt>
-<dd><p>Name of the unique column in the table.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.coverage_area">
-<span class="sig-name descname"><span class="pre">coverage_area</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.coverage_area" title="Link to this definition"></a></dt>
-<dd><p>Coverage area of the geospatial data, e.g. ‘New Zealand’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.url">
-<span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.url" title="Link to this definition"></a></dt>
-<dd><p>URL pointing to the geospatial layer.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">__tablename__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'geospatial_layers'</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">data_provider</span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">layer_id</span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">table_name</span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">unique_column_name</span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">coverage_area</span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.GeospatialLayers.__table_args__">
-<span class="sig-name descname"><span class="pre">__table_args__</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.GeospatialLayers.__table_args__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.create_table">
-<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">create_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.create_table" title="Link to this definition"></a></dt>
-<dd><p>Create a table in the database if it doesn’t already exist, using the provided engine.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>table</strong> (<em>Base</em>) – Class representing the table to create.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This function does not return any value.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py data">
 <dt class="sig sig-object py" id="src.digitaltwin.instructions_records_to_db.log">
 <span class="sig-prename descclassname"><span class="pre">src.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.digitaltwin.instructions_records_to_db.log" title="Link to this definition"></a></dt>
