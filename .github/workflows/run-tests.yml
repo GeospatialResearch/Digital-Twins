@@ -72,6 +72,8 @@ jobs:
           echo $ENV_BASE64 | base64 -d > .env
 
       - name: Run tests with pytest
+        env:
+          TEST_DATABASE_INTEGRATION: "false"
         run: |
           pytest
 
