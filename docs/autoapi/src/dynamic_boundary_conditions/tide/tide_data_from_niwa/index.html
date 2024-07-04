@@ -111,19 +111,6 @@
 </tbody>
 </table>
 </section>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.DatumType" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.DatumType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DatumType</span></code></a></p></td>
-<td><p>Enum class representing different datum types.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.ApproachType" title="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.ApproachType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ApproachType</span></code></a></p></td>
-<td><p>Enum class representing different types of approaches.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
@@ -175,84 +162,6 @@
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.DatumType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">DatumType</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.DatumType" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.StrEnum</span></code></p>
-<p>Enum class representing different datum types.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.DatumType.LAT">
-<span class="sig-name descname"><span class="pre">LAT</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.DatumType.LAT" title="Link to this definition"></a></dt>
-<dd><p>Lowest astronomical tide.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.DatumType.MSL">
-<span class="sig-name descname"><span class="pre">MSL</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.DatumType.MSL" title="Link to this definition"></a></dt>
-<dd><p>Mean sea level.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">LAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lat'</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">MSL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'msl'</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.ApproachType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">ApproachType</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.ApproachType" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.StrEnum</span></code></p>
-<p>Enum class representing different types of approaches.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.ApproachType.KING_TIDE">
-<span class="sig-name descname"><span class="pre">KING_TIDE</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.ApproachType.KING_TIDE" title="Link to this definition"></a></dt>
-<dd><p>King Tide approach.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.ApproachType.PERIOD_TIDE">
-<span class="sig-name descname"><span class="pre">PERIOD_TIDE</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.ApproachType.PERIOD_TIDE" title="Link to this definition"></a></dt>
-<dd><p>Period Tide approach.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">KING_TIDE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'king_tide'</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">PERIOD_TIDE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'period_tide'</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="py data">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.tide_data_from_niwa.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.tide_data_from_niwa.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.tide_data_from_niwa.log" title="Link to this definition"></a></dt>

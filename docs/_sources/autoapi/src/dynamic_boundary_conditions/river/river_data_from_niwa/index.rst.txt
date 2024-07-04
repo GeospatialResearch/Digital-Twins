@@ -31,7 +31,6 @@ Functions
 
 .. autoapisummary::
 
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.get_nz_boundary
    src.dynamic_boundary_conditions.river.river_data_from_niwa.get_feature_layer_record_counts
    src.dynamic_boundary_conditions.river.river_data_from_niwa.gen_rec_query_param_list
    src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data
@@ -41,19 +40,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:function:: get_nz_boundary(engine: sqlalchemy.engine.Engine, to_crs: int = 2193) -> geopandas.GeoDataFrame
-
-   Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).
-
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
-   :param to_crs: Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.
-   :type to_crs: int = 2193
-
-   :returns: A GeoDataFrame representing the boundary of New Zealand in the specified CRS.
-   :rtype: gpd.GeoDataFrame
-
 
 .. py:data:: log
 

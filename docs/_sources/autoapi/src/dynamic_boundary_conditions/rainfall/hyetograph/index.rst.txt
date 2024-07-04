@@ -9,14 +9,6 @@ src.dynamic_boundary_conditions.rainfall.hyetograph
 
 
 
-Classes
--------
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.rainfall.hyetograph.HyetoMethod
-
-
 Functions
 ---------
 
@@ -36,36 +28,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:class:: HyetoMethod
-
-   Bases: :py:obj:`enum.StrEnum`
-
-
-   Enum class representing different hyetograph methods.
-
-   .. attribute:: ALT_BLOCK
-
-      Alternating Block Method.
-
-      :type: str
-
-   .. attribute:: CHICAGO
-
-      Chicago Method.
-
-      :type: str
-
-
-   .. py:attribute:: ALT_BLOCK
-      :value: 'alt_block'
-
-
-
-   .. py:attribute:: CHICAGO
-      :value: 'chicago'
-
-
 
 .. py:function:: get_transposed_data(rain_depth_in_catchment: pandas.DataFrame) -> pandas.DataFrame
 

@@ -18,20 +18,11 @@ Attributes
    src.digitaltwin.instructions_records_to_db.log
 
 
-Classes
--------
-
-.. autoapisummary::
-
-   src.digitaltwin.instructions_records_to_db.GeospatialLayers
-
-
 Functions
 ---------
 
 .. autoapisummary::
 
-   src.digitaltwin.instructions_records_to_db.create_table
    src.digitaltwin.instructions_records_to_db.validate_url_reachability
    src.digitaltwin.instructions_records_to_db.validate_instruction_fields
    src.digitaltwin.instructions_records_to_db.read_and_check_instructions_file
@@ -42,104 +33,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:class:: GeospatialLayers
-
-   Bases: :py:obj:`Base`
-
-
-   Class representing the 'geospatial_layers' table.
-
-   .. attribute:: __tablename__
-
-      Name of the database table.
-
-      :type: str
-
-   .. attribute:: unique_id
-
-      Unique identifier for each geospatial layer entry (primary key).
-
-      :type: int
-
-   .. attribute:: data_provider
-
-      Name of the data provider.
-
-      :type: str
-
-   .. attribute:: layer_id
-
-      Identifier for the layer.
-
-      :type: int
-
-   .. attribute:: table_name
-
-      Name of the table containing the data.
-
-      :type: str
-
-   .. attribute:: unique_column_name
-
-      Name of the unique column in the table.
-
-      :type: Optional[str]
-
-   .. attribute:: coverage_area
-
-      Coverage area of the geospatial data, e.g. 'New Zealand'.
-
-      :type: Optional[str]
-
-   .. attribute:: url
-
-      URL pointing to the geospatial layer.
-
-      :type: str
-
-
-   .. py:attribute:: __tablename__
-      :value: 'geospatial_layers'
-
-
-
-   .. py:attribute:: unique_id
-
-
-   .. py:attribute:: data_provider
-
-
-   .. py:attribute:: layer_id
-
-
-   .. py:attribute:: table_name
-
-
-   .. py:attribute:: unique_column_name
-
-
-   .. py:attribute:: coverage_area
-
-
-   .. py:attribute:: url
-
-
-   .. py:attribute:: __table_args__
-
-
-.. py:function:: create_table(engine: sqlalchemy.engine.Engine, table: Base) -> None
-
-   Create a table in the database if it doesn't already exist, using the provided engine.
-
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
-   :param table: Class representing the table to create.
-   :type table: Base
-
-   :returns: This function does not return any value.
-   :rtype: None
-
 
 .. py:data:: log
 

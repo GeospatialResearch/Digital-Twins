@@ -15,7 +15,6 @@ Attributes
 
 .. autoapisummary::
 
-   src.tasks.DEFAULT_MODULES_TO_PARAMETERS
    src.tasks.message_broker_url
    src.tasks.app
    src.tasks.log
@@ -35,8 +34,6 @@ Functions
 
 .. autoapisummary::
 
-   src.tasks.get_env_variable
-   src.tasks.setup_logging
    src.tasks.create_model_for_area
    src.tasks.ensure_lidar_datasets_initialised
    src.tasks.add_base_data_to_db
@@ -54,48 +51,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:function:: get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: Type[T] = str) -> T
-
-   Reads an environment variable, with settings to allow defaults, empty values, and type casting
-   To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
-
-   :param var_name: The name of the environment variable to retrieve.
-   :type var_name: str
-   :param default: Default return value if the environment variable does not exist. Doesn't override empty string vars.
-   :type default: T = None
-   :param allow_empty: If False then a KeyError will be raised if the environment variable is empty.
-   :type allow_empty: bool
-   :param cast_to: The type to cast to e.g. str, int, or bool
-   :type cast_to: Type[T]
-
-   :rtype: The environment variable, or default if it does not exist, as type T.
-
-   :raises KeyError: If allow_empty is False and the environment variable is empty string or None
-   :raises ValueError: If cast_to is not compatible with the value stored.
-
-
-.. py:function:: setup_logging(log_level: LogLevel = LogLevel.INFO) -> None
-
-   Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
-   loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
-   execution of the function in the script.
-
-   :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
-                     The available logging levels and their corresponding numeric values are:
-                     - LogLevel.CRITICAL (50)
-                     - LogLevel.ERROR (40)
-                     - LogLevel.WARNING (30)
-                     - LogLevel.INFO (20)
-                     - LogLevel.DEBUG (10)
-                     - LogLevel.NOTSET (0)
-   :type log_level: LogLevel = LogLevel.DEBUG
-
-   :returns: This function does not return any value.
-   :rtype: None
-
-
-.. py:data:: DEFAULT_MODULES_TO_PARAMETERS
 
 .. py:data:: message_broker_url
 

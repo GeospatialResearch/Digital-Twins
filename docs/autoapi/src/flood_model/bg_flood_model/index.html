@@ -111,81 +111,47 @@ resulting model output metadata in the database, and incorporates the model outp
 </tbody>
 </table>
 </section>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.BGFloodModelOutput" title="src.flood_model.bg_flood_model.BGFloodModelOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BGFloodModelOutput</span></code></a></p></td>
-<td><p>Class representing the 'bg_flood_model_output' table.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.LogLevel" title="src.flood_model.bg_flood_model.LogLevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LogLevel</span></code></a></p></td>
-<td><p>Enum class representing different logging levels mapped to their corresponding numeric values from the</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.create_table" title="src.flood_model.bg_flood_model.create_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_table</span></code></a>(→ None)</p></td>
-<td><p>Create a table in the database if it doesn't already exist, using the provided engine.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.check_table_exists" title="src.flood_model.bg_flood_model.check_table_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_table_exists</span></code></a>(→ bool)</p></td>
-<td><p>Check if a table exists in the database.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.setup_logging" title="src.flood_model.bg_flood_model.setup_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_logging</span></code></a>(→ None)</p></td>
-<td><p>Configures the root logger with the specified log level and formats, captures warnings, and excludes specific</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.get_catchment_area" title="src.flood_model.bg_flood_model.get_catchment_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_catchment_area</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.find_flooded_buildings" title="src.flood_model.bg_flood_model.find_flooded_buildings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_flooded_buildings</span></code></a>(→ pandas.DataFrame)</p></td>
-<td><p>Creates a building DataFrame with attribute &quot;is_flooded&quot;,</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.store_flooded_buildings_in_database" title="src.flood_model.bg_flood_model.store_flooded_buildings_in_database"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_flooded_buildings_in_database</span></code></a>(→ None)</p></td>
-<td><p>Appends the details of which buildings are flooded for a given flood_model_id to the database</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.add_model_output_to_geoserver" title="src.flood_model.bg_flood_model.add_model_output_to_geoserver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_output_to_geoserver</span></code></a>(→ None)</p></td>
-<td><p>Adds the model output max depths to GeoServer, ready for serving.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.get_valid_bg_flood_dir" title="src.flood_model.bg_flood_model.get_valid_bg_flood_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_bg_flood_dir</span></code></a>(→ pathlib.Path)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.get_valid_bg_flood_dir" title="src.flood_model.bg_flood_model.get_valid_bg_flood_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_bg_flood_dir</span></code></a>(→ pathlib.Path)</p></td>
 <td><p>Get the valid BG-Flood Model directory.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.get_new_model_output_path" title="src.flood_model.bg_flood_model.get_new_model_output_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_new_model_output_path</span></code></a>(→ pathlib.Path)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.get_new_model_output_path" title="src.flood_model.bg_flood_model.get_new_model_output_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_new_model_output_path</span></code></a>(→ pathlib.Path)</p></td>
 <td><p>Get a new file path for saving the BG Flood model output with the current timestamp included in the filename.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.get_model_output_metadata" title="src.flood_model.bg_flood_model.get_model_output_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_output_metadata</span></code></a>(→ Tuple[str, str, str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.get_model_output_metadata" title="src.flood_model.bg_flood_model.get_model_output_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_output_metadata</span></code></a>(→ Tuple[str, str, str])</p></td>
 <td><p>Get metadata related to the BG Flood model output.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.store_model_output_metadata_to_db" title="src.flood_model.bg_flood_model.store_model_output_metadata_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_model_output_metadata_to_db</span></code></a>(→ int)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.store_model_output_metadata_to_db" title="src.flood_model.bg_flood_model.store_model_output_metadata_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_model_output_metadata_to_db</span></code></a>(→ int)</p></td>
 <td><p>Store metadata related to the BG Flood model output in the database.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.model_output_from_db_by_id" title="src.flood_model.bg_flood_model.model_output_from_db_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_output_from_db_by_id</span></code></a>(→ pathlib.Path)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.model_output_from_db_by_id" title="src.flood_model.bg_flood_model.model_output_from_db_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_output_from_db_by_id</span></code></a>(→ pathlib.Path)</p></td>
 <td><p>Retrieves the path to the model output file from the database by model_id</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.model_extents_from_db_by_id" title="src.flood_model.bg_flood_model.model_extents_from_db_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_extents_from_db_by_id</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.model_extents_from_db_by_id" title="src.flood_model.bg_flood_model.model_extents_from_db_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_extents_from_db_by_id</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Finds the extents of a model output in gpd.GeoDataFrame format</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.add_crs_to_model_output" title="src.flood_model.bg_flood_model.add_crs_to_model_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_crs_to_model_output</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.add_crs_to_model_output" title="src.flood_model.bg_flood_model.add_crs_to_model_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_crs_to_model_output</span></code></a>(→ None)</p></td>
 <td><p>Add Coordinate Reference System (CRS) to the BG-Flood model output.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_rain_input_files" title="src.flood_model.bg_flood_model.process_rain_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_rain_input_files</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_rain_input_files" title="src.flood_model.bg_flood_model.process_rain_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_rain_input_files</span></code></a>(→ None)</p></td>
 <td><p>Process rain input files and write their parameter values to the BG-Flood parameter file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_boundary_input_files" title="src.flood_model.bg_flood_model.process_boundary_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_boundary_input_files</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_boundary_input_files" title="src.flood_model.bg_flood_model.process_boundary_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_boundary_input_files</span></code></a>(→ None)</p></td>
 <td><p>Process uniform boundary input files and write their parameter values to the BG-Flood parameter file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_river_input_files" title="src.flood_model.bg_flood_model.process_river_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_river_input_files</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.process_river_input_files" title="src.flood_model.bg_flood_model.process_river_input_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_river_input_files</span></code></a>(→ None)</p></td>
 <td><p>Process river input files, rename them, and write their parameter values to the BG-Flood parameter file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs" title="src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_bg_flood_model_inputs</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs" title="src.flood_model.bg_flood_model.prepare_bg_flood_model_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_bg_flood_model_inputs</span></code></a>(→ None)</p></td>
 <td><p>Prepare inputs for the BG-Flood Model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.run_bg_flood_model" title="src.flood_model.bg_flood_model.run_bg_flood_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bg_flood_model</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.run_bg_flood_model" title="src.flood_model.bg_flood_model.run_bg_flood_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bg_flood_model</span></code></a>(→ None)</p></td>
 <td><p>Run the BG-Flood Model for the specified catchment area.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.main" title="src.flood_model.bg_flood_model.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ int)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.bg_flood_model.main" title="src.flood_model.bg_flood_model.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ int)</p></td>
 <td><p>Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer</p></td>
 </tr>
 </tbody>
@@ -193,366 +159,6 @@ resulting model output metadata in the database, and incorporates the model outp
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.BGFloodModelOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">BGFloodModelOutput</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.BGFloodModelOutput" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#src.flood_model.bg_flood_model.Base" title="src.flood_model.bg_flood_model.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Base</span></code></a></p>
-<p>Class representing the ‘bg_flood_model_output’ table.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.BGFloodModelOutput.__tablename__">
-<span class="sig-name descname"><span class="pre">__tablename__</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.BGFloodModelOutput.__tablename__" title="Link to this definition"></a></dt>
-<dd><p>Name of the database table.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.BGFloodModelOutput.unique_id">
-<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.BGFloodModelOutput.unique_id" title="Link to this definition"></a></dt>
-<dd><p>Unique identifier for each entry (primary key).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.BGFloodModelOutput.file_name">
-<span class="sig-name descname"><span class="pre">file_name</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.BGFloodModelOutput.file_name" title="Link to this definition"></a></dt>
-<dd><p>Name of the flood model output file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.BGFloodModelOutput.file_path">
-<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.BGFloodModelOutput.file_path" title="Link to this definition"></a></dt>
-<dd><p>Path to the flood model output file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.BGFloodModelOutput.created_at">
-<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.BGFloodModelOutput.created_at" title="Link to this definition"></a></dt>
-<dd><p>Timestamp indicating when the output was created.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>datetime</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.BGFloodModelOutput.geometry">
-<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.BGFloodModelOutput.geometry" title="Link to this definition"></a></dt>
-<dd><p>Geometric representation of the catchment area coverage.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Polygon</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">__tablename__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bg_flood_model_output'</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">unique_id</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">file_name</span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.create_table">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">create_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.create_table" title="Link to this definition"></a></dt>
-<dd><p>Create a table in the database if it doesn’t already exist, using the provided engine.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>table</strong> (<em>Base</em>) – Class representing the table to create.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This function does not return any value.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.check_table_exists">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">check_table_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'public'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.check_table_exists" title="Link to this definition"></a></dt>
-<dd><p>Check if a table exists in the database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table to check for existence.</p></li>
-<li><p><strong>schema</strong> (<em>str = &quot;public&quot;</em>) – The name of the schema where the table resides. Defaults to “public”.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the table exists, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.LogLevel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">LogLevel</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.LogLevel" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
-<p>Enum class representing different logging levels mapped to their corresponding numeric values from the
-logging library.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.LogLevel.CRITICAL">
-<span class="sig-name descname"><span class="pre">CRITICAL</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.LogLevel.CRITICAL" title="Link to this definition"></a></dt>
-<dd><p>The critical logging level. Corresponds to logging.CRITICAL (50).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.LogLevel.ERROR">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.LogLevel.ERROR" title="Link to this definition"></a></dt>
-<dd><p>The error logging level. Corresponds to logging.ERROR (40).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.LogLevel.WARNING">
-<span class="sig-name descname"><span class="pre">WARNING</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.LogLevel.WARNING" title="Link to this definition"></a></dt>
-<dd><p>The warning logging level. Corresponds to logging.WARNING (30).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.LogLevel.INFO">
-<span class="sig-name descname"><span class="pre">INFO</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.LogLevel.INFO" title="Link to this definition"></a></dt>
-<dd><p>The info logging level. Corresponds to logging.INFO (20).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.LogLevel.DEBUG">
-<span class="sig-name descname"><span class="pre">DEBUG</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.LogLevel.DEBUG" title="Link to this definition"></a></dt>
-<dd><p>The debug logging level. Corresponds to logging.DEBUG (10).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.LogLevel.NOTSET">
-<span class="sig-name descname"><span class="pre">NOTSET</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.LogLevel.NOTSET" title="Link to this definition"></a></dt>
-<dd><p>The not-set logging level. Corresponds to logging.NOTSET (0).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">CRITICAL</span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">WARNING</span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id9">
-<span class="sig-name descname"><span class="pre">INFO</span></span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id10">
-<span class="sig-name descname"><span class="pre">DEBUG</span></span><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id11">
-<span class="sig-name descname"><span class="pre">NOTSET</span></span><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.setup_logging">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.flood_model.bg_flood_model.LogLevel" title="src.flood_model.bg_flood_model.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.setup_logging" title="Link to this definition"></a></dt>
-<dd><p>Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
-loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
-execution of the function in the script.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log_level</strong> (<em>LogLevel = LogLevel.DEBUG</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
-The available logging levels and their corresponding numeric values are:
-- LogLevel.CRITICAL (50)
-- LogLevel.ERROR (40)
-- LogLevel.WARNING (30)
-- LogLevel.INFO (20)
-- LogLevel.DEBUG (10)
-- LogLevel.NOTSET (0)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This function does not return any value.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.get_catchment_area">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">get_catchment_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2193</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.get_catchment_area" title="Link to this definition"></a></dt>
-<dd><p>Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
-<li><p><strong>to_crs</strong> (<em>int = 2193</em>) – Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A GeoDataFrame representing the catchment area with the transformed CRS.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>gpd.GeoDataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.find_flooded_buildings">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">find_flooded_buildings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flood_model_output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flood_depth_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.find_flooded_buildings" title="Link to this definition"></a></dt>
-<dd><p>Creates a building DataFrame with attribute “is_flooded”,
-depending on if the area for each building is flooded to a depth greater than or equal to flood_depth_threshold.
-the index, building_outline_id, matches building_outline_id from nz_building_outline table.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The sqlalchemy database connection engine</p></li>
-<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame with a polygon specifying the area to get buildings for.</p></li>
-<li><p><strong>flood_model_output_path</strong> (<em>pathlib.Path</em>) – Path to the flood model output file to be read.</p></li>
-<li><p><strong>flood_depth_threshold</strong> (<em>float</em>) – The minimum depth required to designate a pixel in the raster as flooded.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pd.DataFrame specifying if each building is flooded or not.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.store_flooded_buildings_in_database">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">store_flooded_buildings_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flood_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.store_flooded_buildings_in_database" title="Link to this definition"></a></dt>
-<dd><p>Appends the details of which buildings are flooded for a given flood_model_id to the database</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The sqlalchemy database connection engine</p></li>
-<li><p><strong>buildings</strong> (<em>pd.DataFrame</em>) – DataFrame containing a mapping of building_ids to their flood status for the current model run</p></li>
-<li><p><strong>flood_model_id</strong> (<em>float</em>) – The id of the current flood model run, to associate with the building flood data.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This function does not return anything</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.flood_model.bg_flood_model.add_model_output_to_geoserver">
-<span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">add_model_output_to_geoserver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.add_model_output_to_geoserver" title="Link to this definition"></a></dt>
-<dd><p>Adds the model output max depths to GeoServer, ready for serving.
-The GeoServer layer name will be f”Output_{model_id}” and the workspace name will be “{db_name}-dt-model-outputs”</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model_output_path</strong> (<em>pathlib.Path</em>) – The file path to the model output to serve.</p></li>
-<li><p><strong>model_id</strong> (<em>int</em>) – The database id of the model output.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This function does not return anything</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py data">
 <dt class="sig sig-object py" id="src.flood_model.bg_flood_model.log">
 <span class="sig-prename descclassname"><span class="pre">src.flood_model.bg_flood_model.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.flood_model.bg_flood_model.log" title="Link to this definition"></a></dt>

@@ -28,7 +28,6 @@ Functions
 
 .. autoapisummary::
 
-   src.app.get_env_variable
    src.app.check_celery_alive
    src.app.index
    src.app.health_check
@@ -45,26 +44,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:function:: get_env_variable(var_name: str, default: T = None, allow_empty: bool = False, cast_to: Type[T] = str) -> T
-
-   Reads an environment variable, with settings to allow defaults, empty values, and type casting
-   To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
-
-   :param var_name: The name of the environment variable to retrieve.
-   :type var_name: str
-   :param default: Default return value if the environment variable does not exist. Doesn't override empty string vars.
-   :type default: T = None
-   :param allow_empty: If False then a KeyError will be raised if the environment variable is empty.
-   :type allow_empty: bool
-   :param cast_to: The type to cast to e.g. str, int, or bool
-   :type cast_to: Type[T]
-
-   :rtype: The environment variable, or default if it does not exist, as type T.
-
-   :raises KeyError: If allow_empty is False and the environment variable is empty string or None
-   :raises ValueError: If cast_to is not compatible with the value stored.
-
 
 .. py:data:: app
 
