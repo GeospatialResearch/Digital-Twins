@@ -10,11 +10,8 @@ import math
 from enum import StrEnum
 
 import geopandas as gpd
-import numpy as np
-import xarray as xr
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql import text
 
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
@@ -382,7 +379,7 @@ def run_pollution_model_rain_event(
                                                                           total_zinc_load=curr_total_zinc,
                                                                           surface_type=surface_type)
         all_buildings.loc[index] = [index, surface_area, surface_type, curr_tss,
-                                 curr_total_copper, curr_total_zinc, curr_dissolved_copper, curr_dissolved_zinc]
+                                    curr_total_copper, curr_total_zinc, curr_dissolved_copper, curr_dissolved_zinc]
         # print(all_buildings.loc[{'row': i, 'col': "TSS"}])
         # all_buildings.loc[{'row': i, 'col': 'TSS'}] = curr_tss
         # all_buildings.loc[{'row': i, 'col': 'TCu'}] = curr_total_copper
