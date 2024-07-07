@@ -1,5 +1,5 @@
-:py:mod:`src.digitaltwin.retrieve_static_boundaries`
-====================================================
+src.digitaltwin.retrieve_static_boundaries
+==========================================
 
 .. py:module:: src.digitaltwin.retrieve_static_boundaries
 
@@ -10,26 +10,24 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.digitaltwin.retrieve_static_boundaries.sample_polygon
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    src.digitaltwin.retrieve_static_boundaries.main
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.digitaltwin.retrieve_static_boundaries.sample_polygon
-
+Module Contents
+---------------
 
 .. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, log_level: src.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> None
 
@@ -54,6 +52,4 @@ Attributes
 
 
 .. py:data:: sample_polygon
-
-   
 

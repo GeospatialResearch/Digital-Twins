@@ -1,5 +1,5 @@
-:py:mod:`src.digitaltwin.utils`
-===============================
+src.digitaltwin.utils
+=====================
 
 .. py:module:: src.digitaltwin.utils
 
@@ -9,20 +9,24 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.digitaltwin.utils.log
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    src.digitaltwin.utils.LogLevel
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -32,23 +36,15 @@ Functions
    src.digitaltwin.utils.get_nz_boundary
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.digitaltwin.utils.log
-
+Module Contents
+---------------
 
 .. py:data:: log
 
-   
-
 .. py:class:: LogLevel
 
-
    Bases: :py:obj:`enum.IntEnum`
+
 
    Enum class representing different logging levels mapped to their corresponding numeric values from the
    logging library.
@@ -89,29 +85,23 @@ Attributes
 
       :type: int
 
+
    .. py:attribute:: CRITICAL
 
-      
 
    .. py:attribute:: ERROR
 
-      
 
    .. py:attribute:: WARNING
 
-      
 
    .. py:attribute:: INFO
 
-      
 
    .. py:attribute:: DEBUG
 
-      
 
    .. py:attribute:: NOTSET
-
-      
 
 
 .. py:function:: log_execution_info() -> None

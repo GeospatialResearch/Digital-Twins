@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.river_network_for_aoi`
-=====================================================================
+src.dynamic_boundary_conditions.river.river_network_for_aoi
+===========================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.river_network_for_aoi
 
@@ -9,12 +9,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_network_for_aoi.log
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -32,18 +36,10 @@ Functions
    src.dynamic_boundary_conditions.river.river_network_for_aoi.get_rec_river_network
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.river_network_for_aoi.log
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: get_unique_nodes_dict(rec_data_w_node_coords: geopandas.GeoDataFrame) -> Dict[shapely.geometry.Point, int]
 

@@ -1,5 +1,5 @@
-:py:mod:`src.digitaltwin.setup_environment`
-===========================================
+src.digitaltwin.setup_environment
+=================================
 
 .. py:module:: src.digitaltwin.setup_environment
 
@@ -10,12 +10,17 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.digitaltwin.setup_environment.log
+   src.digitaltwin.setup_environment.Base
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -24,23 +29,12 @@ Functions
    src.digitaltwin.setup_environment.get_engine
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.digitaltwin.setup_environment.log
-   src.digitaltwin.setup_environment.Base
-
+Module Contents
+---------------
 
 .. py:data:: log
 
-   
-
 .. py:data:: Base
-
-   
 
 .. py:function:: get_database() -> sqlalchemy.engine.Engine
 

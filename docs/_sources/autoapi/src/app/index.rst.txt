@@ -1,5 +1,5 @@
-:py:mod:`src.app`
-=================
+src.app
+=======
 
 .. py:module:: src.app
 
@@ -9,12 +9,22 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.app.app
+   src.app.WWW_HOST
+   src.app.WWW_PORT
+   src.app.SWAGGER_URL
+   src.app.API_URL
+   src.app.swagger_ui_blueprint
+   src.app.gunicorn_logger
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -32,32 +42,14 @@ Functions
    src.app.valid_coordinates
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.app.app
-   src.app.WWW_HOST
-   src.app.WWW_PORT
-   src.app.SWAGGER_URL
-   src.app.API_URL
-   src.app.swagger_ui_blueprint
-   src.app.gunicorn_logger
-
+Module Contents
+---------------
 
 .. py:data:: app
 
-   
-
 .. py:data:: WWW_HOST
 
-   
-
 .. py:data:: WWW_PORT
-
-   
 
 .. py:function:: check_celery_alive(f: Callable[Ellipsis, flask.Response]) -> Callable[Ellipsis, flask.Response]
 
@@ -73,16 +65,12 @@ Attributes
 .. py:data:: SWAGGER_URL
    :value: '/swagger'
 
-   
 
 .. py:data:: API_URL
    :value: '/static/api_documentation.yml'
 
-   
 
 .. py:data:: swagger_ui_blueprint
-
-   
 
 .. py:function:: index() -> flask.Response
 
@@ -182,7 +170,6 @@ Attributes
 
 .. py:function:: serve_model_output(model_id: int)
 
-
 .. py:function:: refresh_lidar_data_sources()
 
    Updates LiDAR data sources to the most recent.
@@ -209,6 +196,4 @@ Attributes
 
 
 .. py:data:: gunicorn_logger
-
-   
 

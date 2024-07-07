@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.hydrograph`
-==========================================================
+src.dynamic_boundary_conditions.river.hydrograph
+================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.hydrograph
 
@@ -10,12 +10,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.hydrograph.log
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -25,18 +29,10 @@ Functions
    src.dynamic_boundary_conditions.river.hydrograph.get_hydrograph_data
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.hydrograph.log
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: clean_rec_inflow_data(rec_inflows_w_input_points: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
 

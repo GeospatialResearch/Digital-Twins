@@ -1,17 +1,17 @@
-:py:mod:`src.flood_model`
-=========================
+src.flood_model
+===============
 
 .. py:module:: src.flood_model
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   bg_flood_model/index.rst
-   flooded_buildings/index.rst
-   serve_model/index.rst
+   /autoapi/src/flood_model/bg_flood_model/index
+   /autoapi/src/flood_model/flooded_buildings/index
+   /autoapi/src/flood_model/serve_model/index
 
 

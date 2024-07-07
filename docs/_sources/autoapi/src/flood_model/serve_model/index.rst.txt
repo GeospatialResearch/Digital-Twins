@@ -1,5 +1,5 @@
-:py:mod:`src.flood_model.serve_model`
-=====================================
+src.flood_model.serve_model
+===========================
 
 .. py:module:: src.flood_model.serve_model
 
@@ -10,12 +10,17 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.flood_model.serve_model.log
+   src.flood_model.serve_model._xml_header
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -34,23 +39,12 @@ Functions
    src.flood_model.serve_model.add_model_output_to_geoserver
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.flood_model.serve_model.log
-   src.flood_model.serve_model._xml_header
-
+Module Contents
+---------------
 
 .. py:data:: log
 
-   
-
 .. py:data:: _xml_header
-
-   
 
 .. py:function:: convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path
 
@@ -132,7 +126,6 @@ Attributes
 
 
 .. py:function:: create_datastore_layer(workspace_name, data_store_name: str, layer_name, metadata_elem: str = '') -> None
-
 
 .. py:function:: create_building_layers(workspace_name: str, data_store_name: str) -> None
 

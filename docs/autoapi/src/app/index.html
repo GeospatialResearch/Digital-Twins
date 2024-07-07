@@ -48,15 +48,16 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">src</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../index.html#subpackages">Subpackages</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.app</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.config</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../run_all/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.run_all</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../tasks/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.tasks</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">src.app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../config/index.html">src.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../run_all/index.html">src.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tasks/index.html">src.tasks</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -79,8 +80,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.app</span></code></li>
+          <li class="breadcrumb-item"><a href="../index.html">src</a></li>
+      <li class="breadcrumb-item active">src.app</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../_sources/autoapi/src/app/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,12 +92,38 @@
            <div itemprop="articleBody">
              
   <section id="module-src.app">
-<span id="src-app"></span><h1><a class="reference internal" href="#module-src.app" title="src.app"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.app</span></code></a><a class="headerlink" href="#module-src.app" title="Link to this heading"></a></h1>
+<span id="src-app"></span><h1>src.app<a class="headerlink" href="#module-src.app" title="Link to this heading"></a></h1>
 <p>The main web application that serves the Digital Twin to the web through a Rest API.</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.app" title="src.app.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.app.WWW_HOST" title="src.app.WWW_HOST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WWW_HOST</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.WWW_PORT" title="src.app.WWW_PORT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WWW_PORT</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.app.SWAGGER_URL" title="src.app.SWAGGER_URL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SWAGGER_URL</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.API_URL" title="src.app.API_URL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">API_URL</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.app.swagger_ui_blueprint" title="src.app.swagger_ui_blueprint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swagger_ui_blueprint</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.gunicorn_logger" title="src.app.gunicorn_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gunicorn_logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.app.check_celery_alive" title="src.app.check_celery_alive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_celery_alive</span></code></a>(→ Callable[Ellipsis, flask.Response])</p></td>
@@ -138,33 +165,8 @@
 </tbody>
 </table>
 </section>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.app" title="src.app.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.app.WWW_HOST" title="src.app.WWW_HOST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WWW_HOST</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.WWW_PORT" title="src.app.WWW_PORT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WWW_PORT</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.app.SWAGGER_URL" title="src.app.SWAGGER_URL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SWAGGER_URL</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.API_URL" title="src.app.API_URL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">API_URL</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.app.swagger_ui_blueprint" title="src.app.swagger_ui_blueprint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swagger_ui_blueprint</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.gunicorn_logger" title="src.app.gunicorn_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gunicorn_logger</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <dl class="py data">
 <dt class="sig sig-object py" id="src.app.app">
 <span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">app</span></span><a class="headerlink" href="#src.app.app" title="Link to this definition"></a></dt>
@@ -403,7 +405,6 @@ Supported methods: POST</p>
 <span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">gunicorn_logger</span></span><a class="headerlink" href="#src.app.gunicorn_logger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-</section>
 </section>
 </section>
 

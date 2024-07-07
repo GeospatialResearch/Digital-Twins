@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.rainfall.main_rainfall`
-================================================================
+src.dynamic_boundary_conditions.rainfall.main_rainfall
+======================================================
 
 .. py:module:: src.dynamic_boundary_conditions.rainfall.main_rainfall
 
@@ -10,12 +10,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -23,14 +27,8 @@ Functions
    src.dynamic_boundary_conditions.rainfall.main_rainfall.main
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.rainfall.main_rainfall.sample_polygon
-
+Module Contents
+---------------
 
 .. py:function:: remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None
 
@@ -82,6 +80,4 @@ Attributes
 
 
 .. py:data:: sample_polygon
-
-   
 

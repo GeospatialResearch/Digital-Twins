@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.rainfall.hyetograph`
-=============================================================
+src.dynamic_boundary_conditions.rainfall.hyetograph
+===================================================
 
 .. py:module:: src.dynamic_boundary_conditions.rainfall.hyetograph
 
@@ -9,12 +9,8 @@
 
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -30,6 +26,8 @@ Functions
    src.dynamic_boundary_conditions.rainfall.hyetograph.hyetograph
 
 
+Module Contents
+---------------
 
 .. py:function:: get_transposed_data(rain_depth_in_catchment: pandas.DataFrame) -> pandas.DataFrame
 

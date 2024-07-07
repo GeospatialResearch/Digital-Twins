@@ -1,15 +1,11 @@
-:py:mod:`src.flood_model.flooded_buildings`
-===========================================
+src.flood_model.flooded_buildings
+=================================
 
 .. py:module:: src.flood_model.flooded_buildings
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -20,6 +16,8 @@ Functions
    src.flood_model.flooded_buildings.polygonize_flooded_area
 
 
+Module Contents
+---------------
 
 .. py:function:: store_flooded_buildings_in_database(engine: sqlalchemy.engine.Engine, buildings: pandas.DataFrame, flood_model_id: int) -> None
 

@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../dynamic_boundary_conditions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dynamic_boundary_conditions/index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,9 +79,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model.serve_model</span></code></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.flood_model</a></li>
+      <li class="breadcrumb-item active">src.flood_model.serve_model</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../_sources/autoapi/src/flood_model/serve_model/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,13 +92,24 @@
            <div itemprop="articleBody">
              
   <section id="module-src.flood_model.serve_model">
-<span id="src-flood-model-serve-model"></span><h1><a class="reference internal" href="#module-src.flood_model.serve_model" title="src.flood_model.serve_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model.serve_model</span></code></a><a class="headerlink" href="#module-src.flood_model.serve_model" title="Link to this heading"></a></h1>
+<span id="src-flood-model-serve-model"></span><h1>src.flood_model.serve_model<a class="headerlink" href="#module-src.flood_model.serve_model" title="Link to this heading"></a></h1>
 <p>Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
 or other clients</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.log" title="src.flood_model.serve_model.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model._xml_header" title="src.flood_model.serve_model._xml_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_xml_header</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.convert_nc_to_gtiff" title="src.flood_model.serve_model.convert_nc_to_gtiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_nc_to_gtiff</span></code></a>(→ pathlib.Path)</p></td>
@@ -142,18 +154,8 @@ or other clients</p>
 </tbody>
 </table>
 </section>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.flood_model.serve_model.log" title="src.flood_model.serve_model.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.flood_model.serve_model._xml_header" title="src.flood_model.serve_model._xml_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_xml_header</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <dl class="py data">
 <dt class="sig sig-object py" id="src.flood_model.serve_model.log">
 <span class="sig-prename descclassname"><span class="pre">src.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.flood_model.serve_model.log" title="Link to this definition"></a></dt>
@@ -395,7 +397,6 @@ The GeoServer layer name will be f”Output_{model_id}” and the workspace name
 </dl>
 </dd></dl>
 
-</section>
 </section>
 </section>
 

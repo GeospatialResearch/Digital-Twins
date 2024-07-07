@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.main_river`
-==========================================================
+src.dynamic_boundary_conditions.river.main_river
+================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.main_river
 
@@ -10,12 +10,17 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.main_river.log
+   src.dynamic_boundary_conditions.river.main_river.sample_polygon
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -25,19 +30,10 @@ Functions
    src.dynamic_boundary_conditions.river.main_river.main
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.main_river.log
-   src.dynamic_boundary_conditions.river.main_river.sample_polygon
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: retrieve_hydro_dem_info(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> Tuple[xarray.Dataset, shapely.geometry.LineString, Union[int, float]]
 
@@ -112,6 +108,4 @@ Attributes
 
 
 .. py:data:: sample_polygon
-
-   
 

@@ -1,5 +1,5 @@
-:py:mod:`src.dynamic_boundary_conditions.river.river_data_from_niwa`
-====================================================================
+src.dynamic_boundary_conditions.river.river_data_from_niwa
+==========================================================
 
 .. py:module:: src.dynamic_boundary_conditions.river.river_data_from_niwa
 
@@ -9,20 +9,25 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.log
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.REC_API_URL
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    src.dynamic_boundary_conditions.river.river_data_from_niwa.RecordCounts
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -33,29 +38,19 @@ Functions
    src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.log
-   src.dynamic_boundary_conditions.river.river_data_from_niwa.REC_API_URL
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:data:: REC_API_URL
    :value: 'https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2'
 
-   
 
 .. py:class:: RecordCounts
 
-
    Bases: :py:obj:`NamedTuple`
+
 
    Represents the record counts of the REC feature layer.
 
@@ -71,15 +66,13 @@ Attributes
 
       :type: int
 
-   .. py:attribute:: max_record_count
-      :type: int
 
-      
+   .. py:attribute:: max_record_count
+      :type:  int
+
 
    .. py:attribute:: total_record_count
-      :type: int
-
-      
+      :type:  int
 
 
 .. py:function:: get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts
@@ -111,6 +104,7 @@ Attributes
 .. py:function:: fetch_rec_data(session: aiohttp.ClientSession, query_param: Dict[str, Union[str, int]], url: str = f'{REC_API_URL}/query') -> geopandas.GeoDataFrame
    :async:
 
+
    Fetch REC data using the provided query parameters within a single API call.
 
    :param session: An instance of `aiohttp.ClientSession` used for making HTTP requests.
@@ -126,6 +120,7 @@ Attributes
 
 .. py:function:: fetch_rec_data_for_nz(query_param_list: List[Dict[str, Union[str, int]]], url: str = REC_API_URL) -> geopandas.GeoDataFrame
    :async:
+
 
    Iterate over the list of API query parameters to fetch REC data in New Zealand.
 

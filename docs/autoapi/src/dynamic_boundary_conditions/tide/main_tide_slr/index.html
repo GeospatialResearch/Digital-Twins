@@ -48,14 +48,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">src</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.digitaltwin</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.flood_model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">src.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html">src.flood_model</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
 </ul>
 </li>
@@ -78,10 +79,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide.main_tide_slr</span></code></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src.dynamic_boundary_conditions</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.dynamic_boundary_conditions.tide</a></li>
+      <li class="breadcrumb-item active">src.dynamic_boundary_conditions.tide.main_tide_slr</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../../../_sources/autoapi/src/dynamic_boundary_conditions/tide/main_tide_slr/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,13 +93,24 @@
            <div itemprop="articleBody">
              
   <section id="module-src.dynamic_boundary_conditions.tide.main_tide_slr">
-<span id="src-dynamic-boundary-conditions-tide-main-tide-slr"></span><h1><a class="reference internal" href="#module-src.dynamic_boundary_conditions.tide.main_tide_slr" title="src.dynamic_boundary_conditions.tide.main_tide_slr"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.dynamic_boundary_conditions.tide.main_tide_slr</span></code></a><a class="headerlink" href="#module-src.dynamic_boundary_conditions.tide.main_tide_slr" title="Link to this heading"></a></h1>
+<span id="src-dynamic-boundary-conditions-tide-main-tide-slr"></span><h1>src.dynamic_boundary_conditions.tide.main_tide_slr<a class="headerlink" href="#module-src.dynamic_boundary_conditions.tide.main_tide_slr" title="Link to this heading"></a></h1>
 <p>Main tide and sea level rise script used to fetch tide data, download and store sea level rise data in the database,
 and generate the requested tide uniform boundary model input for BG-Flood etc.</p>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.log" title="src.dynamic_boundary_conditions.tide.main_tide_slr.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon" title="src.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_polygon</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs" title="src.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_existing_boundary_inputs</span></code></a>(→ None)</p></td>
@@ -110,18 +122,8 @@ and generate the requested tide uniform boundary model input for BG-Flood etc.</
 </tbody>
 </table>
 </section>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.log" title="src.dynamic_boundary_conditions.tide.main_tide_slr.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon" title="src.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_polygon</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <dl class="py data">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.main_tide_slr.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.log" title="Link to this definition"></a></dt>
@@ -188,7 +190,6 @@ The available logging levels and their corresponding numeric values are:
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">sample_polygon</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-</section>
 </section>
 </section>
 

@@ -1,5 +1,5 @@
-:py:mod:`src.digitaltwin.instructions_records_to_db`
-====================================================
+src.digitaltwin.instructions_records_to_db
+==========================================
 
 .. py:module:: src.digitaltwin.instructions_records_to_db
 
@@ -10,12 +10,16 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.digitaltwin.instructions_records_to_db.log
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -27,18 +31,10 @@ Functions
    src.digitaltwin.instructions_records_to_db.store_instructions_records_to_db
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.digitaltwin.instructions_records_to_db.log
-
+Module Contents
+---------------
 
 .. py:data:: log
-
-   
 
 .. py:function:: validate_url_reachability(section: str, url: str) -> None
 

@@ -1,5 +1,5 @@
-:py:mod:`src.flood_model.bg_flood_model`
-========================================
+src.flood_model.bg_flood_model
+==============================
 
 .. py:module:: src.flood_model.bg_flood_model
 
@@ -10,12 +10,18 @@
 
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.flood_model.bg_flood_model.log
+   src.flood_model.bg_flood_model.Base
+   src.flood_model.bg_flood_model.sample_polygon
 
 
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -34,24 +40,12 @@ Functions
    src.flood_model.bg_flood_model.main
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   src.flood_model.bg_flood_model.log
-   src.flood_model.bg_flood_model.Base
-   src.flood_model.bg_flood_model.sample_polygon
-
+Module Contents
+---------------
 
 .. py:data:: log
 
-   
-
 .. py:data:: Base
-
-   
 
 .. py:function:: get_valid_bg_flood_dir() -> pathlib.Path
 
@@ -282,6 +276,4 @@ Attributes
 
 
 .. py:data:: sample_polygon
-
-   
 
