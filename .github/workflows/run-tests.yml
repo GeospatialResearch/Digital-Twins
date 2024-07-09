@@ -18,7 +18,7 @@ jobs:
           python -m pip install flake8
       - name: Run lint with flake8
         run: |
-          flake8 src --show-source --count --statistics --max-line-length=120
+          flake8 src
 
 
   linting-js:
