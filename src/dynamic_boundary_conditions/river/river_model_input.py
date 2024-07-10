@@ -40,7 +40,8 @@ def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.
         # Unpack group_name tuple to extract 'river_input_point_no' and 'dem_resolution'
         river_input_point_no, _, dem_resolution, _ = group_name
         # Create a buffer around the 'river_input_point' to define the 'river_input_cell'
-        group_data["river_input_cell"] = group_data["river_input_point"].buffer(distance=dem_resolution/2, cap_style=3)
+        group_data["river_input_cell"] = (group_data["river_input_point"]
+                                          .buffer(distance=dem_resolution / 2, cap_style=3))
         # Retrieve the unique 'river_input_cell' geometry
         river_input_cell = group_data["river_input_cell"].unique()[0]
         # Extract bounding box coordinates (x_min, y_min, x_max, y_max) of the 'river_input_cell'
