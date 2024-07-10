@@ -2,7 +2,6 @@
 Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
 Allows the frontend to send tasks and retrieve status later.
 """
-import json
 import logging
 import traceback
 from typing import List, NamedTuple
@@ -15,12 +14,12 @@ from celery import Celery, states, result
 from pyproj import Transformer
 
 from src.config import get_env_variable
-from src.digitaltwin import retrieve_static_boundaries, setup_environment, tables
+from src.digitaltwin import retrieve_static_boundaries, setup_environment
 from src.digitaltwin.utils import setup_logging
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.tide import main_tide_slr
-from src.flood_model import bg_flood_model
+from src.flood_model import bg_flood_model, process_hydro_dem
 from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
 
 # Setup celery backend task management
@@ -74,7 +73,6 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
         The task result for the long-running group of tasks. The task ID represents the final task in the group.
     """
     return (
-            ensure_lidar_datasets_initialised.si() |
             add_base_data_to_db.si(selected_polygon_wkt) |
             process_dem.si(selected_polygon_wkt) |
             generate_rainfall_inputs.si(selected_polygon_wkt) |
@@ -82,36 +80,6 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
             generate_river_inputs.si(selected_polygon_wkt) |
             run_flood_model.si(selected_polygon_wkt)
     )()
-
-
-@app.task(base=OnFailureStateTask)
-def ensure_lidar_datasets_initialised() -> None:
-    """
-    Task checks if LiDAR datasets table is initialised.
-    This table holds URLs to data sources for LiDAR.
-    If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.
-
-    Returns
-    -------
-    None
-        This task does not return anything
-    """
-    # Connect to database
-    engine = setup_environment.get_connection_from_profile()
-    # Check if datasets table initialised
-    if not tables.check_table_exists(engine, "dataset"):
-        # If it is not initialised, then initialise it
-        newzealidar.datasets.main()
-    # Check that datasets_mapping is in the instructions.json file
-    instructions_file_name = "instructions.json"
-    with open(instructions_file_name, "r") as instructions_file:
-        # Load content from the file
-        instructions = json.load(instructions_file)["instructions"]
-    dataset_mapping = instructions.get("dataset_mapping")
-    # If the dataset_mapping does not exist on the instruction file then read it from the database
-    if dataset_mapping is None:
-        # Add dataset_mapping to instructions file, reading from database
-        newzealidar.utils.map_dataset_name(engine, instructions_file_name)
 
 
 @app.task(base=OnFailureStateTask)
@@ -149,9 +117,9 @@ def process_dem(selected_polygon_wkt: str):
     None
         This task does not return anything
     """
-    parameters = DEFAULT_MODULES_TO_PARAMETERS[newzealidar.process]
+    parameters = DEFAULT_MODULES_TO_PARAMETERS[process_hydro_dem]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    newzealidar.process.main(selected_polygon, **parameters)
+    process_hydro_dem.main(selected_polygon, **parameters)
 
 
 @app.task(base=OnFailureStateTask)
