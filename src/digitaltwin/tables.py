@@ -37,6 +37,7 @@ class GeospatialLayers(Base):
     url : str
         URL pointing to the geospatial layer.
     """
+
     __tablename__ = "geospatial_layers"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     data_provider = Column(String, nullable=False)
@@ -72,6 +73,7 @@ class UserLogInfo(Base):
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """
+
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
@@ -96,6 +98,7 @@ class RiverNetworkExclusions(Base):
     geometry : LineString
         Geometric representation of the excluded REC river features.
     """
+
     __tablename__ = "rec_network_exclusions"
     rec_network_id = Column(Integer, primary_key=True,
                             comment="An identifier for the river network associated with each run")
@@ -128,6 +131,7 @@ class RiverNetwork(Base):
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """
+
     __tablename__ = "rec_network"
     rec_network_id = Column(Integer, primary_key=True,
                             comment="An identifier for the river network associated with each run")
@@ -156,6 +160,7 @@ class BGFloodModelOutput(Base):
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """
+
     __tablename__ = "bg_flood_model_output"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     file_name = Column(String, comment="name of the flood model output file")
@@ -182,6 +187,7 @@ class BuildingFloodStatus(Base):
     flood_model_id: int.
         Foreign key mathing the unique_id from bg_flood_model_output table
     """
+
     __tablename__ = "building_flood_status"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     building_outline_id = Column(Integer, comment="The building outline id matching from nz_building_outlines table")

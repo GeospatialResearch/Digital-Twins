@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 class NoTideDataException(Exception):
     """Exception raised when no tide data is to be used for the BG-Flood model."""
+
     pass
 
 

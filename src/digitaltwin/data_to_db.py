@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 class NoNonIntersectionError(Exception):
     """Exception raised when no non-intersecting area is found."""
+
     pass
 
 

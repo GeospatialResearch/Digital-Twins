@@ -55,6 +55,7 @@ class DepthTimePlot(NamedTuple):
     times : List[float]
         A list of all of the times in s for the pixel. Parallels the depts list
     """
+
     depths: List[float]
     times: List[float]
 

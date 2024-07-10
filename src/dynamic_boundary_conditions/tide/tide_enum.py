@@ -15,6 +15,7 @@ class DatumType(StrEnum):
     MSL : str
         Mean sea level.
     """
+
     LAT = "lat"
     MSL = "msl"
 
@@ -30,5 +31,6 @@ class ApproachType(StrEnum):
     PERIOD_TIDE : str
         Period Tide approach.
     """
+
     KING_TIDE = "king_tide"
     PERIOD_TIDE = "period_tide"

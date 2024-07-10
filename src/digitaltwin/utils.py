@@ -33,6 +33,7 @@ class LogLevel(IntEnum):
     NOTSET : int
         The not-set logging level. Corresponds to logging.NOTSET (0).
     """
+
     CRITICAL = logging.CRITICAL
     ERROR = logging.ERROR
     WARNING = logging.WARNING

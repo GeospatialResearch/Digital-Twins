@@ -15,6 +15,7 @@ class HyetoMethod(StrEnum):
     CHICAGO : str
         Chicago Method.
     """
+
     ALT_BLOCK = "alt_block"
     CHICAGO = "chicago"
 
@@ -30,5 +31,6 @@ class RainInputType(StrEnum):
     VARYING : str
         Spatially varying rain input.
     """
+
     UNIFORM = "uniform"
     VARYING = "varying"

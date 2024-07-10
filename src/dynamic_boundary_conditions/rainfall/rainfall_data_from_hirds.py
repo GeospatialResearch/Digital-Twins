@@ -114,6 +114,7 @@ class BlockStructure(NamedTuple):
     category : str
         Historical data, Historical Standard Error or Projections (i.e. hist, hist_stderr or proj).
     """
+
     skip_rows: int
     rcp: Optional[float]
     time_period: Optional[str]

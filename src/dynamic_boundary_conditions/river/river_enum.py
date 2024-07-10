@@ -17,6 +17,7 @@ class BoundType(StrEnum):
     UPPER : str
         Upper bound of a confidence interval.
     """
+
     LOWER = "lower"
     MIDDLE = "middle"
     UPPER = "upper"

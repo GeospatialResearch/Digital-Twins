@@ -31,6 +31,7 @@ class RecordCounts(NamedTuple):
     total_record_count : int
         The total number of records available in the feature layer.
     """
+
     max_record_count: int
     total_record_count: int
 
