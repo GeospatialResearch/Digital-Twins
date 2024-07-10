@@ -350,7 +350,6 @@ def refresh_lidar_data_sources():
     Response
         ACCEPTED is the expected response. Response body contains Celery taskId
     """
-
     # Start task to refresh lidar datasets
     task = tasks.refresh_lidar_datasets.delay()
     # Return HTTP Response with task id so it can be monitored with get_status(taskId)
