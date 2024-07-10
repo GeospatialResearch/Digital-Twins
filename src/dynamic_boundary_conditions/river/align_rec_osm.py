@@ -92,7 +92,7 @@ def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
         single_intersect_inflow = single_intersect[
             ((single_intersect["node_direction"] == "to") & (single_intersect["node_intersect_aoi"] == "last_node")) |
             ((single_intersect["node_direction"] == "from") & (single_intersect["node_intersect_aoi"] == "first_node"))
-            ]
+        ]
         # Create a new column for inflow points for consistency purposes
         single_intersect_inflow["rec_inflow_point"] = single_intersect_inflow["rec_boundary_point"]
         # Set the geometry of the GeoDataFrame to 'rec_inflow_point'
