@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script provides utility functions for logging configuration and geospatial data manipulation.
-"""
+"""This script provides utility functions for logging configuration and geospatial data manipulation."""
 
 import inspect
 import logging

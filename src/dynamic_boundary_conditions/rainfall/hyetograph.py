@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Get hyetograph data and generate interactive hyetograph plots for sites located within the catchment area.
-"""
+"""Get hyetograph data and generate interactive hyetograph plots for sites located within the catchment area."""
 
 from typing import Union
 from math import floor, ceil

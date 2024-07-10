@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Get the locations used to fetch tide data from NIWA using the tide API.
-"""
+"""Get the locations used to fetch tide data from NIWA using the tide API."""
 
 import logging
 

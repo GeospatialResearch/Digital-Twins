@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Fetch rainfall sites data from the HIRDS website and store it in the database.
-"""
+"""Fetch rainfall sites data from the HIRDS website and store it in the database."""
 
 import logging
 

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Enum(s) used in the tide_slr module.
-"""
+"""Enum(s) used in the tide_slr module."""
 
 from enum import StrEnum
 

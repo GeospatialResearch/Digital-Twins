@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Enum(s) used in the river module.
-"""
+"""Enum(s) used in the river module."""
 
 from enum import StrEnum
 

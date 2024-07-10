@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Fetch rainfall data from the HIRDS website.
-"""
+"""Fetch rainfall data from the HIRDS website."""
 
 import re
 from typing import List, NamedTuple, Optional

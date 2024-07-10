@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Store the rainfall data for all the sites within the catchment area in the database.
-"""
+"""Store the rainfall data for all the sites within the catchment area in the database."""
 
 import logging
 from typing import List

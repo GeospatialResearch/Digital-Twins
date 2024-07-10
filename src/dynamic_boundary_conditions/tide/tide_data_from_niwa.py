@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Fetch tide data from NIWA using the Tide API based on the specified approach, datum, etc.
-"""
+"""Fetch tide data from NIWA using the Tide API based on the specified approach, datum, etc."""
 
 import asyncio
 import io

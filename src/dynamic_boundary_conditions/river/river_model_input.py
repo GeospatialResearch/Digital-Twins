@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script handles the task of generating the requested river model inputs for BG-Flood.
-"""
+"""This script handles the task of generating the requested river model inputs for BG-Flood."""
 
 import logging
 import pathlib

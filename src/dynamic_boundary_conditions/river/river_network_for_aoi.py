@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script processes REC data to construct a river network for the defined catchment area.
-"""
+"""This script processes REC data to construct a river network for the defined catchment area."""
 
 import logging
 from typing import Dict, Tuple

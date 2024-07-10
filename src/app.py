@@ -1,6 +1,6 @@
-"""
-The main web application that serves the Digital Twin to the web through a Rest API.
-"""
+# -*- coding: utf-8 -*-
+"""The main web application that serves the Digital Twin to the web through a Rest API."""
+
 import logging
 import pathlib
 from functools import wraps

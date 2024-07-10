@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script contains SQLAlchemy models for various database tables and utility functions for database operations.
-"""
+"""This script contains SQLAlchemy models for various database tables and utility functions for database operations."""
 
 from datetime import datetime, timezone
 

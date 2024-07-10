@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.
-"""
+"""Fetch REC data in New Zealand from NIWA using the ArcGIS REST API."""
 
 import logging
 from typing import List, Dict, Union, NamedTuple

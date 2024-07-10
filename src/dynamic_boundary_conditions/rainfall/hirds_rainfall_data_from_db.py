@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Retrieve all rainfall data for sites within the catchment area from the database.
-"""
+"""Retrieve all rainfall data for sites within the catchment area from the database."""
 
 import logging
 from typing import Optional

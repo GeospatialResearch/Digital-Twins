@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Generates the requested water level uniform boundary model input for BG-Flood.
-"""
+"""Generates the requested water level uniform boundary model input for BG-Flood."""
 
 import logging
 import pathlib

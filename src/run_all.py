@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script runs each module in the Digital Twin using a Sample Polygon.
-"""
+"""This script runs each module in the Digital Twin using a Sample Polygon."""
 
 from enum import Enum
 from types import ModuleType
