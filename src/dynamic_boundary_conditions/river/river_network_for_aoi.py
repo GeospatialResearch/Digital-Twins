@@ -39,8 +39,8 @@ def get_unique_nodes_dict(rec_data_w_node_coords: gpd.GeoDataFrame) -> Dict[Poin
     """
     # Combine the first and last coordinates of each LineString into a single list
     rec_node_coords = (
-            rec_data_w_node_coords["first_coord"].to_list() +
-            rec_data_w_node_coords["last_coord"].to_list()
+        rec_data_w_node_coords["first_coord"].to_list() +
+        rec_data_w_node_coords["last_coord"].to_list()
     )
     # Extract unique node coordinates while preserving their original order
     unique_node_coords = [x for i, x in enumerate(rec_node_coords) if x not in rec_node_coords[:i]]
