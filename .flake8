@@ -4,3 +4,4 @@ count = True
 statistics = True
 max-line-length = 120
 require-plugins = flake8-docstrings
+ignore = D205
