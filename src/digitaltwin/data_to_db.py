@@ -126,7 +126,7 @@ def get_vector_data_id_not_in_db(
     -------
     Set[int]
         The set of IDs from the fetched vector_data that are not present in the specified table in the database.
-    """
+    """  # noqa: D400
     # Get the unique IDs from the vector_data
     vector_data_ids = set(vector_data[unique_column_name])
     # Fetch the unique IDs from the specified table that intersect with the area of interest
@@ -210,7 +210,7 @@ def get_non_intersection_area_from_db(
     ------
     NoNonIntersectionError
         If the non-intersecting area is empty, it suggests that the catchment area is already fully covered.
-    """
+    """  # noqa: D400
     # Create the 'user_log_information' table if it doesn't exist
     create_table(engine, UserLogInfo)
     # Extract the geometry of the catchment area

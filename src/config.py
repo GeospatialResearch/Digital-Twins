@@ -13,8 +13,8 @@ load_dotenv("api_keys.env")
 def get_env_variable(var_name: str,
                      default: T = None, allow_empty: bool = False, cast_to: Type[T] = str) -> T:
     """
-    Reads an environment variable, with settings to allow defaults, empty values, and type casting
-    To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool)
+    Reads an environment variable, with settings to allow defaults, empty values, and type casting.
+    To read a boolean EXAMPLE_ENV_VAR=False use get_env_variable("EXAMPLE_ENV_VAR", cast_to=bool).
 
     Parameters
     ----------

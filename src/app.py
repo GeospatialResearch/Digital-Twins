@@ -70,7 +70,7 @@ app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 @app.route('/')
 def index() -> Response:
     """
-    Ping this endpoint to check that the flask app is running
+    Ping this endpoint to check that the flask app is running.
     Supported methods: GET
 
     Returns
@@ -89,7 +89,7 @@ def index() -> Response:
 @check_celery_alive
 def health_check() -> Response:
     """
-    Ping this endpoint to check that the server is up and running
+    Ping this endpoint to check that the server is up and running.
     Supported methods: GET
 
     Returns
@@ -198,7 +198,7 @@ def generate_model() -> Response:
 
 def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:
     """
-    Takes two points and creates a wkt bbox string from them
+    Takes two points and creates a wkt bbox string from them.
 
     Parameters
     ----------
@@ -361,8 +361,8 @@ def refresh_lidar_data_sources():
 
 def valid_coordinates(latitude: float, longitude: float) -> bool:
     """
-    Validates coordinates are in the valid range of WGS84
-    (-90 < latitude <= 90) and (-180 < longitude <= 180)
+    Validates coordinates are in the valid range of WGS84,
+    (-90 < latitude <= 90) and (-180 < longitude <= 180).
 
     Parameters
     ----------
@@ -375,7 +375,7 @@ def valid_coordinates(latitude: float, longitude: float) -> bool:
     -------
     bool
         True if both latitude and longitude are within their valid ranges.
-    """
+    """   # noqa: D400
     return (-90 < latitude <= 90) and (-180 < longitude <= 180)
 
 

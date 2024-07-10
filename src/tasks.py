@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 
 
 class OnFailureStateTask(app.Task):
-    """Task that switches state to FAILURE if an exception occurs"""
+    """Task that switches state to FAILURE if an exception occurs."""
 
     def on_failure(self, exc, _task_id, _args, _kwargs, _einfo):
         self.update_state(state=states.FAILURE, meta={
@@ -46,7 +46,7 @@ class DepthTimePlot(NamedTuple):
     """
     Represents the depths over time for a particular pixel location in a raster.
     Uses tuples and lists instead of Arrays or Dataframes because it needs to be easily serializable when communicating
-    over message_broker
+    over message_broker.
 
     Attributes
     ----------
@@ -118,7 +118,7 @@ def ensure_lidar_datasets_initialised() -> None:
 @app.task(base=OnFailureStateTask)
 def add_base_data_to_db(selected_polygon_wkt: str) -> None:
     """
-    Task to ensure static base data for the given area is added to the database
+    Task to ensure static base data for the given area is added to the database.
 
     Parameters
     ----------
@@ -255,7 +255,7 @@ def refresh_lidar_datasets() -> None:
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
     """
-    Transforms a WKT string polygon into a GeoDataFrame
+    Transforms a WKT string polygon into a GeoDataFrame.
 
     Parameters
     ----------
@@ -332,7 +332,7 @@ def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> DepthTi
 @app.task(base=OnFailureStateTask)
 def get_model_extents_bbox(model_id: int) -> str:
     """
-    Task to find the bounding box of a given model output
+    Task to find the bounding box of a given model output.
 
     Parameters
     ----------

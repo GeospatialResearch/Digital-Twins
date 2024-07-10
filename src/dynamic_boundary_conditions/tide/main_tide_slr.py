@@ -2,7 +2,7 @@
 """
 Main tide and sea level rise script used to fetch tide data, download and store sea level rise data in the database,
 and generate the requested tide uniform boundary model input for BG-Flood etc.
-"""
+"""  # noqa: D400
 
 import logging
 import pathlib
@@ -98,7 +98,7 @@ def main(
     -------
     None
         This function does not return any value.
-    """
+    """  # noqa: D400
     try:
         # Set up logging with the specified log level
         setup_logging(log_level)

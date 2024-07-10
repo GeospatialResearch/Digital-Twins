@@ -290,7 +290,7 @@ def add_absent_edges_to_network(
     -------
     None
         This function does not return any value.
-    """
+    """  # noqa: D400
     # Identify edges that are absent from the REC river network and require addition
     absent_edges_to_add = identify_absent_edges_to_add(rec_network, prepared_network_data)
 

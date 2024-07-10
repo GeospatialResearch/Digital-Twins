@@ -1,7 +1,7 @@
 """
 Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
-or other clients
-"""
+or other clients.
+"""   # noqa: D400
 
 import logging
 import os
@@ -464,7 +464,7 @@ def style_exists(style_name: str) -> bool:
 
 def create_viridis_style_if_not_exists() -> None:
     """
-    Creates a geoserver style for rasters using the viridis colour scale
+    Creates a geoserver style for rasters using the viridis colour scale.
 
     Returns
     -------

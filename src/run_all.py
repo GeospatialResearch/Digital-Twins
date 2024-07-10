@@ -44,7 +44,7 @@ def main(
     -------
     None
         This function does not return any value.
-    """
+    """  # noqa: D400
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
         # Call the main function of each module with the selected polygon and specified parameters

@@ -12,7 +12,7 @@ from src.flood_model.serve_model import create_building_database_views_if_not_ex
 
 def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame, flood_model_id: int) -> None:
     """
-    Appends the details of which buildings are flooded for a given flood_model_id to the database
+    Appends the details of which buildings are flooded for a given flood_model_id to the database.
 
     Parameters
     ----------
@@ -60,7 +60,7 @@ def find_flooded_buildings(engine: Engine,
     -------
     pd.DataFrame
         A pd.DataFrame specifying if each building is flooded or not.
-    """
+    """  # noqa: D400
     # Open flood output and read the maximum depth raster
     with xarray.open_dataset(flood_model_output_path, decode_coords="all") as ds:
         max_depth_raster = ds["hmax_P0"]
@@ -104,7 +104,7 @@ def categorise_buildings_as_flooded(building_polygons: gpd.GeoDataFrame,
 
 def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Retrieve building outlines for an area of interest from the database
+    Retrieve building outlines for an area of interest from the database.
 
     Parameters
     ----------
@@ -148,7 +148,7 @@ def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshol
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing polygons of the flooded areas
-    """
+    """  # noqa: D400
     # Find areas that are flooded to at least the flood_depth_threshold depth
     mask = flood_raster >= flood_depth_threshold
     # Turn the flood mask into a vector polygon form

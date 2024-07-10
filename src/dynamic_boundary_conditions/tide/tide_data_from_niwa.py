@@ -76,7 +76,7 @@ def get_date_ranges(
     ValueError
         - If 'total_days' is less than 1.
         - If 'days_per_call' is not between 1 and 31 inclusive.
-    """
+    """  # noqa: D400
     # Check for invalid arguments
     if total_days < 1:
         raise ValueError(f"total_days is {total_days}, must be at least 1.")

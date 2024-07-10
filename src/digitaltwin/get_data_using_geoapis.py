@@ -3,7 +3,7 @@
 This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ,
 LRIS, and MFE, using the 'geoapis' library. To access data from each provider, you'll need to set an
 API key in the environment variables.
-"""
+"""  # noqa: D400
 
 from typing import Optional
 
