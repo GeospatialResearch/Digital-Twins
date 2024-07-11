@@ -42,7 +42,7 @@ def get_database() -> Engine:
 
 def get_connection_from_profile() -> Engine:
     """
-    Sets up database connection from configuration.
+    Set up database connection from configuration.
 
     Returns
     -------

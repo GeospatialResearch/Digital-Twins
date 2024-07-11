@@ -14,8 +14,8 @@ def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
-    Connects to various data providers to fetch geospatial data for the selected polygon, i.e., the catchment area.
-    Subsequently, it populates the 'geospatial_layers' table in the database and stores user log information for
+    Connect to various data providers to fetch geospatial data for the selected polygon, i.e., the catchment area.
+    Subsequently, populate the 'geospatial_layers' table in the database and store user log information for
     tracking and reference.
 
     Parameters

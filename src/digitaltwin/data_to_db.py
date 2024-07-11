@@ -79,7 +79,7 @@ def get_non_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
 
 def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, int, str, str]:
     """
-    Extracts geospatial layer information from a single layer entry.
+    Extract geospatial layer information from a single layer entry.
 
     Parameters
     ----------
@@ -148,7 +148,7 @@ def nz_geospatial_layers_data_to_db(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches New Zealand geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch New Zealand geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -249,7 +249,7 @@ def process_new_non_nz_geospatial_layers(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches new non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch new non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -295,7 +295,7 @@ def process_existing_non_nz_geospatial_layers(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches existing non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch existing non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -349,7 +349,7 @@ def non_nz_geospatial_layers_data_to_db(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -399,7 +399,7 @@ def store_geospatial_layers_data_to_db(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------

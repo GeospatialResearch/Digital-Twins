@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 def load_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
     """
-    Loads REC data from the NIWA REC dataset.
+    Load REC data from the NIWA REC dataset.
 
     Returns
     -------

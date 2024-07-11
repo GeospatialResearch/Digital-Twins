@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pd.DataFrame) -> None:
     """
-    Generates the requested water level uniform boundary model input for BG-Flood.
+    Generate the requested water level uniform boundary model input for BG-Flood.
 
     Parameters
     ----------

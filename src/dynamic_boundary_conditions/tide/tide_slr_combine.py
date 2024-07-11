@@ -197,8 +197,8 @@ def add_slr_to_tide(
         slr_interp_scenario: gpd.GeoDataFrame,
         proj_year: int) -> pd.DataFrame:
     """
-    Adds sea level rise (SLR) data to the tide data for a specific projection year and
-    returns the combined tide and sea level rise value.
+    Add sea level rise (SLR) data to the tide data for a specific projection year and
+    return the combined tide and sea level rise value.
 
     Parameters
     ----------
@@ -274,7 +274,7 @@ def get_combined_tide_slr_data(
         increment_year: int = 1,
         interp_method: str = "linear") -> pd.DataFrame:
     """
-    Generates the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
+    Generate the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
     confidence_level, ssp_scenario, add_vlm, percentile, and more.
 
     Parameters

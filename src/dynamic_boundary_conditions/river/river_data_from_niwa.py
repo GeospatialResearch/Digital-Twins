@@ -38,7 +38,7 @@ class RecordCounts(NamedTuple):
 
 def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     """
-    Retrieves the maximum and total record counts from the REC feature layer.
+    Retrieve the maximum and total record counts from the REC feature layer.
 
     Parameters
     ----------

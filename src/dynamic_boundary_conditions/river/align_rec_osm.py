@@ -70,7 +70,7 @@ def get_rec_network_data_on_bbox(
 
 def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Identifies REC river segments that intersect the catchment boundary once, then retrieves the segments
+    Identify REC river segments that intersect the catchment boundary once, then retrieve the segments
     that are inflows into the catchment area, along with their corresponding inflow boundary points.
 
     Parameters
@@ -108,10 +108,10 @@ def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
 
 def get_exploded_multi_intersect(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Identifies REC river segments that intersect the catchment boundary multiple times,
-    transforms MultiPoint geometries into individual Point geometries (boundary points),
-    calculates the distance along the river segment for each boundary point, and
-    adds a new column containing boundary points sorted by their distance along the river.
+    Identify REC river segments that intersect the catchment boundary multiple times,
+    transform MultiPoint geometries into individual Point geometries (boundary points),
+    calculate the distance along the river segment for each boundary point, and
+    add a new column containing boundary points sorted by their distance along the river.
 
     Parameters
     ----------
@@ -148,7 +148,7 @@ def get_exploded_multi_intersect(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
 
 def determine_multi_intersect_inflow_index(multi_intersect_row: pd.Series) -> int:
     """
-    Determines the index that represents the position of the first inflow boundary point along a REC river segment.
+    Determine the index that represents the position of the first inflow boundary point along a REC river segment.
 
     Parameters
     ----------
@@ -234,7 +234,7 @@ def categorize_exploded_multi_intersect(multi_intersect: gpd.GeoDataFrame) -> Di
 
 def get_multi_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Identifies REC river segments that intersect the catchment boundary multiple times, then retrieves the segments
+    Identify REC river segments that intersect the catchment boundary multiple times, then retrieve the segments
     that are inflows into the catchment area, along with their corresponding inflow boundary points.
 
     Parameters

@@ -103,7 +103,7 @@ def health_check() -> Response:
 @app.route('/tasks/<task_id>', methods=["GET"])
 def get_status(task_id: str) -> Response:
     """
-    Retrieves status of a particular Celery backend task.
+    Retrieve status of a particular Celery backend task.
     Supported methods: GET
 
     Parameters
@@ -138,7 +138,7 @@ def get_status(task_id: str) -> Response:
 @app.route('/tasks/<task_id>', methods=["DELETE"])
 def remove_task(task_id: str) -> Response:
     """
-    Deletes and stops a particular Celery backend task.
+    Delete and stop a particular Celery backend task.
     Supported methods: DELETE
 
     Parameters
@@ -160,7 +160,7 @@ def remove_task(task_id: str) -> Response:
 @check_celery_alive
 def generate_model() -> Response:
     """
-    Generates a flood model for a given area.
+    Generate a flood model for a given area.
     Supported methods: POST
     POST values: {"bbox": {"lat1": number, "lat2": number, "lng1": number, "lng2": number}}
 
@@ -198,7 +198,7 @@ def generate_model() -> Response:
 
 def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:
     """
-    Takes two points and creates a wkt bbox string from them.
+    Create a WKT bbox string from two points.
 
     Parameters
     ----------
@@ -227,7 +227,7 @@ def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -
 @check_celery_alive
 def get_depth_at_point(task_id: str) -> Response:
     """
-    Finds the depths and times at a particular point for a given completed model output task.
+    Find the depths and times at a particular point for a given completed model output task.
     Supported methods: GET
     Required query param values: "lat": float, "lng": float
 
@@ -275,7 +275,7 @@ def get_depth_at_point(task_id: str) -> Response:
 @check_celery_alive
 def retrieve_building_flood_status(model_id: int) -> Response:
     """
-    Retrieves information on building flood status, for a given flood model output id.
+    Retrieve information on building flood status, for a given flood model output ID.
     It is recommended to use the geoserver API if it is possible, since this is a proxy around that.
 
     Parameters
@@ -340,8 +340,8 @@ def serve_model_output(model_id: int):
 @check_celery_alive
 def refresh_lidar_data_sources():
     """
-    Updates LiDAR data sources to the most recent.
-    Web-scrapes OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
+    Update LiDAR data sources to the most recent.
+    Web-scrape OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
     Takes a long time to run but needs to be run periodically so that the datasets are up to date.
     Supported methods: POST
 
@@ -361,7 +361,7 @@ def refresh_lidar_data_sources():
 
 def valid_coordinates(latitude: float, longitude: float) -> bool:
     """
-    Validates coordinates are in the valid range of WGS84,
+    Validate that coordinates are within the valid range of WGS84,
     (-90 < latitude <= 90) and (-180 < longitude <= 180).
 
     Parameters

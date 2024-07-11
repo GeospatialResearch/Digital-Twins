@@ -32,7 +32,7 @@ def configure_osm_cache() -> None:
 
 def fetch_osm_waterways(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Fetches OpenStreetMap (OSM) waterways data for the specified catchment area.
+    Fetch OpenStreetMap (OSM) waterways data for the specified catchment area.
 
     Parameters
     ----------
@@ -75,7 +75,7 @@ def fetch_osm_waterways(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
 def get_osm_waterways_data(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Fetches OpenStreetMap (OSM) waterways data for the specified catchment area.
+    Fetch OpenStreetMap (OSM) waterways data for the specified catchment area.
     Only LineString geometries representing waterways of type "river" or "stream" are included.
 
     Parameters

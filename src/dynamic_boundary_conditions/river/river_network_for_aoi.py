@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 def get_unique_nodes_dict(rec_data_w_node_coords: gpd.GeoDataFrame) -> Dict[Point, int]:
     """
-    Generates a dictionary that contains the unique node coordinates in the REC data for the catchment area.
+    Generate a dictionary that contains the unique node coordinates in the REC data for the catchment area.
 
     Parameters
     ----------
@@ -122,7 +122,7 @@ def prepare_network_data_for_construction(
         catchment_area: gpd.GeoDataFrame,
         rec_data_with_sdc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Prepares the necessary data for constructing the river network for the catchment area using the REC data.
+    Prepare the necessary data for constructing the river network for the catchment area using the REC data.
 
     Parameters
     ----------
@@ -466,7 +466,7 @@ def build_rec_river_network(
         catchment_area: gpd.GeoDataFrame,
         rec_network_id: int) -> Tuple[nx.DiGraph, gpd.GeoDataFrame]:
     """
-    Builds a river network for the catchment area using the REC data.
+    Build a river network for the catchment area using the REC data.
 
     Parameters
     ----------

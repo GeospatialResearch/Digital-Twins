@@ -22,7 +22,7 @@ def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         modules_to_parameters: Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]) -> None:
     """
-    Runs each module in the Digital Twin using the selected polygon and the defined parameters for each module's
+    Run each module in the Digital Twin using the selected polygon and the defined parameters for each module's
     main function.
 
     Parameters

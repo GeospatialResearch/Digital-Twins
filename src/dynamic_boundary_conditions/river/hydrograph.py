@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 def clean_rec_inflow_data(rec_inflows_w_input_points: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Selects and renames specific columns that represent REC river inflow data from the input GeoDataFrame.
+    Select and rename specific columns that represent REC river inflow data from the input GeoDataFrame.
 
     Parameters
     ----------
@@ -50,7 +50,7 @@ def clean_rec_inflow_data(rec_inflows_w_input_points: gpd.GeoDataFrame) -> gpd.G
 
 def extract_valid_ari_values(rec_inflow_data: gpd.GeoDataFrame) -> List[int]:
     """
-    Extracts valid ARI (Annual Recurrence Interval) values from the column names of the REC river inflow data.
+    Extract valid ARI (Annual Recurrence Interval) values from the column names of the REC river inflow data.
 
     Parameters
     ----------

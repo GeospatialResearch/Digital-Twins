@@ -62,7 +62,7 @@ class DepthTimePlot(NamedTuple):
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
     """
-    Creates a model for the area using series of chained (sequential) sub-tasks.
+    Create a model for the area using series of chained (sequential) sub-tasks.
 
     Parameters
     ----------
@@ -255,7 +255,7 @@ def refresh_lidar_datasets() -> None:
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
     """
-    Transforms a WKT string polygon into a GeoDataFrame.
+    Transform a WKT string polygon into a GeoDataFrame.
 
     Parameters
     ----------

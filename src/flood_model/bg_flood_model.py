@@ -143,7 +143,7 @@ def store_model_output_metadata_to_db(
 
 def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
     """
-    Retrieves the path to the model output file from the database by model_id.
+    Retrieve the path to the model output file from the database by model_id.
 
     Parameters
     ----------
@@ -176,7 +176,7 @@ def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
 
 def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFrame:
     """
-    Finds the extents of a model output in gpd.GeoDataFrame format.
+    Find the extents of a model output in gpd.GeoDataFrame format.
 
     Parameters
     ----------

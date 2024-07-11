@@ -44,7 +44,7 @@ class LogLevel(IntEnum):
 
 def log_execution_info() -> None:
     """
-    Logs a debug message indicating the execution of the function in the script.
+    Log a debug message indicating the execution of the function in the script.
 
     Returns
     -------
@@ -63,8 +63,8 @@ def log_execution_info() -> None:
 
 def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
     """
-    Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
-    loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
+    Configure the root logger with the specified log level and formats, capture warnings, and exclude specific
+    loggers from propagating their messages to the root logger. Additionally, log a debug message indicating the
     execution of the function in the script.
 
     Parameters

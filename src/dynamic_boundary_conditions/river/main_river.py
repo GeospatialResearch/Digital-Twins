@@ -36,7 +36,7 @@ def retrieve_hydro_dem_info(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame) -> Tuple[xr.Dataset, LineString, Union[int, float]]:
     """
-    Retrieves the Hydrologically Conditioned DEM (Hydro DEM) data, along with its spatial extent and resolution,
+    Retrieve the Hydrologically Conditioned DEM (Hydro DEM) data, along with its spatial extent and resolution,
     for the specified catchment area.
 
     Parameters

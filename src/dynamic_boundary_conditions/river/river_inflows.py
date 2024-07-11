@@ -23,7 +23,7 @@ def get_elevations_near_rec_entry_point(
         rec_inflows_row: pd.Series,
         hydro_dem: xr.Dataset) -> gpd.GeoDataFrame:
     """
-    Extracts elevation values and their corresponding coordinates from the Hydrologically Conditioned DEM in the
+    Extract elevation values and their corresponding coordinates from the Hydrologically Conditioned DEM in the
     vicinity of the entry point of the REC river inflow segment.
 
     Parameters
