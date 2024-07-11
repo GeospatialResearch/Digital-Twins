@@ -63,21 +63,6 @@ RUN mkdir /stored_data \
     && mkdir /stored_data/model_output \
     && mkdir /stored_data/rec_data
 
-# Copy Rec1 dataset shapefiless.
-# Accessible at https://data-niwa.opendata.arcgis.com/datasets/ae4316ef6bc842c4aed6a76b10b0c39e_2/explore
-RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates wget unzip \
- && wget -q "https://opendata.arcgis.com/api/v3/datasets/ae4316ef6bc842c4aed6a76b10b0c39e_2/downloads/data?format=shp&spatialRefId=2193&where=1%3D1" -O /tmp/rec_data \
- # Unzip shapefiles and set up permissions
- && unzip /tmp/rec_data -d /stored_data/rec_data \
- && setfacl -R -m u:nonroot:rwx /stored_data/rec_data \
-# Cleanup image and remove junk
- && rm -rf /tmp/rec_data \
- && rm -fr /var/lib/apt/lists/* \
-# Remove unused packages.
- && apt-get purge -y ca-certificates wget unzip \
- && apt-get autoremove -y
-
 USER nonroot
 
 # Copy python virtual environment from build layer
