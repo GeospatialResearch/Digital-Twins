@@ -7,7 +7,6 @@ import traceback
 from typing import List, NamedTuple
 
 import geopandas as gpd
-import newzealidar
 import shapely
 import xarray
 from celery import Celery, states, result
@@ -217,7 +216,7 @@ def refresh_lidar_datasets() -> None:
     None
         This task does not return anything
     """
-    newzealidar.datasets.main()
+    process_hydro_dem.refresh_lidar_datasets()
 
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
