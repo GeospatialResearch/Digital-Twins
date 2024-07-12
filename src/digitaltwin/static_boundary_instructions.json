@@ -40,5 +40,19 @@
     "table_name": "nz_building_outlines",
     "unique_column_name": "building_outline_id",
     "url": "https://data.linz.govt.nz/layer/101292-nz-building-outlines-all-sources/"
+  },
+  "instruction_7": {
+    "data_provider": "LINZ",
+    "layer_id": 103631,
+    "table_name": "nz_river_name",
+    "unique_column_name": "river_section_id",
+    "url": "https://data.linz.govt.nz/layer/103631-nz-river-name-polygons-pilot/"
+  },
+  "instruction_8":{
+    "data_provider": "LINZ",
+    "layer_id": 50244,
+    "table_name": "nz_bridge_centrelines",
+    "unique_column_name": "t50_fid",
+    "url": "https://data.linz.govt.nz/layer/50244-nz-bridge-centrelines-topo-150k/"
   }
 }
