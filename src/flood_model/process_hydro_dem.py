@@ -1,3 +1,7 @@
+"""
+This script fetches LiDAR terrain data for a region of interest and creates a hydrologically-conditioned DEM.
+"""
+
 import json
 import logging
 
@@ -44,7 +48,7 @@ def ensure_lidar_datasets_initialised() -> None:
 
 def process_dem(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     """
-    Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.
+    Ensures hydrologically-conditioned DEM is processed for the given area and added to the database.
 
     Parameters
     ----------
@@ -68,7 +72,7 @@ def refresh_lidar_datasets() -> None:
     Returns
     -------
     None
-        This function does not return anything
+        This function does not return any value.
     """
     newzealidar.datasets.main()
 
@@ -77,7 +81,7 @@ def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
-    Fetch and store rainfall data in the database, and generate the requested rainfall model input for BG-Flood.
+    Retrieves LiDAR data for the selected polygon and processes it into a hydrologically-conditioned DEM.
 
     Parameters
     ----------
