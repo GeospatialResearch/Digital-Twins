@@ -1,6 +1,4 @@
-"""
-This script fetches LiDAR terrain data for a region of interest and creates a hydrologically-conditioned DEM.
-"""
+"""This script fetches LiDAR terrain data for a region of interest and creates a hydrologically-conditioned DEM."""
 
 import json
 import logging
