@@ -13,19 +13,18 @@ log = logging.getLogger(__name__)
 
 def ensure_lidar_datasets_initialised() -> None:
     """
-    Checks if LiDAR datasets table is initialised.
+    Check if LiDAR datasets table is initialised.
     This table holds URLs to data sources for LiDAR.
     If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.
 
     Returns
     -------
     None
-        This function does not return anything
+        This function does not return any value.
     """
     # Connect to database
     engine = setup_environment.get_connection_from_profile()
     # Check if datasets table initialised
-
     if not tables.check_table_exists(engine, "dataset"):
         # If it is not initialised, then initialise it
         log.info("dataset table does not exist, initialising LiDAR dataset information.")
@@ -55,7 +54,7 @@ def process_dem(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     Returns
     -------
     None
-        This function does not return anything
+        This function does not return any value.
     """
     log.info("Processing LiDAR data into hydrologically conditioned DEM for area of interest.")
     newzealidar.process.main(selected_polygon_gdf)
@@ -64,7 +63,7 @@ def process_dem(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
 def refresh_lidar_datasets() -> None:
     """
     Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
-    Takes a long time to run but needs to be run periodically so that the datasets are up to date
+    Takes a long time to run but needs to be run periodically so that the datasets are up to date.
 
     Returns
     -------
