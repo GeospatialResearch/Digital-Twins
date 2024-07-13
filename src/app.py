@@ -16,7 +16,7 @@ from kombu.exceptions import OperationalError
 from shapely import box
 
 from src import tasks
-from src.config import get_env_variable
+from src.config import get_env_variable, get_bool_env_variable
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -123,7 +123,7 @@ def get_status(task_id: str) -> Response:
         task_value = task_result.get()
     elif status == states.FAILURE:
         http_status = INTERNAL_SERVER_ERROR
-        is_debug_mode = get_env_variable("DEBUG_TRACEBACK", default=False, cast_to=bool)
+        is_debug_mode = get_bool_env_variable("DEBUG_TRACEBACK", default=False)
         task_value = task_result.traceback if is_debug_mode else None
     else:
         task_value = None

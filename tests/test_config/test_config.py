@@ -35,19 +35,19 @@ class GetEnvVariableTest(unittest.TestCase):
         test_var_value = "10"
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
-        self.assertEqual(config.get_env_variable(self.TEST_VAR_KEY, cast_to=int), 10)
+        self.assertEqual(int(config.get_env_variable(self.TEST_VAR_KEY)), 10)
 
     def test_true_bool_env_var(self):
         test_var_value = "True"
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
-        self.assertEqual(config.get_env_variable(self.TEST_VAR_KEY, cast_to=bool), True)
+        self.assertEqual(config.get_bool_env_variable(self.TEST_VAR_KEY), True)
 
     def test_false_bool_env_var(self):
         test_var_value = "F"
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
-        self.assertFalse(config.get_env_variable(self.TEST_VAR_KEY, cast_to=bool))
+        self.assertFalse(config.get_bool_env_variable(self.TEST_VAR_KEY))
 
     def test_unknown_bool_env_var(self):
         test_var_value = "UNKNOWN"
@@ -55,7 +55,7 @@ class GetEnvVariableTest(unittest.TestCase):
         os.environ[self.TEST_VAR_KEY] = test_var_value
         with self.assertRaises(ValueError,
                                msg="get_env_variable should raise a key error if variable is being casted to bool but it is not explicitly True or False"):
-            config.get_env_variable(self.TEST_VAR_KEY, cast_to=bool)
+            config.get_bool_env_variable(self.TEST_VAR_KEY)
 
     def test_default_env_var(self):
         default_string = "default test string"
@@ -73,7 +73,7 @@ class GetEnvVariableTest(unittest.TestCase):
         # Manually set empty env variable
         os.environ[self.TEST_VAR_KEY] = ""
         self.assertEqual(
-            config.get_env_variable(self.TEST_VAR_KEY, allow_empty=True, default=test_default_value, cast_to=bool),
+            config.get_bool_env_variable(self.TEST_VAR_KEY, allow_empty=True, default=test_default_value),
             test_default_value)
 
 
