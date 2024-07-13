@@ -107,7 +107,7 @@ def main(
         # Get catchment area
         catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
         # BG-Flood Model Directory
-        bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+        bg_flood_dir = pathlib.Path(config.get_env_variable("FLOOD_MODEL_DIR"))
         # Remove any existing uniform boundary model inputs in the BG-Flood directory
         remove_existing_boundary_inputs(bg_flood_dir)
 

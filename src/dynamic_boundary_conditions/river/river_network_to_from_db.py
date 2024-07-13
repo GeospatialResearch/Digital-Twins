@@ -110,7 +110,7 @@ def get_new_network_output_paths() -> Tuple[pathlib.Path, pathlib.Path]:
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     # Get the data directory from the environment variable
-    data_dir = get_env_variable("DATA_DIR", cast_to=pathlib.Path)
+    data_dir = pathlib.Path(get_env_variable("DATA_DIR"))
     # Define the directory for storing the REC Network and its associated data
     network_dir = data_dir / "rec_network" / dt_string
     # Create the REC Network directory if it does not already exist
