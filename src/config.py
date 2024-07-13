@@ -1,5 +1,5 @@
 import os
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Optional
 
 from dotenv import load_dotenv
 
