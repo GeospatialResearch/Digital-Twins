@@ -5,7 +5,7 @@ FROM node:lts as build-stage
 WORKDIR /app
 # Install node_modules
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY ./ .
 
 # Build code for production style server
