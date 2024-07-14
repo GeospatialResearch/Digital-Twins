@@ -62,15 +62,15 @@ RUN mkdir /stored_data \
     && mkdir /stored_data/geoserver \
     && mkdir /stored_data/model_output
 
+# Copy python virtual environment from build layer
+COPY --chmod=555 --from=build /venv /venv
+
 USER nonroot
 
-# Copy python virtual environment from build layer
-COPY --chown=nonroot:nonroot --chmod=544 --from=build /venv /venv
-
 # Copy source files and essential runtime files
-COPY --chown=nonroot:nonroot --chmod=444 selected_polygon.geojson .
+COPY --chown=root:root --chmod=444 selected_polygon.geojson .
 COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
-COPY --chown=nonroot:nonroot --chmod=544 src/ src/
+COPY --chown=root:root --chmod=555 src/ src/
 
 
 FROM runtime-base AS backend
