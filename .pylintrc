@@ -1,0 +1,12 @@
+[tool.pylint.main]
+load-plugins = pylint.extensions.docparams
+
+[tool.pylint.parameter_documentation]
+accept-no-param-doc = False
+accept-no-raise-doc = False
+accept-no-return-doc = False
+accept-no-yields-doc = False
+default-docstring-type = numpy
+
+[tool.pylint.format]
+max-line-length = 120
