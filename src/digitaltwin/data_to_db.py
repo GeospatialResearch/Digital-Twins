@@ -156,11 +156,6 @@ def nz_geospatial_layers_data_to_db(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get New Zealand geospatial layers
     nz_geo_layers = get_nz_geospatial_layers(engine)
@@ -265,11 +260,6 @@ def process_new_non_nz_geospatial_layers(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Fetch vector data using geoapis
     log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
@@ -313,11 +303,6 @@ def process_existing_non_nz_geospatial_layers(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Fetch vector data using geoapis
     log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
@@ -359,11 +344,6 @@ def non_nz_geospatial_layers_data_to_db(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get non-NZ geospatial layers from the database
     non_nz_geo_layers = get_non_nz_geospatial_layers(engine)
@@ -409,11 +389,6 @@ def store_geospatial_layers_data_to_db(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Store New Zealand geospatial layers data to the database
     nz_geospatial_layers_data_to_db(engine, crs, verbose)
@@ -431,11 +406,6 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Create the 'user_log_information' table if it doesn't exist
     create_table(engine, UserLogInfo)

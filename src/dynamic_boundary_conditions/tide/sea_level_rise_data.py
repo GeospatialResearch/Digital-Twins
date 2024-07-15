@@ -34,11 +34,6 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     ----------
     slr_data_dir : pathlib.Path
         The directory where the downloaded sea level rise data files will be saved.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Check if the directory exists and, if so, delete all files within it
     if slr_data_dir.exists():
@@ -177,11 +172,6 @@ def store_slr_data_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Define the table name for storing the sea level rise data
     table_name = "sea_level_rise"

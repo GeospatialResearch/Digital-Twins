@@ -212,12 +212,6 @@ def add_crs_to_model_output(engine: Engine, flood_model_output_id: int) -> None:
         The sqlalchemy database connection engine
     flood_model_output_id: int
         The ID of the flood model output being queried for
-
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get the path to the latest BG-Flood model output file from the database
     model_output_file = model_output_from_db_by_id(engine, flood_model_output_id)
@@ -254,11 +248,6 @@ def process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> 
         The BG-Flood model directory containing the rain input files.
     param_file : TextIO
         The file object representing the parameter file where the parameter values will be written.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Loop through the rain input files in the BG-Flood directory
     for rain_input_file_path in bg_flood_dir.glob('rain_forcing.*'):
@@ -288,11 +277,6 @@ def process_boundary_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO)
         The BG-Flood model directory containing the uniform boundary input files.
     param_file : TextIO
         The file object representing the parameter file where the parameter values will be written.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Loop through the boundary input files in the BG-Flood directory
     for boundary_input_file_path in bg_flood_dir.glob('*_bnd.txt'):
@@ -314,11 +298,6 @@ def process_river_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) ->
         The BG-Flood model directory containing the river input files.
     param_file : TextIO
         The file object representing the parameter file where the parameter values will be written.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Loop through the river input files in the BG-Flood directory
     for river_input_file_path in bg_flood_dir.glob('river[0-9]*_*.txt'):
@@ -373,11 +352,6 @@ def prepare_bg_flood_model_inputs(
         Specify whether the output should be saved as short integers to reduce the size of the output file.
         Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
         Default value is 0.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Read the Hydro DEM file using xarray and get the name of the elevation variable
     with xr.open_dataset(hydro_dem_path) as dem_file:
@@ -446,11 +420,6 @@ def run_bg_flood_model(
         Specify whether the output should be saved as short integers to reduce the size of the output file.
         Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
         Default value is 0.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get the valid BG-Flood Model directory
     bg_flood_dir = get_valid_bg_flood_dir()

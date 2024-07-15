@@ -74,11 +74,6 @@ def add_network_exclusions_to_db(
         A GeoDataFrame containing the REC geometries that are excluded from the river network for the current run.
     exclusion_cause : str
         Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     if not rec_network_exclusions.empty:
         # Assign the exclusion cause to the 'exclusion_cause' column
@@ -175,11 +170,6 @@ def store_rec_network_to_db(
         The constructed REC river network, represented as a directed graph (DiGraph).
     rec_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the REC river network data.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     log.info("Adding REC river network metadata to the database.")
     # Get new file paths for storing both the REC Network and its associated data

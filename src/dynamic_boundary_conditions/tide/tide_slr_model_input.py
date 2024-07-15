@@ -21,11 +21,6 @@ def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: p
         The BG-Flood model directory.
     tide_slr_data : pd.DataFrame
         A DataFrame containing the combined tide and sea level rise data.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Remove any existing uniform boundary input files in the BG-Flood directory
     main_tide_slr.remove_existing_boundary_inputs(bg_flood_dir)

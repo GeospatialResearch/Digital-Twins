@@ -45,11 +45,6 @@ class LogLevel(IntEnum):
 def log_execution_info() -> None:
     """
     Log a debug message indicating the execution of the function in the script.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Obtain the stack frame of the calling function (two frames up in the call stack)
     stack_frame = inspect.currentframe().f_back.f_back
@@ -78,11 +73,6 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """  # noqa: D400
     # Define the logging format and date format
     logging_format = "%(asctime)s | %(levelname)-8s | %(name)-30s %(lineno)4d | %(funcName)-50s | %(message)s"

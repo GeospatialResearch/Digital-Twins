@@ -107,11 +107,6 @@ def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
     ----------
     bg_flood_dir : pathlib.Path
         The BG-Flood model directory containing the river input files.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Iterate through all river input files in the directory
     for river_input_file in bg_flood_dir.glob('river[0-9]*.txt'):
@@ -156,11 +151,6 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """  # noqa: D400
     # Set up logging with the specified log level
     setup_logging(log_level)

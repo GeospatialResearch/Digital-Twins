@@ -22,11 +22,6 @@ def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame,
         DataFrame containing a mapping of building_ids to their flood status for the current model run
     flood_model_id : float
         The id of the current flood model run, to associate with the building flood data.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     # Associate the building flood status dataframe with the current model id
     buildings["flood_model_id"] = flood_model_id

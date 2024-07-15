@@ -31,11 +31,6 @@ def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
     ----------
     bg_flood_dir : pathlib.Path
         BG-Flood model directory containing the rain input files.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Iterate through all rain input files in the directory
     for rain_input_file in bg_flood_dir.glob('rain_forcing.*'):
@@ -88,11 +83,6 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Set up logging with the specified log level
     setup_logging(log_level)

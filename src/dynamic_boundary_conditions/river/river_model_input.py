@@ -21,11 +21,6 @@ def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.
         The BG-Flood model directory.
     hydrograph_data : gpd.GeoDataFrame
         A GeoDataFrame containing hydrograph data for the requested REC river inflow scenario.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Remove any existing river model inputs in the BG-Flood directory
     main_river.remove_existing_river_inputs(bg_flood_dir)

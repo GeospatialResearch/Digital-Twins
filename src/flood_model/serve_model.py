@@ -60,11 +60,6 @@ def upload_gtiff_to_store(
         The name of the new Geoserver store to be created.
     workspace_name : str
         The name of the existing GeoServer workspace that the store is to be added to.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     log.info(f"Uploading {gtiff_filepath.name} to Geoserver workspace {workspace_name}")
 
@@ -109,11 +104,6 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str
         The WKT form of the CRS of the data being shown in the layer.
     workspace_name : str
         The name of the existing GeoServer workspace that the store is to be added to.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     data = f"""
     <coverage>
@@ -169,11 +159,6 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, mo
         The name of the existing GeoServer workspace that the store is to be added to.
     model_id : int
         The id of the model being added, to facilitate layer naming.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     gs_url = get_geoserver_url()
     layer_name = f"output_{model_id}"
@@ -196,11 +181,6 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
     ----------
     workspace_name : str
         The name of the workspace to create if it does not exists.
-
-    Returns
-    -------
-    None
-        This function does not return anything.
     """
     # Create data directory for workspace if it does not already exist
     geoserver_data_root = get_env_variable("DATA_DIR_GEOSERVER", cast_to=pathlib.Path)
@@ -298,11 +278,6 @@ def create_building_layers(workspace_name: str, data_store_name: str) -> None:
         The name of the workspace to create views for
     data_store_name : str
          The name of the datastore that the building layer is being created from
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     # Simple layer that is just displaying the nz_building_outlines database table
     create_datastore_layer(workspace_name, data_store_name, layer_name="nz_building_outlines")
@@ -359,11 +334,6 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
         The name of the workspace to create views for
     new_data_store_name : str
         The name of the new datastore to create
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     # Create request to check if database store already exists
     db_exists_response = requests.get(
@@ -417,11 +387,6 @@ def create_building_database_views_if_not_exists() -> None:
     """
     Create a GeoServer workspace and building layers using database views if they do not currently exist.
     These only need to be created once per database.
-
-    Returns
-    -------
-    None
-        This function does not return anything.
     """
     log.debug("Creating building database views if they do not exist")
     db_name = get_env_variable("POSTGRES_DB")
@@ -465,11 +430,6 @@ def style_exists(style_name: str) -> bool:
 def create_viridis_style_if_not_exists() -> None:
     """
     Create a GeoServer style for rasters using the viridis color scale.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     style_name = "viridis_raster"
     if not style_exists(style_name):
@@ -509,11 +469,6 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
         The file path to the model output to serve.
     model_id : int
         The database id of the model output.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     log.debug("Adding model output to geoserver")
     gtiff_filepath = convert_nc_to_gtiff(model_output_path)

@@ -62,11 +62,6 @@ def store_rec_data_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Define the table name for storing the REC data
     table_name = "rec_data"

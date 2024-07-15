@@ -73,11 +73,6 @@ def rainfall_sites_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     table_name = "rainfall_sites"
     # Check if the table already exists in the database

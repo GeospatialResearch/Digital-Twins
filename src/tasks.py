@@ -91,11 +91,6 @@ def ensure_lidar_datasets_initialised() -> None:
     Task checks if LiDAR datasets table is initialised.
     This table holds URLs to data sources for LiDAR.
     If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.
-
-    Returns
-    -------
-    None
-        This task does not return anything
     """
     # Connect to database
     engine = setup_environment.get_connection_from_profile()
@@ -124,11 +119,6 @@ def add_base_data_to_db(selected_polygon_wkt: str) -> None:
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add base data for. Defined in WKT form.
-
-    Returns
-    -------
-    None
-        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_static_boundaries]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
@@ -144,11 +134,6 @@ def process_dem(selected_polygon_wkt: str):
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to process the DEM for. Defined in WKT form.
-
-    Returns
-    -------
-    None
-        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[newzealidar.process]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
@@ -164,11 +149,6 @@ def generate_rainfall_inputs(selected_polygon_wkt: str):
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add rainfall data for. Defined in WKT form.
-
-    Returns
-    -------
-    None
-        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[main_rainfall]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
@@ -184,11 +164,6 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add tide data for. Defined in WKT form.
-
-    Returns
-    -------
-    None
-        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr]
     parameters["proj_year"] = scenario_options["Projected Year"]
@@ -207,11 +182,6 @@ def generate_river_inputs(selected_polygon_wkt: str):
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add river data for. Defined in WKT form.
-
-    Returns
-    -------
-    None
-        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[main_river]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
@@ -243,12 +213,7 @@ def run_flood_model(selected_polygon_wkt: str) -> int:
 def refresh_lidar_datasets() -> None:
     """
     Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
-    Takes a long time to run but needs to be run periodically so that the datasets are up to date
-
-    Returns
-    -------
-    None
-        This task does not return anything
+    Takes a long time to run but needs to be run periodically so that the datasets are up to date.
     """
     newzealidar.datasets.main()
 
@@ -291,7 +256,7 @@ def get_model_output_filepath_from_model_id(model_id: int) -> str:
     Returns
     -------
     str
-        Serialized posix-style str version of the filepath
+        Serialized posix-style str version of the filepath.
     """
     engine = setup_environment.get_connection_from_profile()
     return bg_flood_model.model_output_from_db_by_id(engine, model_id).as_posix()
@@ -341,8 +306,8 @@ def get_model_extents_bbox(model_id: int) -> str:
 
     Returns
     -------
-    str:
-        The bounding box in 'x1,y1,x2,y2' format
+    str
+        The bounding box in 'x1,y1,x2,y2' format.
     """
     engine = setup_environment.get_connection_from_profile()
     extents = bg_flood_model.model_extents_from_db_by_id(engine, model_id).geometry[0]

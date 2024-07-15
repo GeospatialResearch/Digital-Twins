@@ -107,11 +107,6 @@ def thiessen_polygons_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """  # noqa: D400
     table_name = "rainfall_sites_voronoi"
     # Check if the table already exists in the database

@@ -31,11 +31,6 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Set up logging with the specified log level
     setup_logging(log_level)

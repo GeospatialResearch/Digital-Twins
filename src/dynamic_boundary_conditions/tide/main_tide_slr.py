@@ -34,11 +34,6 @@ def remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None:
     ----------
     bg_flood_dir : pathlib.Path
         BG-Flood model directory containing the uniform boundary input files.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Iterate through all boundary files in the directory
     for boundary_file in bg_flood_dir.glob('*_bnd.txt'):
@@ -93,11 +88,6 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """  # noqa: D400
     try:
         # Set up logging with the specified log level

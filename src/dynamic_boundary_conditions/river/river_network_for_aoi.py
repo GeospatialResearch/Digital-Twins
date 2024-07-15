@@ -158,11 +158,6 @@ def add_nodes_to_network(rec_network: nx.Graph, prepared_network_data: gpd.GeoDa
         The REC river network, a directed graph, to which nodes will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Iterate over rows in the prepared network data
     for _, row_edge in prepared_network_data.iterrows():
@@ -184,11 +179,6 @@ def add_initial_edges_to_network(rec_network: nx.Graph, prepared_network_data: g
         The REC river network, a directed graph, to which initial edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Iterate through each edge in the prepared network data
     for _, current_edge in prepared_network_data.iterrows():
@@ -285,11 +275,6 @@ def add_absent_edges_to_network(
         The REC river network, a directed graph, to which absent edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """  # noqa: D400
     # Identify edges that are absent from the REC river network and require addition
     absent_edges_to_add = identify_absent_edges_to_add(rec_network, prepared_network_data)

@@ -39,11 +39,6 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """  # noqa: D400
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():

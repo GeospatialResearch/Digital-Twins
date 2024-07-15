@@ -95,11 +95,6 @@ def add_rainfall_data_to_db(engine: Engine, site_id: str, idf: bool) -> None:
         HIRDS rainfall site ID.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get the relevant rainfall data table name from the idf parameter
     rain_table_name = db_rain_table_name(idf)
@@ -130,11 +125,6 @@ def add_each_site_rainfall_data(engine: Engine, site_ids_list: List[str], idf: b
         List of rainfall sites' IDs.
     idf : bool
         Set to False for rainfall depth data, and True for rainfall intensity data.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     for site_id in site_ids_list:
         add_rainfall_data_to_db(engine, site_id, idf)
@@ -152,11 +142,6 @@ def rainfall_data_to_db(engine: Engine, sites_in_catchment: gpd.GeoDataFrame, id
         Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
     idf : bool = False
         Set to False for rainfall depth data, and True for rainfall intensity data.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get the IDs of the sites within the catchment area
     site_ids_in_catchment = get_site_ids_in_catchment(sites_in_catchment)

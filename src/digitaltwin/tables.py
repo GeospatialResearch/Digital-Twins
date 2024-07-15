@@ -205,11 +205,6 @@ def create_table(engine: Engine, table: Base) -> None:
         The engine used to connect to the database.
     table : Base
         Class representing the table to create.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     table.__table__.create(bind=engine, checkfirst=True)
 
@@ -246,11 +241,6 @@ def execute_query(engine: Engine, query) -> None:
         The engine used to connect to the database.
     query
         The query to be executed.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
 
     Raises
     ------

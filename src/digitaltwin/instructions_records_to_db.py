@@ -30,11 +30,6 @@ def validate_url_reachability(section: str, url: str) -> None:
     url : str
         The URL to validate.
 
-    Returns
-    -------
-    None
-        This function does not return any value.
-
     Raises
     ------
     ValueError
@@ -65,11 +60,6 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
         The section identifier of the instruction.
     instruction : Dict[str, Union[str, int]]
         The instruction details.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
 
     Raises
     ------
@@ -178,11 +168,6 @@ def store_instructions_records_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Create the 'geospatial_layers' table if it doesn't exist
     create_table(engine, GeospatialLayers)

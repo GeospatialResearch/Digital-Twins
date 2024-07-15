@@ -129,11 +129,6 @@ def spatial_uniform_rain_input(
         including the size and percentage of the catchment area covered by each site.
     bg_flood_dir : pathlib.Path
         BG-Flood model directory.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """  # noqa: D400
     # Calculate the mean catchment rainfall
     mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
@@ -199,11 +194,6 @@ def spatial_varying_rain_input(
         including the size and percentage of the catchment area covered by each site.
     bg_flood_dir : pathlib.Path
         BG-Flood model directory.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Create the rainfall data cube
     rain_data_cube = create_rain_data_cube(hyetograph_data, sites_coverage)
@@ -232,11 +222,6 @@ def generate_rain_model_input(
     input_type: RainInputType
         The type of rainfall model input to be generated. Valid options are 'uniform' or 'varying',
         representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """  # noqa: D400
     # Remove any existing rainfall model inputs in the BG-Flood directory
     main_rainfall.remove_existing_rain_inputs(bg_flood_dir)
