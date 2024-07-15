@@ -6,3 +6,6 @@ max-line-length = 120
 require-plugins = flake8-docstrings
 ignore = D205
 extend-ignore = W504
+
+# D205: 1 blank line required between summary line and description
+# W504: line break after binary operator
