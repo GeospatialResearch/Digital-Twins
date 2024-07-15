@@ -60,8 +60,7 @@ RUN mkdir /stored_data \
     && setfacl -R -d -m u:nonroot:rwx /stored_data \
     && setfacl -R -m u:nonroot:rwx /stored_data \
     && mkdir /stored_data/geoserver \
-    && mkdir /stored_data/model_output \
-    && mkdir /stored_data/rec_data
+    && mkdir /stored_data/model_output
 
 USER nonroot
 
