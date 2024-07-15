@@ -14,10 +14,9 @@ class SetupEnvironmentTest(unittest.TestCase):
     def setUpClass(cls):
         """Set up arguments used for testing."""
         # flag for checking if tests requiring database to be active should run
-        cls.run_database_integration_tests = config.get_env_variable("TEST_DATABASE_INTEGRATION",
+        cls.run_database_integration_tests = config.get_bool_env_variable("TEST_DATABASE_INTEGRATION",
                                                                      default=True,
-                                                                     allow_empty=True,
-                                                                     cast_to=bool
+                                                                     allow_empty=True
                                                                      )
         cls.DATABASE_SKIP_REASON = """TEST_DATABASE_INTEGRATION env var is not True, so the test is skipped.
             This is intentional at all times on the GitHub Actions."""

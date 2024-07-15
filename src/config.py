@@ -13,20 +13,21 @@ load_dotenv("api_keys.env")
 def get_env_variable(var_name: str, default: str = None, allow_empty: bool = False) -> str:
     """
     Reads a string environment variable, with settings to allow defaults, empty values.
-    To read a boolean user get_bool_env_variable
+    To read a boolean please use get_bool_env_variable
 
     Parameters
     ----------
     var_name : str
         The name of the environment variable to retrieve.
-    default : T = None
-        Default return value if the environment variable does not exist.
+    default : Optional[str] = None
+        Default return value if the environment variable is empty or does not exist.
     allow_empty : bool
-        If False then a ValueError will be raised if the environment variable is empty.
+        If False then a KeyError will be raised if the environment variable is empty.
 
     Returns
     -------
-    The environment variable, or default if it does not exist, as type T.
+    str
+        The environment variable, or default if it is empty or does not exist.
 
     Raises
     ------
@@ -45,7 +46,8 @@ def get_env_variable(var_name: str, default: str = None, allow_empty: bool = Fal
 def get_bool_env_variable(var_name: str, default: Optional[bool] = None, allow_empty: bool = False) -> bool:
     """
     Reads an environment variable and attempts to cast to bool, with settings to allow defaults, empty values.
-    For bool we have the problem where bool("False") == True but we want this function to return False
+    For bool casting we have the problem where bool("False") == True
+    but this function fixes that so get_bool_env_variable("False") == False
 
     Parameters
     ----------
@@ -66,7 +68,7 @@ def get_bool_env_variable(var_name: str, default: Optional[bool] = None, allow_e
     ValueError
         If allow_empty is False and the environment variable is empty string or None
     """
-    env_variable = get_env_variable(var_name, default, allow_empty)
+    env_variable = get_env_variable(var_name, str(default), allow_empty)
     truth_values = {"true", "t", "1"}
     false_values = {"false", "f", "0"}
     if env_variable.lower() in truth_values:
