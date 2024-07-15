@@ -428,9 +428,7 @@ def style_exists(style_name: str) -> bool:
 
 
 def create_viridis_style_if_not_exists() -> None:
-    """
-    Create a GeoServer style for rasters using the viridis color scale.
-    """
+    """Create a GeoServer style for rasters using the viridis color scale."""
     style_name = "viridis_raster"
     if not style_exists(style_name):
         # Create the style base

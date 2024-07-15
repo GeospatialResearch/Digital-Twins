@@ -43,9 +43,7 @@ class LogLevel(IntEnum):
 
 
 def log_execution_info() -> None:
-    """
-    Log a debug message indicating the execution of the function in the script.
-    """
+    """Log a debug message indicating the execution of the function in the script."""
     # Obtain the stack frame of the calling function (two frames up in the call stack)
     stack_frame = inspect.currentframe().f_back.f_back
     # Extract the name of the script file (without the path) where the function is being executed
