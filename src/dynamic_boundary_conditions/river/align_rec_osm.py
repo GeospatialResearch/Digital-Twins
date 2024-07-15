@@ -20,8 +20,6 @@ log = logging.getLogger(__name__)
 class NoRiverDataException(Exception):
     """Exception raised when no river data is to be used for the BG-Flood model."""
 
-    pass
-
 
 def get_rec_network_data_on_bbox(
         engine: Engine,

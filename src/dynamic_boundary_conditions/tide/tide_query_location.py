@@ -13,8 +13,6 @@ log = logging.getLogger(__name__)
 class NoTideDataException(Exception):
     """Exception raised when no tide data is to be used for the BG-Flood model."""
 
-    pass
-
 
 def get_regional_council_clipped_from_db(
         engine: Engine,
