@@ -92,7 +92,7 @@ def read_and_check_instructions_file() -> pd.DataFrame:
     # Path to the 'static_boundary_instructions.json' file
     instruction_file = pathlib.Path("src/digitaltwin/static_boundary_instructions.json")
     # Read the 'static_boundary_instructions.json' file
-    with open(instruction_file, "r") as file:
+    with open(instruction_file, "r", encoding="utf-8") as file:
         # Load content from the file
         instructions = json.load(file)
         # Iterate through each section

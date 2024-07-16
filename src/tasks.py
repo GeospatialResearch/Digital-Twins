@@ -100,7 +100,7 @@ def ensure_lidar_datasets_initialised() -> None:
         newzealidar.datasets.main()
     # Check that datasets_mapping is in the instructions.json file
     instructions_file_name = "instructions.json"
-    with open(instructions_file_name, "r") as instructions_file:
+    with open(instructions_file_name, "r", encoding="utf-8") as instructions_file:
         # Load content from the file
         instructions = json.load(instructions_file)["instructions"]
     dataset_mapping = instructions.get("dataset_mapping")

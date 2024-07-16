@@ -361,7 +361,7 @@ def prepare_bg_flood_model_inputs(
     bg_param_file_path = bg_flood_dir / "BG_param.txt"
 
     # Open the BG-Flood Model parameter file for writing
-    with open(bg_param_file_path, "w+") as param_file:
+    with open(bg_param_file_path, "w+", encoding="utf-8") as param_file:
         # Write general parameter values to the parameter file
         param_file.write(f"topo = {hydro_dem_path.as_posix()}?{elev_var_name};\n"
                          f"dx = {resolution};\n"

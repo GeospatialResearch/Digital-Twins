@@ -37,7 +37,7 @@ def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: p
         # Save the input data as a tab-separated text file at the specified file path
         input_data.to_csv(file_path, sep='\t', index=False, header=False)
         # Add the "# Water level boundary" line at the beginning of the uniform boundary input file
-        with open(file_path, 'r+') as file:
+        with open(file_path, 'r+', encoding='utf-8') as file:
             content = file.read()
             file.seek(0, 0)
             file.write('# Water level boundary\n' + content)
