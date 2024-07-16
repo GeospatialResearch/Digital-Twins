@@ -52,7 +52,11 @@ def fetch_osm_waterways(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     # Execute the Overpass query to retrieve waterway elements
     waterways = Overpass().query(query, timeout=600)
     # Initialize an empty dictionary to store element information
-    element_dict = dict(id=[], waterway=[], geometry=[])
+    element_dict = {
+        "id": [],
+        "waterway": [],
+        "geometry": []
+    }
     # Iterate over the retrieved waterway elements
     for element in waterways.elements():
         # Extract and store the ID, waterway type, and geometry of each element

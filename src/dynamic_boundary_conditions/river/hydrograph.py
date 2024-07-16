@@ -204,14 +204,14 @@ def get_hydrograph_data(
     #  Obtain the requested REC river inflow scenario data
     rec_inflow_scenario_data = get_rec_inflow_scenario_data(rec_inflows_w_input_points, maf, ari, bound)
     # Initialize an empty data dictionary to store hydrograph data
-    hydro_data_dict = dict(
-        river_input_point_no=[],
-        river_input_point=[],
-        dem_resolution=[],
-        areakm2=[],
-        mins=[],
-        flow=[]
-    )
+    hydro_data_dict = {
+        "river_input_point_no": [],
+        "river_input_point": [],
+        "dem_resolution": [],
+        "areakm2": [],
+        "mins": [],
+        "flow": []
+    }
     # Generate hydrograph data for the requested REC river inflow scenario
     for _, row in rec_inflow_scenario_data.iterrows():
         hydro_data_dict["river_input_point_no"].extend([row["river_input_point_no"]] * 3)

@@ -442,24 +442,24 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: float) -> None:
             title_x=0.5,
             bargap=0,
             updatemenus=[
-                dict(
-                    type="dropdown",
-                    direction="down",
-                    x=0.99,
-                    y=0.99,
-                    buttons=list([
-                        dict(
-                            args=["type", "bar"],
-                            label="Bar Chart",
-                            method="restyle"
-                        ),
-                        dict(
-                            args=["type", "line"],
-                            label="Line Chart",
-                            method="restyle"
-                        )
-                    ]),
-                )
+                {
+                    "type": "dropdown",
+                    "direction": "down",
+                    "x": 0.99,
+                    "y": 0.99,
+                    "buttons": [
+                        {
+                            "args": ["type", "bar"],
+                            "label": "Bar Chart",
+                            "method": "restyle"
+                        },
+                        {
+                            "args": ["type", "line"],
+                            "label": "Line Chart",
+                            "method": "restyle"
+                        }
+                    ]
+                }
             ]
         )
         # Display the hyetograph figure.

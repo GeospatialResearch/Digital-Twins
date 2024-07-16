@@ -217,7 +217,7 @@ def categorize_exploded_multi_intersect(multi_intersect: gpd.GeoDataFrame) -> Di
         inflow_index = determine_multi_intersect_inflow_index(row)
 
         # Initialize a dictionary to categorize boundary points as 'inflow' or 'outflow'
-        categorized_points = dict(outflow=[], inflow=[])
+        categorized_points = {"outflow": [], "inflow": []}
         # Iterate through the list of exploded boundary points and categorize each one
         for index, point in enumerate(boundary_points):
             # Determine the category based on their order along the river segment and inflow index
