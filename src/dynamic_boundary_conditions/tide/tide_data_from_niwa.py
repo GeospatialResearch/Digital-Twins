@@ -604,13 +604,12 @@ def add_time_information(
             message = f"If the 'approach' is KING_TIDE, 'time_to_peak_mins' must be at least half of " \
                       f"'tide_length_mins'. The current values are 'time_to_peak_mins': {time_to_peak_mins}, " \
                       f"'tide_length_mins': {tide_length_mins}."
-            raise ValueError(message)
         else:
             # Error message for PERIOD_TIDE approach
             message = f"If the 'approach' is PERIOD_TIDE, 'time_to_peak_mins' must be at least half of " \
                       f"'total_days' in minutes. The current values are 'time_to_peak_mins': {time_to_peak_mins}, " \
                       f"'total_days': {total_days} (equivalent to {tide_length_mins} minutes)."
-            raise ValueError(message)
+        raise ValueError(message)
 
     # Group the tide data by position and geometry
     grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])

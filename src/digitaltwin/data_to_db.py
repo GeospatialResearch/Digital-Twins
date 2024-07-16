@@ -229,8 +229,7 @@ def get_non_intersection_area_from_db(
     if non_intersection_area.empty:
         raise NoNonIntersectionError(
             f"'{table_name}' data for the requested catchment area is already in the database.")
-    else:
-        return non_intersection_area
+    return non_intersection_area
 
 
 def process_new_non_nz_geospatial_layers(

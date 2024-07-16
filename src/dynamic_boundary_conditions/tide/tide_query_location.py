@@ -257,18 +257,17 @@ def get_tide_query_locations(
             raise NoTideDataException(
                 f"No query locations were found within {distance_km}km of the catchment area; "
                 f"hence, 'tide' data will not be utilised in the BG-Flood model.")
-        else:
-            # Extract the geometry of the coastline
-            coastline_geom = coastline['geometry'].iloc[0]
-            # Get the centroid positions of the catchment boundary lines
-            boundary_centroids = get_catchment_boundary_centroids(catchment_area)
-            # Calculate the distance from each boundary centroid to the coastline
-            boundary_centroids['dist_to_coast'] = boundary_centroids.distance(coastline_geom)
-            # Select the boundary centroid closest to the coastline
-            tide_query_location = boundary_centroids.sort_values('dist_to_coast').head(1)
-            # Rename the 'line_position' column to 'position' for consistency
-            tide_query_location = tide_query_location[['line_position', 'geometry']].rename(
-                columns={'line_position': 'position'})
+        # Extract the geometry of the coastline
+        coastline_geom = coastline['geometry'].iloc[0]
+        # Get the centroid positions of the catchment boundary lines
+        boundary_centroids = get_catchment_boundary_centroids(catchment_area)
+        # Calculate the distance from each boundary centroid to the coastline
+        boundary_centroids['dist_to_coast'] = boundary_centroids.distance(coastline_geom)
+        # Select the boundary centroid closest to the coastline
+        tide_query_location = boundary_centroids.sort_values('dist_to_coast').head(1)
+        # Rename the 'line_position' column to 'position' for consistency
+        tide_query_location = tide_query_location[['line_position', 'geometry']].rename(
+            columns={'line_position': 'position'})
     else:
         # Determine the positions of non-intersection centroid points relative to the catchment boundary lines
         non_intersections = get_non_intersection_centroid_position(catchment_area, non_intersection_area)
