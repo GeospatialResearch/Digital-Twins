@@ -235,7 +235,7 @@ def add_crs_to_model_output(engine: Engine, flood_model_output_id: int) -> None:
     if model_output_file.exists() and temp_file.exists():
         # Replace the original file with the modified temporary file
         temp_file.replace(model_output_file)
-    log.debug(f"Added CRS info to {model_output_file}")
+    log.debug("Added CRS info to %s", model_output_file)
 
 
 def process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None:
@@ -455,12 +455,13 @@ def run_bg_flood_model(
         subprocess.run([bg_flood_dir / "BG_Flood"], check=True)
     else:
         # Other OSs are not officially supported, but we can attempt to try the Linux one.
-        log.warning(f"{operating_system} is not officially supported. Only Windows and Linux are officially supported.")
-        log.warning(f"Attempting to run BG_Flood linux script in {operating_system}")
+        log.warning("%s is not officially supported. Only Windows and Linux are officially supported.",
+                    operating_system)
+        log.warning("Attempting to run BG_Flood linux script in %s", operating_system)
         subprocess.run([bg_flood_dir / "BG_Flood"], check=True)
     # Change the current working directory back to the original directory (cwd)
     os.chdir(cwd)
-    log.info(f"Saved new flood model to {model_output_path}")
+    log.info("Saved new flood model to %s", model_output_path)
 
 
 def main(

@@ -111,17 +111,17 @@ def thiessen_polygons_to_db(engine: Engine) -> None:
     table_name = "rainfall_sites_voronoi"
     # Check if the table already exists in the database
     if tables.check_table_exists(engine, table_name):
-        log.info(f"'{table_name}' data already exists in the database.")
+        log.info("'%s' data already exists in the database.", table_name)
     else:
         # Get the boundary of New Zealand
         nz_boundary = get_nz_boundary(engine, to_crs=4326)
         # Get all rainfall sites within the boundary of New Zealand from the database
         sites_in_nz = get_sites_within_aoi(engine, nz_boundary)
         # Calculate the Thiessen polygons, i.e. the area covered by each rainfall site
-        log.info(f"Calculating '{table_name}'.")
+        log.info("Calculating '%s'.", table_name)
         rainfall_sites_voronoi = thiessen_polygons_calculator(nz_boundary, sites_in_nz)
         # Store the Thiessen polygons data in the database
-        log.info(f"Adding '{table_name}' data to the database.")
+        log.info("Adding '%s' data to the database.", table_name)
         rainfall_sites_voronoi.to_postgis(f"{table_name}", engine, if_exists="replace")
 
 

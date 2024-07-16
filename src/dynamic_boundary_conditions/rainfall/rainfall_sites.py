@@ -77,11 +77,11 @@ def rainfall_sites_to_db(engine: Engine) -> None:
     table_name = "rainfall_sites"
     # Check if the table already exists in the database
     if tables.check_table_exists(engine, table_name):
-        log.info(f"'{table_name}' data already exists in the database.")
+        log.info("'%s' data already exists in the database.", table_name)
     else:
         # Get rainfall sites data
-        log.info(f"Fetching '{table_name}' data from the HIRDS website https://hirds.niwa.co.nz/.")
+        log.info("Fetching '%s' data from the HIRDS website https://hirds.niwa.co.nz/.", table_name)
         sites = get_rainfall_sites_in_df()
         # Store rainfall sites data in the database
-        log.info(f"Adding '{table_name}' data to the database.")
+        log.info("Adding '%s' data to the database.", table_name)
         sites.to_postgis(f'{table_name}', engine, if_exists='replace', index=False)

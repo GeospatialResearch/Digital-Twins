@@ -88,8 +88,8 @@ def add_network_exclusions_to_db(
         # Convert the excluded REC river segment object IDs to a list
         excluded_ids = rec_network_exclusions["objectid"].tolist()
         # Log a warning message indicating the reason and IDs of the excluded REC river segments
-        log.warning(f"Excluded REC from river network because '{exclusion_cause}': "
-                    f"{', '.join(map(str, excluded_ids))}")
+        log.warning("Excluded REC from river network because '%s': %s",
+                    exclusion_cause, ', '.join(map(str, excluded_ids)))
 
 
 def get_new_network_output_paths() -> Tuple[pathlib.Path, pathlib.Path]:
@@ -272,8 +272,8 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
         # Convert the excluded REC river segment object IDs to a list
         excluded_ids = data["objectid"].tolist()
         # Log a warning message indicating the reason and IDs of the excluded REC river segments
-        log.warning(f"Excluded REC from river network because '{exclusion_cause}': "
-                    f"{', '.join(map(str, excluded_ids))}")
+        log.warning("Excluded REC from river network because '%s': %s",
+                    exclusion_cause, ', '.join(map(str, excluded_ids)))
     # Load the REC river network graph
     with open(existing_network_series["network_path"], "rb") as file:
         rec_network = pickle.load(file)

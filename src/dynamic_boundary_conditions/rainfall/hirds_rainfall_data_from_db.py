@@ -78,7 +78,7 @@ def get_one_site_rainfall_data(
     """
     # Get the relevant rainfall data table name from the idf parameter
     rain_table_name = hirds_rainfall_data_to_db.db_rain_table_name(idf)
-    log.info(f"Retrieving the requested '{rain_table_name}' scenario data for site {site_id} from the database.")
+    log.info("Retrieving the requested '%s' scenario data for site %s from the database.", rain_table_name, site_id)
     # Check for inconsistent rcp and time_period arguments
     if (rcp is None and time_period is not None) or (rcp is not None and time_period is None):
         raise ValueError("Inconsistent arguments provided. "

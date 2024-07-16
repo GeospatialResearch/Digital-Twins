@@ -51,7 +51,7 @@ def log_execution_info() -> None:
     # Extract the name of the function currently being executed
     function_name = stack_frame.f_code.co_name
     # Log a debug message indicating the execution of the function in the script
-    log.debug(f"Executing {function_name}() in {script_name}")
+    log.debug("Executing %s() in %s", function_name, script_name)
 
 
 def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
