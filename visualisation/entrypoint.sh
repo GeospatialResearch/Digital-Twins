@@ -20,6 +20,8 @@ do
     sed -i 's|'"${VAR_NAME}"'|'"${VAR_VALUE}"'|g' $FILE || true
   done
 done
+echo "Finished processing files for env constants"
 
+echo "Starting nginx server now."
 # Run the nginx server
 nginx -g 'daemon off;'
