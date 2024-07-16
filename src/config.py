@@ -10,7 +10,7 @@ load_dotenv()
 load_dotenv("api_keys.env")
 
 
-def get_env_variable(var_name: str, default: str = None, allow_empty: bool = False) -> str:
+def get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
     """
     Reads a string environment variable, with settings to allow defaults, empty values.
     To read a boolean please use get_bool_env_variable
