@@ -46,7 +46,7 @@ def validate_url_reachability(section: str, url: str) -> None:
         # Raise an exception if the response status code indicates an error
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        raise ValueError(f"Unreachable URL provided for {section}: '{url}'\n{e}")
+        raise ValueError(f"Unreachable URL provided for {section}: '{url}'\n{e}") from e
 
 
 def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None:

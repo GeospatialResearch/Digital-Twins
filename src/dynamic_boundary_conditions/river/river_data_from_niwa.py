@@ -228,6 +228,6 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
         # Log that the REC data has been successfully fetched
         log.info("Successfully fetched 'rec_data'.")
         return rec_data
-    except TypeError:
+    except TypeError as e:
         # Raise a RuntimeError to indicate the failure
-        raise RuntimeError("Failed to fetch 'rec_data'.")
+        raise RuntimeError("Failed to fetch 'rec_data'.") from e

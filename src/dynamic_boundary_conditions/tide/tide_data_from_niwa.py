@@ -271,7 +271,7 @@ async def fetch_tide_data_for_requested_period(
                 # Concatenate the results into a single GeoDataFrame and reset the index
                 tide_data = gpd.GeoDataFrame(pd.concat(query_results)).reset_index(drop=True)
             return tide_data
-        except TypeError:
+        except TypeError as e:
             # If a TypeError occurs, it means the Tide API did not return the expected data format.
             # This can happen if the data source at the current URL is not available or the data is corrupt.
             # In such cases, try fetching the data from an alternative URL.
@@ -280,7 +280,7 @@ async def fetch_tide_data_for_requested_period(
                 url = TIDE_API_URL_DATA_CSV
             else:
                 # If the alternative URL also fails, raise a RuntimeError to indicate the failure.
-                raise RuntimeError("Failed to fetch tide data.")
+                raise RuntimeError("Failed to fetch tide data.") from e
 
 
 def convert_to_nz_timezone(tide_data_utc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
