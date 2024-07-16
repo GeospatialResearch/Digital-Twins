@@ -68,7 +68,7 @@ class GetEnvVariableTest(unittest.TestCase):
         self.assertEqual(config.get_env_variable(self.TEST_VAR_KEY, allow_empty=True, default=test_default_value),
                          test_default_value)
 
-    def test_empty_str_env_var_allow_empty_with_bool_default(self):
+    def test_empty_bool_env_var_allow_empty_with_default(self):
         test_default_value = True
         # Manually set empty env variable
         os.environ[self.TEST_VAR_KEY] = ""
