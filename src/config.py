@@ -1,10 +1,7 @@
 import os
-from typing import Type, TypeVar, Optional
+from typing import Optional
 
 from dotenv import load_dotenv
-
-# Generic type, used for static type checking
-T = TypeVar("T", str, bool, int, float)
 
 load_dotenv()
 load_dotenv("api_keys.env")
