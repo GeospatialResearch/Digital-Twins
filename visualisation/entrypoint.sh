@@ -8,7 +8,7 @@ VUE_ENV_VARS=$(printenv | grep -o "VUE_APP_\w*")
 
 echo "Replacing env constants in JS"
 echo "Env constants = ${VUE_ENV_VARS}"
-for FILE in "$ROOT_DIR"/js/app.*.js* "$ROOT_DIR"/index.html "$ROOT_DIR"/precache-manifest*.js;
+for FILE in "$ROOT_DIR"/js/app.*.js* "$ROOT_DIR"/index.html
 do
   echo "Processing $FILE ...";
 
