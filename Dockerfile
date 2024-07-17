@@ -59,8 +59,7 @@ Pin-Priority: 1000 \n\
 RUN mkdir /stored_data \
     && setfacl -R -d -m u:nonroot:rwx /stored_data \
     && setfacl -R -m u:nonroot:rwx /stored_data \
-    && mkdir /stored_data/geoserver \
-    && mkdir /stored_data/model_output
+    && mkdir /stored_data/geoserver
 
 # Copy python virtual environment from build layer
 COPY --chmod=555 --from=build /venv /venv
