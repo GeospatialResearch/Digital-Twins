@@ -213,7 +213,7 @@ def add_slr_to_tide(
     -------
     pd.DataFrame
         A DataFrame that contains the combined tide and sea level rise data for the specified projection year.
-    
+
     Raises
     ------
     ValueError
