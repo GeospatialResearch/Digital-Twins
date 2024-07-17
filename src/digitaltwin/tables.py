@@ -8,7 +8,7 @@ from sqlalchemy import Boolean, Column, DateTime, inspect, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 from sqlalchemy.schema import CheckConstraint, PrimaryKeyConstraint
 
 Base = declarative_base()
@@ -231,7 +231,7 @@ def check_table_exists(engine: Engine, table_name: str, schema: str = "public") 
     return inspector.has_table(table_name, schema=schema)
 
 
-def execute_query(engine: Engine, query) -> None:
+def execute_query(engine: Engine, query: Query) -> None:
     """
     Execute the given query on the provided engine using a session.
 
@@ -239,7 +239,7 @@ def execute_query(engine: Engine, query) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-    query
+    query : Query
         The query to be executed.
 
     Raises
