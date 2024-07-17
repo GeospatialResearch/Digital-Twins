@@ -84,7 +84,8 @@ def thiessen_polygons_calculator(
     # Extract the geometry of the area of interest
     aoi_polygon = area_of_interest["geometry"].iloc[0]
     # Generate Voronoi regions from the coordinates within the area of interest
-    region_polys, region_pts = voronoi_regions_from_coords(coordinates, aoi_polygon, per_geom=False)
+    region_polys_pts = voronoi_regions_from_coords(coordinates, aoi_polygon, per_geom=False)
+    region_polys, region_pts = region_polys_pts[:2]
     voronoi_regions = list(region_polys.values())
     sites_in_voronoi_order = pd.DataFrame()
     for site_index in region_pts.values():
