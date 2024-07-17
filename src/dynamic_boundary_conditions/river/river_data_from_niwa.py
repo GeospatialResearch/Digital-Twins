@@ -49,6 +49,11 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     -------
     RecordCounts
         A named tuple containing the maximum and total record counts of the REC feature layer.
+
+    Raises
+    ------
+    RuntimeError
+        If there is an issue with retrieving the record counts from the REC feature layer.
     """
     # Set up parameters for the initial request to get the maximum record count
     params = {"f": "json"}

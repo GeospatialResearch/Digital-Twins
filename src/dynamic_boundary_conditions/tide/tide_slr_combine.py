@@ -213,6 +213,11 @@ def add_slr_to_tide(
     -------
     pd.DataFrame
         A DataFrame that contains the combined tide and sea level rise data for the specified projection year.
+    
+    Raises
+    ------
+    ValueError
+        If an invalid 'proj_year' value is provided.
     """  # noqa: D400
     log.info("Adding 'sea_level_rise' data to 'tide' data for the requested scenario.")
 

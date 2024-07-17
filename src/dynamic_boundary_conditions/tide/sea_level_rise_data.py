@@ -34,6 +34,11 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     ----------
     slr_data_dir : pathlib.Path
         The directory where the downloaded sea level rise data files will be saved.
+
+    Raises
+    ------
+    ValueError
+        If the number of downloaded files does not match the number of datasets found on the web page.
     """
     # Check if the directory exists and, if so, delete all files within it
     if slr_data_dir.exists():
