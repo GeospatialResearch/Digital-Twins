@@ -36,7 +36,7 @@ class GeospatialLayers(Base):
         Coverage area of the geospatial data, e.g. 'New Zealand'.
     url : str
         URL pointing to the geospatial layer.
-    """
+    """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "geospatial_layers"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -72,7 +72,7 @@ class UserLogInfo(Base):
         Timestamp indicating when the log entry was created.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
-    """
+    """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -97,7 +97,7 @@ class RiverNetworkExclusions(Base):
         Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
     geometry : LineString
         Geometric representation of the excluded REC river features.
-    """
+    """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "rec_network_exclusions"
     rec_network_id = Column(Integer, primary_key=True,
@@ -130,7 +130,7 @@ class RiverNetwork(Base):
         Timestamp indicating when the output was created.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
-    """
+    """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "rec_network"
     rec_network_id = Column(Integer, primary_key=True,
@@ -159,7 +159,7 @@ class BGFloodModelOutput(Base):
         Timestamp indicating when the output was created.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
-    """
+    """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "bg_flood_model_output"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -186,7 +186,7 @@ class BuildingFloodStatus(Base):
         If the building is flooded or not
     flood_model_id: int.
         Foreign key mathing the unique_id from bg_flood_model_output table
-    """
+    """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "building_flood_status"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
