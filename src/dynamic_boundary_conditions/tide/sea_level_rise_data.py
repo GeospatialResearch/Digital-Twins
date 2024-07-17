@@ -42,7 +42,8 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     """
     # Check if the directory exists and, if so, delete all files within it
     if slr_data_dir.exists():
-        [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
+        for slr_file in slr_data_dir.glob("*"):
+            slr_file.unlink()
     # Create the directory if it does not already exist
     else:
         slr_data_dir.mkdir(parents=True, exist_ok=True)
@@ -90,7 +91,9 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     # Find and click "Download"
     driver.find_element(By.ID, "container-control-text-6268d9223c91dd00278d5ecf").click()
     # Find and click "Download Regional Data"
-    [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
+    for element in driver.find_elements(By.TAG_NAME, "h5"):
+        if element.text == "Download Regional Data":
+            element.click()
     # Identify links to all the regional data files on the webpage
     elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
     # Iterate through the identified links and simulate a click action to trigger the download
