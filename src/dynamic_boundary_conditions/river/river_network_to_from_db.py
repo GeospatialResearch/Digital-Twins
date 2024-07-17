@@ -111,9 +111,9 @@ def get_new_network_output_paths() -> Tuple[pathlib.Path, pathlib.Path]:
     # Create the REC Network directory if it does not already exist
     network_dir.mkdir(parents=True, exist_ok=True)
     # Create the file path for the REC Network with the current timestamp
-    network_path = (network_dir / f"{dt_string}_network.pickle")
+    network_path = network_dir / f"{dt_string}_network.pickle"
     # Create the file path for the REC Network data with the current timestamp
-    network_data_path = (network_dir / f"{dt_string}_network_data.geojson")
+    network_data_path = network_dir / f"{dt_string}_network_data.geojson"
     return network_path, network_data_path
 
 

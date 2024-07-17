@@ -72,7 +72,7 @@ def get_new_model_output_path() -> pathlib.Path:
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     # Create the BG Flood model output path with the current timestamp
-    model_output_path = (model_output_dir / f"output_{dt_string}.nc")
+    model_output_path = model_output_dir / f"output_{dt_string}.nc"
     return model_output_path
 
 

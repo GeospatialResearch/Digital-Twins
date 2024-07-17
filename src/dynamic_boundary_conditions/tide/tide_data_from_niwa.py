@@ -138,11 +138,11 @@ def gen_tide_query_param_list(
         - If the time interval is provided and outside the range of 10 to 1440.
     """
     # Verify that the provided arguments meet the query parameter requirements of the Tide API
-    if not (-53 <= lat <= -29):
+    if not -53 <= lat <= -29:
         raise ValueError(f"latitude is {lat}, must range from -29 to -53.")
     if not ((160 <= long <= 180) or (-180 <= long <= -175)):
         raise ValueError(f"longitude is {long}, must range from 160 to 180 or from -175 to -180.")
-    if interval_mins is not None and not (10 <= interval_mins <= 1440):
+    if interval_mins is not None and not 10 <= interval_mins <= 1440:
         raise ValueError(f"interval is {interval_mins}, must range from 10 to 1440.")
 
     # Get the NIWA API key

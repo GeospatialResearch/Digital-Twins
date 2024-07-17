@@ -161,7 +161,7 @@ def get_storm_length_increment_data(interp_increment_data: pd.DataFrame, storm_l
     if storm_length_mins < min_storm_length_mins:
         raise ValueError(f"Storm duration (storm_length_mins) needs to be at least '{int(min_storm_length_mins)}'.")
     # Filter the data to include only rows within the specified storm duration
-    storm_length_filter = (interp_increment_data["duration_mins"] <= storm_length_mins)
+    storm_length_filter = interp_increment_data["duration_mins"] <= storm_length_mins
     storm_length_data = interp_increment_data[storm_length_filter]
     return storm_length_data
 
