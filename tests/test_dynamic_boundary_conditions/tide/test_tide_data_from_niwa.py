@@ -1,5 +1,4 @@
 import unittest
-from datetime import date, timedelta
 
 import geopandas as gpd
 import pandas as pd
@@ -14,7 +13,7 @@ class TideDataFromNiwaTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         data_dir = "tests/test_dynamic_boundary_conditions/tide/data"
-        cls.query_loc_row = pd.read_csv(f"{data_dir}/query_loc_row.txt")
+        cls.query_loc_row = pd.read_csv(f"{data_dir}/query_loc_row.csv")
         cls.query_loc_row['geometry'] = cls.query_loc_row['geometry'].apply(loads)
         cls.gdf = gpd.GeoDataFrame(cls.query_loc_row, geometry='geometry')
 
