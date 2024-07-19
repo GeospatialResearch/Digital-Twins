@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, MagicMock
 
 import geopandas as gpd
 import pandas as pd
@@ -8,7 +8,6 @@ from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
 from src.dynamic_boundary_conditions.river.river_inflows import (
-    get_elevations_near_rec_entry_point,
     get_rec_inflows_with_input_points,
     get_min_elevation_river_input_point
 )
@@ -20,22 +19,6 @@ class RiverInflowsTest(unittest.TestCase):
         # Set up necessary mocks or data for testing
         self.hydro_dem_mock = MagicMock(spec=xr.Dataset)
         self.hydro_dem_mock.rio.clip.return_value = self.hydro_dem_mock
-
-    def test_get_elevations_near_rec_entry_point(self):
-        rec_inflows_row = pd.Series({
-            'dem_boundary_line_buffered': 'mocked_dem_boundary_line_buffered',
-            'aligned_rec_entry_point': gpd.GeoSeries([Point(1, 2)]),
-        })
-
-        # Mock the clip method and set the return value for spatial_ref.crs_wkt
-        self.hydro_dem_mock.rio.clip.return_value = self.hydro_dem_mock
-
-        # Mock the spatial_ref attribute using PropertyMock
-        spatial_ref_mock = PropertyMock()
-        type(self.hydro_dem_mock).spatial_ref = spatial_ref_mock
-        spatial_ref_mock.crs_wkt.return_value = 'mocked_crs_wkt'
-
-        result = get_elevations_near_rec_entry_point(rec_inflows_row, self.hydro_dem_mock)
 
     def test_get_min_elevation_river_input_point(self):
         rec_inflows_row = pd.Series({

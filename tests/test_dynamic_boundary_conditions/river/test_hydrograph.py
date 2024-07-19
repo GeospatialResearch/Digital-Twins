@@ -33,8 +33,6 @@ class HydrographTest(unittest.TestCase):
         cleaned_flow_5h = cleaned_rec_inflow_data["flow_5h"].to_list()
         self.assertEqual(orig_flow_5h, cleaned_flow_5h)
 
-    # def test_extract_valid_ari_values(self):
-
 
 if __name__ == "__main__":
     unittest.main()
