@@ -1,10 +1,13 @@
-import unittest
-from unittest.mock import patch
-import requests
-from src.digitaltwin import instructions_records_to_db
-import pandas as pd
-from pathlib import Path
 import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+import pandas as pd
+import requests
+
+from src.digitaltwin import instructions_records_to_db
+
 
 class TestInstructionsRecordsToDb(unittest.TestCase):
     def test_validate_url_reachability_valid_url(self):
@@ -99,36 +102,6 @@ class TestInstructionsRecordsToDb(unittest.TestCase):
         finally:
             # Clean up: remove the temporary file
             Path(temp_file_path).unlink()
-
-    def test_get_non_existing_records(self):
-        # Sample data for instructions_df
-        instructions_data = {'data_provider': ['A', 'B', 'C', 'D'],
-                             'layer_id': [1, 2, 3, 4],
-                             'section': ['S1', 'S2', 'S3', 'S4'],
-                             'url': ['url1', 'url2', 'url3', 'url4']}
-        instructions_df = pd.DataFrame(instructions_data)
-
-        # Sample data for existing_layers_df
-        existing_data = {'data_provider': ['A', 'B', 'C'],
-                         'layer_id': [1, 2, 3],
-                         'section': ['S1', 'S2', 'S3'],
-                         'url': ['url1', 'url2', 'url3']}
-        existing_layers_df = pd.DataFrame(existing_data)
-
-        # Call the function
-        with patch(
-                "src.digitaltwin.instructions_records_to_db.get_non_existing_records") as mock_get_non_existing_records:
-            # Set the return value of the mock to simulate the absence of 'url' column
-            mock_get_non_existing_records.return_value = instructions_df
-
-            result = instructions_records_to_db.get_non_existing_records(instructions_df, existing_layers_df)
-
-            # Assertions
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertEqual(len(result), len(instructions_df))
-
-            # Assert that get_non_existing_records was called with the expected arguments
-            mock_get_non_existing_records.assert_called_with(instructions_df, existing_layers_df)
 
 
 if __name__ == '__main__':
