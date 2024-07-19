@@ -1,12 +1,7 @@
 import unittest
-from unittest.mock import patch
-from typing import List
 
-from shapely import LineString
-from shapely.wkt import loads
-import pandas as pd
 import geopandas as gpd
-import numpy as np
+import pandas as pd
 
 from src.dynamic_boundary_conditions.river import osm_waterways
 
