@@ -76,7 +76,7 @@ class TestInstructionsRecordsToDb(unittest.TestCase):
     def test_read_and_check_instructions_file(self):
         # Create a temporary file with sample data
         with tempfile.NamedTemporaryFile(mode='w+', delete=False) as temp_file:
-            temp_file.write('{"section1": {"url": "http://example.com", "other_field": "value"}}')
+            temp_file.write('{"section1": {"url": "https://example.com", "other_field": "value"}}')
             temp_file_path = temp_file.name
 
         try:
@@ -94,10 +94,11 @@ class TestInstructionsRecordsToDb(unittest.TestCase):
                         self.assertSetEqual(set(result_df.columns), {'section', 'url', 'other_field'})
 
                         # Assert that validate_url_reachability was called with the expected arguments
-                        mock_validate_url_reachability.assert_called_with("section1", "http://example.com")
+                        mock_validate_url_reachability.assert_called_with("section1", "https://example.com")
 
                         # Assert that validate_instruction_fields was called with the expected arguments
-                        mock_validate_instruction_fields.assert_called_with("section1", {"url": "http://example.com"})
+                        mock_validate_instruction_fields.assert_called_with("section1", {"url": "https://example.com",
+                                                                                         'other_field': 'value'})
 
         finally:
             # Clean up: remove the temporary file
