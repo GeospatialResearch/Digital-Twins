@@ -1,20 +1,14 @@
 import unittest
-from unittest.mock import patch
-from typing import List, Dict
-
-from shapely import LineString
 from datetime import date, timedelta
-from shapely.wkt import loads
-import pandas as pd
-import geopandas as gpd
 
-import numpy as np
+import geopandas as gpd
+import pandas as pd
+from shapely.wkt import loads
 
 from src.dynamic_boundary_conditions.tide import tide_data_from_niwa
 
 
 class TideDataFromNiwaTest(unittest.TestCase):
-
     query_loc_row = None
 
     @classmethod
@@ -79,4 +73,3 @@ class TideDataFromNiwaTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
