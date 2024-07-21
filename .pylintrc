@@ -1,6 +1,6 @@
 [tool.pylint.main]
 load-plugins = pylint.extensions.docparams
-disable = R0913, R0914, W3101
+disable = R0913, R0914, W3101, R1720, R1705
 
 # R0913: too-many-arguments
 # R0914: too-many-locals
