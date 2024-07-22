@@ -156,6 +156,11 @@ def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
     -------
     pathlib.Path
         The path to the model output file
+
+    Raises
+    -------
+    FileNotFoundError
+        Error raised if `bg_flood` table is not found or does not contain the `model_id`.
     """
     # Execute a query to get the model output record based on the 'flood_model_id' column
     query = text("SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
@@ -189,6 +194,11 @@ def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFra
     -------
     gpd.GeoDataFrame
         Returns the geometry (extents) of the flood model output.
+
+    Raises
+    -------
+    FileNotFoundError
+        Error raised if `bg_flood` table is not found or does not contain the `model_id`.
     """
     # Execute a query to get the model output record based on the 'flood_model_id' column
     bg_flood_table = "bg_flood_model_output"
