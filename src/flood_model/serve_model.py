@@ -34,7 +34,7 @@ def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
         The filepath of the new GeoTiff file.
     """
     new_name = f"{nc_file_path.stem}.tif"
-    log.info("Converting %s to %s", nc_file_path.name, new_name)
+    log.info(f"Converting {nc_file_path.name} to {new_name}")
     temp_dir = pathlib.Path("tmp/gtiff")
     # Create temporary storage folder if it does not already exist
     temp_dir.mkdir(parents=True, exist_ok=True)
@@ -61,7 +61,7 @@ def upload_gtiff_to_store(
     workspace_name : str
         The name of the existing GeoServer workspace that the store is to be added to.
     """
-    log.info("Uploading %s to Geoserver workspace %s", gtiff_filepath.name, workspace_name)
+    log.info(f"Uploading {gtiff_filepath.name} to Geoserver workspace {workspace_name}")
 
     # Set file copying src and dest
     geoserver_data_root = get_env_variable("DATA_DIR_GEOSERVER", cast_to=pathlib.Path)
@@ -187,7 +187,7 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
     os.makedirs(geoserver_data_root / "data" / workspace_name, exist_ok=True)
 
     # Create the geoserver REST API request to create the workspace
-    log.info("Creating geoserver workspace %s if it does not already exist.", workspace_name)
+    log.info(f"Creating geoserver workspace {workspace_name} if it does not already exist.")
     req_body = {
         "workspace": {
             "name": workspace_name
@@ -199,9 +199,9 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD"))
     )
     if response.status_code == HTTPStatus.CREATED:
-        log.info("Created new workspace %s.", workspace_name)
+        log.info(f"Created new workspace {workspace_name}.")
     elif response.status_code == HTTPStatus.CONFLICT:
-        log.info("Workspace %s already exists.", workspace_name)
+        log.info(f"Workspace {workspace_name} already exists.")
     else:
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
@@ -259,7 +259,7 @@ def create_datastore_layer(workspace_name, data_store_name: str, layer_name, met
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
     )
     if response.status_code == HTTPStatus.CREATED:
-        log.info("Created new datastore layer %s:%s.", workspace_name, layer_name)
+        log.info(f"Created new datastore layer {workspace_name}:{layer_name}.")
     else:
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
@@ -375,7 +375,7 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
     )
     if response.status_code == HTTPStatus.CREATED:
-        log.info("Created new db store %s.", workspace_name)
+        log.info(f"Created new db store {workspace_name}.")
     # Expected responses are CREATED if the new store is created or CONFLICT if one already exists.
     else:
         # If it does not meet the expected results then raise an error
