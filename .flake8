@@ -1,9 +1,9 @@
 [flake8]
+require-plugins = flake8-docstrings, flake8-annotations
 show-source = True
 count = True
 statistics = True
 max-line-length = 120
-require-plugins = flake8-docstrings, flake8-annotations
 ignore = D205, ANN101
 extend-ignore = W504
 
