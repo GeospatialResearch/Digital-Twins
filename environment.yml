@@ -36,6 +36,6 @@ dependencies:
     - geoapis==0.3.2
     - celery==5.2.7
     - gunicorn==20.1.0
-    - git+https://github.com/LukeParky/NewZeaLiDAR.git@v0.2 # v0.1 for Windows, v0.2 for Linux
+    - git+https://github.com/LukeParky/NewZeaLiDAR.git@v0.3
 
 prefix: 
