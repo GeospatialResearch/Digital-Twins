@@ -67,7 +67,7 @@ def store_rec_data_to_db(engine: Engine) -> None:
     table_name = "rec_data"
     # Check if the table already exists in the database
     if check_table_exists(engine, table_name):
-        log.info("'%s' already exists in the database.", table_name)
+        log.info(f"'{table_name}' already exists in the database.")
     else:
         try:
             # Retrieve REC data from NIWA
@@ -78,9 +78,9 @@ def store_rec_data_to_db(engine: Engine) -> None:
             # Load REC data from the backup NIWA REC dataset
             rec_data = load_backup_rec_data_from_niwa()
         # Store the REC data to the database table
-        log.info("Adding '%s' to the database.", table_name)
+        log.info(f"Adding '{table_name}' to the database.")
         rec_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-        log.info("Successfully added '%s' to the database.", table_name)
+        log.info(f"Successfully added '{table_name}' to the database.")
 
 
 def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:

@@ -99,13 +99,12 @@ def add_rainfall_data_to_db(engine: Engine, site_id: str, idf: bool) -> None:
     # Get the relevant rainfall data table name from the idf parameter
     rain_table_name = db_rain_table_name(idf)
     # Retrieve the rainfall data for the specified site from HIRDS
-    log.info("Fetching '%s' data for site %s from the HIRDS website https://hirds.niwa.co.nz/.",
-             rain_table_name, site_id)
+    log.info(f"Fetching '{rain_table_name}' data for site {site_id} from the HIRDS website https://hirds.niwa.co.nz/.")
     site_data = rainfall_data_from_hirds.get_data_from_hirds(site_id, idf)
     # Extract the layout structure of the data
     layout_structure = rainfall_data_from_hirds.get_layout_structure_of_data(site_data)
 
-    log.info("Adding '%s' data for site %s to the database.", rain_table_name, site_id)
+    log.info(f"Adding '{rain_table_name}' data for site {site_id} to the database.")
     # Iterate over each block structure in the layout structure
     for block_structure in layout_structure:
         # Convert the data to a tabular format
@@ -157,7 +156,7 @@ def rainfall_data_to_db(engine: Engine, sites_in_catchment: gpd.GeoDataFrame, id
             # Add rainfall data for sites not in the database
             add_each_site_rainfall_data(engine, site_ids_not_in_db, idf)
         else:
-            log.info("'%s' data for sites within the requested catchment area is already in the database.", table_name)
+            log.info(f"'{table_name}' data for sites within the requested catchment area is already in the database.")
     else:
         # Check if there are sites within the catchment area
         if site_ids_in_catchment:
