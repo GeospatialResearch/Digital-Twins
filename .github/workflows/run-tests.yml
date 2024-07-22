@@ -33,6 +33,11 @@ jobs:
           # only cache environment
           cache-environment: true
           cache-downloads: false
+      - run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
       - name: Install pylint
         run: |
           python -m pip install pylint
