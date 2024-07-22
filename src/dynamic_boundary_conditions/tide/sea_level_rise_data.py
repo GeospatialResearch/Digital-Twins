@@ -190,7 +190,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
         # Get the data directory and append "slr_data" to specify the sea level rise data directory
         slr_data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "slr_data"
         # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
-        # download_slr_data_files_from_takiwa(slr_data_dir)
+        download_slr_data_files_from_takiwa(slr_data_dir)
         # Read sea level rise data from the NZ Sea level rise datasets
         slr_nz = read_slr_data_from_files(slr_data_dir)
         # Store the sea level rise data to the database table
