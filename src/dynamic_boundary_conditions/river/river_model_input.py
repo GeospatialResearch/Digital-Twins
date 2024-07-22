@@ -6,9 +6,22 @@ import pathlib
 
 import geopandas as gpd
 
-from src.dynamic_boundary_conditions.river import main_river
-
 log = logging.getLogger(__name__)
+
+
+def remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None:
+    """
+    Remove existing river input files from the specified directory.
+
+    Parameters
+    ----------
+    bg_flood_dir : pathlib.Path
+        The BG-Flood model directory containing the river input files.
+    """
+    # Iterate through all river input files in the directory
+    for river_input_file in bg_flood_dir.glob('river[0-9]*.txt'):
+        # Remove the file
+        river_input_file.unlink()
 
 
 def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.GeoDataFrame) -> None:
@@ -23,7 +36,7 @@ def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.
         A GeoDataFrame containing hydrograph data for the requested REC river inflow scenario.
     """
     # Remove any existing river model inputs in the BG-Flood directory
-    main_river.remove_existing_river_inputs(bg_flood_dir)
+    remove_existing_river_inputs(bg_flood_dir)
     # Log that the generation of river model inputs has started
     log.info("Generating the river model inputs for BG-Flood.")
     # Group the hydrograph data based on specific attributes

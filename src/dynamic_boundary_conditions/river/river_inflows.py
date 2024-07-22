@@ -14,7 +14,7 @@ from sqlalchemy.engine import Engine
 import pyproj
 from newzealidar.utils import get_dem_band_and_resolution_by_geometry
 
-from src.dynamic_boundary_conditions.river import main_river, align_rec_osm
+from src.dynamic_boundary_conditions.river import hydro_dem_utils, align_rec_osm
 
 log = logging.getLogger(__name__)
 
@@ -148,7 +148,7 @@ def get_rec_inflows_with_input_points(
 
     log.info("Determining the river input points used for the BG-Flood model.")
     # Get the boundary lines of the Hydrologically Conditioned DEM
-    dem_boundary_lines = main_river.get_hydro_dem_boundary_lines(engine, catchment_area)
+    dem_boundary_lines = hydro_dem_utils.get_hydro_dem_boundary_lines(engine, catchment_area)
     # Perform a spatial join between the REC inflow data and the Hydro DEM boundary lines
     rec_inflows = gpd.sjoin(aligned_rec_inflows, dem_boundary_lines, how="left", predicate="intersects")
     # Merge with the Hydro DEM boundary lines data and remove unnecessary columns

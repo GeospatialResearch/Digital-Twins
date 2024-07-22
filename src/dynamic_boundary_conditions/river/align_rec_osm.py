@@ -12,7 +12,7 @@ import pandas as pd
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions.river import main_river, osm_waterways
+from src.dynamic_boundary_conditions.river import hydro_dem_utils, osm_waterways
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ def get_rec_network_data_on_bbox(
         If no REC river segment is found crossing the catchment boundary.
     """  # noqa: D400
     # Obtain the spatial extent of the hydro DEM
-    _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+    _, hydro_dem_extent, _ = hydro_dem_utils.retrieve_hydro_dem_info(engine, catchment_area)
     # Select features that intersect with the hydro DEM extent
     rec_on_bbox = rec_network_data[rec_network_data.intersects(hydro_dem_extent)].reset_index(drop=True)
     # Check if there are REC river segments that cross the hydro DEM extent
@@ -335,7 +335,7 @@ def get_osm_waterways_on_bbox(
         along with the corresponding intersection points on the boundary.
     """  # noqa: D400
     # Obtain the spatial extent of the hydro DEM
-    _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+    _, hydro_dem_extent, _ = hydro_dem_utils.retrieve_hydro_dem_info(engine, catchment_area)
     # Fetch OSM waterway data for the catchment area
     osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
 

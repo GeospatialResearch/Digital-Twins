@@ -10,7 +10,7 @@ import numpy as np
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions.river import main_river, river_data_to_from_db
+from src.dynamic_boundary_conditions.river import hydro_dem_utils, river_data_to_from_db
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
     get_next_network_id,
     add_network_exclusions_to_db,
@@ -282,7 +282,7 @@ def add_absent_edges_to_network(
     # Check if there are any absent edges to add
     if not absent_edges_to_add.empty:
         # Obtain the hydro DEM and its spatial extent
-        hydro_dem, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+        hydro_dem, hydro_dem_extent, _ = hydro_dem_utils.retrieve_hydro_dem_info(engine, catchment_area)
         # Get the boundary point of each absent edge that intersects with the hydro DEM extent
         absent_edges_to_add["boundary_point"] = absent_edges_to_add["geometry"].intersection(hydro_dem_extent)
 
