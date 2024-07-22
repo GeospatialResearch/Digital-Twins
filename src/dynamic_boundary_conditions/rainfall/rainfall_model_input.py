@@ -13,10 +13,25 @@ import pandas as pd
 import xarray as xr
 from geocube.api.core import make_geocube
 
+from src.dynamic_boundary_conditions.rainfall import hyetograph
 from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType
-from src.dynamic_boundary_conditions.rainfall import main_rainfall, hyetograph
 
 log = logging.getLogger(__name__)
+
+
+def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
+    """
+    Remove existing rain input files from the specified directory.
+
+    Parameters
+    ----------
+    bg_flood_dir : pathlib.Path
+        BG-Flood model directory containing the rain input files.
+    """
+    # Iterate through all rain input files in the directory
+    for rain_input_file in bg_flood_dir.glob('rain_forcing.*'):
+        # Remove the file
+        rain_input_file.unlink()
 
 
 def sites_voronoi_intersect_catchment(
@@ -224,7 +239,7 @@ def generate_rain_model_input(
         representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
     """  # noqa: D400
     # Remove any existing rainfall model inputs in the BG-Flood directory
-    main_rainfall.remove_existing_rain_inputs(bg_flood_dir)
+    remove_existing_rain_inputs(bg_flood_dir)
     # Generate the requested type of rainfall model input
     if input_type == RainInputType.UNIFORM:
         log.info("Generating the spatially uniform rain model input for BG-Flood.")
