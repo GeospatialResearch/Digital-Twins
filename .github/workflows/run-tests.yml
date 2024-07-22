@@ -7,18 +7,28 @@ name: Run tests
 on: push
 
 jobs:
-  linting-py:
-    name: Lint Python with flake8 and pylint
+  linting-flake8:
+    name: Lint Python with flake8
     runs-on: ubuntu-latest
     steps:
       - name: Checkout github repo
         uses: actions/checkout@v2
-      - name: Install linting dependencies
+      - name: Install flake8
         run: |
-          python -m pip install flake8 flake8-docstrings flake8-annotations pylint
+          python -m pip install flake8 flake8-docstrings flake8-annotations
       - name: Run lint with flake8
         run: |
           flake8 src
+
+  linting-pylint:
+    name: Lint Python with pylint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout github repo
+        uses: actions/checkout@v2
+      - name: Install pylint
+        run: |
+          python -m pip install pylint
       - name: Run lint with pylint
         run: |
           pylint src
