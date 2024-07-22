@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 This script handles Hydrologically Conditioned Digital Elevation Model (Hydro DEM) data processing.
 It provides functions to retrieve information about the Hydro DEM and extract its boundary lines.
