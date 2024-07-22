@@ -5,8 +5,9 @@ Allows the frontend to send tasks and retrieve status later.
 import json
 import logging
 import traceback
-from typing import List, NamedTuple
+from typing import Dict, List, NamedTuple, Tuple
 
+import billiard.einfo
 import geopandas as gpd
 import newzealidar
 import shapely
@@ -34,7 +35,29 @@ log = logging.getLogger(__name__)
 class OnFailureStateTask(app.Task):
     """Task that switches state to FAILURE if an exception occurs."""
 
-    def on_failure(self, exc, _task_id, _args, _kwargs, _einfo):
+    def on_failure(self,
+                   exc: Exception,
+                   _task_id: str,
+                   _args: Tuple,
+                   _kwargs: Dict,
+                   _einfo: billiard.einfo.ExceptionInfo) -> None:
+        """
+        Change state to FAILURE and add exception to task data if an exception occurs.
+
+        Parameters
+        ----------
+        exc : Exception
+            The exception raised by the task.
+        _task_id : str
+            Unique id of the failed task.
+        _args : Tuple
+            Original arguments for the task that failed.
+        _kwargs : Dict
+            Original keyword arguments for the task that failed.
+        _einfo : billiard.einfo.ExceptionInfo
+            Exception information.
+
+        """
         self.update_state(state=states.FAILURE, meta={
             "exc_type": type(exc).__name__,
             "exc_message": traceback.format_exc().split('\n'),
@@ -126,7 +149,7 @@ def add_base_data_to_db(selected_polygon_wkt: str) -> None:
 
 
 @app.task(base=OnFailureStateTask)
-def process_dem(selected_polygon_wkt: str):
+def process_dem(selected_polygon_wkt: str) -> None:
     """
     Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.
 
@@ -141,7 +164,7 @@ def process_dem(selected_polygon_wkt: str):
 
 
 @app.task(base=OnFailureStateTask)
-def generate_rainfall_inputs(selected_polygon_wkt: str):
+def generate_rainfall_inputs(selected_polygon_wkt: str) -> None:
     """
     Task to ensure rainfall input data for the given area is added to the database and model input files are created.
 
@@ -156,7 +179,7 @@ def generate_rainfall_inputs(selected_polygon_wkt: str):
 
 
 @app.task(base=OnFailureStateTask)
-def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
+def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict) -> None:
     """
     Task to ensure tide input data for the given area is added to the database and model input files are created.
 
@@ -164,6 +187,8 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add tide data for. Defined in WKT form.
+    scenario_options: dict
+        Options for scenario modelling inputs.
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr]
     parameters["proj_year"] = scenario_options["Projected Year"]
@@ -174,7 +199,7 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
 
 
 @app.task(base=OnFailureStateTask)
-def generate_river_inputs(selected_polygon_wkt: str):
+def generate_river_inputs(selected_polygon_wkt: str) -> None:
     """
     Task to ensure river input data for the given area is added to the database and model input files are created.
 

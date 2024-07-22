@@ -5,7 +5,7 @@ import logging
 import pathlib
 from functools import wraps
 from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE
-from typing import Callable
+from typing import Callable, Dict, Tuple
 
 import requests
 from celery import result, states
@@ -28,12 +28,12 @@ WWW_PORT = get_env_variable('WWW_port', default="8080")
 
 def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     """
-    Function decorator to check if the Celery workers are running and return INTERNAL_SERVER_ERROR if they are down.
+    Check if the Celery workers are running and return INTERNAL_SERVER_ERROR if they are down using function decorator.
 
     Parameters
     ----------
     f : Callable[..., Response]
-        The view function that is being decorated
+        The view function that is being decorated.
 
     Returns
     -------
@@ -42,7 +42,23 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     """
 
     @wraps(f)
-    def decorated_function(*args, **kwargs) -> Response:
+    def decorated_function(*args: Tuple, **kwargs: Dict) -> Response:
+        """
+        Before function `f` is called, check if Celery workers are down, and return and error response if so.
+        If Celery workers are running, then continue with calling `f` with original arguments.
+
+        Parameters
+        ----------
+        args : Tuple
+            The original arguments for function `f`.
+        kwargs : Dict
+            The original keyword arguments for function `f`.
+
+        Returns
+        -------
+        Response
+            SERVICE_UNAVAILABLE if Celery workers are down, otherwise response from function `f`.
+        """
         try:
             ping_celery_response = tasks.app.control.ping()
             if len(ping_celery_response) == 0:
@@ -328,7 +344,15 @@ def retrieve_building_flood_status(model_id: int) -> Response:
 
 @app.route('/models/<int:model_id>', methods=['GET'])
 @check_celery_alive
-def serve_model_output(model_id: int):
+def serve_model_output(model_id: int) -> Response:
+    """
+    Serve the specified model output as a raw file.
+
+    Parameters
+    ----------
+    model_id: int
+        The ID of the model output to be served.
+    """
     try:
         model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()
         return send_file(pathlib.Path(model_filepath))
@@ -338,7 +362,7 @@ def serve_model_output(model_id: int):
 
 @app.route('/datasets/update', methods=["POST"])
 @check_celery_alive
-def refresh_lidar_data_sources():
+def refresh_lidar_data_sources() -> Response:
     """
     Update LiDAR data sources to the most recent.
     Web-scrape OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
@@ -375,7 +399,7 @@ def valid_coordinates(latitude: float, longitude: float) -> bool:
     -------
     bool
         True if both latitude and longitude are within their valid ranges.
-    """   # noqa: D400
+    """  # noqa: D400
     return (-90 < latitude <= 90) and (-180 < longitude <= 180)
 
 

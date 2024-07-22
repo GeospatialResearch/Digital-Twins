@@ -1,7 +1,7 @@
 """
 Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
 or other clients.
-"""   # noqa: D400
+"""  # noqa: D400
 
 import logging
 import os
@@ -208,7 +208,24 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
         raise requests.HTTPError(response.text, response=response)
 
 
-def create_datastore_layer(workspace_name, data_store_name: str, layer_name, metadata_elem: str = "") -> None:
+def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name: str, metadata_elem: str = "") -> None:
+    """
+    Create a GeoServer layer for a given data store if it does not currently exist.
+    Can be used to create layers for a database table, or to create a database view for a custom dynamic query.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the workspace the data store is associated to
+    data_store_name : str
+        The name of the data store the layer is being created from.
+    layer_name : str
+        The name of the new layer.
+        This is the same as the name of the database table if creating a layer from a table.
+    metadata_elem : str = ""
+        An optional XML str that contains the metadata element used to configure custom SQL queries.
+
+    """
     db_exists_response = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes.json',
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
@@ -275,9 +292,9 @@ def create_building_layers(workspace_name: str, data_store_name: str) -> None:
     Parameters
     ----------
     workspace_name : str
-        The name of the workspace to create views for
+        The name of the workspace to create views for.
     data_store_name : str
-         The name of the datastore that the building layer is being created from
+         The name of the datastore that the building layer is being created from.
     """
     # Simple layer that is just displaying the nz_building_outlines database table
     create_datastore_layer(workspace_name, data_store_name, layer_name="nz_building_outlines")
