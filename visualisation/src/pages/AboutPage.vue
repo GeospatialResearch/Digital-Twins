@@ -1,6 +1,6 @@
 <template>
-  <!-- Page displaying About information. Context of the web app, license, source code, etc.  -->
-  <b-container fluid>
+  <!-- Page displaying About information. Context of the web app, license, source code, etc.  todo reinstate b-container fluid -->
+  <div>
     <h3>Flood Resilience Digital Twin (FReDT)</h3>
     <p>
       This web application visualises and provides controls to the Digital Twin for Flood Resilience in New Zealand
@@ -10,21 +10,21 @@
     <h4>Source code</h4>
     <p>
       The source code for the app <a href="https://github.com/GeospatialResearch/Digital-Twins">can be obtained from
-        GitHub here</a>.
+      GitHub here</a>.
     </p>
     <hr>
     <h4>App licence</h4>
     <div class="multiline">
       {{ license }}
     </div>
-  </b-container>
+  </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import titleMixin from "@/mixins/title"
 
-export default Vue.extend({
+export default defineComponent({
   name: "AboutPage",
   title: "About",
   mixins: [titleMixin],

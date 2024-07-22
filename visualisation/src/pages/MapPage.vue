@@ -28,19 +28,19 @@
       @task-completed="onTaskCompleted"
       @task-failed="onTaskFailed"
     />
-    <img id="legend" alt="Legend graphic showing how colour relates to depth" src="viridis_legend.png">
+    <img id="legend" alt="Legend graphic showing how colour relates to depth" src="@/assets/viridis_legend.png">
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import * as Cesium from "cesium";
 import {MapViewer} from 'geo-visualisation-components/src/components';
 import titleMixin from "@/mixins/title";
-import {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/src/types";
-import {AxiosError} from "axios";
+import type {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/src/types";
+import type {AxiosError} from "axios";
 
-export default Vue.extend({
+export default defineComponent({
   name: "MapPage",
   title: "Map",
   mixins: [titleMixin],
@@ -78,13 +78,13 @@ export default Vue.extend({
       },
       // Environment variables
       env: {
-        cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
+        cesiumApiToken: import.meta.env.VUE_APP_CESIUM_ACCESS_TOKEN,
         geoserver: {
-          host: process.env.VUE_APP_GEOSERVER_HOST,
-          port: process.env.VUE_APP_GEOSERVER_PORT
+          host: import.meta.env.VUE_APP_GEOSERVER_HOST,
+          port: import.meta.env.VUE_APP_GEOSERVER_PORT
         },
         db: {
-          name: process.env.VUE_APP_POSTGRES_DB
+          name: import.meta.env.VUE_APP_POSTGRES_DB
         }
       },
     }
@@ -118,7 +118,7 @@ export default Vue.extend({
     /**
      * When a task fails, reset the data sources to blank map
      */
-    async onTaskFailed(event: {err: AxiosError}) {
+    async onTaskFailed(event: { err: AxiosError }) {
       this.dataSources = {};
       console.log(event)
     },
