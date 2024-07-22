@@ -18,6 +18,7 @@ from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.flood_model import bg_flood_model
+from pollution_model import run_medusa_2
 
 
 def main(
@@ -57,9 +58,9 @@ DEFAULT_MODULES_TO_PARAMETERS = {
     retrieve_static_boundaries: {
         "log_level": LogLevel.INFO
     },
-    datasets: {
-        "log_level": LogLevel.INFO  # only need to run it one time to initiate db.dataset table
-    },
+    #datasets: {
+    #    "log_level": LogLevel.INFO  # only need to run it one time to initiate db.dataset table
+    #},
     process: {
         "log_level": LogLevel.INFO
     },
@@ -101,6 +102,15 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "gpu_device": -1,
         "small_nc": 0,
         "log_level": LogLevel.INFO
+    },
+    run_medusa_2: {
+        # Is this the best way to do this? I am not explicitly setting the catchment area as I believe this is done
+        # automatically in the main function of this script.
+        "log_level": LogLevel.INFO,
+        "antecedent_dry_days": 1,
+        "average_rain_intensity": 1,
+        "event_duration": 1,
+        "rainfall_ph": 7
     }
 }
 

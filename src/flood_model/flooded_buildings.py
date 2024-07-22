@@ -20,7 +20,7 @@ def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame,
         The sqlalchemy database connection engine
     buildings : pd.DataFrame
         DataFrame containing a mapping of building_ids to their flood status for the current model run
-    flood_model_id : float
+    flood_model_id : int
         The id of the current flood model run, to associate with the building flood data.
 
     Returns
