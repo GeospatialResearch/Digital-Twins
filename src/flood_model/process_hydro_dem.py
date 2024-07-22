@@ -46,7 +46,7 @@ def ensure_lidar_datasets_initialised() -> None:
 
 def process_dem(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     """
-    Ensures hydrologically-conditioned DEM is processed for the given area and added to the database.
+    Ensure hydrologically-conditioned DEM is processed for the given area and added to the database.
 
     Parameters
     ----------
@@ -79,7 +79,7 @@ def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
-    Retrieves LiDAR data for the selected polygon and processes it into a hydrologically-conditioned DEM.
+    Retrieve LiDAR data for the selected polygon and processes it into a hydrologically-conditioned DEM.
 
     Parameters
     ----------
