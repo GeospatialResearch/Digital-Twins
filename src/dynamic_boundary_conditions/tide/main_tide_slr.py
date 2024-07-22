@@ -26,21 +26,6 @@ from src.dynamic_boundary_conditions.tide import (
 log = logging.getLogger(__name__)
 
 
-def remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None:
-    """
-    Remove existing uniform boundary input files from the specified directory.
-
-    Parameters
-    ----------
-    bg_flood_dir : pathlib.Path
-        BG-Flood model directory containing the uniform boundary input files.
-    """
-    # Iterate through all boundary files in the directory
-    for boundary_file in bg_flood_dir.glob('*_bnd.txt'):
-        # Remove the file
-        boundary_file.unlink()
-
-
 def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         tide_length_mins: int,
@@ -99,7 +84,7 @@ def main(
         # BG-Flood Model Directory
         bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
         # Remove any existing uniform boundary model inputs in the BG-Flood directory
-        remove_existing_boundary_inputs(bg_flood_dir)
+        tide_slr_model_input.remove_existing_boundary_inputs(bg_flood_dir)
 
         # Get the locations used to fetch tide data
         tide_query_loc = tide_query_location.get_tide_query_locations(engine, catchment_area)

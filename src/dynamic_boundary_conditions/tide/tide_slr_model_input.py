@@ -6,9 +6,22 @@ import pathlib
 
 import pandas as pd
 
-from src.dynamic_boundary_conditions.tide import main_tide_slr
-
 log = logging.getLogger(__name__)
+
+
+def remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None:
+    """
+    Remove existing uniform boundary input files from the specified directory.
+
+    Parameters
+    ----------
+    bg_flood_dir : pathlib.Path
+        BG-Flood model directory containing the uniform boundary input files.
+    """
+    # Iterate through all boundary files in the directory
+    for boundary_file in bg_flood_dir.glob('*_bnd.txt'):
+        # Remove the file
+        boundary_file.unlink()
 
 
 def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pd.DataFrame) -> None:
@@ -23,7 +36,7 @@ def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: p
         A DataFrame containing the combined tide and sea level rise data.
     """
     # Remove any existing uniform boundary input files in the BG-Flood directory
-    main_tide_slr.remove_existing_boundary_inputs(bg_flood_dir)
+    remove_existing_boundary_inputs(bg_flood_dir)
     # Log that the generation of uniform boundary model inputs has started
     log.info("Generating the uniform boundary model inputs for BG-Flood.")
     # Group the combined tide and sea level rise data by position
