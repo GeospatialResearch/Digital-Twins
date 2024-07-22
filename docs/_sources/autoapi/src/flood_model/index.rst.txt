@@ -12,6 +12,7 @@ Submodules
 
    /autoapi/src/flood_model/bg_flood_model/index
    /autoapi/src/flood_model/flooded_buildings/index
+   /autoapi/src/flood_model/process_hydro_dem/index
    /autoapi/src/flood_model/serve_model/index
 
 

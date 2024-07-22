@@ -1,5 +1,3 @@
-version: '3.8'
-
 volumes:
   postgres_db_vol:
   stored_data:
