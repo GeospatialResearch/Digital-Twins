@@ -1,13 +1,13 @@
 [tool.pylint.main]
 load-plugins = pylint.extensions.docparams
-disable = R0913, R0914, W3101, R1720, R1705, W1203
+disable = R0913, R0914, R1720, R1705, W1203, W3101
 
 # R0913: too-many-arguments
 # R0914: too-many-locals
-# W3101: missing-timeout
 # R1720: no-else-raise
 # R1705: no-else-return
 # W1203: logging-fstring-interpolation
+# W3101: missing-timeout
 
 [tool.pylint.parameter_documentation]
 accept-no-param-doc = False
