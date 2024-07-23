@@ -96,11 +96,6 @@ def ensure_lidar_datasets_initialised() -> None:
     Check if LiDAR datasets table is initialised.
     This table holds URLs to data sources for LiDAR.
     If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Connect to database
     engine = setup_environment.get_connection_from_profile()
@@ -111,7 +106,7 @@ def ensure_lidar_datasets_initialised() -> None:
         newzealidar.datasets.main()
     # Check that datasets_mapping is in the instructions.json file
     instructions_file_name = "instructions.json"
-    with open(instructions_file_name, "r") as instructions_file:
+    with open(instructions_file_name, "r", encoding="utf-8") as instructions_file:
         # Load content from the file
         instructions = json.load(instructions_file)["instructions"]
     dataset_mapping = instructions.get("dataset_mapping")
@@ -130,11 +125,6 @@ def process_dem(selected_polygon_gdf: gpd.GeoDataFrame) -> None:
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         The polygon defining the selected area to process the DEM for.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     log.info("Processing LiDAR data into hydrologically conditioned DEM for area of interest.")
     newzealidar.process.main(selected_polygon_gdf)
@@ -144,11 +134,6 @@ def refresh_lidar_datasets() -> None:
     """
     Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
     Takes a long time to run but needs to be run periodically so that the datasets are up to date.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     newzealidar.datasets.main()
 
@@ -172,11 +157,6 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Set up logging with the specified log level
     setup_logging(log_level)

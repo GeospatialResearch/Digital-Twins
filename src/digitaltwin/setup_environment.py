@@ -8,8 +8,8 @@ import logging
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.ext.declarative import declarative_base
 
 from src import config
 
@@ -37,7 +37,10 @@ def get_database() -> Engine:
         log.debug("Connected to PostgreSQL database successfully!")
         return engine
     except OperationalError as e:
-        raise OperationalError("Database connection failed. Please check database running and check .env file.") from e
+        raise OperationalError("Database connection failed. Please check database running and check .env file.",
+                               params="",
+                               orig=e,
+                               hide_parameters=True) from e
 
 
 def get_connection_from_profile() -> Engine:

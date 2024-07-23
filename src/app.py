@@ -352,6 +352,11 @@ def serve_model_output(model_id: int) -> Response:
     ----------
     model_id: int
         The ID of the model output to be served.
+
+    Returns
+    -------
+    Response
+        HTTP Response containing the model output file.
     """
     try:
         model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()

@@ -30,7 +30,7 @@ setup_logging()
 log = logging.getLogger(__name__)
 
 
-class OnFailureStateTask(app.Task):
+class OnFailureStateTask(app.Task):  # pylint: disable=too-few-public-methods
     """Task that switches state to FAILURE if an exception occurs."""
 
     def on_failure(self,
@@ -46,15 +46,6 @@ class OnFailureStateTask(app.Task):
         ----------
         exc : Exception
             The exception raised by the task.
-        _task_id : str
-            Unique id of the failed task.
-        _args : Tuple
-            Original arguments for the task that failed.
-        _kwargs : Dict
-            Original keyword arguments for the task that failed.
-        _einfo : billiard.einfo.ExceptionInfo
-            Exception information.
-
         """
         self.update_state(state=states.FAILURE, meta={
             "exc_type": type(exc).__name__,
@@ -89,6 +80,8 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to run the model for. Defined in WKT form.
+    scenario_options: dict
+        Options for scenario modelling inputs.
 
     Returns
     -------
