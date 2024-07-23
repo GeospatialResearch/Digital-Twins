@@ -80,6 +80,8 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to run the model for. Defined in WKT form.
+    scenario_options: dict
+        Options for scenario modelling inputs.
 
     Returns
     -------

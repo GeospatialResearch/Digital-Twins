@@ -31,7 +31,8 @@ def get_env_variable(var_name: str,
 
     Returns
     -------
-    The environment variable, or default if it does not exist, as type T.
+    T
+        The environment variable, or default if it does not exist, as type T.
 
     Raises
     ------
