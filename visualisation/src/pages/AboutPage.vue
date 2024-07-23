@@ -22,12 +22,11 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import titleMixin from "@/mixins/title"
 
 export default defineComponent({
   name: "AboutPage",
   title: "About",
-  mixins: [titleMixin],
+  // mixins: [titleMixin], //todo reinstate titleMixin functionality
   data() {
     return {
       license: "MIT License\n" +

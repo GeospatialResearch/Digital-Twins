@@ -36,14 +36,27 @@
 import {defineComponent} from "vue";
 import * as Cesium from "cesium";
 import {MapViewer} from 'geo-visualisation-components/src/components';
-import titleMixin from "@/mixins/title";
 import type {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/src/types";
 import type {AxiosError} from "axios";
+
+interface DataOption {
+  data: (string | number)[]
+  min?: never;
+  max?: never;
+}
+
+interface RangeOption {
+  min: number;
+  max: number;
+  data?: never;
+}
+
+type SelectionOption = { name: string } & (RangeOption | DataOption)
 
 export default defineComponent({
   name: "MapPage",
   title: "Map",
-  mixins: [titleMixin],
+  // mixins: [titleMixin], todo reinstate tileMixin functionality
   components: {
     MapViewer,
   },
@@ -66,16 +79,16 @@ export default defineComponent({
         },
         sspScenario: {name: "SSP Scenario", data: ['SSP1-1.9', 'SSP1-2.6', 'SSP2-4.5', 'SSP3-7.0', 'SSP5-8.5']},
         confidenceLevel: {name: "Confidence Level", data: ['low', 'medium']},
-        addVerticalLandMovement: {name: "Add Vertical Land Movement", data: [true, false]}
-      },
+        addVerticalLandMovement: {name: "Add Vertical Land Movement", data: ["true", "false"]}
+      } as Record<string, SelectionOption>,
       projYear: 2050,
       // Default selected options for parameters
       selectedOption: {
         "Projected Year": 2050,
         "SSP Scenario": 'SSP2-4.5',
         "Confidence Level": "medium",
-        "Add Vertical Land Movement": true
-      },
+        "Add Vertical Land Movement": "true"
+      } as Record<string, number | string>,
       // Environment variables
       env: {
         cesiumApiToken: import.meta.env.VUE_APP_CESIUM_ACCESS_TOKEN,
