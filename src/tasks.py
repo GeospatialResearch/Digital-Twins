@@ -33,6 +33,7 @@ log = logging.getLogger(__name__)
 class OnFailureStateTask(app.Task):
     """Task that switches state to FAILURE if an exception occurs."""  # pylint: disable=too-few-public-methods
 
+    # noinspection PyIncorrectDocstring
     def on_failure(self,
                    exc: Exception,
                    _task_id: str,
