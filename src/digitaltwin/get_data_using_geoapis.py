@@ -3,7 +3,7 @@
 This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ,
 LRIS, and MFE, using the 'geoapis' library. To access data from each provider, you'll need to set an
 API key in the environment variables.
-"""
+"""  # noqa: D400
 
 from typing import Optional
 
@@ -22,6 +22,7 @@ class MFE(WfsQueryBase):
     Note that the 'GEOMETRY_NAMES' used when making WFS 'cql_filter' queries varies between layers.
     The MFE generally follows the LINZ LDS but uses 'Shape' in place of 'shape'. It still uses 'GEOMETRY'.
     """
+
     NETLOC_API = "data.mfe.govt.nz"
     GEOMETRY_NAMES = ["GEOMETRY", "Shape"]
 

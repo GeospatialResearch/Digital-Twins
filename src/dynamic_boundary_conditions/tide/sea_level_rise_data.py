@@ -3,7 +3,7 @@
 This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
 storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
 in the provided tide data.
-"""
+"""  # noqa: D400
 
 import logging
 import os
@@ -14,7 +14,7 @@ import time
 
 import geopandas as gpd
 import pandas as pd
-import pyarrow.csv as csv
+from pyarrow import csv
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -35,14 +35,15 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     slr_data_dir : pathlib.Path
         The directory where the downloaded sea level rise data files will be saved.
 
-    Returns
-    -------
-    None
-        This function does not return any value.
+    Raises
+    ------
+    ValueError
+        If the number of downloaded files does not match the number of datasets found on the web page.
     """
     # Check if the directory exists and, if so, delete all files within it
     if slr_data_dir.exists():
-        [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
+        for slr_file in slr_data_dir.glob("*"):
+            slr_file.unlink()
     # Create the directory if it does not already exist
     else:
         slr_data_dir.mkdir(parents=True, exist_ok=True)
@@ -90,7 +91,9 @@ def download_slr_data_files_from_takiwa(slr_data_dir: pathlib.Path) -> None:
     # Find and click "Download"
     driver.find_element(By.ID, "container-control-text-6268d9223c91dd00278d5ecf").click()
     # Find and click "Download Regional Data"
-    [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
+    for element in driver.find_elements(By.TAG_NAME, "h5"):
+        if element.text == "Download Regional Data":
+            element.click()
     # Identify links to all the regional data files on the webpage
     elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
     # Iterate through the identified links and simulate a click action to trigger the download
@@ -177,11 +180,6 @@ def store_slr_data_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Define the table name for storing the sea level rise data
     table_name = "sea_level_rise"

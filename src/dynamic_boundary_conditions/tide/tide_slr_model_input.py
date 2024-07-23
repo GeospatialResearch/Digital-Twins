@@ -1,21 +1,32 @@
 # -*- coding: utf-8 -*-
-"""
-Generates the requested water level uniform boundary model input for BG-Flood.
-"""
+"""Generates the requested water level uniform boundary model input for BG-Flood."""
 
 import logging
 import pathlib
 
 import pandas as pd
 
-from src.dynamic_boundary_conditions.tide import main_tide_slr
-
 log = logging.getLogger(__name__)
+
+
+def remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None:
+    """
+    Remove existing uniform boundary input files from the specified directory.
+
+    Parameters
+    ----------
+    bg_flood_dir : pathlib.Path
+        BG-Flood model directory containing the uniform boundary input files.
+    """
+    # Iterate through all boundary files in the directory
+    for boundary_file in bg_flood_dir.glob('*_bnd.txt'):
+        # Remove the file
+        boundary_file.unlink()
 
 
 def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pd.DataFrame) -> None:
     """
-    Generates the requested water level uniform boundary model input for BG-Flood.
+    Generate the requested water level uniform boundary model input for BG-Flood.
 
     Parameters
     ----------
@@ -23,14 +34,9 @@ def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: p
         The BG-Flood model directory.
     tide_slr_data : pd.DataFrame
         A DataFrame containing the combined tide and sea level rise data.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Remove any existing uniform boundary input files in the BG-Flood directory
-    main_tide_slr.remove_existing_boundary_inputs(bg_flood_dir)
+    remove_existing_boundary_inputs(bg_flood_dir)
     # Log that the generation of uniform boundary model inputs has started
     log.info("Generating the uniform boundary model inputs for BG-Flood.")
     # Group the combined tide and sea level rise data by position
@@ -44,7 +50,7 @@ def generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: p
         # Save the input data as a tab-separated text file at the specified file path
         input_data.to_csv(file_path, sep='\t', index=False, header=False)
         # Add the "# Water level boundary" line at the beginning of the uniform boundary input file
-        with open(file_path, 'r+') as file:
+        with open(file_path, 'r+', encoding='utf-8') as file:
             content = file.read()
             file.seek(0, 0)
             file.write('# Water level boundary\n' + content)

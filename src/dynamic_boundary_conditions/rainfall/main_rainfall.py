@@ -2,7 +2,7 @@
 """
 Main rainfall script used to fetch and store rainfall data in the database, and to generate the requested
 rainfall model input for BG-Flood, etc.
-"""
+"""  # noqa: D400
 
 import pathlib
 from typing import Optional, Union
@@ -21,26 +21,6 @@ from src.dynamic_boundary_conditions.rainfall import (
     hyetograph,
     rainfall_model_input,
 )
-
-
-def remove_existing_rain_inputs(bg_flood_dir: pathlib.Path) -> None:
-    """
-    Remove existing rain input files from the specified directory.
-
-    Parameters
-    ----------
-    bg_flood_dir : pathlib.Path
-        BG-Flood model directory containing the rain input files.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
-    # Iterate through all rain input files in the directory
-    for rain_input_file in bg_flood_dir.glob('rain_forcing.*'):
-        # Remove the file
-        rain_input_file.unlink()
 
 
 def main(
@@ -88,11 +68,6 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
@@ -104,7 +79,7 @@ def main(
     # BG-Flood Model Directory
     bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
     # Remove any existing rainfall model inputs in the BG-Flood directory
-    remove_existing_rain_inputs(bg_flood_dir)
+    rainfall_model_input.remove_existing_rain_inputs(bg_flood_dir)
 
     # Fetch rainfall sites data from the HIRDS website and store it to the database
     rainfall_sites.rainfall_sites_to_db(engine)

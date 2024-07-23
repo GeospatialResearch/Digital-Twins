@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Get hyetograph data and generate interactive hyetograph plots for sites located within the catchment area.
-"""
+"""Get hyetograph data and generate interactive hyetograph plots for sites located within the catchment area."""
 
 from typing import Union
 from math import floor, ceil
@@ -28,7 +26,7 @@ def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:
     -------
     pd.DataFrame
         A DataFrame containing the cleaned and transposed scenario data.
-    """
+    """  # noqa: D400
     # Drop unnecessary columns
     catchment_data = rain_depth_in_catchment.drop(columns=["category", "rcp", "time_period", "ari", "aep"])
     # Convert duration column names from text to duration columns in minutes
@@ -75,7 +73,7 @@ def get_interpolated_data(
     ValueError
         - If the specified 'increment_mins' is out of range.
         - If the specified 'interp_method' is not supported.
-    """
+    """  # noqa: D400
     # Extract the duration column from the transposed catchment data
     duration = transposed_catchment_data['duration_mins']
     # Check if increment_mins is within the valid range
@@ -123,7 +121,7 @@ def get_interp_incremental_data(interp_catchment_data: pd.DataFrame) -> pd.DataF
     -------
     pd.DataFrame
         A DataFrame containing the incremental rainfall depths.
-    """
+    """  # noqa: D400
     # Calculate the difference between consecutive rows to get the incremental rainfall depths
     interp_increment_data = interp_catchment_data.diff()[1:]
     # Include the first row of interpolated data as the initial cumulative rainfall values
@@ -163,7 +161,7 @@ def get_storm_length_increment_data(interp_increment_data: pd.DataFrame, storm_l
     if storm_length_mins < min_storm_length_mins:
         raise ValueError(f"Storm duration (storm_length_mins) needs to be at least '{int(min_storm_length_mins)}'.")
     # Filter the data to include only rows within the specified storm duration
-    storm_length_filter = (interp_increment_data["duration_mins"] <= storm_length_mins)
+    storm_length_filter = interp_increment_data["duration_mins"] <= storm_length_mins
     storm_length_data = interp_increment_data[storm_length_filter]
     return storm_length_data
 
@@ -200,7 +198,7 @@ def add_time_information(
     ------
     ValueError
         If the specified 'time_to_peak_mins' is less than half of the storm duration.
-    """
+    """  # noqa: D400
     # Determine the minimum time to peak based on the storm duration
     min_time_to_peak_mins = storm_length_mins / 2
     # Check if the specified time to peak is valid
@@ -273,7 +271,7 @@ def transform_data_for_selected_method(
     -------
     pd.DataFrame
         Hyetograph depths data for all sites within the catchment area.
-    """
+    """  # noqa: D400
     # Get the incremental rainfall depths data within the specified storm duration
     storm_length_data = get_storm_length_increment_data(interp_increment_data, storm_length_mins)
     # Initialize a list to hold the hyetograph data
@@ -423,11 +421,6 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: float) -> None:
         Hyetograph intensities data for sites within the catchment area.
     ari : float
         Average Recurrence Interval (ARI) value. Valid options are 1.58, 2, 5, 10, 20, 30, 40, 50, 60, 80, 100, or 250.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     for site_id in hyetograph_data.columns.values[:-3]:
         # Retrieve the hyetograph data for the current site, including time and rain intensity measurements.
@@ -449,24 +442,24 @@ def hyetograph(hyetograph_data: pd.DataFrame, ari: float) -> None:
             title_x=0.5,
             bargap=0,
             updatemenus=[
-                dict(
-                    type="dropdown",
-                    direction="down",
-                    x=0.99,
-                    y=0.99,
-                    buttons=list([
-                        dict(
-                            args=["type", "bar"],
-                            label="Bar Chart",
-                            method="restyle"
-                        ),
-                        dict(
-                            args=["type", "line"],
-                            label="Line Chart",
-                            method="restyle"
-                        )
-                    ]),
-                )
+                {
+                    "type": "dropdown",
+                    "direction": "down",
+                    "x": 0.99,
+                    "y": 0.99,
+                    "buttons": [
+                        {
+                            "args": ["type", "bar"],
+                            "label": "Bar Chart",
+                            "method": "restyle"
+                        },
+                        {
+                            "args": ["type", "line"],
+                            "label": "Line Chart",
+                            "method": "restyle"
+                        }
+                    ]
+                }
             ]
         )
         # Display the hyetograph figure.

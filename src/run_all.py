@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script runs each module in the Digital Twin using a Sample Polygon.
-"""
+"""This script runs each module in the Digital Twin using a Sample Polygon."""
 
 from enum import Enum
 from types import ModuleType
@@ -23,7 +21,7 @@ def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         modules_to_parameters: Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]) -> None:
     """
-    Runs each module in the Digital Twin using the selected polygon and the defined parameters for each module's
+    Run each module in the Digital Twin using the selected polygon and the defined parameters for each module's
     main function.
 
     Parameters
@@ -40,12 +38,7 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
+    """  # noqa: D400
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
         # Call the main function of each module with the selected polygon and specified parameters

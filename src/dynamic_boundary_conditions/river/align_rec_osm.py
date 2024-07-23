@@ -2,7 +2,7 @@
 """
 This script handles the task of obtaining data for REC river inflow segments whose boundary points align with the
 boundary points of OpenStreetMap (OSM) waterways within a specified distance threshold.
-"""
+"""  # noqa: D400
 
 import logging
 from typing import Dict, List
@@ -12,14 +12,14 @@ import pandas as pd
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions.river import main_river, osm_waterways
+from src.dynamic_boundary_conditions.river import osm_waterways
+from src.flood_model import process_hydro_dem
 
 log = logging.getLogger(__name__)
 
 
 class NoRiverDataException(Exception):
     """Exception raised when no river data is to be used for the BG-Flood model."""
-    pass
 
 
 def get_rec_network_data_on_bbox(
@@ -49,9 +49,9 @@ def get_rec_network_data_on_bbox(
     ------
     NoRiverDataException
         If no REC river segment is found crossing the catchment boundary.
-    """
+    """  # noqa: D400
     # Obtain the spatial extent of the hydro DEM
-    _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+    _, hydro_dem_extent, _ = process_hydro_dem.retrieve_hydro_dem_info(engine, catchment_area)
     # Select features that intersect with the hydro DEM extent
     rec_on_bbox = rec_network_data[rec_network_data.intersects(hydro_dem_extent)].reset_index(drop=True)
     # Check if there are REC river segments that cross the hydro DEM extent
@@ -69,7 +69,7 @@ def get_rec_network_data_on_bbox(
 
 def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Identifies REC river segments that intersect the catchment boundary once, then retrieves the segments
+    Identify REC river segments that intersect the catchment boundary once, then retrieve the segments
     that are inflows into the catchment area, along with their corresponding inflow boundary points.
 
     Parameters
@@ -83,7 +83,7 @@ def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
     gpd.GeoDataFrame
         A GeoDataFrame containing the REC river segments that intersect the catchment boundary once and
         are inflows into the catchment area, along with their corresponding inflow boundary points.
-    """
+    """  # noqa: D400
     # Check if there are any single Point geometries
     if any(rec_on_bbox.geom_type == "Point"):
         # Select only the records where 'rec_boundary_point' is a single point
@@ -92,7 +92,7 @@ def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
         single_intersect_inflow = single_intersect[
             ((single_intersect["node_direction"] == "to") & (single_intersect["node_intersect_aoi"] == "last_node")) |
             ((single_intersect["node_direction"] == "from") & (single_intersect["node_intersect_aoi"] == "first_node"))
-            ]
+        ]
         # Create a new column for inflow points for consistency purposes
         single_intersect_inflow["rec_inflow_point"] = single_intersect_inflow["rec_boundary_point"]
         # Set the geometry of the GeoDataFrame to 'rec_inflow_point'
@@ -107,10 +107,10 @@ def get_single_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
 
 def get_exploded_multi_intersect(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Identifies REC river segments that intersect the catchment boundary multiple times,
-    transforms MultiPoint geometries into individual Point geometries (boundary points),
-    calculates the distance along the river segment for each boundary point, and
-    adds a new column containing boundary points sorted by their distance along the river.
+    Identify REC river segments that intersect the catchment boundary multiple times,
+    transform MultiPoint geometries into individual Point geometries (boundary points),
+    calculate the distance along the river segment for each boundary point, and
+    add a new column containing boundary points sorted by their distance along the river.
 
     Parameters
     ----------
@@ -123,7 +123,7 @@ def get_exploded_multi_intersect(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
     gpd.GeoDataFrame
         A GeoDataFrame containing the REC river segments that intersect the catchment boundary multiple times,
         along with the corresponding intersection points on the boundary, sorted by distance along the river.
-    """
+    """  # noqa: D400
     # Select only the records where 'rec_boundary_point' is a collection of multiple points (MultiPoint)
     multi_intersect = rec_on_bbox[rec_on_bbox["rec_boundary_point"].geom_type == "MultiPoint"]
     # Explode multi-part geometries into multiple single geometries
@@ -147,7 +147,7 @@ def get_exploded_multi_intersect(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFr
 
 def determine_multi_intersect_inflow_index(multi_intersect_row: pd.Series) -> int:
     """
-    Determines the index that represents the position of the first inflow boundary point along a REC river segment.
+    Determine the index that represents the position of the first inflow boundary point along a REC river segment.
 
     Parameters
     ----------
@@ -206,7 +206,7 @@ def categorize_exploded_multi_intersect(multi_intersect: gpd.GeoDataFrame) -> Di
         A dictionary where the keys represent the 'objectid' values of REC river segments, and the values are
         dictionaries. Each of these dictionaries contains two lists: 'inflow' and 'outflow,' which respectively
         represent the boundary points where water flows into and out of the catchment area.
-    """
+    """  # noqa: D400
     # Initialize an empty dictionary to store categorized boundary points for each REC river segment
     categorized_multi_intersect: Dict[int, Dict[str, List[Point]]] = {}
 
@@ -218,7 +218,7 @@ def categorize_exploded_multi_intersect(multi_intersect: gpd.GeoDataFrame) -> Di
         inflow_index = determine_multi_intersect_inflow_index(row)
 
         # Initialize a dictionary to categorize boundary points as 'inflow' or 'outflow'
-        categorized_points = dict(outflow=[], inflow=[])
+        categorized_points = {"outflow": [], "inflow": []}
         # Iterate through the list of exploded boundary points and categorize each one
         for index, point in enumerate(boundary_points):
             # Determine the category based on their order along the river segment and inflow index
@@ -233,7 +233,7 @@ def categorize_exploded_multi_intersect(multi_intersect: gpd.GeoDataFrame) -> Di
 
 def get_multi_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Identifies REC river segments that intersect the catchment boundary multiple times, then retrieves the segments
+    Identify REC river segments that intersect the catchment boundary multiple times, then retrieve the segments
     that are inflows into the catchment area, along with their corresponding inflow boundary points.
 
     Parameters
@@ -247,7 +247,7 @@ def get_multi_intersect_inflows(rec_on_bbox: gpd.GeoDataFrame) -> gpd.GeoDataFra
     gpd.GeoDataFrame
         A GeoDataFrame containing the REC river segments that intersect the catchment boundary multiple times and
         are inflows into the catchment area, along with their corresponding inflow boundary points.
-    """
+    """  # noqa: D400
     # Check if there are any MultiPoint geometries
     if any(rec_on_bbox.geom_type == "MultiPoint"):
         # Identify and explode MultiPoint geometries into individual Point geometries
@@ -301,7 +301,7 @@ def get_rec_inflows_on_bbox(
     ------
     NoRiverDataException
         If no REC river segment is found crossing the catchment boundary.
-    """
+    """  # noqa: D400
     log.info("Extracting REC river segments that are inflows into the requested catchment area.")
     # Get REC river network segments that intersect with the catchment area boundary
     rec_on_bbox = get_rec_network_data_on_bbox(engine, catchment_area, rec_network_data)
@@ -334,9 +334,9 @@ def get_osm_waterways_on_bbox(
     gpd.GeoDataFrame
         A GeoDataFrame containing OpenStreetMap (OSM) waterway data that intersects with the catchment boundary,
         along with the corresponding intersection points on the boundary.
-    """
+    """  # noqa: D400
     # Obtain the spatial extent of the hydro DEM
-    _, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+    _, hydro_dem_extent, _ = process_hydro_dem.retrieve_hydro_dem_info(engine, catchment_area)
     # Fetch OSM waterway data for the catchment area
     osm_waterways_data = osm_waterways.get_osm_waterways_data(catchment_area)
 
@@ -376,7 +376,7 @@ def align_rec_with_osm(
     gpd.GeoDataFrame
         A GeoDataFrame containing the boundary points of REC river inflow segments aligned with the boundary points of
         OpenStreetMap (OSM) waterways within a specified distance threshold.
-    """
+    """  # noqa: D400
     log.info("Aligning the boundary points of REC river inflow segments with the boundary points of OSM waterways.")
     # Select relevant columns from REC data
     rec_columns = ["objectid", rec_inflows_on_bbox.geometry.name]
@@ -441,7 +441,7 @@ def get_rec_inflows_aligned_to_osm(
     ------
     NoRiverDataException
         If no REC river segment is found crossing the catchment boundary.
-    """
+    """  # noqa: D400
     # Obtain REC river network segments where water flows into the catchment area
     rec_inflows_on_bbox = get_rec_inflows_on_bbox(engine, catchment_area, rec_network_data)
     # Retrieve OpenStreetMap (OSM) waterway data that intersects with the catchment area boundary

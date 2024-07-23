@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.
-"""
+"""Fetch REC data in New Zealand from NIWA using the ArcGIS REST API."""
 
 import logging
 from typing import List, Dict, Union, NamedTuple
@@ -33,13 +31,14 @@ class RecordCounts(NamedTuple):
     total_record_count : int
         The total number of records available in the feature layer.
     """
+
     max_record_count: int
     total_record_count: int
 
 
 def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     """
-    Retrieves the maximum and total record counts from the REC feature layer.
+    Retrieve the maximum and total record counts from the REC feature layer.
 
     Parameters
     ----------
@@ -50,6 +49,11 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     -------
     RecordCounts
         A named tuple containing the maximum and total record counts of the REC feature layer.
+
+    Raises
+    ------
+    RuntimeError
+        If there is an issue with retrieving the record counts from the REC feature layer.
     """
     # Set up parameters for the initial request to get the maximum record count
     params = {"f": "json"}
@@ -229,6 +233,6 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
         # Log that the REC data has been successfully fetched
         log.info("Successfully fetched 'rec_data'.")
         return rec_data
-    except TypeError:
+    except TypeError as e:
         # Raise a RuntimeError to indicate the failure
-        raise RuntimeError("Failed to fetch 'rec_data'.")
+        raise RuntimeError("Failed to fetch 'rec_data'.") from e
