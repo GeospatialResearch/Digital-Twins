@@ -46,15 +46,6 @@ class OnFailureStateTask(app.Task):
         ----------
         exc : Exception
             The exception raised by the task.
-        _task_id : str
-            Unique id of the failed task.
-        _args : Tuple
-            Original arguments for the task that failed.
-        _kwargs : Dict
-            Original keyword arguments for the task that failed.
-        _einfo : billiard.einfo.ExceptionInfo
-            Exception information.
-
         """
         self.update_state(state=states.FAILURE, meta={
             "exc_type": type(exc).__name__,
