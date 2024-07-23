@@ -130,40 +130,37 @@ Allows the frontend to send tasks and retrieve status later.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.create_model_for_area" title="src.tasks.create_model_for_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_model_for_area</span></code></a>(→ celery.result.GroupResult)</p></td>
 <td><p>Creates a model for the area using series of chained (sequential) sub-tasks.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.ensure_lidar_datasets_initialised" title="src.tasks.ensure_lidar_datasets_initialised"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_lidar_datasets_initialised</span></code></a>(→ None)</p></td>
-<td><p>Task checks if LiDAR datasets table is initialised.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.add_base_data_to_db" title="src.tasks.add_base_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_base_data_to_db</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.add_base_data_to_db" title="src.tasks.add_base_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_base_data_to_db</span></code></a>(→ None)</p></td>
 <td><p>Task to ensure static base data for the given area is added to the database</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.process_dem" title="src.tasks.process_dem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_dem</span></code></a>(selected_polygon_wkt)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.process_dem" title="src.tasks.process_dem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_dem</span></code></a>(selected_polygon_wkt)</p></td>
 <td><p>Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.generate_rainfall_inputs" title="src.tasks.generate_rainfall_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_rainfall_inputs</span></code></a>(selected_polygon_wkt)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.generate_rainfall_inputs" title="src.tasks.generate_rainfall_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_rainfall_inputs</span></code></a>(selected_polygon_wkt)</p></td>
 <td><p>Task to ensure rainfall input data for the given area is added to the database and model input files are created.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.generate_tide_inputs" title="src.tasks.generate_tide_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_tide_inputs</span></code></a>(selected_polygon_wkt, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.generate_tide_inputs" title="src.tasks.generate_tide_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_tide_inputs</span></code></a>(selected_polygon_wkt, ...)</p></td>
 <td><p>Task to ensure tide input data for the given area is added to the database and model input files are created.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.generate_river_inputs" title="src.tasks.generate_river_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_river_inputs</span></code></a>(selected_polygon_wkt)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.generate_river_inputs" title="src.tasks.generate_river_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_river_inputs</span></code></a>(selected_polygon_wkt)</p></td>
 <td><p>Task to ensure river input data for the given area is added to the database and model input files are created.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.run_flood_model" title="src.tasks.run_flood_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_flood_model</span></code></a>(→ int)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.run_flood_model" title="src.tasks.run_flood_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_flood_model</span></code></a>(→ int)</p></td>
 <td><p>Task to run flood model using input data from previous tasks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.refresh_lidar_datasets" title="src.tasks.refresh_lidar_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refresh_lidar_datasets</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.refresh_lidar_datasets" title="src.tasks.refresh_lidar_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refresh_lidar_datasets</span></code></a>(→ None)</p></td>
 <td><p>Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.wkt_to_gdf" title="src.tasks.wkt_to_gdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wkt_to_gdf</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.wkt_to_gdf" title="src.tasks.wkt_to_gdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wkt_to_gdf</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Transforms a WKT string polygon into a GeoDataFrame</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.get_model_output_filepath_from_model_id" title="src.tasks.get_model_output_filepath_from_model_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_output_filepath_from_model_id</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.get_model_output_filepath_from_model_id" title="src.tasks.get_model_output_filepath_from_model_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_output_filepath_from_model_id</span></code></a>(→ str)</p></td>
 <td><p>Task to query the database and find the filepath for the model output for the model_id.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.get_depth_by_time_at_point" title="src.tasks.get_depth_by_time_at_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_depth_by_time_at_point</span></code></a>(→ DepthTimePlot)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.get_depth_by_time_at_point" title="src.tasks.get_depth_by_time_at_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_depth_by_time_at_point</span></code></a>(→ DepthTimePlot)</p></td>
 <td><p>Task to query a point in a flood model output and return the list of depths and times.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.tasks.get_model_extents_bbox" title="src.tasks.get_model_extents_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_extents_bbox</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.tasks.get_model_extents_bbox" title="src.tasks.get_model_extents_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_extents_bbox</span></code></a>(→ str)</p></td>
 <td><p>Task to find the bounding box of a given model output</p></td>
 </tr>
 </tbody>
@@ -252,22 +249,6 @@ over message_broker</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>result.GroupResult</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.tasks.ensure_lidar_datasets_initialised">
-<span class="sig-prename descclassname"><span class="pre">src.tasks.</span></span><span class="sig-name descname"><span class="pre">ensure_lidar_datasets_initialised</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.tasks.ensure_lidar_datasets_initialised" title="Link to this definition"></a></dt>
-<dd><p>Task checks if LiDAR datasets table is initialised.
-This table holds URLs to data sources for LiDAR.
-If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>This task does not return anything</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

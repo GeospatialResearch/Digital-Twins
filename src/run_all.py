@@ -8,7 +8,6 @@ from types import ModuleType
 from typing import Dict, Union
 
 import geopandas as gpd
-from newzealidar import datasets, process
 
 from src.digitaltwin import retrieve_static_boundaries
 from src.digitaltwin.utils import LogLevel
@@ -19,6 +18,7 @@ from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.flood_model import bg_flood_model
 from pollution_model import run_medusa_2
+from src.flood_model import bg_flood_model, process_hydro_dem
 
 
 def main(
@@ -58,10 +58,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
     retrieve_static_boundaries: {
         "log_level": LogLevel.INFO
     },
-    #datasets: {
-    #    "log_level": LogLevel.INFO  # only need to run it one time to initiate db.dataset table
-    #},
-    process: {
+    process_hydro_dem: {
         "log_level": LogLevel.INFO
     },
     main_rainfall: {
