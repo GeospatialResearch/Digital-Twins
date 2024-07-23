@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """This script detects if buildings are flooded for a given scenario."""
 import pathlib
 

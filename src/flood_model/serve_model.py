@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
 or other clients.

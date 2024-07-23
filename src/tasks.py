@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
 Allows the frontend to send tasks and retrieve status later.

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Collection of utils that are used for system and environment configuration."""
 
 import os
