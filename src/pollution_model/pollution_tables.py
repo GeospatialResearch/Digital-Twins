@@ -2,6 +2,7 @@
 
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
+
 Base = declarative_base()
 
 
@@ -31,7 +32,7 @@ class MEDUSA2ModelOutput(Base):
         Total dissolved zinc of the surface.
     scenario_id: int
         Unique identifier for the rainfall event that this feature was processed with.
-    """
+    """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "medusa2_model_output"
     Index = Column(Integer, primary_key=True)

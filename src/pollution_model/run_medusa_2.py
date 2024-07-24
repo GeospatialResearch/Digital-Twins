@@ -31,12 +31,18 @@ class SurfaceType(StrEnum):
     """
     StrEnum to represent the surface types that a feature could have.
 
-    These include:
-        Concrete Roof = "Cr",
-        Copper Roof = "Cu",
-        Galvanised Roof = "Gv",
-        Asphalt Road = "Rd",
-        Car Park = "CrP".
+    Attributes
+    ----------
+    CONCRETE_ROOF : str
+        Concrete Roof surface.
+    COPPER_ROOF : str
+        Copper Roof surface.
+    GALVANISED_ROOF : str
+        Galvanised Roof surface.
+    ASPHALT_ROAD : str
+        Asphalt Road surface.
+    CAR_PARK : str
+        Car Park surface.
     """
 
     CONCRETE_ROOF = "Cr"
@@ -71,6 +77,11 @@ def compute_tss_roof_road(surface_area: float,
     -------
     float
        Returns the TSS value from the given parameters
+
+    Raises
+    ----------
+    ValueError
+        If the surface type is not a roof or road (concrete, copper, galvanised roof, asphalt road, or car park).
     """
     # Define the constants (Cf is the capacity factor).
     roof_surface_types = {SurfaceType.CONCRETE_ROOF, SurfaceType.GALVANISED_ROOF, SurfaceType.COPPER_ROOF}
@@ -93,8 +104,8 @@ def compute_tss_roof_road(surface_area: float,
             a1, a2, a3 = 2.9, 0.16, 0.0008
         case _:
             raise ValueError(invalid_surface_error)
-    first_term = surface_area * a1 * (antecedent_dry_days ** a2) * capacity_factor
-    second_term = (1 - math.exp(a3 * average_rain_intensity * event_duration))
+    first_term = surface_area * a1 * antecedent_dry_days ** a2 * capacity_factor
+    second_term = 1 - math.exp(a3 * average_rain_intensity * event_duration)
 
     return first_term * second_term
 
@@ -127,6 +138,11 @@ def total_metal_load_roof(surface_area: float,
     -------
     Tuple[float, float]
        Returns the total copper and zinc loads from the given parameters (micrograms)
+
+    Raises
+    ----------
+    ValueError
+        If the surface type is not a roof (concrete, copper, or galvanised roof).
     """
     # Define error message (if needed)
     invalid_surface_error = (f"Given surface is not valid for computing total metal load."
@@ -146,23 +162,23 @@ def total_metal_load_roof(surface_area: float,
         case _:
             raise ValueError(invalid_surface_error)
     # Define the initial and second stage metal concentrations (X_0 and X_est)
-    initial_copper_concentration = (b[0] * rainfall_ph ** b[1]) * (b[2] * antecedent_dry_days ** b[3]) * (
+    initial_copper_concentration = b[0] * rainfall_ph ** b[1] * b[2] * antecedent_dry_days ** b[3] * (
         b[4] * average_rain_intensity ** b[5])
     second_stage_copper = b[6] * rainfall_ph ** b[7]
 
-    initial_zinc_concentration = (c[0] * rainfall_ph + c[1]) * (c[2] * antecedent_dry_days ** c[3]) * (
+    initial_zinc_concentration = c[0] * rainfall_ph + c[1] * c[2] * antecedent_dry_days ** c[3] * (
         c[4] * average_rain_intensity ** c[5])
     second_stage_zinc = c[6] * rainfall_ph + c[7]
 
     # Define Z as per experimental data
     z = 0.75
 
-    # Define K, the wash off coefficient. TODO: find out what the k parameter should be
+    # Define K, the wash off coefficient.
     k = 1
 
     # Initialise total copper and zinc loads as a guaranteed common factor
-    total_copper_load = initial_copper_concentration * surface_area * (1 / k)
-    total_zinc_load = initial_zinc_concentration * surface_area * (1 / k)
+    total_copper_load = initial_copper_concentration * surface_area * 1 / k
+    total_zinc_load = initial_zinc_concentration * surface_area * 1 / k
 
     # Calculate total metal loads, where the method depends on if Z is less than event_duration
     if event_duration <= z:
@@ -221,6 +237,11 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     Tuple[float, float]
         Returns the dissolved copper and zinc load for this surface
         [Dissolved Copper Load, Dissolved Zinc Load]
+
+    Raises
+    ----------
+    ValueError
+        If the surface type is not a roof or road (concrete, copper, galvanised roof, asphalt road, or car park).
     """
     # Define error message (if needed)
     invalid_surface_error = (f"Given surface is not valid for computing dissolved metal load."
@@ -252,7 +273,7 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     Parameters
     ----------
     engine: Engine
-      The sqlalchemy database connection engine
+        The sqlalchemy database connection engine
     area_of_interest : gpd.GeoDataFrame
         A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
 
@@ -267,7 +288,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     crs = area_of_interest.crs.to_epsg()
 
     # Select all relevant information from the appropriate table
-    # TODO: Update this when the database has been created
     query = f"""
     SELECT building_id, geometry FROM nz_building_outlines
     WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
@@ -278,8 +298,7 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
 
     buildings = gpd.GeoDataFrame.from_file("central_buildings.geojson")
     result = buildings
-    for index, item in result.iterrows():
-        # TODO: Update this when the real database has been created. For the time being, we use a geojson file.
+    for index, _ in result.iterrows():
         # Append appropriate attribute data to the list. The attributes are Index, SurfaceArea, and SurfaceType.
         # Additionally, a placeholder for TSS, TCu, TZn, DCu, and DZn are included and set to "None". These will be
         # edited later.
@@ -314,7 +333,6 @@ def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
     crs = area_of_interest.crs.to_epsg()
 
     # Select all relevant information from the appropriate table
-    # TODO: Update this when the database has been created
     query = f"""
     SELECT road_id, geometry FROM nz_roads
     WHERE ST_INTERSECTS(nz_roads.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
@@ -325,7 +343,6 @@ def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
     new_result = []
 
     for index, row in result.iterrows():
-        # TODO: Update this when the real database has been created
         # Append appropriate attribute data to the list. The attributes are Index, SurfaceArea, and SurfaceType.
         # Additionally, a placeholder for TSS, TCu, TZn, DCu, and DZn are included and set to "None". These will be
         # edited later.
@@ -370,12 +387,10 @@ def run_pollution_model_rain_event(
         The combined results of all buildings and roads from the MEDUSA2.0 pollution model
     """
     # building_data = []
-    # TODO: Get these values from a dataset
     all_buildings = get_building_information(engine, area_of_interest)
     all_roads = get_road_information(engine, area_of_interest)
 
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
-    # TODO: change forloop to something meaningful. For the time being, it is simply a placeholder.
     for index, row in all_buildings.iterrows():
         surface_area = float(row["SurfaceArea"])
         surface_type = row["SurfaceType"]
@@ -426,11 +441,6 @@ def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame,
         current model run
     scenario_id : int
         The id of the current medusa2.0 model run, to associate with the results.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     results["scenario_id"] = scenario_id
     results.set_index("Index", inplace=True)
