@@ -293,7 +293,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
     """
     # Execute the SQL query
-    result = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_id", geom_col="geometry")
     new_result = []
 
     buildings = gpd.GeoDataFrame.from_file("central_buildings.geojson")
@@ -386,7 +385,6 @@ def run_pollution_model_rain_event(
     gpd.GeoDataFrame
         The combined results of all buildings and roads from the MEDUSA2.0 pollution model
     """
-    # building_data = []
     all_buildings = get_building_information(engine, area_of_interest)
     all_roads = get_road_information(engine, area_of_interest)
 
