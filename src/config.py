@@ -11,10 +11,12 @@ load_dotenv()
 load_dotenv("api_keys.env")
 
 
-def get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
+def _get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
     """
     Read a string environment variable, with settings to allow defaults, empty values.
-    To read a boolean use get_bool_env_variable.
+    To read a boolean use _get_bool_env_variable.
+
+    For public use please use EnvVariable.
 
     Parameters
     ----------
@@ -44,11 +46,13 @@ def get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: 
     return env_var
 
 
-def get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool:
+def _get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool:
     """
     Read an environment variable and attempts to cast to bool, with settings to allow defaults.
     For bool casting we have the problem where bool("False") == True
     but this function fixes that so get_bool_env_variable("False") == False
+
+    For public use please use EnvVariable.
 
     Parameters
     ----------
@@ -67,7 +71,7 @@ def get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool
     ValueError
         If allow_empty is False and the environment variable is empty string or None
     """
-    env_variable = get_env_variable(var_name, str(default))
+    env_variable = _get_env_variable(var_name, str(default))
     truth_values = {"true", "t", "1"}
     false_values = {"false", "f", "0"}
     if env_variable.lower() in truth_values:
@@ -79,36 +83,36 @@ def get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool
 
 
 class EnvVariable:
-    STATSNZ_API_KEY = get_env_variable("STATSNZ_API_KEY")
-    LINZ_API_KEY = get_env_variable("LINZ_API_KEY")
-    LRIS_API_KEY = get_env_variable("LRIS_API_KEY")
-    MFE_API_KEY = get_env_variable("MFE_API_KEY")
-    NIWA_API_KEY = get_env_variable("NIWA_API_KEY")
+    STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY")
+    LINZ_API_KEY = _get_env_variable("LINZ_API_KEY")
+    LRIS_API_KEY = _get_env_variable("LRIS_API_KEY")
+    MFE_API_KEY = _get_env_variable("MFE_API_KEY")
+    NIWA_API_KEY = _get_env_variable("NIWA_API_KEY")
 
-    DEBUG_TRACEBACK = get_bool_env_variable("DEBUG_TRACEBACK", default=False)
-    TEST_DATABASE_INTEGRATION = get_bool_env_variable("TEST_DATABASE_INTEGRATION", default=True)
+    DEBUG_TRACEBACK = _get_bool_env_variable("DEBUG_TRACEBACK", default=False)
+    TEST_DATABASE_INTEGRATION = _get_bool_env_variable("TEST_DATABASE_INTEGRATION", default=True)
 
-    DATA_DIR = pathlib.Path(get_env_variable("DATA_DIR"))
-    DATA_DIR_REC = pathlib.Path(get_env_variable("DATA_DIR_REC"))
-    DATA_DIR_MODEL_OUTPUT = pathlib.Path(get_env_variable("DATA_DIR_MODEL_OUTPUT"))
-    DATA_DIR_GEOSERVER = pathlib.Path(get_env_variable("DATA_DIR_GEOSERVER"))
-    FLOOD_MODEL_DIR = pathlib.Path(get_env_variable("FLOOD_MODEL_DIR"))
+    DATA_DIR = pathlib.Path(_get_env_variable("DATA_DIR"))
+    DATA_DIR_REC = pathlib.Path(_get_env_variable("DATA_DIR_REC"))
+    DATA_DIR_MODEL_OUTPUT = pathlib.Path(_get_env_variable("DATA_DIR_MODEL_OUTPUT"))
+    DATA_DIR_GEOSERVER = pathlib.Path(_get_env_variable("DATA_DIR_GEOSERVER"))
+    FLOOD_MODEL_DIR = pathlib.Path(_get_env_variable("FLOOD_MODEL_DIR"))
 
-    POSTGRES_HOST = get_env_variable("POSTGRES_HOST", default="localhost")
-    POSTGRES_PORT = get_env_variable("POSTGRES_PORT", default="5431")
-    POSTGRES_DB = get_env_variable("POSTGRES_DB", default="db")
-    POSTGRES_USER = get_env_variable("POSTGRES_USER", default="postgres")
-    POSTGRES_PASSWORD = get_env_variable("POSTGRES_PASSWORD")
+    POSTGRES_HOST = _get_env_variable("POSTGRES_HOST", default="localhost")
+    POSTGRES_PORT = _get_env_variable("POSTGRES_PORT", default="5431")
+    POSTGRES_DB = _get_env_variable("POSTGRES_DB", default="db")
+    POSTGRES_USER = _get_env_variable("POSTGRES_USER", default="postgres")
+    POSTGRES_PASSWORD = _get_env_variable("POSTGRES_PASSWORD")
 
-    MESSAGE_BROKER_HOST = get_env_variable("MESSAGE_BROKER_HOST", default="localhost")
+    MESSAGE_BROKER_HOST = _get_env_variable("MESSAGE_BROKER_HOST", default="localhost")
 
-    GEOSERVER_HOST = get_env_variable("GEOSERVER_HOST", default="http://localhost")
-    GEOSERVER_PORT = get_env_variable("GEOSERVER_PORT", default="8088")
-    GEOSERVER_ADMIN_NAME = get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
-    GEOSERVER_ADMIN_PASSWORD = get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
+    GEOSERVER_HOST = _get_env_variable("GEOSERVER_HOST", default="http://localhost")
+    GEOSERVER_PORT = _get_env_variable("GEOSERVER_PORT", default="8088")
+    GEOSERVER_ADMIN_NAME = _get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
+    GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
 
     # NewZealidar config that we must ensure have values.
-    _LIDAR_DIR = get_env_variable("LIDAR_DIR")
-    _DEM_DIR = get_env_variable("DEM_DIR")
-    _LAND_FILE = get_env_variable("LAND_FILE", allow_empty=True)
-    _INSTRUCTIONS_FILE = get_env_variable("INSTRUCTIONS_FILE")
+    _LIDAR_DIR = _get_env_variable("LIDAR_DIR")
+    _DEM_DIR = _get_env_variable("DEM_DIR")
+    _LAND_FILE = _get_env_variable("LAND_FILE", allow_empty=True)
+    _INSTRUCTIONS_FILE = _get_env_variable("INSTRUCTIONS_FILE")
