@@ -1,6 +1,7 @@
 """
-This script takes in appropriate datasets as input and runs the MEDUSA2.0 model to calculate
-TSS (total suspended solids), TCu (total copper), DCu  (dissolved copper), TZn (total zinc), and DZn (dissolved zinc).
+This script takes in appropriate datasets as input.
+Then runs the MEDUSA2.0 model to calculate TSS (total suspended solids), TCu (total copper), DCu  (dissolved copper),
+TZn (total zinc), and DZn (dissolved zinc).
 
 DOI of the model paper: https://doi.org/10.3390/w12040969
 """
@@ -8,6 +9,7 @@ DOI of the model paper: https://doi.org/10.3390/w12040969
 import logging
 import math
 from enum import StrEnum
+from typing import Tuple
 
 import geopandas as gpd
 import pandas as pd
@@ -17,7 +19,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import create_table
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.flood_model.serve_model import create_building_database_views_if_not_exists
 from src.pollution_model.pollution_tables import MEDUSA2ModelOutput
 
 log = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ class SurfaceType(StrEnum):
         Asphalt Road = "Rd",
         Car Park = "CrP".
     """
+
     CONCRETE_ROOF = "Cr"
     COPPER_ROOF = "Cu"
     GALVANISED_ROOF = "Gv"
@@ -48,9 +50,9 @@ def compute_tss_roof_road(surface_area: float,
                           antecedent_dry_days: float,
                           average_rain_intensity: float,
                           event_duration: float,
-                          surface_type: SurfaceType):
+                          surface_type: SurfaceType) -> float:
     """
-    Calculates the total suspended solids (TSS) for a surface, given the following parameters;
+    Calculate the total suspended solids (TSS) for a surface, given the following parameters.
 
     Parameters
     ----------
@@ -70,7 +72,6 @@ def compute_tss_roof_road(surface_area: float,
     float
        Returns the TSS value from the given parameters
     """
-
     # Define the constants (Cf is the capacity factor).
     roof_surface_types = {SurfaceType.CONCRETE_ROOF, SurfaceType.GALVANISED_ROOF, SurfaceType.COPPER_ROOF}
     capacity_factor = 0.75 if surface_type in roof_surface_types else 0.25
@@ -103,9 +104,9 @@ def total_metal_load_roof(surface_area: float,
                           average_rain_intensity: float,
                           event_duration: float,
                           rainfall_ph: float,
-                          surface_type: SurfaceType):
+                          surface_type: SurfaceType) -> Tuple[float, float]:
     """
-    Calculates the total metal load for a given roof;
+    Calculate the total metal load for a given roof.
 
     Parameters
     ----------
@@ -146,11 +147,11 @@ def total_metal_load_roof(surface_area: float,
             raise ValueError(invalid_surface_error)
     # Define the initial and second stage metal concentrations (X_0 and X_est)
     initial_copper_concentration = (b[0] * rainfall_ph ** b[1]) * (b[2] * antecedent_dry_days ** b[3]) * (
-            b[4] * average_rain_intensity ** b[5])
+        b[4] * average_rain_intensity ** b[5])
     second_stage_copper = b[6] * rainfall_ph ** b[7]
 
     initial_zinc_concentration = (c[0] * rainfall_ph + c[1]) * (c[2] * antecedent_dry_days ** c[3]) * (
-            c[4] * average_rain_intensity ** c[5])
+        c[4] * average_rain_intensity ** c[5])
     second_stage_zinc = c[6] * rainfall_ph + c[7]
 
     # Define Z as per experimental data
@@ -177,7 +178,7 @@ def total_metal_load_roof(surface_area: float,
     return total_copper_load, total_zinc_load
 
 
-def total_metal_load_road_carpark(tss_surface: float):
+def total_metal_load_road_carpark(tss_surface: float) -> Tuple[float, float]:
     """
     Calculate the total metal load for a car park or road from their total suspended solids.
 
@@ -201,7 +202,8 @@ def total_metal_load_road_carpark(tss_surface: float):
     return total_cu_load, total_zn_load
 
 
-def dissolved_metal_load(total_copper_load: float, total_zinc_load: float, surface_type: SurfaceType):
+def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
+                         surface_type: SurfaceType) -> Tuple[float, float]:
     """
     Calculate the dissolved metal load for all surfaces from their total suspended solids.
 
@@ -219,8 +221,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float, surfa
     Tuple[float, float]
         Returns the dissolved copper and zinc load for this surface
         [Dissolved Copper Load, Dissolved Zinc Load]
-        """
-
+    """
     # Define error message (if needed)
     invalid_surface_error = (f"Given surface is not valid for computing dissolved metal load."
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
@@ -243,10 +244,10 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float, surfa
     return f * total_copper_load, g * total_zinc_load
 
 
-def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame):
+def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Extracts relevant information about buildings from the database and formats them such that they are easy to use for
-    pollution modeling purposes.
+    Extract relevant information about buildings from the database.
+    Then formats them such that they are easy to use for pollution modeling purposes.
 
     Parameters
     ----------
@@ -291,10 +292,10 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     return gpd.GeoDataFrame(new_result)
 
 
-def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame):
+def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Extracts relevant information about roads and car parks from the database and formats them such that they are easy
-    to use for pollution modeling purposes.
+    Extract relevant information about roads and car parks from the database.
+    Then formats them such that they are easy to use for pollution modeling purposes.
 
     Parameters
     ----------
@@ -345,8 +346,8 @@ def run_pollution_model_rain_event(
         event_duration: float,
         rainfall_ph: float) -> gpd.GeoDataFrame:
     """
-    Runs the pollution model for buildings (roofs), roads, and car parks. For each of these it calculates the TSS,
-    total metal load, and dissolved metal load. This runs for one rain event.
+    Run the pollution model for buildings (roofs), roads, and car parks.
+    For each of these it calculates the TSS, total metal load, and dissolved metal load. This runs for one rain event.
 
     Parameters
     ----------
@@ -409,13 +410,12 @@ def run_pollution_model_rain_event(
         all_roads.iloc[i] = [all_roads.iloc[i]["Index"], surface_area, surface_type, curr_tss,
                              curr_total_copper, curr_total_zinc, curr_dissolved_copper, curr_dissolved_zinc]
 
-    # all_result = xr.merge(all_roads, all_buildings)
     return gpd.GeoDataFrame(pd.concat([all_roads, all_buildings], ignore_index=True))
 
 
-def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame, scenario_id: int):
+def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame, scenario_id: int) -> None:
     """
-    Appends the details of which buildings are flooded for a given flood_model_id to the database
+    Append the details of the output of the MEDUSA 2.0 pollution model into the database, with an assigned scenario_id.
 
     Parameters
     ----------
@@ -435,15 +435,26 @@ def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame,
     results["scenario_id"] = scenario_id
     results.set_index("Index", inplace=True)
     results.to_sql("medusa2_model_output", engine, if_exists="append", index=True)
-    # Create geoserver endpoints for database views if they do not already exist I noticed this was in the code for a
-    # similar function, so I've added it. Please comment if this is necessary or not @Luke
-    create_building_database_views_if_not_exists()
 
 
-def get_next_scenario_id(engine):
+def get_next_scenario_id(engine: Engine) -> int:
+    """
+    Read the database to find the latest scenario id. Returns that id + 1 to give the new scenario_id.
+
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine
+
+    Returns
+    -------
+    int
+        The scenario_id for the current output about to be appended to the database.
+    """
     with engine.begin() as conn:
         result = conn.execute("SELECT MAX(scenario_id) FROM medusa2_model_output").fetchone()[0]
-        return (result or 0) + 1
+        max_scenario_id = result if result is not None else 0
+        return max_scenario_id + 1
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
@@ -451,10 +462,9 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
          antecedent_dry_days: float = 1,
          average_rain_intensity: float = 10000,
          event_duration: float = 5,
-         rainfall_ph: float = 7):
+         rainfall_ph: float = 7) -> int:
     """
-    Generate pollution model output for the requested catchment area, and incorporate the model output to GeoServer
-    for visualization.
+    Generate pollution model output for the requested catchment area, and save result to database.
 
     Parameters
     ----------
@@ -489,9 +499,6 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     engine = setup_environment.get_database()
     # Get catchment area
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
-
-    # DEBUGGING:
-    # print(get_building_information(engine).sel(row=0, col="Index"))
 
     # Run the pollution model
     results = run_pollution_model_rain_event(engine=engine, area_of_interest=catchment_area,

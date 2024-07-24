@@ -1,6 +1,4 @@
-"""
-This script contains a SQLAlchemy model for the medusa 2.0 database table.
-"""
+"""This script contains a SQLAlchemy model for the medusa 2.0 database table."""
 
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
@@ -34,6 +32,7 @@ class MEDUSA2ModelOutput(Base):
     scenario_id: int
         Unique identifier for the rainfall event that this feature was processed with.
     """
+
     __tablename__ = "medusa2_model_output"
     Index = Column(Integer, primary_key=True)
     SurfaceArea = Column(Float)

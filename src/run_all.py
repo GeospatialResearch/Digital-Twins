@@ -14,7 +14,6 @@ from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType
 from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.tide import main_tide_slr
-from src.flood_model import bg_flood_model
 from pollution_model import run_medusa_2
 from src.flood_model import bg_flood_model, process_hydro_dem
 
@@ -94,8 +93,6 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "log_level": LogLevel.INFO
     },
     run_medusa_2: {
-        # Is this the best way to do this? I am not explicitly setting the catchment area as I believe this is done
-        # automatically in the main function of this script.
         "log_level": LogLevel.INFO,
         "antecedent_dry_days": 1,
         "average_rain_intensity": 1,
