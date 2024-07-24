@@ -43,9 +43,9 @@ def get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: 
     return env_var
 
 
-def get_bool_env_variable(var_name: str, default: Optional[bool] = None, allow_empty: bool = False) -> bool:
+def get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool:
     """
-    Read an environment variable and attempts to cast to bool, with settings to allow defaults, empty values.
+    Read an environment variable and attempts to cast to bool, with settings to allow defaults.
     For bool casting we have the problem where bool("False") == True
     but this function fixes that so get_bool_env_variable("False") == False
 
@@ -55,8 +55,6 @@ def get_bool_env_variable(var_name: str, default: Optional[bool] = None, allow_e
         The name of the environment variable to retrieve.
     default : Optional[bool] = None
         Default return value if the environment variable does not exist.
-    allow_empty : bool
-        If False then a KeyError will be raised if the environment variable is empty.
 
     Returns
     -------
@@ -68,7 +66,7 @@ def get_bool_env_variable(var_name: str, default: Optional[bool] = None, allow_e
     ValueError
         If allow_empty is False and the environment variable is empty string or None
     """
-    env_variable = get_env_variable(var_name, str(default), allow_empty)
+    env_variable = get_env_variable(var_name, str(default))
     truth_values = {"true", "t", "1"}
     false_values = {"false", "f", "0"}
     if env_variable.lower() in truth_values:
