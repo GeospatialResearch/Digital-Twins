@@ -35,8 +35,8 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import * as Cesium from "cesium";
-import {MapViewer} from 'geo-visualisation-components/src/components';
-import type {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/src/types";
+import type {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components";
+import {MapViewer} from 'geo-visualisation-components';
 import type {AxiosError} from "axios";
 
 interface DataOption {
