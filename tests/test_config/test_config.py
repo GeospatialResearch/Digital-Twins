@@ -77,8 +77,7 @@ class GetEnvVariableTest(unittest.TestCase):
             test_default_value)
     
     def test_non_existent_env_var_allow_empty(self):
-        self.assertEqual(config.get_env_variable("NON_INITIALISED_ENVIRONMENT_VARIABLE_TEST_KEY", allow_empty=True),
-                         None)
+        self.assertIsNone(config.get_env_variable("NON_INITIALISED_ENVIRONMENT_VARIABLE_TEST_KEY", allow_empty=True))
 
 
 if __name__ == '__main__':
