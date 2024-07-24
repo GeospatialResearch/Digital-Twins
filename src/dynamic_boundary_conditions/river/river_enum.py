@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Enum(s) used in the river module.
-"""
+"""Enum(s) used in the river module."""
 
 from enum import StrEnum
 
@@ -19,6 +17,7 @@ class BoundType(StrEnum):
     UPPER : str
         Upper bound of a confidence interval.
     """
+
     LOWER = "lower"
     MIDDLE = "middle"
     UPPER = "upper"

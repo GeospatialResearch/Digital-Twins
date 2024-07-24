@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script handles the fetching of OpenStreetMap (OSM) waterways data for the defined catchment area.
-"""
+"""This script handles the fetching of OpenStreetMap (OSM) waterways data for the defined catchment area."""
 
 import logging
 import pathlib
@@ -16,14 +14,7 @@ log = logging.getLogger(__name__)
 
 
 def configure_osm_cache() -> None:
-    """
-    Change the directory for storing the OSM cache files.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
+    """Change the directory for storing the OSM cache files."""
     # Get the data directory from the environment variable
     data_dir = pathlib.Path(config.get_env_variable("DATA_DIR"))
     # Define the OSM cache directory
@@ -34,7 +25,7 @@ def configure_osm_cache() -> None:
 
 def fetch_osm_waterways(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Fetches OpenStreetMap (OSM) waterways data for the specified catchment area.
+    Fetch OpenStreetMap (OSM) waterways data for the specified catchment area.
 
     Parameters
     ----------
@@ -61,7 +52,11 @@ def fetch_osm_waterways(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     # Execute the Overpass query to retrieve waterway elements
     waterways = Overpass().query(query, timeout=600)
     # Initialize an empty dictionary to store element information
-    element_dict = dict(id=[], waterway=[], geometry=[])
+    element_dict = {
+        "id": [],
+        "waterway": [],
+        "geometry": []
+    }
     # Iterate over the retrieved waterway elements
     for element in waterways.elements():
         # Extract and store the ID, waterway type, and geometry of each element
@@ -77,7 +72,7 @@ def fetch_osm_waterways(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
 def get_osm_waterways_data(catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Fetches OpenStreetMap (OSM) waterways data for the specified catchment area.
+    Fetch OpenStreetMap (OSM) waterways data for the specified catchment area.
     Only LineString geometries representing waterways of type "river" or "stream" are included.
 
     Parameters

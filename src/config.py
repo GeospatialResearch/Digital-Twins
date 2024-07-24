@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Collection of utils that are used for system and environment configuration."""
+
 import os
 from typing import Optional
 
@@ -9,8 +12,8 @@ load_dotenv("api_keys.env")
 
 def get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
     """
-    Reads a string environment variable, with settings to allow defaults, empty values.
-    To read a boolean please use get_bool_env_variable
+    Read a string environment variable, with settings to allow defaults, empty values.
+    To read a boolean use get_bool_env_variable.
 
     Parameters
     ----------
@@ -42,7 +45,7 @@ def get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: 
 
 def get_bool_env_variable(var_name: str, default: Optional[bool] = None, allow_empty: bool = False) -> bool:
     """
-    Reads an environment variable and attempts to cast to bool, with settings to allow defaults, empty values.
+    Read an environment variable and attempts to cast to bool, with settings to allow defaults, empty values.
     For bool casting we have the problem where bool("False") == True
     but this function fixes that so get_bool_env_variable("False") == False
 

@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 """
 Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
-or other clients
-"""
+or other clients.
+"""  # noqa: D400
 
 import logging
 import os
@@ -21,7 +22,7 @@ _xml_header = {"Content-type": "text/xml"}
 
 def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
     """
-    Creates a GeoTiff file from a netCDF model output. The Tiff represents the max flood height in the model output.
+    Create a GeoTiff file from a netCDF model output. The Tiff represents the max flood height in the model output.
 
     Parameters
     ----------
@@ -48,7 +49,7 @@ def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
 def upload_gtiff_to_store(
         geoserver_url: str, gtiff_filepath: pathlib.Path, store_name: str, workspace_name: str) -> None:
     """
-    Uploads a GeoTiff file to a new GeoServer store, to enable serving.
+    Upload a GeoTiff file to a new GeoServer store, to enable serving.
 
     Parameters
     ----------
@@ -61,10 +62,10 @@ def upload_gtiff_to_store(
     workspace_name : str
         The name of the existing GeoServer workspace that the store is to be added to.
 
-    Returns
-    -------
-    None
-        This function does not return anything
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     log.info(f"Uploading {gtiff_filepath.name} to Geoserver workspace {workspace_name}")
 
@@ -97,7 +98,7 @@ def upload_gtiff_to_store(
 
 def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str, workspace_name: str) -> None:
     """
-    Creates a GeoServer Layer from a GeoServer store, making it ready to serve.
+    Create a GeoServer Layer from a GeoServer store, making it ready to serve.
 
     Parameters
     ----------
@@ -110,10 +111,10 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str
     workspace_name : str
         The name of the existing GeoServer workspace that the store is to be added to.
 
-    Returns
-    -------
-    None
-        This function does not return anything
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     data = f"""
     <coverage>
@@ -145,7 +146,7 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str
 
 def get_geoserver_url() -> str:
     """
-    Retrieves full GeoServer URL from environment variables.
+    Retrieve full GeoServer URL from environment variables.
 
     Returns
     -------
@@ -159,7 +160,7 @@ def get_geoserver_url() -> str:
 
 def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, model_id: int) -> None:
     """
-    Uploads a GeoTiff file to GeoServer, ready for serving to clients.
+    Upload a GeoTiff file to GeoServer, ready for serving to clients.
 
     Parameters
     ----------
@@ -169,11 +170,6 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, mo
         The name of the existing GeoServer workspace that the store is to be added to.
     model_id : int
         The id of the model being added, to facilitate layer naming.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     gs_url = get_geoserver_url()
     layer_name = f"output_{model_id}"
@@ -190,17 +186,17 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, mo
 
 def create_workspace_if_not_exists(workspace_name: str) -> None:
     """
-    Creates a geoserver workspace if it does not currently exist.
+    Create a GeoServer workspace if it does not currently exist.
 
     Parameters
     ----------
     workspace_name : str
         The name of the workspace to create if it does not exists.
 
-    Returns
-    -------
-    None
-        This function does not return anything.
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Create data directory for workspace if it does not already exist
     geoserver_data_root = pathlib.Path(get_env_variable("DATA_DIR_GEOSERVER"))
@@ -228,7 +224,29 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
         raise requests.HTTPError(response.text, response=response)
 
 
-def create_datastore_layer(workspace_name, data_store_name: str, layer_name, metadata_elem: str = "") -> None:
+def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name: str, metadata_elem: str = "") -> None:
+    """
+    Create a GeoServer layer for a given data store if it does not currently exist.
+    Can be used to create layers for a database table, or to create a database view for a custom dynamic query.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the workspace the data store is associated to
+    data_store_name : str
+        The name of the data store the layer is being created from.
+    layer_name : str
+        The name of the new layer.
+        This is the same as the name of the database table if creating a layer from a table.
+    metadata_elem : str = ""
+        An optional XML str that contains the metadata element used to configure custom SQL queries.
+
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+    """
     db_exists_response = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes.json',
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
@@ -288,21 +306,21 @@ def create_datastore_layer(workspace_name, data_store_name: str, layer_name, met
 
 def create_building_layers(workspace_name: str, data_store_name: str) -> None:
     """
-    Creates dynamic geoserver layers "nz_building_outlines" and "building_flood_status" for the given workspace.
-    If they already exist then does nothing.
-    "building_flood_status" required viewparam=scenario:{model_id} to dynamically fetch correct flood statuses.
+    Create dynamic GeoServer layers "nz_building_outlines" and "building_flood_status" for the given workspace.
+    If they already exist then do nothing.
+    "building_flood_status" requires viewparam=scenario:{model_id} to dynamically fetch correct flood statuses.
 
     Parameters
     ----------
     workspace_name : str
-        The name of the workspace to create views for
+        The name of the workspace to create views for.
     data_store_name : str
-         The name of the datastore that the building layer is being created from
+         The name of the datastore that the building layer is being created from.
 
-    Returns
-    -------
-    None
-        This function does not return anything
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Simple layer that is just displaying the nz_building_outlines database table
     create_datastore_layer(workspace_name, data_store_name, layer_name="nz_building_outlines")
@@ -348,8 +366,8 @@ def create_building_layers(workspace_name: str, data_store_name: str) -> None:
 
 def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_store_name: str) -> None:
     """
-    Creates PostGIS database store in a geoserver workspace for a given database.
-    If it already exists, does not do anything.
+    Create PostGIS database store in a GeoServer workspace for a given database.
+    If it already exists, do not do anything.
 
     Parameters
     ----------
@@ -360,10 +378,10 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
     new_data_store_name : str
         The name of the new datastore to create
 
-    Returns
-    -------
-    None
-        This function does not return anything
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Create request to check if database store already exists
     db_exists_response = requests.get(
@@ -415,13 +433,8 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
 
 def create_building_database_views_if_not_exists() -> None:
     """
-    Creates a geoserver workspace and building layers using database views if they do not currently exist.
+    Create a GeoServer workspace and building layers using database views if they do not currently exist.
     These only need to be created once per database.
-
-    Returns
-    -------
-    None
-        This function does not return anything.
     """
     log.debug("Creating building database views if they do not exist")
     db_name = get_env_variable("POSTGRES_DB")
@@ -437,7 +450,7 @@ def create_building_database_views_if_not_exists() -> None:
 
 def style_exists(style_name: str) -> bool:
     """
-    Checks if a geoserver style definition already exists for a given style_name.
+    Check if a GeoServer style definition already exists for a given style_name.
     The style definition may be empty.
 
     Parameters
@@ -455,22 +468,12 @@ def style_exists(style_name: str) -> bool:
         f'{get_geoserver_url()}/styles/{style_name}.sld',
         auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
     )
-    if response.status_code == HTTPStatus.OK:
-        return True
-    if response.status_code == HTTPStatus.NOT_FOUND:
-        return False
     response.raise_for_status()
+    return response.status_code == HTTPStatus.OK
 
 
 def create_viridis_style_if_not_exists() -> None:
-    """
-    Creates a geoserver style for rasters using the viridis colour scale
-
-    Returns
-    -------
-    None
-        This function does not return anything
-    """
+    """Create a GeoServer style for rasters using the viridis color scale."""
     style_name = "viridis_raster"
     if not style_exists(style_name):
         # Create the style base
@@ -500,7 +503,7 @@ def create_viridis_style_if_not_exists() -> None:
 
 def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int) -> None:
     """
-    Adds the model output max depths to GeoServer, ready for serving.
+    Add the model output max depths to GeoServer, ready for serving.
     The GeoServer layer name will be f"Output_{model_id}" and the workspace name will be "{db_name}-dt-model-outputs"
 
     Parameters
@@ -509,11 +512,6 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
         The file path to the model output to serve.
     model_id : int
         The database id of the model output.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     log.debug("Adding model output to geoserver")
     gtiff_filepath = convert_nc_to_gtiff(model_output_path)
