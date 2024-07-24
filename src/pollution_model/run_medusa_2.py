@@ -182,11 +182,11 @@ def total_metal_load_roof(surface_area: float,
 
     # Calculate total metal loads, where the method depends on if Z is less than event_duration
     if event_duration <= z:
-        factor = (1 - math.exp(k * average_rain_intensity * event_duration))
+        factor = 1 - math.exp(k * average_rain_intensity * event_duration)
         total_zinc_load *= factor
         total_copper_load *= factor
     else:
-        factor = (1 - math.exp(k * average_rain_intensity * z))
+        factor = 1 - math.exp(k * average_rain_intensity * z)
         bias_factor = average_rain_intensity * (event_duration - z)
         total_zinc_load = total_zinc_load * factor + second_stage_zinc * surface_area * bias_factor
         total_copper_load *= total_copper_load * factor + second_stage_copper * surface_area * bias_factor
