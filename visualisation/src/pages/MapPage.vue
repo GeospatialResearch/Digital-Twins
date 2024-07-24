@@ -91,13 +91,13 @@ export default defineComponent({
       } as Record<string, number | string>,
       // Environment variables
       env: {
-        cesiumApiToken: import.meta.env.VUE_APP_CESIUM_ACCESS_TOKEN,
+        cesiumApiToken: import.meta.env.VITE_CESIUM_ACCESS_TOKEN,
         geoserver: {
-          host: import.meta.env.VUE_APP_GEOSERVER_HOST,
-          port: import.meta.env.VUE_APP_GEOSERVER_PORT
+          host: import.meta.env.VITE_GEOSERVER_HOST,
+          port: import.meta.env.VITE_GEOSERVER_PORT
         },
         db: {
-          name: import.meta.env.VUE_APP_POSTGRES_DB
+          name: import.meta.env.VITE_POSTGRES_DB
         }
       },
     }
