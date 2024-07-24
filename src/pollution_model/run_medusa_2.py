@@ -283,10 +283,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    # Get the area of interest polygon in well known text format for database querying
-    aoi_wkt = area_of_interest["geometry"][0].wkt
-    crs = area_of_interest.crs.to_epsg()
-
     new_result = []
 
     buildings = gpd.GeoDataFrame.from_file("central_buildings.geojson")
