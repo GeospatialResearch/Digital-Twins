@@ -14,7 +14,7 @@ import xarray
 from celery import Celery, states, result
 from pyproj import Transformer
 
-from src.config import get_env_variable
+from src.config import EnvVariable
 from src.digitaltwin import retrieve_static_boundaries, setup_environment
 from src.digitaltwin.utils import setup_logging
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
@@ -24,7 +24,7 @@ from src.flood_model import bg_flood_model, process_hydro_dem
 from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
 
 # Setup celery backend task management
-message_broker_url = f"redis://{get_env_variable('MESSAGE_BROKER_HOST')}:6379/0"
+message_broker_url = f"redis://{EnvVariable.MESSAGE_BROKER_HOST}:6379/0"
 app = Celery("tasks", backend=message_broker_url, broker=message_broker_url)
 
 setup_logging()

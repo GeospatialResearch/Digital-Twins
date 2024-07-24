@@ -11,7 +11,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.declarative import declarative_base
 
-from src import config
+from src.config import EnvVariable
 
 log = logging.getLogger(__name__)
 
@@ -51,20 +51,13 @@ def get_connection_from_profile() -> Engine:
     -------
     Engine
         The engine used to connect to the database.
-
-    Raises
-    ------
-    ValueError
-        If one or more connection credentials are missing in the .env file.
     """
-    # Get the connection credentials from the environment variables
-    connection_keys = ["POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"]
-    host, port, db, username, password = (config.get_env_variable(key) for key in connection_keys)
-    # Check if any connection credential is missing
-    if any(connection_cred is None for connection_cred in [host, port, db, username, password]):
-        raise ValueError("Please check the .env file as one or more of the connection credentials are missing.")
     # Create and return the database engine
-    return get_engine(host, port, db, username, password)
+    return get_engine(EnvVariable.POSTGRES_HOST,
+                      EnvVariable.POSTGRES_PORT,
+                      EnvVariable.POSTGRES_DB,
+                      EnvVariable.POSTGRES_USER,
+                      EnvVariable.POSTGRES_PASSWORD)
 
 
 def get_engine(host: str, port: str, db: str, username: str, password: str) -> Engine:

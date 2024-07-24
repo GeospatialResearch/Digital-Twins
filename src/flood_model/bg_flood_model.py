@@ -48,7 +48,7 @@ def get_valid_bg_flood_dir() -> pathlib.Path:
         If the BG-Flood Model directory is not found or is not a valid directory.
     """
     # Get the BG-Flood Model directory from the environment variable
-    bg_flood_dir = pathlib.Path(config.get_env_variable("FLOOD_MODEL_DIR"))
+    bg_flood_dir = config.EnvVariable.FLOOD_MODEL_DIR
     # Check if the directory exists and is a valid directory
     if bg_flood_dir.exists() and bg_flood_dir.is_dir():
         return bg_flood_dir
@@ -66,7 +66,7 @@ def get_new_model_output_path() -> pathlib.Path:
         The path to the BG Flood model output file.
     """
     # Get the BG Flood model output directory from the environment variable
-    model_output_dir = pathlib.Path(config.get_env_variable("DATA_DIR_MODEL_OUTPUT"))
+    model_output_dir = config.EnvVariable.DATA_DIR_MODEL_OUTPUT
     # Create the BG Flood model output directory if it does not already exist
     model_output_dir.mkdir(parents=True, exist_ok=True)
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
