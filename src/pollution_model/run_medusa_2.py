@@ -287,12 +287,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     aoi_wkt = area_of_interest["geometry"][0].wkt
     crs = area_of_interest.crs.to_epsg()
 
-    # Select all relevant information from the appropriate table
-    query = f"""
-    SELECT building_id, geometry FROM nz_building_outlines
-    WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
-    """
-    # Execute the SQL query
     new_result = []
 
     buildings = gpd.GeoDataFrame.from_file("central_buildings.geojson")
