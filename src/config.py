@@ -2,6 +2,7 @@
 """Collection of utils that are used for system and environment configuration."""
 
 import os
+import pathlib
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -75,3 +76,39 @@ def get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool
         return False
     raise ValueError(f"Environment variable {var_name}={env_variable} being casted to bool "
                      f"but is not in {truth_values} or {false_values}")
+
+
+class EnvVariable:
+    STATSNZ_API_KEY = get_env_variable("STATSNZ_API_KEY")
+    LINZ_API_KEY = get_env_variable("LINZ_API_KEY")
+    LRIS_API_KEY = get_env_variable("LRIS_API_KEY")
+    MFE_API_KEY = get_env_variable("MFE_API_KEY")
+    NIWA_API_KEY = get_env_variable("NIWA_API_KEY")
+
+    DEBUG_TRACEBACK = get_bool_env_variable("DEBUG_TRACEBACK", default=False)
+    TEST_DATABASE_INTEGRATION = get_bool_env_variable("TEST_DATABASE_INTEGRATION", default=True)
+
+    DATA_DIR = pathlib.Path(get_env_variable("DATA_DIR"))
+    DATA_DIR_REC = pathlib.Path(get_env_variable("DATA_DIR_REC"))
+    DATA_DIR_MODEL_OUTPUT = pathlib.Path(get_env_variable("DATA_DIR_MODEL_OUTPUT"))
+    DATA_DIR_GEOSERVER = pathlib.Path(get_env_variable("DATA_DIR_GEOSERVER"))
+    FLOOD_MODEL_DIR = pathlib.Path(get_env_variable("FLOOD_MODEL_DIR"))
+
+    POSTGRES_HOST = get_env_variable("POSTGRES_HOST", default="localhost")
+    POSTGRES_PORT = get_env_variable("POSTGRES_PORT", default="5431")
+    POSTGRES_DB = get_env_variable("POSTGRES_DB", default="db")
+    POSTGRES_USER = get_env_variable("POSTGRES_USER", default="postgres")
+    POSTGRES_PASSWORD = get_env_variable("POSTGRES_PASSWORD")
+
+    MESSAGE_BROKER_HOST = get_env_variable("MESSAGE_BROKER_HOST", default="localhost")
+
+    GEOSERVER_HOST = get_env_variable("GEOSERVER_HOST", default="http://localhost")
+    GEOSERVER_PORT = get_env_variable("GEOSERVER_PORT", default="8088")
+    GEOSERVER_ADMIN_NAME = get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
+    GEOSERVER_ADMIN_PASSWORD = get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
+
+    # NewZealidar config that we must ensure have values.
+    _LIDAR_DIR = get_env_variable("LIDAR_DIR")
+    _DEM_DIR = get_env_variable("DEM_DIR")
+    _LAND_FILE = get_env_variable("LAND_FILE", allow_empty=True)
+    _INSTRUCTIONS_FILE = get_env_variable("INSTRUCTIONS_FILE")
