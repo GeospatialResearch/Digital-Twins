@@ -3,14 +3,14 @@
 Fetch REC data in New Zealand from NIWA using the ArcGIS REST API.
 """
 
+import asyncio
 import logging
 from typing import List, Dict, Union, NamedTuple
-import asyncio
 
 import aiohttp
-import requests
 import geopandas as gpd
 import pandas as pd
+import requests
 from shapely.geometry import LineString
 from sqlalchemy.engine import Engine
 
@@ -223,12 +223,46 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
     query_param_list = gen_rec_query_param_list(engine, max_record_count, total_record_count)
     try:
         # Log that the fetching of REC data has started
-        log.info("Fetching 'rec_data' from NIWA.")
+        log.info("Fetching 'rec_data' from NIWA using the ArcGIS REST API.")
         # Iterate over the list of API query parameters to fetch REC data in New Zealand
         rec_data = asyncio.run(fetch_rec_data_for_nz(query_param_list, url))
         # Log that the REC data has been successfully fetched
-        log.info("Successfully fetched 'rec_data'.")
+        log.info("Successfully fetched 'rec_data' from NIWA using the ArcGIS REST API.")
         return rec_data
     except TypeError:
         # Raise a RuntimeError to indicate the failure
-        raise RuntimeError("Failed to fetch 'rec_data'.")
+        raise RuntimeError("Failed to fetch 'rec_data' from NIWA using the ArcGIS REST API.")
+
+
+def fetch_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
+    """
+    Retrieve REC data in New Zealand from NIWA OpenData.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the fetched REC data in New Zealand.
+    """
+    # Log a message indicating the start of fetching process
+    log.info("Fetching backup 'rec_data' from NIWA OpenData.")
+    # URL for the GeoJSON REC data
+    url = ("https://opendata.arcgis.com/api/v3/datasets/ae4316ef6bc842c4aed6a76b10b0c39e_2/downloads/data?"
+           "format=geojson&spatialRefId=4326&where=1%3D1")
+    # Send a GET request to the URL
+    response = requests.get(url)
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Parse the JSON response
+        geojson_data = response.json()
+        # Convert GeoJSON data to GeoDataFrame
+        rec_data = gpd.GeoDataFrame.from_features(geojson_data['features'])
+        # Ensure consistent column naming convention by converting all column names to lowercase
+        rec_data.columns = rec_data.columns.str.lower()
+        # Move the 'geometry' column to the end, ensuring spatial columns are located at the end of database tables
+        rec_data['geometry'] = rec_data.pop('geometry')
+        # Log a message indicating successful fetching
+        log.info("Successfully fetched backup 'rec_data' from NIWA OpenData.")
+        return rec_data
+    else:
+        # Raise a RuntimeError if fetching failed
+        raise RuntimeError("Failed to fetch backup 'rec_data' from NIWA OpenData.")
