@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
     component: AboutPage
   },
   {
-    path: '*',
+    path: '/:pathMatch(.*)*',
     redirect: '/'
   }
 ];
