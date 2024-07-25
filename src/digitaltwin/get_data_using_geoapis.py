@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ,
-LRIS, and MFE, using the 'geoapis' library. To access data from each provider, you'll need to set an
+This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ, and MFE,
+using the 'geoapis' library. To access data from each provider, you'll need to set an
 API key in the environment variables.
 """  # noqa: D400
 
 from typing import Optional
 
 import geopandas as gpd
-from geoapis.vector import StatsNz, Linz, Lris, WfsQueryBase
+from geoapis.vector import StatsNz, Linz, WfsQueryBase
 
 from src import config
 
@@ -60,7 +60,7 @@ def fetch_vector_data_using_geoapis(
     Parameters
     -----------
     data_provider : str
-        The data provider to use. Supported values: "StatsNZ", "LINZ", "LRIS", "MFE".
+        The data provider to use. Supported values: "StatsNZ", "LINZ", "MFE".
     layer_id : int
         The ID of the layer to fetch.
     crs : int = 2193
@@ -87,9 +87,6 @@ def fetch_vector_data_using_geoapis(
     elif data_provider == "LINZ":
         linz_api_key = config.EnvVariable.LINZ_API_KEY
         vector_fetcher = Linz(key=linz_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
-    elif data_provider == "LRIS":
-        lris_api_key = config.EnvVariable.LRIS_API_KEY
-        vector_fetcher = Lris(key=lris_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
     elif data_provider == "MFE":
         mfe_api_key = config.EnvVariable.MFE_API_KEY
         vector_fetcher = MFE(key=mfe_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)

@@ -87,7 +87,6 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
 
     STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY")
     LINZ_API_KEY = _get_env_variable("LINZ_API_KEY")
-    LRIS_API_KEY = _get_env_variable("LRIS_API_KEY")
     MFE_API_KEY = _get_env_variable("MFE_API_KEY")
     NIWA_API_KEY = _get_env_variable("NIWA_API_KEY")
 
