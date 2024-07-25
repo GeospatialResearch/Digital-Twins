@@ -110,16 +110,13 @@ information from the database.</p>
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_backup_rec_data_from_niwa</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
-<td><p>Loads REC data from the NIWA REC dataset.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_rec_data_to_db</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_rec_data_to_db</span></code></a>(→ None)</p></td>
 <td><p>Store REC data in the database.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.get_sdc_data_from_db" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.get_sdc_data_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sdc_data_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.get_sdc_data_from_db" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.get_sdc_data_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sdc_data_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Retrieve sea-draining catchment data from the database that intersects with the given catchment area.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.get_rec_data_with_sdc_from_db" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.get_rec_data_with_sdc_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rec_data_with_sdc_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.get_rec_data_with_sdc_from_db" title="src.dynamic_boundary_conditions.river.river_data_to_from_db.get_rec_data_with_sdc_from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rec_data_with_sdc_from_db</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
 <td><p>Retrieve REC data from the database for the specified catchment area with an additional column that identifies</p></td>
 </tr>
 </tbody>
@@ -131,23 +128,6 @@ information from the database.</p>
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_to_from_db.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_to_from_db.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.log" title="Link to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa">
-<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.river.river_data_to_from_db.</span></span><span class="sig-name descname"><span class="pre">load_backup_rec_data_from_niwa</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa" title="Link to this definition"></a></dt>
-<dd><p>Loads REC data from the NIWA REC dataset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A GeoDataFrame containing the REC data from the NZ REC dataset.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>gpd.GeoDataFrame</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>FileNotFoundError</strong> – If the REC data directory does not exist or if there are no Shapefiles in the specified directory.</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db">
