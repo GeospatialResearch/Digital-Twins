@@ -95,7 +95,7 @@ ENTRYPOINT source /venv/bin/activate && \
            health-checker --listener 0.0.0.0:5001 --log-level error --script-timeout 10 \
              --script "celery -A src.tasks inspect ping"  & \
            source /venv/bin/activate && \
-           celery -A src.tasks worker -P threads --loglevel=INFO
+           celery -A src.tasks worker --pool=solo --loglevel=INFO
 
 FROM docker.osgeo.org/geoserver:2.21.2 as geoserver
 
