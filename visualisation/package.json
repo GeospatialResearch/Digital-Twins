@@ -16,7 +16,7 @@
     "axios": "^0.21.4",
     "bootstrap-vue": "^2.22.0",
     "core-js": "^3.6.5",
-    "geo-visualisation-components": "./geo-visualisation-components-0.2.0-alpha7.tgz",
+    "geo-visualisation-components": "./geo-visualisation-components-0.2.0-alpha16.tgz",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
@@ -35,6 +35,7 @@
     "prettier": "^3.2.5",
     "typescript": "~5.4.0",
     "vite": "^5.3.1",
+    "vite-plugin-static-copy": "^1.0.6",
     "vue-tsc": "^2.0.21"
   }
 }
