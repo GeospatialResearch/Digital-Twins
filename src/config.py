@@ -82,7 +82,9 @@ def _get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> boo
                      f"but is not in {truth_values} or {false_values}")
 
 
-class EnvVariable:
+class EnvVariable:  # pylint: disable=too-few-public-methods
+    """Encapsulates all environment variable fetching, ensuring proper defaults and types."""
+
     STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY")
     LINZ_API_KEY = _get_env_variable("LINZ_API_KEY")
     LRIS_API_KEY = _get_env_variable("LRIS_API_KEY")
