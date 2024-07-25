@@ -9,6 +9,7 @@ from typing import Optional
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
 
 from src.dynamic_boundary_conditions.rainfall import hirds_rainfall_data_to_db
 
@@ -88,19 +89,28 @@ def get_one_site_rainfall_data(
                          "If 'rcp' is None, 'time_period' should also be None, and vice versa.")
     elif rcp is not None and time_period is not None:
         # Query for specific rcp and time_period
-        query = f"""
-        SELECT *
+        command_text = f"""SELECT *
         FROM {rain_table_name}
-        WHERE site_id='{site_id}' AND rcp='{rcp}' AND time_period='{time_period}' AND ari={ari};
+        WHERE site_id=:site_id AND rcp=:rcp AND time_period=:time_period AND ari=:ari
         """
+        query = text(command_text).bindparams(
+            site_id=site_id,
+            rcp=rcp,
+            time_period=time_period,
+            ari=ari
+        )
         rain_data = pd.read_sql_query(query, engine)
+
     else:
         # Query for historical data (rcp is None and time_period is None)
-        query = f"""
-        SELECT *
+        command_text = f"""SELECT *
         FROM {rain_table_name}
-        WHERE site_id='{site_id}' AND rcp IS NULL AND time_period IS NULL AND ari={ari};
+        WHERE site_id=:site_id AND rcp IS NULL AND time_period IS NULL AND ari=:ari
         """
+        query = text(command_text).bindparams(
+            site_id=site_id,
+            ari=ari
+        )
         rain_data = pd.read_sql_query(query, engine)
         # Filter for historical data
         rain_data.query("category == 'hist'", inplace=True)
