@@ -265,17 +265,12 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     return f * total_copper_load, g * total_zinc_load
 
 
-def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_building_information(_engine: Engine, _area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Extract relevant information about buildings from the database.
+    Extract relevant information about buildings from central_buildings.geojson, since the input data is not finalised.
     Then formats them such that they are easy to use for pollution modeling purposes.
-
-    Parameters
-    ----------
-    engine: Engine
-        The sqlalchemy database connection engine
-    area_of_interest : gpd.GeoDataFrame
-        A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
+    
+    Github Issue to resolve the input_data: https://github.com/GeospatialResearch/Digital-Twins/issues/198
 
     Returns
     -------
