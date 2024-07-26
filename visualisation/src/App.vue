@@ -1,7 +1,7 @@
 <template>
   <!-- The Vue app main context -->
   <div id="app">
-    <!--    <TheNavBar />  todo -->
+    <TheNavBar />
     <router-view ref="routerView" />
   </div>
 </template>
