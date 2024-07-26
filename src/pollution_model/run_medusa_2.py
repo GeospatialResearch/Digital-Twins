@@ -269,7 +269,7 @@ def get_building_information(_engine: Engine, _area_of_interest: gpd.GeoDataFram
     """
     Extract relevant information about buildings from central_buildings.geojson, since the input data is not finalised.
     Then formats them such that they are easy to use for pollution modeling purposes.
-    
+
     Github Issue to resolve the input_data: https://github.com/GeospatialResearch/Digital-Twins/issues/198
 
     Returns
