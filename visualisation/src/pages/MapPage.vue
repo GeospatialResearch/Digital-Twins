@@ -2,19 +2,21 @@
   <!-- The page that shows the map for the Digital Twin -->
   <div class="full-height">
     <div v-for="column of selectionOptions" :key="column.name">
-      <label>{{ column.name }}</label>
-      <select v-if="column.data" v-model="selectedOption[column.name]">
-        <option v-for="option of column.data" :value="option" :key="option">
-          {{ option }}
-        </option>
-      </select>
-      <input
-        v-if="column.min && column.max"
-        type="number"
-        v-model.number="selectedOption[column.name]"
-        :min="column.min"
-        :max="column.max"
-      >
+      <label>
+        {{ column.name }}
+        <select v-if="column.data" v-model="selectedOption[column.name]">
+          <option v-for="option of column.data" :value="option" :key="option">
+            {{ option }}
+          </option>
+        </select>
+        <input
+          v-if="column.min && column.max"
+          type="number"
+          v-model.number="selectedOption[column.name]"
+          :min="column.min"
+          :max="column.max"
+        >
+      </label>
     </div>
     <MapViewer
       :init-lat="kaiapoi.latitude"
