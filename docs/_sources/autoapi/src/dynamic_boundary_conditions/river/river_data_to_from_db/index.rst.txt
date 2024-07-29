@@ -23,7 +23,6 @@ Functions
 
 .. autoapisummary::
 
-   src.dynamic_boundary_conditions.river.river_data_to_from_db.load_backup_rec_data_from_niwa
    src.dynamic_boundary_conditions.river.river_data_to_from_db.store_rec_data_to_db
    src.dynamic_boundary_conditions.river.river_data_to_from_db.get_sdc_data_from_db
    src.dynamic_boundary_conditions.river.river_data_to_from_db.get_rec_data_with_sdc_from_db
@@ -33,16 +32,6 @@ Module Contents
 ---------------
 
 .. py:data:: log
-
-.. py:function:: load_backup_rec_data_from_niwa() -> geopandas.GeoDataFrame
-
-   Loads REC data from the NIWA REC dataset.
-
-   :returns: A GeoDataFrame containing the REC data from the NZ REC dataset.
-   :rtype: gpd.GeoDataFrame
-
-   :raises FileNotFoundError: If the REC data directory does not exist or if there are no Shapefiles in the specified directory.
-
 
 .. py:function:: store_rec_data_to_db(engine: sqlalchemy.engine.Engine) -> None
 

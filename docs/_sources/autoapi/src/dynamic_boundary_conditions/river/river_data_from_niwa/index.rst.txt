@@ -36,6 +36,7 @@ Functions
    src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data
    src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_for_nz
    src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_rec_data_from_niwa
+   src.dynamic_boundary_conditions.river.river_data_from_niwa.fetch_backup_rec_data_from_niwa
 
 
 Module Contents
@@ -146,5 +147,13 @@ Module Contents
    :rtype: gpd.GeoDataFrame
 
    :raises RuntimeError: If failed to fetch REC data.
+
+
+.. py:function:: fetch_backup_rec_data_from_niwa() -> geopandas.GeoDataFrame
+
+   Retrieve REC data in New Zealand from NIWA OpenData.
+
+   :returns: A GeoDataFrame containing the fetched REC data in New Zealand.
+   :rtype: gpd.GeoDataFrame
 
 
