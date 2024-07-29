@@ -35,11 +35,12 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import type {AxiosError} from "axios";
 import * as Cesium from "cesium";
 import type {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components";
 import {MapViewer} from 'geo-visualisation-components';
-import type {AxiosError} from "axios";
+import {reactive, ref} from "vue";
+
 import {usePageTitlePrefix} from "./composables/title";
 
 interface DataOption {
