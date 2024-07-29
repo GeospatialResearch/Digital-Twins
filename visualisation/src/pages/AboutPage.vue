@@ -21,6 +21,10 @@
 </template>
 
 <script setup lang="ts">
+import {usePageTitlePrefix} from "@/mixins/title";
+
+// Add page title prefix to webpage title
+usePageTitlePrefix("About");
 
 const license = "MIT License\n" +
   "\n" +
