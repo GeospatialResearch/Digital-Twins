@@ -14,7 +14,7 @@ import rasterio as rio
 import requests
 import xarray as xr
 
-from src.config import get_env_variable
+from src.config import EnvVariable
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}
@@ -70,7 +70,7 @@ def upload_gtiff_to_store(
     log.info(f"Uploading {gtiff_filepath.name} to Geoserver workspace {workspace_name}")
 
     # Set file copying src and dest
-    geoserver_data_root = get_env_variable("DATA_DIR_GEOSERVER", cast_to=pathlib.Path)
+    geoserver_data_root = EnvVariable.DATA_DIR_GEOSERVER
     geoserver_data_dest = pathlib.Path("data") / workspace_name / gtiff_filepath.name
     # Copy file to geoserver data folder
     shutil.copyfile(gtiff_filepath, geoserver_data_root / geoserver_data_dest)
@@ -89,7 +89,7 @@ def upload_gtiff_to_store(
         params={"configure": "all"},
         headers=_xml_header,
         data=data,
-        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD),
     )
     if not response.ok:
         # Raise error manually so we can configure the text
@@ -137,7 +137,7 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str
         params={"configure": "all"},
         headers=_xml_header,
         data=data,
-        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if not response.ok:
         # Raise error manually so we can configure the text
@@ -153,9 +153,7 @@ def get_geoserver_url() -> str:
     str
         The full GeoServer URL
     """
-    gs_host = get_env_variable("GEOSERVER_HOST")
-    gs_port = get_env_variable("GEOSERVER_PORT")
-    return f"{gs_host}:{gs_port}/geoserver/rest"
+    return f"{EnvVariable.GEOSERVER_HOST}:{EnvVariable.GEOSERVER_PORT}/geoserver/rest"
 
 
 def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, model_id: int) -> None:
@@ -199,7 +197,7 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
         If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Create data directory for workspace if it does not already exist
-    geoserver_data_root = get_env_variable("DATA_DIR_GEOSERVER", cast_to=pathlib.Path)
+    geoserver_data_root = EnvVariable.DATA_DIR_GEOSERVER
     os.makedirs(geoserver_data_root / "data" / workspace_name, exist_ok=True)
 
     # Create the geoserver REST API request to create the workspace
@@ -212,7 +210,7 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
     response = requests.post(
         f"{get_geoserver_url()}/workspaces",
         json=req_body,
-        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD"))
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if response.status_code == HTTPStatus.CREATED:
         log.info(f"Created new workspace {workspace_name}.")
@@ -249,7 +247,7 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
     """
     db_exists_response = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes.json',
-        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     response_data = db_exists_response.json()
     # Parse JSON structure to get list of feature names
@@ -294,7 +292,7 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
         params={"configure": "all"},
         headers=_xml_header,
         data=data,
-        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if response.status_code == HTTPStatus.CREATED:
         log.info(f"Created new datastore layer {workspace_name}:{layer_name}.")
@@ -386,7 +384,7 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
     # Create request to check if database store already exists
     db_exists_response = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores',
-        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     response_data = db_exists_response.json()
 
@@ -408,8 +406,8 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
             <host>db_postgres</host>
             <port>5432</port>
             <database>{db_name}</database>
-            <user>{get_env_variable("POSTGRES_USER")}</user>
-            <passwd>{get_env_variable("POSTGRES_PASSWORD")}</passwd>
+            <user>{EnvVariable.POSTGRES_USER}</user>
+            <passwd>{EnvVariable.POSTGRES_PASSWORD}</passwd>
             <dbtype>postgis</dbtype>
           </connectionParameters>
         </dataStore>
@@ -420,7 +418,7 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
         params={"configure": "all"},
         headers=_xml_header,
         data=create_db_store_data,
-        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if response.status_code == HTTPStatus.CREATED:
         log.info(f"Created new db store {workspace_name}.")
@@ -437,7 +435,7 @@ def create_building_database_views_if_not_exists() -> None:
     These only need to be created once per database.
     """
     log.debug("Creating building database views if they do not exist")
-    db_name = get_env_variable("POSTGRES_DB")
+    db_name = EnvVariable.POSTGRES_DB
     workspace_name = f"{db_name}-buildings"
     # Create workspace if it doesn't exist, so that the namespaces can be separated if multiple dbs are running
     create_workspace_if_not_exists(workspace_name)
@@ -466,7 +464,7 @@ def style_exists(style_name: str) -> bool:
     """
     response = requests.get(
         f'{get_geoserver_url()}/styles/{style_name}.sld',
-        auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     response.raise_for_status()
     return response.status_code == HTTPStatus.OK
@@ -487,7 +485,7 @@ def create_viridis_style_if_not_exists() -> None:
             f'{get_geoserver_url()}/styles',
             data=create_style_data,
             headers=_xml_header,
-            auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+            auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
         )
         create_style_response.raise_for_status()
     # PUT the style definition .sld file into the style base
@@ -496,7 +494,7 @@ def create_viridis_style_if_not_exists() -> None:
             f'{get_geoserver_url()}/styles/{style_name}',
             data=payload,
             headers={"Content-type": "application/vnd.ogc.sld+xml"},
-            auth=(get_env_variable("GEOSERVER_ADMIN_NAME"), get_env_variable("GEOSERVER_ADMIN_PASSWORD")),
+            auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
         )
     sld_response.raise_for_status()
 
@@ -515,7 +513,7 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
     """
     log.debug("Adding model output to geoserver")
     gtiff_filepath = convert_nc_to_gtiff(model_output_path)
-    db_name = get_env_variable("POSTGRES_DB")
+    db_name = EnvVariable.POSTGRES_DB
     # Assign a new workspace name based on the db_name, to prevent name clashes if running multiple databases
     workspace_name = f"{db_name}-dt-model-outputs"
     create_workspace_if_not_exists(workspace_name)

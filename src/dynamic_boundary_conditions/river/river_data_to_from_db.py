@@ -5,7 +5,6 @@ information from the database.
 """  # noqa: D400
 
 import logging
-import pathlib
 
 import geopandas as gpd
 import pandas as pd
@@ -34,7 +33,7 @@ def load_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
         If the REC data directory does not exist or if there are no Shapefiles in the specified directory.
     """
     # Get the REC data directory from the environment variable
-    rec_data_dir = config.get_env_variable("DATA_DIR_REC", cast_to=pathlib.Path)
+    rec_data_dir = config.EnvVariable.DATA_DIR_REC
     # Check if the REC data directory exists
     if not rec_data_dir.exists():
         raise FileNotFoundError(f"'rec_data' directory not found: {rec_data_dir}")

@@ -2,7 +2,6 @@
 """This script handles the fetching of OpenStreetMap (OSM) waterways data for the defined catchment area."""
 
 import logging
-import pathlib
 
 import geopandas as gpd
 from OSMPythonTools.cachingStrategy import CachingStrategy, JSON
@@ -16,7 +15,7 @@ log = logging.getLogger(__name__)
 def configure_osm_cache() -> None:
     """Change the directory for storing the OSM cache files."""
     # Get the data directory from the environment variable
-    data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path)
+    data_dir = config.EnvVariable.DATA_DIR
     # Define the OSM cache directory
     osm_cache_dir = data_dir / "osm_cache"
     # Change the directory for storing the OSM cache files

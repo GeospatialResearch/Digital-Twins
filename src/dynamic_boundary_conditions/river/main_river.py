@@ -5,7 +5,6 @@ and its associated data, and generate the requested river model input for BG-Flo
 """  # noqa: D400
 
 import logging
-import pathlib
 from typing import Union, Optional
 
 import geopandas as gpd
@@ -71,7 +70,7 @@ def main(
     # Get catchment area
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
     # BG-Flood Model Directory
-    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    bg_flood_dir = config.EnvVariable.FLOOD_MODEL_DIR
     # Remove any existing river model inputs in the BG-Flood directory
     river_model_input.remove_existing_river_inputs(bg_flood_dir)
 

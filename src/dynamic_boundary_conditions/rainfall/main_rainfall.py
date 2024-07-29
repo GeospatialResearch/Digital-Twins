@@ -4,7 +4,6 @@ Main rainfall script used to fetch and store rainfall data in the database, and 
 rainfall model input for BG-Flood, etc.
 """  # noqa: D400
 
-import pathlib
 from typing import Optional, Union
 
 import geopandas as gpd
@@ -12,7 +11,6 @@ import geopandas as gpd
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions.rainfall import (
     rainfall_sites,
     thiessen_polygons,
@@ -21,6 +19,7 @@ from src.dynamic_boundary_conditions.rainfall import (
     hyetograph,
     rainfall_model_input,
 )
+from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
 
 
 def main(
@@ -77,7 +76,7 @@ def main(
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=4326)
 
     # BG-Flood Model Directory
-    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    bg_flood_dir = config.EnvVariable.FLOOD_MODEL_DIR
     # Remove any existing rainfall model inputs in the BG-Flood directory
     rainfall_model_input.remove_existing_rain_inputs(bg_flood_dir)
 

@@ -5,7 +5,6 @@ and generate the requested tide uniform boundary model input for BG-Flood etc.
 """  # noqa: D400
 
 import logging
-import pathlib
 from typing import Union
 
 import geopandas as gpd
@@ -13,8 +12,6 @@ import geopandas as gpd
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-
-from src.dynamic_boundary_conditions.tide.tide_enum import ApproachType
 from src.dynamic_boundary_conditions.tide import (
     tide_query_location,
     tide_data_from_niwa,
@@ -22,6 +19,7 @@ from src.dynamic_boundary_conditions.tide import (
     tide_slr_combine,
     tide_slr_model_input
 )
+from src.dynamic_boundary_conditions.tide.tide_enum import ApproachType
 
 log = logging.getLogger(__name__)
 
@@ -82,7 +80,7 @@ def main(
         # Get catchment area
         catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
         # BG-Flood Model Directory
-        bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+        bg_flood_dir = config.EnvVariable.FLOOD_MODEL_DIR
         # Remove any existing uniform boundary model inputs in the BG-Flood directory
         tide_slr_model_input.remove_existing_boundary_inputs(bg_flood_dir)
 

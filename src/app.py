@@ -16,14 +16,11 @@ from kombu.exceptions import OperationalError
 from shapely import box
 
 from src import tasks
-from src.config import get_env_variable
+from src.config import EnvVariable
 
 # Initialise flask server object
 app = Flask(__name__)
 CORS(app)
-
-WWW_HOST = get_env_variable('WWW_HOST', default="http://localhost")
-WWW_PORT = get_env_variable('WWW_port', default="8080")
 
 
 def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
@@ -139,7 +136,7 @@ def get_status(task_id: str) -> Response:
         task_value = task_result.get()
     elif status == states.FAILURE:
         http_status = INTERNAL_SERVER_ERROR
-        is_debug_mode = get_env_variable("DEBUG_TRACEBACK", default=False, cast_to=bool)
+        is_debug_mode = EnvVariable.DEBUG_TRACEBACK
         task_value = task_result.traceback if is_debug_mode else None
     else:
         task_value = None
@@ -315,12 +312,12 @@ def retrieve_building_flood_status(model_id: int) -> Response:
         return make_response(f"Could not find flood model output {model_id}", NOT_FOUND)
 
     # Geoserver workspace is dependant on environment variables
-    db_name = get_env_variable("POSTGRES_DB")
+    db_name = EnvVariable.POSTGRES_DB
     workspace_name = f"{db_name}-buildings"
     store_name = f"{db_name} PostGIS"
     # Set up geoserver request parameters
-    geoserver_host = get_env_variable("GEOSERVER_HOST")
-    geoserver_port = get_env_variable("GEOSERVER_PORT")
+    geoserver_host = EnvVariable.GEOSERVER_HOST
+    geoserver_port = EnvVariable.GEOSERVER_PORT
     request_url = f"{geoserver_host}:{geoserver_port}/geoserver/{workspace_name}/ows"
     params = {
         "service": "WFS",
