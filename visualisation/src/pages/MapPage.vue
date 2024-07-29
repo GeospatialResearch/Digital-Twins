@@ -40,7 +40,7 @@ import * as Cesium from "cesium";
 import type {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components";
 import {MapViewer} from 'geo-visualisation-components';
 import type {AxiosError} from "axios";
-import {usePageTitlePrefix} from "@/mixins/title";
+import {usePageTitlePrefix} from "./composables/title";
 
 interface DataOption {
   data: (string | number)[]

@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import {usePageTitlePrefix} from "@/mixins/title";
+import {usePageTitlePrefix} from "./composables/title";
 
 // Add page title prefix to webpage title
 usePageTitlePrefix("About");
