@@ -14,6 +14,7 @@ from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType
 from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.tide import main_tide_slr
+from src.pollution_model import run_medusa_2
 from src.flood_model import bg_flood_model, process_hydro_dem
 
 
@@ -90,6 +91,13 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "gpu_device": -1,
         "small_nc": 0,
         "log_level": LogLevel.INFO
+    },
+    run_medusa_2: {
+        "log_level": LogLevel.INFO,
+        "antecedent_dry_days": 1,
+        "average_rain_intensity": 1,
+        "event_duration": 1,
+        "rainfall_ph": 7
     }
 }
 
