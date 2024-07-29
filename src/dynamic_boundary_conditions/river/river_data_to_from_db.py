@@ -76,9 +76,9 @@ def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gp
 
 
 def get_rec_data_with_sdc_from_db(
-    engine: Engine,
-    catchment_area: gpd.GeoDataFrame,
-    river_network_id: int) -> gpd.GeoDataFrame:
+        engine: Engine,
+        catchment_area: gpd.GeoDataFrame,
+        river_network_id: int) -> gpd.GeoDataFrame:
     """
     Retrieve REC data from the database for the specified catchment area with an additional column that identifies
     the associated sea-draining catchment for each REC geometry.

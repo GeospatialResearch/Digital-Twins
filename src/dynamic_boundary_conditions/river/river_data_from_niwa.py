@@ -235,7 +235,7 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
         return rec_data
     except TypeError as e:
         # Raise a RuntimeError to indicate the failure
-        raise RuntimeError("Failed to fetch 'rec_data' from NIWA using the ArcGIS REST API.")
+        raise RuntimeError("Failed to fetch 'rec_data' from NIWA using the ArcGIS REST API.") from e
 
 
 def fetch_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
@@ -246,6 +246,11 @@ def fetch_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the fetched REC data in New Zealand.
+
+    Raises
+    -------
+    RuntimeError
+        If failed to fetch REC data.
     """
     # Log a message indicating the start of fetching process
     log.info("Fetching backup 'rec_data' from NIWA OpenData.")
