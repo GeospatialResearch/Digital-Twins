@@ -105,7 +105,7 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         "scrapy",
         "distributed",
         "selenium",
-        "s3transfer"
+        "s3transfer",
         "charset_normalizer",
         "boto3"
     ]
