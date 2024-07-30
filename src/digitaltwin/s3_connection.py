@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""This script defines a python class to facilitate interactions with an Amazon S3 bucket."""
+
 import logging
 import pathlib
 import pickle
@@ -19,7 +22,7 @@ class S3Manager:
     """
     A class for managing interactions with an Amazon Simple Storage Service (Amazon S3) bucket.
     Provides methods to interact with an AWS S3 bucket, including storing and retrieving objects,
-    listing objects, removing objects, uploading files, and clearing the entire bucket.
+    listing objects, removing objects, uploading files, retrieving files, and clearing the entire bucket.
     """
 
     def __init__(self) -> None:
