@@ -23,7 +23,6 @@ from sqlalchemy.sql import text
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.s3_connection import S3Manager
-from src.digitaltwin.tables import BGFloodModelOutput, create_table
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.flood_model.flooded_buildings import find_flooded_buildings
