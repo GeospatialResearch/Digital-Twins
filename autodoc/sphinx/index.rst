@@ -17,3 +17,10 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+Link to my non-Sphinx HTML file
+===============================
+
+To get to my standalone, non-generated HTML file,
+just `click here </./swagger/index.html>`_ now!

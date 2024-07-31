@@ -32,6 +32,7 @@ jobs:
       working-directory: ./
       run: |
         cp -a ./autodoc/sphinx/_build/. ./docs
+        cp -a ./autodoc/swagger/dist/. ./docs/swagger
 
     - name: Commit doc changes
       working-directory: ./
