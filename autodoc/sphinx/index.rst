@@ -6,6 +6,14 @@
 Welcome to Digital Twin for Flood Resilience in Aotearoa New Zealand's documentation!
 =====================================================================================
 
+REST API specification
+===============================
+
+`Link to Swagger API documentation </./Digital-Twins/api>`_
+
+Python codebase documentation
+===============================
+
 .. toctree::
    :maxdepth: 4
    :caption: Contents:
@@ -19,8 +27,3 @@ Indices and tables
 * :ref:`search`
 
 
-Link to my non-Sphinx HTML file
-===============================
-
-To get to my standalone, non-generated HTML file,
-just `click here </./swagger/index.html>`_ now!
