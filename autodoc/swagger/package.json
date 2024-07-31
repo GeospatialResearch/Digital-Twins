@@ -1,7 +1,8 @@
 {
-  "name": "swagger-ui-webpack-getting-started",
+  "name": "swagger-ui-webpack",
   "version": "0.0.1",
   "description": "A simple setup of Swagger UI with Webpack",
+  "private": true,
   "scripts": {
     "build": "webpack",
     "start": "webpack-dev-server --open"
