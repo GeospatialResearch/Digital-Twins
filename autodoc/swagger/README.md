@@ -1,14 +1,13 @@
 
-### Demo of Swagger UI with Webpack.
+### Automated API documentation website building.
 
-This `webpack-getting-started` sample is for reference only.
+This small webpack project creates the webpages for our API documentation.
+It is linked to GitHub Actions to merge with out Python docs.
 
-It includes CSS and OAuth configuration.
-
-`_sample_package.json` is a placeholder sample. You should rename this file, per `Usage` section below, and you should also verify and update this sample's `@latest` compared to the `swagger-ui@latest`
-
+The source for this documentation is the API spec defined at `src/static/api_documentation.yml`
 
 #### Usage
-    rename `_sample_package.json` to `package.json`
-    npm install
-    npm start
+    npm ci
+    npm run build
+    
+The built documentation can be viewed by opening `dist/index.html` in browser.
