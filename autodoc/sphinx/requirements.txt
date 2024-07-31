@@ -1,2 +1,2 @@
-sphinx_rtd_theme
-sphinx-autoapi
+sphinx_rtd_theme==2.0.0
+sphinx-autoapi==3.2.1
