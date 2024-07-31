@@ -71,7 +71,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-autodoc/_build/
+autodoc/sphinx/_build/
 docs/.doctrees/
 docs/.buildinfo
 

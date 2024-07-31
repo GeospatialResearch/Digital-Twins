@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./autodoc
+        working-directory: ./autodoc/sphinx
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -24,12 +24,12 @@ jobs:
         sphinx-build -b html . _build
     - name: Copy to Github Pages dir
       run: |
-        cp -a _build/. ../docs
+        cp -a _build/. ../../docs
     - name: Commit doc changes
       run: |
         git config --global user.name 'GRI Admin'
         git config --global user.email '175378150+GRI-Admin@users.noreply.github.com'
-        git add ../docs/*
+        git add ../../docs/*
         : # Commit changes if there are any
         git diff --cached --exit-code || git commit -m "Automated update - Sphinx documentation"
         git push
