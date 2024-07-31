@@ -38,12 +38,12 @@ def get_sites_within_aoi(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
     # Extract the geometry of the area of interest
     aoi_polygon = area_of_interest["geometry"].iloc[0]
     # Construct the query to fetch rainfall sites within the area of interest
-    command_text = f"""
+    command_text = """
     SELECT *
     FROM rainfall_sites AS rs
     WHERE ST_Within(rs.geometry, ST_GeomFromText(:aoi_polygon, 4326));
     """
-    query = text(command_text).bindparams(aoi_polygon=aoi_polygon)
+    query = text(command_text).bindparams(aoi_polygon=str(aoi_polygon))
     # Execute the query and retrieve the results as a GeoDataFrame
     sites_in_aoi = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
