@@ -11,7 +11,6 @@ import requests
 from celery import result, states
 from flask import Flask, Response, jsonify, make_response, send_file, request
 from flask_cors import CORS
-from flask_swagger_ui import get_swaggerui_blueprint
 from kombu.exceptions import OperationalError
 from shapely import box
 
@@ -56,17 +55,6 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     return decorated_function
 
 
-# Serve API documentation
-SWAGGER_URL = "/swagger"
-API_URL = "/static/api_documentation.yml"
-swagger_ui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={"app_name": "Flood Resilience Digital Twin (FReDT)"}
-)
-app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
-
-
 @app.route('/')
 def index() -> Response:
     """
@@ -81,7 +69,7 @@ def index() -> Response:
     return Response("""
     Backend is receiving requests.
     GET /health-check to check if celery workers active.
-    GET /swagger to get API documentation.
+    Visit https://geospatialresearch.github.io/Digital-Twins/api to get API documentation.
     """, OK)
 
 

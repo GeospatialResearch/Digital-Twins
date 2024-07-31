@@ -30,7 +30,6 @@ dependencies:
   - botocore>=1.33.10 # Minimum version that is compatible with python >= 3.10 is botocore>=1.13.0
   - scrapy==2.11.1
   - pip:
-    - flask_swagger_ui==4.11.1
     - selenium==4.16.0
     - geovoronoi==0.4.0
     - geoapis==0.3.2
