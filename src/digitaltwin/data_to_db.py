@@ -340,16 +340,16 @@ def process_existing_non_nz_geospatial_layers(
         # Get IDs from the vector data that are not in the database
         ids_not_in_db = get_vector_data_id_not_in_db(
             engine, vector_data, table_name, unique_column_name, area_of_interest)
-    # Check if there are IDs not in the database
-    if ids_not_in_db:
-        # Get vector data that contains only the IDs not present in the database
-        vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
-        # Insert vector data into the database
-        log.info(
-            f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
-        vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
-    else:
-        log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
+        # Check if there are IDs not in the database
+        if ids_not_in_db:
+            # Get vector data that contains only the IDs not present in the database
+            vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
+            # Insert vector data into the database
+            log.info(
+                f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
+            vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
+        else:
+            log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
 
 
 def non_nz_geospatial_layers_data_to_db(
