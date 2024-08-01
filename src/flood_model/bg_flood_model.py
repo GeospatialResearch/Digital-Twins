@@ -21,6 +21,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import text
 
 from src import config
+from src.config import EnvVariable
 from src.digitaltwin import setup_environment
 from src.digitaltwin.s3_connection import S3Manager
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
@@ -92,7 +93,7 @@ def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
         This function does not return any value.
     """
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
+    use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
     # If using S3 bucket, store the BG-Flood model output in the S3 bucket
     if use_aws_s3_bucket:
         s3_manager = S3Manager()

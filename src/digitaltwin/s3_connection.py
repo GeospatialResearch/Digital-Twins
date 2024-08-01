@@ -13,7 +13,7 @@ import networkx as nx
 import xarray as xr
 from pyproj import CRS
 
-from src import config
+from src.config import EnvVariable
 
 log = logging.getLogger(__name__)
 
@@ -31,9 +31,9 @@ class S3Manager:
         Sets up the S3Manager with the necessary AWS credentials obtained from environment variables and creates a boto3
         session, S3 client, and S3 resource for interacting with an Amazon Simple Storage Service (Amazon S3) bucket.
         """
-        self.access_key_id = config.get_env_variable("AWS_ACCESS_KEY_ID")
-        self.secret_access_key = config.get_env_variable("AWS_SECRET_ACCESS_KEY")
-        self.bucket_name = config.get_env_variable("AWS_BUCKET_NAME")
+        self.access_key_id = EnvVariable.AWS_ACCESS_KEY_ID
+        self.secret_access_key = EnvVariable.AWS_SECRET_ACCESS_KEY
+        self.bucket_name = EnvVariable.AWS_BUCKET_NAME
         self.session = self._create_session()
         self.s3_client = self.session.client("s3")
         self.s3_resource = self.session.resource("s3")

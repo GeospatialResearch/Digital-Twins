@@ -122,7 +122,7 @@ def get_new_network_output_paths() -> Tuple[pathlib.Path, pathlib.Path]:
         A tuple containing the file path to the REC Network and the file path to the REC Network data.
     """  # noqa: D400
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
+    use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     # Get the data directory from the environment variable
@@ -197,7 +197,7 @@ def store_rec_network_to_db(
     network_data["first_coord"] = network_data["first_coord"].astype(str)
     network_data["last_coord"] = network_data["last_coord"].astype(str)
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
+    use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
     # If True, store REC river network and its associated data in S3 bucket
     if use_aws_s3_bucket:
         s3_manager = S3Manager()
@@ -301,7 +301,7 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
                     f"{', '.join(map(str, excluded_ids))}")
 
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
+    use_aws_s3_bucket = EnvVariable .USE_AWS_S3_BUCKET
     # If True, retrieve REC river network and its associated data from S3 bucket
     if use_aws_s3_bucket:
         s3_manager = S3Manager()
