@@ -51,7 +51,7 @@ Blank fields to fill in include things like the `POSTGRES_PASSWORD` variable and
 1. Choose input variables from the available input boxes at the top of the page.
 1. Select an area using Shift+click+drag to draw a bounding box of your area to start generating a model. It will take a long time, especially for the first run of an area.
 1. Monitor progress by checking the logs using `docker compose logs -f celery_worker`.
-1. The API is available by default on <http://localhost:5000>. Visit <https://geospatialresearch.github.io/Digital-Twins/api> for API documentation.
+1. The API is available by default on <http://localhost:5000>. Visit <http://localhost:5000/swagger> for API documentation.
 
 
 ## Setup for FReDT project software developers
