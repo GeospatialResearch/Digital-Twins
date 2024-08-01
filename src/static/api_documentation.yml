@@ -17,7 +17,7 @@ paths:
                 example: |-
                   Backend is receiving requests.
                   GET /health-check to check if celery workers active.
-                  Visit https://geospatialresearch.github.io/Digital-Twins/api to get API documentation.
+                  GET /swagger to get API documentation.
   "/health-check":
     get:
       summary: Checks that the API service can access the celery workers
