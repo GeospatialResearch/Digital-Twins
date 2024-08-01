@@ -4,7 +4,7 @@ This script handles the following tasks: storing both the REC river network and 
 their metadata in the database, retrieving the existing REC river network and its associated data from the database,
 and managing the addition of REC geometries that have been excluded from the river network in the database,
 as well as retrieving them for an existing REC river network.
-"""
+"""  # noqa: D400
 
 import logging
 import pathlib
@@ -19,7 +19,7 @@ import shapely.wkt
 from sqlalchemy import select, func
 from sqlalchemy.engine import Engine
 
-from src import config
+from src.config import EnvVariable
 from src.digitaltwin.s3_connection import S3Manager
 from src.digitaltwin.tables import (
     check_table_exists,
@@ -93,11 +93,6 @@ def add_network_exclusions_to_db(
         A GeoDataFrame containing the REC geometries that are excluded from the river network for the current run.
     exclusion_cause : str
         Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     if not rec_network_exclusions.empty:
         # Assign the exclusion cause to the 'exclusion_cause' column
@@ -125,22 +120,22 @@ def get_new_network_output_paths() -> Tuple[pathlib.Path, pathlib.Path]:
     -------
     Tuple[pathlib.Path, pathlib.Path]
         A tuple containing the file path to the REC Network and the file path to the REC Network data.
-    """
+    """  # noqa: D400
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
     use_aws_s3_bucket = config.get_env_variable("USE_AWS_S3_BUCKET", cast_to=bool)
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     # Get the data directory from the environment variable
-    data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path)
+    data_dir = EnvVariable.DATA_DIR
     # Define the directory for storing the REC Network and its associated data
     network_dir = data_dir / "rec_network" / dt_string
     # If not using S3, create the REC Network directory if it does not already exist
     if not use_aws_s3_bucket:
         network_dir.mkdir(parents=True, exist_ok=True)
     # Create the file path for the REC Network with the current timestamp
-    network_path = (network_dir / f"{dt_string}_network.pickle")
+    network_path = network_dir / f"{dt_string}_network.pickle"
     # Create the file path for the REC Network data with the current timestamp
-    network_data_path = (network_dir / f"{dt_string}_network_data.geojson")
+    network_data_path = network_dir / f"{dt_string}_network_data.geojson"
     return network_path, network_data_path
 
 
@@ -192,11 +187,6 @@ def store_rec_network_to_db(
         The constructed REC river network, represented as a directed graph (DiGraph).
     rec_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the REC river network data.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     log.info("Adding REC river network metadata to the database.")
     # Get metadata related to the REC Network Output

@@ -2,7 +2,7 @@
 """
 This script handles the processing of input files for the BG-Flood Model, executes the flood model, stores the
 resulting model output metadata in the database, and incorporates the model output into GeoServer for visualization.
-"""
+"""  # noqa: D400
 
 import logging
 import os
@@ -49,7 +49,7 @@ def get_valid_bg_flood_dir() -> pathlib.Path:
         If the BG-Flood Model directory is not found or is not a valid directory.
     """
     # Get the BG-Flood Model directory from the environment variable
-    bg_flood_dir = config.get_env_variable("FLOOD_MODEL_DIR", cast_to=pathlib.Path)
+    bg_flood_dir = config.EnvVariable.FLOOD_MODEL_DIR
     # Check if the directory exists and is a valid directory
     if bg_flood_dir.exists() and bg_flood_dir.is_dir():
         return bg_flood_dir
@@ -67,13 +67,13 @@ def get_new_model_output_path() -> pathlib.Path:
         The path to the BG-Flood model output file.
     """
     # Get the BG-Flood model output directory from the environment variable
-    model_output_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "model_output"
+    model_output_dir = config.EnvVariable.DATA_DIR / "model_output"
     # Create the BG-Flood model output directory if it does not already exist
     model_output_dir.mkdir(parents=True, exist_ok=True)
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     # Create the BG-Flood model output path with the current timestamp
-    model_output_path = (model_output_dir / f"output_{dt_string}.nc")
+    model_output_path = model_output_dir / f"output_{dt_string}.nc"
     return model_output_path
 
 
@@ -166,7 +166,7 @@ def store_model_output_metadata_to_db(
 
 def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
     """
-    Retrieves the path to the model output file from the database by model_id
+    Retrieve the path to the model output file from the database by model_id.
 
     Parameters
     ----------
@@ -179,6 +179,11 @@ def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
     -------
     pathlib.Path
         The path to the model output file
+
+    Raises
+    -------
+    FileNotFoundError
+        Error raised if `bg_flood` table is not found or does not contain the `model_id`.
     """
     # Execute a query to get the model output record based on the 'flood_model_id' column
     query = text("SELECT * FROM bg_flood_model_output WHERE unique_id=:flood_model_id").bindparams(
@@ -199,7 +204,7 @@ def model_output_from_db_by_id(engine: Engine, model_id: int) -> pathlib.Path:
 
 def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFrame:
     """
-    Finds the extents of a model output in gpd.GeoDataFrame format
+    Find the extents of a model output in gpd.GeoDataFrame format.
 
     Parameters
     ----------
@@ -212,6 +217,11 @@ def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFra
     -------
     gpd.GeoDataFrame
         Returns the geometry (extents) of the flood model output.
+
+    Raises
+    -------
+    FileNotFoundError
+        Error raised if `bg_flood` table is not found or does not contain the `model_id`.
     """
     # Execute a query to get the model output record based on the 'flood_model_id' column
     bg_flood_table = "bg_flood_model_output"
@@ -233,11 +243,6 @@ def add_crs_to_model_output(model_output_path: pathlib.Path) -> None:
     ----------
     model_output_path : pathlib.Path
         The path to the BG-Flood model output file.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Create a temporary file path for saving modifications before replacing the current latest model output file
     temp_file = model_output_path.with_name(f"{model_output_path.stem}_temp{model_output_path.suffix}")
@@ -272,11 +277,6 @@ def process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> 
         The BG-Flood model directory containing the rain input files.
     param_file : TextIO
         The file object representing the parameter file where the parameter values will be written.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Loop through the rain input files in the BG-Flood directory
     for rain_input_file_path in bg_flood_dir.glob('rain_forcing.*'):
@@ -306,11 +306,6 @@ def process_boundary_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO)
         The BG-Flood model directory containing the uniform boundary input files.
     param_file : TextIO
         The file object representing the parameter file where the parameter values will be written.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Loop through the boundary input files in the BG-Flood directory
     for boundary_input_file_path in bg_flood_dir.glob('*_bnd.txt'):
@@ -332,11 +327,6 @@ def process_river_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) ->
         The BG-Flood model directory containing the river input files.
     param_file : TextIO
         The file object representing the parameter file where the parameter values will be written.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Loop through the river input files in the BG-Flood directory
     for river_input_file_path in bg_flood_dir.glob('river[0-9]*_*.txt'):
@@ -391,11 +381,6 @@ def prepare_bg_flood_model_inputs(
         Specify whether the output should be saved as short integers to reduce the size of the output file.
         Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
         Default value is 0.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Read the Hydro DEM file using xarray and get the name of the elevation variable
     with xr.open_dataset(hydro_dem_path) as dem_file:
@@ -405,7 +390,7 @@ def prepare_bg_flood_model_inputs(
     bg_param_file_path = bg_flood_dir / "BG_param.txt"
 
     # Open the BG-Flood Model parameter file for writing
-    with open(bg_param_file_path, "w+") as param_file:
+    with open(bg_param_file_path, "w+", encoding="utf-8") as param_file:
         # Write general parameter values to the parameter file
         param_file.write(f"topo = {hydro_dem_path.as_posix()}?{elev_var_name};\n"
                          f"dx = {resolution};\n"
@@ -464,11 +449,6 @@ def run_bg_flood_model(
         Specify whether the output should be saved as short integers to reduce the size of the output file.
         Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
         Default value is 0.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get the valid BG-Flood Model directory
     bg_flood_dir = get_valid_bg_flood_dir()
@@ -561,7 +541,7 @@ def main(
     -------
     int
        Returns the model id of the new flood_model produced
-    """
+    """  # noqa: D400
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database

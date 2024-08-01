@@ -2,7 +2,7 @@
 """
 This script handles the fetching of sea level rise data from the NZ SeaRise Takiwa website, storing the data in the
 database, and retrieving the closest sea level rise data from the database for all locations in the provided tide data.
-"""
+"""  # noqa: D400
 
 import logging
 import platform
@@ -33,8 +33,13 @@ def initialize_headless_webdriver() -> WebDriver:
     -------
     WebDriver
         A headless WebDriver instance (Chrome for Windows, Firefox for other operating system).
+
+    Raises
+    ------
+    ValueError
+        If the number of downloaded files does not match the number of datasets found on the web page.
     """
-    # Create a webdriver, Chrome for windows or Firefox for other operating system
+    # Create a webdriver, Chrome for windows or Firefox for other operating systems
     operating_system = platform.system()
     if operating_system == "Windows":
         # Create a ChromeOptions object to customize the settings for the Chrome WebDriver
@@ -80,7 +85,9 @@ def fetch_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     # Find and click "Download"
     driver.find_element(By.ID, "container-control-text-6268d9223c91dd00278d5ecf").click()
     # Find and click "Download Regional Data"
-    [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
+    for element in driver.find_elements(By.TAG_NAME, "h5"):
+        if element.text == "Download Regional Data":
+            element.click()
     # Identify links to all the regional data files on the webpage
     elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
     # Create an empty DataFrame to store the SLR data
@@ -175,11 +182,6 @@ def store_slr_data_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Define the table name for storing the sea level rise data
     table_name = "sea_level_rise"

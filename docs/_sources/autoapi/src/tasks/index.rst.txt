@@ -35,7 +35,6 @@ Functions
 .. autoapisummary::
 
    src.tasks.create_model_for_area
-   src.tasks.ensure_lidar_datasets_initialised
    src.tasks.add_base_data_to_db
    src.tasks.process_dem
    src.tasks.generate_rainfall_inputs
@@ -108,16 +107,6 @@ Module Contents
 
    :returns: The task result for the long-running group of tasks. The task ID represents the final task in the group.
    :rtype: result.GroupResult
-
-
-.. py:function:: ensure_lidar_datasets_initialised() -> None
-
-   Task checks if LiDAR datasets table is initialised.
-   This table holds URLs to data sources for LiDAR.
-   If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.
-
-   :returns: This task does not return anything
-   :rtype: None
 
 
 .. py:function:: add_base_data_to_db(selected_polygon_wkt: str) -> None

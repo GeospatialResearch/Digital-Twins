@@ -1,30 +1,28 @@
 # -*- coding: utf-8 -*-
-"""
-This script runs each module in the Digital Twin using a Sample Polygon.
-"""
+"""This script runs each module in the Digital Twin using a Sample Polygon."""
 
 from enum import Enum
 from types import ModuleType
 from typing import Dict, Union
 
 import geopandas as gpd
-from newzealidar import datasets, process
 
 from src.digitaltwin import retrieve_static_boundaries
-from src.digitaltwin.utils import LogLevel, setup_logging
+from src.digitaltwin.utils import LogLevel
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.tide import main_tide_slr
-from src.flood_model import bg_flood_model
+from src.flood_model import bg_flood_model, process_hydro_dem
+from src.pollution_model import run_medusa_2
 
 
 def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
         modules_to_parameters: Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]) -> None:
     """
-    Runs each module in the Digital Twin using the selected polygon and the defined parameters for each module's
+    Run each module in the Digital Twin using the selected polygon and the defined parameters for each module's
     main function.
 
     Parameters
@@ -41,18 +39,9 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
+    """  # noqa: D400
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
-        # If the module is datasets or process, configure logging with the specified log level
-        if module in [datasets, process]:
-            # Set up logging with the specified log level, defaulting to DEBUG if not specified
-            setup_logging(parameters.get("log_level", LogLevel.DEBUG))
         # Call the main function of each module with the selected polygon and specified parameters
         module.main(selected_polygon_gdf, **parameters)
 
@@ -61,10 +50,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
     retrieve_static_boundaries: {
         "log_level": LogLevel.INFO
     },
-    datasets: {
-        "log_level": LogLevel.INFO  # only need to run it one time to initiate db.dataset table
-    },
-    process: {
+    process_hydro_dem: {
         "log_level": LogLevel.INFO
     },
     main_rainfall: {
@@ -105,6 +91,13 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "gpu_device": -1,
         "small_nc": 0,
         "log_level": LogLevel.INFO
+    },
+    run_medusa_2: {
+        "log_level": LogLevel.INFO,
+        "antecedent_dry_days": 1,
+        "average_rain_intensity": 1,
+        "event_duration": 1,
+        "rainfall_ph": 7
     }
 }
 

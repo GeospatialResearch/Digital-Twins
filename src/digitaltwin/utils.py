@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script provides utility functions for logging configuration and geospatial data manipulation.
-"""
+"""This script provides utility functions for logging configuration and geospatial data manipulation."""
 
 import inspect
 import logging
@@ -34,7 +32,8 @@ class LogLevel(IntEnum):
         The debug logging level. Corresponds to logging.DEBUG (10).
     NOTSET : int
         The not-set logging level. Corresponds to logging.NOTSET (0).
-    """
+    """  # noqa: D400
+
     CRITICAL = logging.CRITICAL
     ERROR = logging.ERROR
     WARNING = logging.WARNING
@@ -44,14 +43,7 @@ class LogLevel(IntEnum):
 
 
 def log_execution_info() -> None:
-    """
-    Logs a debug message indicating the execution of the function in the script.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
+    """Log a debug message indicating the execution of the function in the script."""
     # Obtain the stack frame of the calling function (two frames up in the call stack)
     stack_frame = inspect.currentframe().f_back.f_back
     # Extract the name of the script file (without the path) where the function is being executed
@@ -64,8 +56,8 @@ def log_execution_info() -> None:
 
 def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
     """
-    Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
-    loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
+    Configure the root logger with the specified log level and formats, capture warnings, and exclude specific
+    loggers from propagating their messages to the root logger. Additionally, log a debug message indicating the
     execution of the function in the script.
 
     Parameters
@@ -79,12 +71,7 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
+    """  # noqa: D400
     # Define the logging format and date format
     logging_format = "%(asctime)s | %(levelname)-8s | %(name)-75s %(lineno)4d | %(funcName)-50s | %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"

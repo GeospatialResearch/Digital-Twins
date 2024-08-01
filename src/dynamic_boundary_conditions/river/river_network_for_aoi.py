@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script processes REC data to construct a river network for the defined catchment area.
-"""
+"""This script processes REC data to construct a river network for the defined catchment area."""
 
 import logging
 from typing import Dict, Tuple
@@ -12,7 +10,7 @@ import numpy as np
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions.river import main_river, river_data_to_from_db
+from src.dynamic_boundary_conditions.river import river_data_to_from_db
 from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
     get_next_network_id,
     add_network_exclusions_to_db,
@@ -20,13 +18,14 @@ from src.dynamic_boundary_conditions.river.river_network_to_from_db import (
     get_existing_network_metadata_from_db,
     get_existing_network
 )
+from src.flood_model import process_hydro_dem
 
 log = logging.getLogger(__name__)
 
 
 def get_unique_nodes_dict(rec_data_w_node_coords: gpd.GeoDataFrame) -> Dict[Point, int]:
     """
-    Generates a dictionary that contains the unique node coordinates in the REC data for the catchment area.
+    Generate a dictionary that contains the unique node coordinates in the REC data for the catchment area.
 
     Parameters
     ----------
@@ -41,8 +40,8 @@ def get_unique_nodes_dict(rec_data_w_node_coords: gpd.GeoDataFrame) -> Dict[Poin
     """
     # Combine the first and last coordinates of each LineString into a single list
     rec_node_coords = (
-            rec_data_w_node_coords["first_coord"].to_list() +
-            rec_data_w_node_coords["last_coord"].to_list()
+        rec_data_w_node_coords["first_coord"].to_list() +
+        rec_data_w_node_coords["last_coord"].to_list()
     )
     # Extract unique node coordinates while preserving their original order
     unique_node_coords = [x for i, x in enumerate(rec_node_coords) if x not in rec_node_coords[:i]]
@@ -124,7 +123,7 @@ def prepare_network_data_for_construction(
         catchment_area: gpd.GeoDataFrame,
         rec_data_with_sdc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Prepares the necessary data for constructing the river network for the catchment area using the REC data.
+    Prepare the necessary data for constructing the river network for the catchment area using the REC data.
 
     Parameters
     ----------
@@ -160,11 +159,6 @@ def add_nodes_to_network(rec_network: nx.DiGraph, prepared_network_data: gpd.Geo
         The REC river network, a directed graph, to which nodes will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Iterate over rows in the prepared network data
     for _, row_edge in prepared_network_data.iterrows():
@@ -186,11 +180,6 @@ def add_initial_edges_to_network(rec_network: nx.DiGraph, prepared_network_data:
         The REC river network, a directed graph, to which initial edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Iterate through each edge in the prepared network data
     for _, current_edge in prepared_network_data.iterrows():
@@ -287,19 +276,14 @@ def add_absent_edges_to_network(
         The REC river network, a directed graph, to which absent edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
+    """  # noqa: D400
     # Identify edges that are absent from the REC river network and require addition
     absent_edges_to_add = identify_absent_edges_to_add(rec_network, prepared_network_data)
 
     # Check if there are any absent edges to add
     if not absent_edges_to_add.empty:
         # Obtain the hydro DEM and its spatial extent
-        hydro_dem, hydro_dem_extent, _ = main_river.retrieve_hydro_dem_info(engine, catchment_area)
+        hydro_dem, hydro_dem_extent, _ = process_hydro_dem.retrieve_hydro_dem_info(engine, catchment_area)
         # Get the boundary point of each absent edge that intersects with the hydro DEM extent
         absent_edges_to_add["boundary_point"] = absent_edges_to_add["geometry"].intersection(hydro_dem_extent)
 
@@ -468,7 +452,7 @@ def build_rec_river_network(
         catchment_area: gpd.GeoDataFrame,
         rec_network_id: int) -> Tuple[nx.DiGraph, gpd.GeoDataFrame]:
     """
-    Builds a river network for the catchment area using the REC data.
+    Build a river network for the catchment area using the REC data.
 
     Parameters
     ----------
