@@ -8,6 +8,7 @@ import logging
 import geopandas as gpd
 from shapely.geometry import LineString, Point
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
 
 log = logging.getLogger(__name__)
 
@@ -38,11 +39,14 @@ def get_regional_council_clipped_from_db(
     # Extract the catchment polygon from the GeoDataFrame
     catchment_polygon = catchment_area["geometry"][0]
     # Construct the query to retrieve the regional council clipped data
-    query = f"""
+    command_text = """
     SELECT *
     FROM region_geometry_clipped AS rgc
-    WHERE ST_Intersects(rgc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    WHERE ST_Intersects(rgc.geometry, ST_GeomFromText(:catchment_polygon, 2193));
     """
+    query = text(command_text).bindparams(
+        catchment_polygon=str(catchment_polygon)
+    )
     # Execute the query and retrieve the result as a GeoDataFrame
     regions_clipped = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return regions_clipped
@@ -75,11 +79,14 @@ def get_nz_coastline_from_db(
     catchment_area_buffered = catchment_area.buffer(distance=distance_m, join_style=2)
     catchment_area_buffered_polygon = catchment_area_buffered.iloc[0]
     # Construct the query to retrieve the New Zealand coastline data within the buffered catchment area
-    query = f"""
+    command_text = """
     SELECT *
     FROM nz_coastlines AS coast
-    WHERE ST_Intersects(coast.geometry, ST_GeomFromText('{catchment_area_buffered_polygon}', 2193));
+    WHERE ST_Intersects(coast.geometry, ST_GeomFromText(:catchment_area_buffered_polygon, 2193));
     """
+    query = text(command_text).bindparams(
+        catchment_area_buffered_polygon=str(catchment_area_buffered_polygon)
+    )
     # Execute the query and retrieve the result as a GeoDataFrame
     coastline = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return coastline

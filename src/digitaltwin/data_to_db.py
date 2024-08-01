@@ -10,6 +10,7 @@ from typing import Tuple, Set
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
 
 from src.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
 from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
@@ -37,11 +38,12 @@ def get_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
         Data frame containing geospatial layers that have a coverage area of New Zealand.
     """
     # SQL query to retrieve geospatial layers that have a coverage area of New Zealand
-    nz_geo_query = f"""
+    nz_geo_query = """
     SELECT *
-    FROM {GeospatialLayers.__tablename__}
+    FROM geospatial_layers
     WHERE coverage_area = 'New Zealand' AND unique_column_name IS NULL;
     """
+
     # Retrieve geospatial layers using the provided SQL query
     nz_geo_layers = pd.read_sql(nz_geo_query, engine)
     # Drop the 'unique_id' column from the DataFrame
@@ -69,6 +71,7 @@ def get_non_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
     FROM {GeospatialLayers.__tablename__}
     WHERE unique_column_name IS NOT NULL AND (coverage_area != 'New Zealand' OR coverage_area IS NULL);
     """
+
     # Retrieve geospatial layers using the provided SQL query
     non_nz_geo_layers = pd.read_sql(non_nz_query, engine)
     # Drop the 'unique_id' column from the DataFrame
@@ -130,11 +133,14 @@ def get_vector_data_id_not_in_db(
     vector_data_ids = set(vector_data[unique_column_name])
     # Fetch the unique IDs from the specified table that intersect with the area of interest
     aoi_polygon = area_of_interest["geometry"][0]
-    query = f"""
+    command_text = f"""
     SELECT DISTINCT {unique_column_name}
     FROM {table_name} AS ids
-    WHERE ST_Intersects(ids.geometry, ST_GeomFromText('{aoi_polygon}', 2193));
+    WHERE ST_Intersects(ids.geometry, ST_GeomFromText(:aoi_polygon, 2193));
     """
+    query = text(command_text).bindparams(
+        aoi_polygon=str(aoi_polygon)
+    )
     # Execute the query and retrieve the IDs present in the database
     ids_in_db = set(pd.read_sql(query, engine)[unique_column_name])
     # Find the IDs from vector_data that are not present in the database
@@ -215,15 +221,19 @@ def get_non_intersection_area_from_db(
     # Extract the geometry of the catchment area
     catchment_polygon = catchment_area["geometry"][0]
     # Build the SQL query to find intersections between the user log information and the catchment area
-    query = f"""
+    command_text = f"""
     SELECT *
     FROM (
         SELECT *
         FROM {UserLogInfo.__tablename__}
-        WHERE '{table_name}' = ANY(source_table_list)
+        WHERE :table_name = ANY(source_table_list)
     ) AS sub
-    WHERE ST_Intersects(sub.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    WHERE ST_Intersects(sub.geometry, ST_GeomFromText(:catchment_polygon, 2193));
     """
+    query = text(command_text).bindparams(
+        table_name=str(table_name),
+        catchment_polygon=str(catchment_polygon)
+    )
     # Execute the SQL query and retrieve the intersections as a GeoDataFrame
     user_log_intersections = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     # Check if there are no intersections
@@ -330,16 +340,16 @@ def process_existing_non_nz_geospatial_layers(
         # Get IDs from the vector data that are not in the database
         ids_not_in_db = get_vector_data_id_not_in_db(
             engine, vector_data, table_name, unique_column_name, area_of_interest)
-        # Check if there are IDs not in the database
-        if ids_not_in_db:
-            # Get vector data that contains only the IDs not present in the database
-            vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
-            # Insert vector data into the database
-            log.info(
-                f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
-            vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
-        else:
-            log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
+    # Check if there are IDs not in the database
+    if ids_not_in_db:
+        # Get vector data that contains only the IDs not present in the database
+        vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
+        # Insert vector data into the database
+        log.info(
+            f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
+        vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
+    else:
+        log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
 
 
 def non_nz_geospatial_layers_data_to_db(
