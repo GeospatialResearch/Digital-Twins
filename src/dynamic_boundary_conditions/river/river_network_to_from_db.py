@@ -301,7 +301,7 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
                     f"{', '.join(map(str, excluded_ids))}")
 
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
-    use_aws_s3_bucket = EnvVariable .USE_AWS_S3_BUCKET
+    use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
     # If True, retrieve REC river network and its associated data from S3 bucket
     if use_aws_s3_bucket:
         s3_manager = S3Manager()
