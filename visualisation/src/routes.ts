@@ -1,3 +1,5 @@
+// Handles the routing configuration, for which URLs point to which pages.
+
 import MapPage from "@/pages/MapPage.vue";
 import AboutPage from "@/pages/AboutPage.vue"
 import type {RouteRecordRaw} from "vue-router";

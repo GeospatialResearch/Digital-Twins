@@ -1,3 +1,5 @@
+// Configurate for Vite build tool
+
 import {fileURLToPath, URL} from 'node:url'
 import {defineConfig} from 'vite'
 import {viteStaticCopy} from 'vite-plugin-static-copy'
