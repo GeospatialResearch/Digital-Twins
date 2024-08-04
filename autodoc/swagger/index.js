@@ -1,3 +1,5 @@
+// Load swagger UI into HTML document/DOM using Javascript to read specification yml
+
 import SwaggerUI from 'swagger-ui'
 import 'swagger-ui/dist/swagger-ui.css';
 
