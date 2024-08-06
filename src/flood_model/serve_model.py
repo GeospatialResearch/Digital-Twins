@@ -461,6 +461,11 @@ def style_exists(style_name: str) -> bool:
     bool
         True if the style exists, although it may be empty.
         False if it does not exist.
+
+    Raises
+    -------
+    HTTPError
+        If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
     response = requests.get(
         f'{get_geoserver_url()}/styles/{style_name}.sld',
@@ -470,7 +475,9 @@ def style_exists(style_name: str) -> bool:
         return True
     if response.status_code == HTTPStatus.NOT_FOUND:
         return False
-    response.raise_for_status()
+    # If it does not meet the expected results then raise an error
+    # Raise error manually, so we can configure the text
+    raise requests.HTTPError(response.text, response=response)
 
 
 def create_viridis_style_if_not_exists() -> None:
