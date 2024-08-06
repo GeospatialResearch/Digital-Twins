@@ -466,8 +466,11 @@ def style_exists(style_name: str) -> bool:
         f'{get_geoserver_url()}/styles/{style_name}.sld',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
+    if response.status_code == HTTPStatus.OK:
+        return True
+    if response.status_code == HTTPStatus.NOT_FOUND:
+        return False
     response.raise_for_status()
-    return response.status_code == HTTPStatus.OK
 
 
 def create_viridis_style_if_not_exists() -> None:
