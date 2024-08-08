@@ -87,7 +87,8 @@ def get_one_site_rainfall_data(
                          "If 'rcp' is None, 'time_period' should also be None, and vice versa.")
     elif rcp is not None and time_period is not None:
         # Query for specific rcp and time_period
-        command_text = f"""SELECT *
+        command_text = f"""
+        SELECT *
         FROM {rain_table_name}
         WHERE site_id=:site_id AND rcp=:rcp AND time_period=:time_period AND ari=:ari
         """
@@ -101,7 +102,8 @@ def get_one_site_rainfall_data(
 
     else:
         # Query for historical data (rcp is None and time_period is None)
-        command_text = f"""SELECT *
+        command_text = f"""
+        SELECT *
         FROM {rain_table_name}
         WHERE site_id=:site_id AND rcp IS NULL AND time_period IS NULL AND ari=:ari
         """

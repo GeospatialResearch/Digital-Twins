@@ -37,12 +37,11 @@ def get_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
         Data frame containing geospatial layers that have a coverage area of New Zealand.
     """
     # SQL query to retrieve geospatial layers that have a coverage area of New Zealand
-    nz_geo_query = """
+    nz_geo_query = f"""
     SELECT *
-    FROM geospatial_layers
+    FROM {GeospatialLayers.__tablename__}
     WHERE coverage_area = 'New Zealand' AND unique_column_name IS NULL;
     """
-
     # Retrieve geospatial layers using the provided SQL query
     nz_geo_layers = pd.read_sql(nz_geo_query, engine)
     # Drop the 'unique_id' column from the DataFrame
@@ -70,7 +69,6 @@ def get_non_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
     FROM {GeospatialLayers.__tablename__}
     WHERE unique_column_name IS NOT NULL AND (coverage_area != 'New Zealand' OR coverage_area IS NULL);
     """
-
     # Retrieve geospatial layers using the provided SQL query
     non_nz_geo_layers = pd.read_sql(non_nz_query, engine)
     # Drop the 'unique_id' column from the DataFrame
