@@ -18,6 +18,8 @@ import numpy as np
 import shapely.wkt
 from sqlalchemy import select, func
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
+
 
 from src.config import EnvVariable
 from src.digitaltwin.tables import (
@@ -224,11 +226,14 @@ def get_existing_network_metadata_from_db(engine: Engine, catchment_area: gpd.Ge
     catchment_polygon = catchment_area["geometry"].iloc[0]
     catchment_polygon_wkt = shapely.wkt.dumps(catchment_polygon, rounding_precision=6)
     # Query the REC Network Output table to find existing REC river network metadata for the catchment area
-    query = f"""
+    command_text = f"""
     SELECT *
     FROM {RiverNetwork.__tablename__}
-    WHERE ST_Equals(geometry, ST_GeomFromText('{catchment_polygon_wkt}', 2193));
+    WHERE ST_Equals(geometry, ST_GeomFromText(:catchment_polygon_wkt, 2193));
     """
+    query = text(command_text).bindparams(
+        catchment_polygon_wkt=str(catchment_polygon_wkt)
+    )
     # Fetch the query result as a GeoPandas DataFrame
     existing_network_meta = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     return existing_network_meta
@@ -258,11 +263,14 @@ def get_existing_network(engine: Engine, existing_network_meta: gpd.GeoDataFrame
     # Extract the REC river network ID from the provided metadata
     rec_network_id = existing_network_series["rec_network_id"]
     # Construct a query to retrieve exclusion data for the existing REC river network
-    query = f"""
+    command_text = f"""
     SELECT *
     FROM {RiverNetworkExclusions.__tablename__}
-    WHERE rec_network_id = {rec_network_id};
+    WHERE rec_network_id=:rec_network_id;
     """
+    query = text(command_text).bindparams(
+        rec_network_id=str(rec_network_id)
+    )
     # Query the database to retrieve exclusion data for the existing REC river network
     rec_network_exclusions = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     # Group exclusion data by the cause of exclusion

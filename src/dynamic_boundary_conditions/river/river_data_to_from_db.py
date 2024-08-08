@@ -9,6 +9,7 @@ import logging
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
 
 from src.digitaltwin.tables import check_table_exists
 from src.dynamic_boundary_conditions.river import river_data_from_niwa
@@ -65,11 +66,14 @@ def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gp
     # Extract the geometry of the catchment area
     catchment_polygon = catchment_area["geometry"][0]
     # Query to retrieve sea-draining catchments that intersect with the catchment polygon
-    sea_drain_query = f"""
+    command_text = """
     SELECT *
     FROM sea_draining_catchments AS sdc
-    WHERE ST_Intersects(sdc.geometry, ST_GeomFromText('{catchment_polygon}', 2193));
+    WHERE ST_Intersects(sdc.geometry, ST_GeomFromText(:catchment_polygon, 2193));
     """
+    sea_drain_query = text(command_text).bindparams(
+        catchment_polygon=str(catchment_polygon)
+    )
     # Execute the query and create a GeoDataFrame from the result
     sdc_data = gpd.GeoDataFrame.from_postgis(sea_drain_query, engine, geom_col="geometry")
     return sdc_data
@@ -109,11 +113,14 @@ def get_rec_data_with_sdc_from_db(
     # Combine the sea-draining catchment area with the input catchment area to create a final unified polygon
     combined_polygon = pd.concat([sdc_area, catchment_area]).unary_union
     # Query to retrieve REC data that intersects with the combined polygon
-    rec_query = f"""
+    command_text = """
     SELECT *
     FROM rec_data AS rec
-    WHERE ST_Intersects(rec.geometry, ST_GeomFromText('{combined_polygon}', 2193));
+    WHERE ST_Intersects(rec.geometry, ST_GeomFromText(:combined_polygon, 2193));
     """
+    rec_query = text(command_text).bindparams(
+        combined_polygon=str(combined_polygon)
+    )
     # Execute the query and retrieve the REC data from the database
     rec_data = gpd.GeoDataFrame.from_postgis(rec_query, engine, geom_col="geometry")
     # Determine the sea-draining catchment for each REC geometry (using the 'within' predicate)

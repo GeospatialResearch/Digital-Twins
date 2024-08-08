@@ -8,6 +8,7 @@ import rasterio as rio
 import shapely
 import xarray
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
 
 from src.flood_model.serve_model import create_building_database_views_if_not_exists
 
@@ -119,10 +120,14 @@ def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFram
     aoi_wkt = area_of_interest["geometry"][0].wkt
     crs = area_of_interest.crs.to_epsg()
     # Construct the query to find buildings within the area of interest
-    query = f"""
+    command_text = """
     SELECT building_outline_id, geometry FROM nz_building_outlines
-    WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
+    WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText(:aoi_wkt, :crs));
     """
+    query = text(command_text).bindparams(
+        aoi_wkt=str(aoi_wkt),
+        crs=str(crs)
+    )
     # Execute the query and retrieve the result as a GeoDataFrame
     gdf = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_outline_id", geom_col="geometry")
     return gdf
