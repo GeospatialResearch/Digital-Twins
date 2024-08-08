@@ -20,7 +20,6 @@ log = logging.getLogger(__name__)
 
 class NoNonIntersectionError(Exception):
     """Exception raised when no non-intersecting area is found."""
-    pass
 
 
 def get_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
@@ -81,7 +80,7 @@ def get_non_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
 
 def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, int, str, str]:
     """
-    Extracts geospatial layer information from a single layer entry.
+    Extract geospatial layer information from a single layer entry.
 
     Parameters
     ----------
@@ -128,7 +127,7 @@ def get_vector_data_id_not_in_db(
     -------
     Set[int]
         The set of IDs from the fetched vector_data that are not present in the specified table in the database.
-    """
+    """  # noqa: D400
     # Get the unique IDs from the vector_data
     vector_data_ids = set(vector_data[unique_column_name])
     # Fetch the unique IDs from the specified table that intersect with the area of interest
@@ -153,7 +152,7 @@ def nz_geospatial_layers_data_to_db(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches New Zealand geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch New Zealand geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -163,11 +162,6 @@ def nz_geospatial_layers_data_to_db(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get New Zealand geospatial layers
     nz_geo_layers = get_nz_geospatial_layers(engine)
@@ -215,7 +209,7 @@ def get_non_intersection_area_from_db(
     ------
     NoNonIntersectionError
         If the non-intersecting area is empty, it suggests that the catchment area is already fully covered.
-    """
+    """  # noqa: D400
     # Create the 'user_log_information' table if it doesn't exist
     create_table(engine, UserLogInfo)
     # Extract the geometry of the catchment area
@@ -245,8 +239,7 @@ def get_non_intersection_area_from_db(
     if non_intersection_area.empty:
         raise NoNonIntersectionError(
             f"'{table_name}' data for the requested catchment area is already in the database.")
-    else:
-        return non_intersection_area
+    return non_intersection_area
 
 
 def process_new_non_nz_geospatial_layers(
@@ -258,7 +251,7 @@ def process_new_non_nz_geospatial_layers(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches new non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch new non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -276,11 +269,6 @@ def process_new_non_nz_geospatial_layers(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Fetch vector data using geoapis
     log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
@@ -304,7 +292,7 @@ def process_existing_non_nz_geospatial_layers(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches existing non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch existing non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -324,11 +312,6 @@ def process_existing_non_nz_geospatial_layers(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Fetch vector data using geoapis
     log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
@@ -358,7 +341,7 @@ def non_nz_geospatial_layers_data_to_db(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -370,11 +353,6 @@ def non_nz_geospatial_layers_data_to_db(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Get non-NZ geospatial layers from the database
     non_nz_geo_layers = get_non_nz_geospatial_layers(engine)
@@ -408,7 +386,7 @@ def store_geospatial_layers_data_to_db(
         crs: int = 2193,
         verbose: bool = False) -> None:
     """
-    Fetches geospatial layers data using 'geoapis' and stores it into the database.
+    Fetch geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -420,11 +398,6 @@ def store_geospatial_layers_data_to_db(
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Store New Zealand geospatial layers data to the database
     nz_geospatial_layers_data_to_db(engine, crs, verbose)
@@ -442,11 +415,6 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
         The engine used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Create the 'user_log_information' table if it doesn't exist
     create_table(engine, UserLogInfo)

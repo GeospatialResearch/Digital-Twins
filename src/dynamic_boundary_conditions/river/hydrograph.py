@@ -2,7 +2,7 @@
 """
 This script handles the task of obtaining REC river inflow scenario data, whether it's Mean Annual Flood (MAF) or
 Average Recurrence Interval (ARI)-based, and generates corresponding hydrograph data for the requested scenarios.
-"""
+"""  # noqa: D400
 
 import logging
 from typing import List, Union, Optional
@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 def clean_rec_inflow_data(rec_inflows_w_input_points: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Selects and renames specific columns that represent REC river inflow data from the input GeoDataFrame.
+    Select and rename specific columns that represent REC river inflow data from the input GeoDataFrame.
 
     Parameters
     ----------
@@ -50,7 +50,7 @@ def clean_rec_inflow_data(rec_inflows_w_input_points: gpd.GeoDataFrame) -> gpd.G
 
 def extract_valid_ari_values(rec_inflow_data: gpd.GeoDataFrame) -> List[int]:
     """
-    Extracts valid ARI (Annual Recurrence Interval) values from the column names of the REC river inflow data.
+    Extract valid ARI (Annual Recurrence Interval) values from the column names of the REC river inflow data.
 
     Parameters
     ----------
@@ -107,7 +107,7 @@ def get_rec_inflow_scenario_data(
         - If 'ari' is provided when 'maf' is set to True (i.e. 'maf' is True and 'ari' is not set to None).
         - If 'ari' is not provided when 'maf' is set to False (i.e. 'maf' is False and 'ari' is set to None).
         - If an invalid 'ari' value is provided.
-    """
+    """  # noqa: D400
     # Selects and renames specific columns that represent REC river inflow data
     rec_inflow_data = clean_rec_inflow_data(rec_inflows_w_input_points)
 
@@ -204,14 +204,14 @@ def get_hydrograph_data(
     #  Obtain the requested REC river inflow scenario data
     rec_inflow_scenario_data = get_rec_inflow_scenario_data(rec_inflows_w_input_points, maf, ari, bound)
     # Initialize an empty data dictionary to store hydrograph data
-    hydro_data_dict = dict(
-        river_input_point_no=[],
-        river_input_point=[],
-        dem_resolution=[],
-        areakm2=[],
-        mins=[],
-        flow=[]
-    )
+    hydro_data_dict = {
+        "river_input_point_no": [],
+        "river_input_point": [],
+        "dem_resolution": [],
+        "areakm2": [],
+        "mins": [],
+        "flow": []
+    }
     # Generate hydrograph data for the requested REC river inflow scenario
     for _, row in rec_inflow_scenario_data.iterrows():
         hydro_data_dict["river_input_point_no"].extend([row["river_input_point_no"]] * 3)

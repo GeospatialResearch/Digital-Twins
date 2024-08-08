@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Enum(s) used in the tide_slr module.
-"""
+"""Enum(s) used in the tide_slr module."""
 
 from enum import StrEnum
 
@@ -17,6 +15,7 @@ class DatumType(StrEnum):
     MSL : str
         Mean sea level.
     """
+
     LAT = "lat"
     MSL = "msl"
 
@@ -32,5 +31,6 @@ class ApproachType(StrEnum):
     PERIOD_TIDE : str
         Period Tide approach.
     """
+
     KING_TIDE = "king_tide"
     PERIOD_TIDE = "period_tide"

@@ -2,7 +2,7 @@
 """
 This script processes 'static_boundary_instructions' records, validates URLs and instruction fields, and stores them in
 the 'geospatial_layers' table of the database.
-"""
+"""  # noqa: D400
 
 import json
 import logging
@@ -30,11 +30,6 @@ def validate_url_reachability(section: str, url: str) -> None:
     url : str
         The URL to validate.
 
-    Returns
-    -------
-    None
-        This function does not return any value.
-
     Raises
     ------
     ValueError
@@ -51,7 +46,7 @@ def validate_url_reachability(section: str, url: str) -> None:
         # Raise an exception if the response status code indicates an error
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        raise ValueError(f"Unreachable URL provided for {section}: '{url}'\n{e}")
+        raise ValueError(f"Unreachable URL provided for {section}: '{url}'\n{e}") from e
 
 
 def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None:
@@ -65,11 +60,6 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
         The section identifier of the instruction.
     instruction : Dict[str, Union[str, int]]
         The instruction details.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
 
     Raises
     ------
@@ -102,7 +92,7 @@ def read_and_check_instructions_file() -> pd.DataFrame:
     # Path to the 'static_boundary_instructions.json' file
     instruction_file = pathlib.Path("src/digitaltwin/static_boundary_instructions.json")
     # Read the 'static_boundary_instructions.json' file
-    with open(instruction_file, "r") as file:
+    with open(instruction_file, "r", encoding="utf-8") as file:
         # Load content from the file
         instructions = json.load(file)
         # Iterate through each section
@@ -178,11 +168,6 @@ def store_instructions_records_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Create the 'geospatial_layers' table if it doesn't exist
     create_table(engine, GeospatialLayers)

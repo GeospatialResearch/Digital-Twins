@@ -1,11 +1,11 @@
-"""
-The main web application that serves the Digital Twin to the web through a Rest API.
-"""
+# -*- coding: utf-8 -*-
+"""The main web application that serves the Digital Twin to the web through a Rest API."""
+
 import logging
 import pathlib
 from functools import wraps
 from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE
-from typing import Callable
+from typing import Callable, Dict, Tuple
 
 import requests
 from celery import result, states
@@ -16,24 +16,21 @@ from kombu.exceptions import OperationalError
 from shapely import box
 
 from src import tasks
-from src.config import get_env_variable
+from src.config import EnvVariable
 
 # Initialise flask server object
 app = Flask(__name__)
 CORS(app)
 
-WWW_HOST = get_env_variable('WWW_HOST', default="http://localhost")
-WWW_PORT = get_env_variable('WWW_port', default="8080")
-
 
 def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     """
-    Function decorator to check if the Celery workers are running and return INTERNAL_SERVER_ERROR if they are down.
+    Check if the Celery workers are running and return INTERNAL_SERVER_ERROR if they are down using function decorator.
 
     Parameters
     ----------
     f : Callable[..., Response]
-        The view function that is being decorated
+        The view function that is being decorated.
 
     Returns
     -------
@@ -42,7 +39,23 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
     """
 
     @wraps(f)
-    def decorated_function(*args, **kwargs) -> Response:
+    def decorated_function(*args: Tuple, **kwargs: Dict) -> Response:
+        """
+        Before function `f` is called, check if Celery workers are down, and return and error response if so.
+        If Celery workers are running, then continue with calling `f` with original arguments.
+
+        Parameters
+        ----------
+        args : Tuple
+            The original arguments for function `f`.
+        kwargs : Dict
+            The original keyword arguments for function `f`.
+
+        Returns
+        -------
+        Response
+            SERVICE_UNAVAILABLE if Celery workers are down, otherwise response from function `f`.
+        """
         try:
             ping_celery_response = tasks.app.control.ping()
             if len(ping_celery_response) == 0:
@@ -70,7 +83,7 @@ app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 @app.route('/')
 def index() -> Response:
     """
-    Ping this endpoint to check that the flask app is running
+    Ping this endpoint to check that the flask app is running.
     Supported methods: GET
 
     Returns
@@ -89,7 +102,7 @@ def index() -> Response:
 @check_celery_alive
 def health_check() -> Response:
     """
-    Ping this endpoint to check that the server is up and running
+    Ping this endpoint to check that the server is up and running.
     Supported methods: GET
 
     Returns
@@ -103,7 +116,7 @@ def health_check() -> Response:
 @app.route('/tasks/<task_id>', methods=["GET"])
 def get_status(task_id: str) -> Response:
     """
-    Retrieves status of a particular Celery backend task.
+    Retrieve status of a particular Celery backend task.
     Supported methods: GET
 
     Parameters
@@ -123,7 +136,7 @@ def get_status(task_id: str) -> Response:
         task_value = task_result.get()
     elif status == states.FAILURE:
         http_status = INTERNAL_SERVER_ERROR
-        is_debug_mode = get_env_variable("DEBUG_TRACEBACK", default=False, cast_to=bool)
+        is_debug_mode = EnvVariable.DEBUG_TRACEBACK
         task_value = task_result.traceback if is_debug_mode else None
     else:
         task_value = None
@@ -138,7 +151,7 @@ def get_status(task_id: str) -> Response:
 @app.route('/tasks/<task_id>', methods=["DELETE"])
 def remove_task(task_id: str) -> Response:
     """
-    Deletes and stops a particular Celery backend task.
+    Delete and stop a particular Celery backend task.
     Supported methods: DELETE
 
     Parameters
@@ -160,7 +173,7 @@ def remove_task(task_id: str) -> Response:
 @check_celery_alive
 def generate_model() -> Response:
     """
-    Generates a flood model for a given area.
+    Generate a flood model for a given area.
     Supported methods: POST
     POST values: {"bbox": {"lat1": number, "lat2": number, "lng1": number, "lng2": number}}
 
@@ -198,7 +211,7 @@ def generate_model() -> Response:
 
 def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:
     """
-    Takes two points and creates a wkt bbox string from them
+    Create a WKT bbox string from two points.
 
     Parameters
     ----------
@@ -227,7 +240,7 @@ def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -
 @check_celery_alive
 def get_depth_at_point(task_id: str) -> Response:
     """
-    Finds the depths and times at a particular point for a given completed model output task.
+    Find the depths and times at a particular point for a given completed model output task.
     Supported methods: GET
     Required query param values: "lat": float, "lng": float
 
@@ -275,7 +288,7 @@ def get_depth_at_point(task_id: str) -> Response:
 @check_celery_alive
 def retrieve_building_flood_status(model_id: int) -> Response:
     """
-    Retrieves information on building flood status, for a given flood model output id.
+    Retrieve information on building flood status, for a given flood model output ID.
     It is recommended to use the geoserver API if it is possible, since this is a proxy around that.
 
     Parameters
@@ -299,12 +312,12 @@ def retrieve_building_flood_status(model_id: int) -> Response:
         return make_response(f"Could not find flood model output {model_id}", NOT_FOUND)
 
     # Geoserver workspace is dependant on environment variables
-    db_name = get_env_variable("POSTGRES_DB")
+    db_name = EnvVariable.POSTGRES_DB
     workspace_name = f"{db_name}-buildings"
     store_name = f"{db_name} PostGIS"
     # Set up geoserver request parameters
-    geoserver_host = get_env_variable("GEOSERVER_HOST")
-    geoserver_port = get_env_variable("GEOSERVER_PORT")
+    geoserver_host = EnvVariable.GEOSERVER_HOST
+    geoserver_port = EnvVariable.GEOSERVER_PORT
     request_url = f"{geoserver_host}:{geoserver_port}/geoserver/{workspace_name}/ows"
     params = {
         "service": "WFS",
@@ -328,7 +341,20 @@ def retrieve_building_flood_status(model_id: int) -> Response:
 
 @app.route('/models/<int:model_id>', methods=['GET'])
 @check_celery_alive
-def serve_model_output(model_id: int):
+def serve_model_output(model_id: int) -> Response:
+    """
+    Serve the specified model output as a raw file.
+
+    Parameters
+    ----------
+    model_id: int
+        The ID of the model output to be served.
+
+    Returns
+    -------
+    Response
+        HTTP Response containing the model output file.
+    """
     try:
         model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()
         return send_file(pathlib.Path(model_filepath))
@@ -338,10 +364,10 @@ def serve_model_output(model_id: int):
 
 @app.route('/datasets/update', methods=["POST"])
 @check_celery_alive
-def refresh_lidar_data_sources():
+def refresh_lidar_data_sources() -> Response:
     """
-    Updates LiDAR data sources to the most recent.
-    Web-scrapes OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
+    Update LiDAR data sources to the most recent.
+    Web-scrape OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
     Takes a long time to run but needs to be run periodically so that the datasets are up to date.
     Supported methods: POST
 
@@ -350,7 +376,6 @@ def refresh_lidar_data_sources():
     Response
         ACCEPTED is the expected response. Response body contains Celery taskId
     """
-
     # Start task to refresh lidar datasets
     task = tasks.refresh_lidar_datasets.delay()
     # Return HTTP Response with task id so it can be monitored with get_status(taskId)
@@ -362,8 +387,8 @@ def refresh_lidar_data_sources():
 
 def valid_coordinates(latitude: float, longitude: float) -> bool:
     """
-    Validates coordinates are in the valid range of WGS84
-    (-90 < latitude <= 90) and (-180 < longitude <= 180)
+    Validate that coordinates are within the valid range of WGS84,
+    (-90 < latitude <= 90) and (-180 < longitude <= 180).
 
     Parameters
     ----------
@@ -376,7 +401,7 @@ def valid_coordinates(latitude: float, longitude: float) -> bool:
     -------
     bool
         True if both latitude and longitude are within their valid ranges.
-    """
+    """  # noqa: D400
     return (-90 < latitude <= 90) and (-180 < longitude <= 180)
 
 

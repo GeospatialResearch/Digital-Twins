@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""This script detects if buildings are flooded for a given scenario."""
 import pathlib
 
 import geopandas as gpd
@@ -13,7 +15,7 @@ from src.flood_model.serve_model import create_building_database_views_if_not_ex
 
 def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame, flood_model_id: int) -> None:
     """
-    Appends the details of which buildings are flooded for a given flood_model_id to the database
+    Append the details of which buildings are flooded for a given flood_model_id to the database.
 
     Parameters
     ----------
@@ -21,13 +23,8 @@ def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame,
         The sqlalchemy database connection engine
     buildings : pd.DataFrame
         DataFrame containing a mapping of building_ids to their flood status for the current model run
-    flood_model_id : float
+    flood_model_id : int
         The id of the current flood model run, to associate with the building flood data.
-
-    Returns
-    -------
-    None
-        This function does not return anything
     """
     # Associate the building flood status dataframe with the current model id
     buildings["flood_model_id"] = flood_model_id
@@ -42,7 +39,7 @@ def find_flooded_buildings(engine: Engine,
                            flood_model_output_path: pathlib.Path,
                            flood_depth_threshold: float) -> pd.DataFrame:
     """
-    Creates a building DataFrame with attribute "is_flooded",
+    Create a building DataFrame with attribute "is_flooded",
     depending on if the area for each building is flooded to a depth greater than or equal to flood_depth_threshold.
     the index, building_outline_id, matches building_outline_id from nz_building_outline table.
 
@@ -61,7 +58,7 @@ def find_flooded_buildings(engine: Engine,
     -------
     pd.DataFrame
         A pd.DataFrame specifying if each building is flooded or not.
-    """
+    """  # noqa: D400
     # Open flood output and read the maximum depth raster
     with xarray.open_dataset(flood_model_output_path, decode_coords="all") as ds:
         max_depth_raster = ds["hmax_P0"]
@@ -76,7 +73,7 @@ def find_flooded_buildings(engine: Engine,
 def categorise_buildings_as_flooded(building_polygons: gpd.GeoDataFrame,
                                     flood_polygons: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Identifies all buildings in building_polygons that intersect with areas in flooded_polygons.
+    Identify all buildings in building_polygons that intersect with areas in flooded_polygons.
 
     Parameters
     ----------
@@ -105,7 +102,7 @@ def categorise_buildings_as_flooded(building_polygons: gpd.GeoDataFrame,
 
 def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Retrieve building outlines for an area of interest from the database
+    Retrieve building outlines for an area of interest from the database.
 
     Parameters
     ----------
@@ -138,9 +135,9 @@ def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFram
 
 def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshold: float) -> gpd.GeoDataFrame:
     """
-    Takes a flood depth raster and applies depth thresholding on it so that only areas
+    Take a flood depth raster and apply depth thresholding on it so that only areas
     flooded deeper than or equal to flood_depth_threshold are represented.
-    Returns the data in a collection of polygons
+    Return the data in a collection of polygons.
 
     Parameters
     ----------
@@ -153,7 +150,7 @@ def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshol
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing polygons of the flooded areas
-    """
+    """  # noqa: D400
     # Find areas that are flooded to at least the flood_depth_threshold depth
     mask = flood_raster >= flood_depth_threshold
     # Turn the flood mask into a vector polygon form

@@ -2,7 +2,7 @@
 """
 Generates combined tide and sea level rise (SLR) data for a specific projection year, taking into account the provided
 confidence level, SSP scenario, inclusion of Vertical Land Motion (VLM), percentile, and more.
-"""
+"""  # noqa: D400
 
 import logging
 import re
@@ -197,8 +197,8 @@ def add_slr_to_tide(
         slr_interp_scenario: gpd.GeoDataFrame,
         proj_year: int) -> pd.DataFrame:
     """
-    Adds sea level rise (SLR) data to the tide data for a specific projection year and
-    returns the combined tide and sea level rise value.
+    Add sea level rise (SLR) data to the tide data for a specific projection year and
+    return the combined tide and sea level rise value.
 
     Parameters
     ----------
@@ -213,7 +213,12 @@ def add_slr_to_tide(
     -------
     pd.DataFrame
         A DataFrame that contains the combined tide and sea level rise data for the specified projection year.
-    """
+
+    Raises
+    ------
+    ValueError
+        If an invalid 'proj_year' value is provided.
+    """  # noqa: D400
     log.info("Adding 'sea_level_rise' data to 'tide' data for the requested scenario.")
 
     # Make a copy of the tide_data DataFrame to avoid modifying the original data
@@ -274,7 +279,7 @@ def get_combined_tide_slr_data(
         increment_year: int = 1,
         interp_method: str = "linear") -> pd.DataFrame:
     """
-    Generates the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
+    Generate the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
     confidence_level, ssp_scenario, add_vlm, percentile, and more.
 
     Parameters
@@ -305,7 +310,7 @@ def get_combined_tide_slr_data(
     pd.DataFrame
         A DataFrame containing the combined tide and sea level rise data for the specified projection year,
         taking into account the provided confidence_level, ssp_scenario, add_vlm, percentile, and more.
-    """
+    """  # noqa: D400
     # Get sea level rise scenario data based on the specified confidence_level, ssp_scenario, add_vlm, and percentile
     slr_scenario_data = get_slr_scenario_data(slr_data, confidence_level, ssp_scenario, add_vlm, percentile)
     # Interpolate sea level rise scenario data based on the specified year interval and interpolation method

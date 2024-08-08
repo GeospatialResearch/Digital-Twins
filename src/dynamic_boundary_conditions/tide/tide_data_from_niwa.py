@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Fetch tide data from NIWA using the Tide API based on the specified approach, datum, etc.
-"""
+"""Fetch tide data from NIWA using the Tide API based on the specified approach, datum, etc."""
 
 import asyncio
 import io
@@ -78,7 +76,7 @@ def get_date_ranges(
     ValueError
         - If 'total_days' is less than 1.
         - If 'days_per_call' is not between 1 and 31 inclusive.
-    """
+    """  # noqa: D400
     # Check for invalid arguments
     if total_days < 1:
         raise ValueError(f"total_days is {total_days}, must be at least 1.")
@@ -140,15 +138,15 @@ def gen_tide_query_param_list(
         - If the time interval is provided and outside the range of 10 to 1440.
     """
     # Verify that the provided arguments meet the query parameter requirements of the Tide API
-    if not (-53 <= lat <= -29):
+    if not -53 <= lat <= -29:
         raise ValueError(f"latitude is {lat}, must range from -29 to -53.")
     if not ((160 <= long <= 180) or (-180 <= long <= -175)):
         raise ValueError(f"longitude is {long}, must range from 160 to 180 or from -175 to -180.")
-    if interval_mins is not None and not (10 <= interval_mins <= 1440):
+    if interval_mins is not None and not 10 <= interval_mins <= 1440:
         raise ValueError(f"interval is {interval_mins}, must range from 10 to 1440.")
 
     # Get the NIWA API key
-    niwa_api_key = config.get_env_variable("NIWA_API_KEY")
+    niwa_api_key = config.EnvVariable.NIWA_API_KEY
 
     # Create an empty list to store the API query parameters
     query_param_list = []
@@ -273,7 +271,7 @@ async def fetch_tide_data_for_requested_period(
                 # Concatenate the results into a single GeoDataFrame and reset the index
                 tide_data = gpd.GeoDataFrame(pd.concat(query_results)).reset_index(drop=True)
             return tide_data
-        except TypeError:
+        except TypeError as e:
             # If a TypeError occurs, it means the Tide API did not return the expected data format.
             # This can happen if the data source at the current URL is not available or the data is corrupt.
             # In such cases, try fetching the data from an alternative URL.
@@ -282,7 +280,7 @@ async def fetch_tide_data_for_requested_period(
                 url = TIDE_API_URL_DATA_CSV
             else:
                 # If the alternative URL also fails, raise a RuntimeError to indicate the failure.
-                raise RuntimeError("Failed to fetch tide data.")
+                raise RuntimeError("Failed to fetch tide data.") from e
 
 
 def convert_to_nz_timezone(tide_data_utc: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -606,13 +604,12 @@ def add_time_information(
             message = f"If the 'approach' is KING_TIDE, 'time_to_peak_mins' must be at least half of " \
                       f"'tide_length_mins'. The current values are 'time_to_peak_mins': {time_to_peak_mins}, " \
                       f"'tide_length_mins': {tide_length_mins}."
-            raise ValueError(message)
         else:
             # Error message for PERIOD_TIDE approach
             message = f"If the 'approach' is PERIOD_TIDE, 'time_to_peak_mins' must be at least half of " \
                       f"'total_days' in minutes. The current values are 'time_to_peak_mins': {time_to_peak_mins}, " \
                       f"'total_days': {total_days} (equivalent to {tide_length_mins} minutes)."
-            raise ValueError(message)
+        raise ValueError(message)
 
     # Group the tide data by position and geometry
     grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
