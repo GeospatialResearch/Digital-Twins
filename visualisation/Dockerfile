@@ -5,8 +5,11 @@ FROM node:lts as build-stage
 WORKDIR /app
 # Install node_modules
 COPY package*.json ./
-RUN npm ci
-COPY ./ .
+RUN npm ci --ignore-scripts
+
+COPY ["*.js", "*.json", ".env.production", "./"]
+COPY src/ src/
+COPY public/ public/
 
 # Build code for production style server
 RUN npm run build
