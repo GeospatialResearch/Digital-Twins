@@ -6,15 +6,11 @@ in the provided tide data.
 """
 
 import logging
-import os
 import pathlib
-import time
 
 import geopandas as gpd
 import pandas as pd
 import requests
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
@@ -25,9 +21,9 @@ log = logging.getLogger(__name__)
 
 
 def download_slr_data_files_from_takiwa(
-        slr_data_dir,
-        url='https://zenodo.org/records/11398538/export/json'
-):
+    slr_data_dir: pathlib.Path,
+    url: str = 'https://zenodo.org/records/11398538/export/json'
+) -> None:
     """
     Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
 
@@ -35,6 +31,8 @@ def download_slr_data_files_from_takiwa(
     ----------
     slr_data_dir : pathlib.Path
         The directory where the downloaded sea level rise data files will be saved.
+    url: basestring
+        The url where sea level rise files need downloading
 
     Returns
     -------
@@ -59,40 +57,6 @@ def download_slr_data_files_from_takiwa(
         # Create request for downloading file from each link
         each_request = requests.get(file_info["links"]["content"])
 
-    # Open the specified website in the browser
-    driver.get("https://searise.takiwa.co/map/6245144372b819001837b900")
-    # Add a 1-second delay to ensure that the website is open before downloading
-    time.sleep(1)
-    # Find and click the "Accept" button on the web page
-    driver.find_element(By.CSS_SELECTOR, "button.ui.green.basic.button").click()
-    # Find and click "Download"
-    driver.find_element(By.ID, "container-control-text-6268d9223c91dd00278d5ecf").click()
-    # Find and click "Download Regional Data"
-    [element.click() for element in driver.find_elements(By.TAG_NAME, "h5") if element.text == "Download Regional Data"]
-    # Identify links to all the regional data files on the webpage
-    elements = driver.find_elements(By.CSS_SELECTOR, "div.content.active a")
-    # Iterate through the identified links and simulate a click action to trigger the download
-    for element in elements:
-        # Scroll down the div to the link. Required for firefox browser
-        driver.execute_script("arguments[0].scrollIntoView(true);", element)
-        # Click the download link
-        ActionChains(driver).move_to_element(element).click().perform()
-        # Wait a short delay before clicking again so that the download starts.
-        time.sleep(0.5)
-    # Add a 5-second delay to ensure all downloads are complete before quitting the browser
-    time.sleep(5)
-    # Quit the WebDriver, closing the browser
-    driver.quit()
-    # If running this from windows within a WSL directory, Zone.Identifier files are created and must be removed.
-    for zone_identifier_file in slr_data_dir.glob("*Zone.identifier"):
-        os.remove(zone_identifier_file)
-    # Check that the number of downloaded files matches the number of links on the webpage
-    slr_dir_files = list(slr_data_dir.glob("*"))
-    if len(slr_dir_files) != len(elements):
-        logging.debug(f"slr_dir_files = {slr_dir_files}")
-        logging.debug(f"elements = {elements}")
-        raise ValueError(f"The number of files in slr_data_dir ({len(slr_dir_files)})"
-                         f" does not match the number of datasets found on the web page ({len(elements)})")
         # Write out csv file
         if each_request.status_code == 200:
             with open(fr"{slr_data_dir}/{file_name}", 'wb') as file:
@@ -103,8 +67,8 @@ def download_slr_data_files_from_takiwa(
 
 
 def read_slr_data_from_files(
-    slr_data_dir,
-):
+    slr_data_dir: pathlib.Path,
+) -> gpd.GeoDataFrame:
     """
     Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
 
@@ -188,6 +152,7 @@ def read_slr_data_from_files(
     slr_nz_with_geom = gpd.GeoDataFrame(slr_nz_df, geometry=geometry)
 
     return slr_nz_with_geom
+
 
 def store_slr_data_to_db(engine: Engine) -> None:
     """
