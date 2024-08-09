@@ -6,21 +6,11 @@ in the provided tide data.
 """
 
 import logging
-import os
 import pathlib
-import platform
-import subprocess
-import time
-
-import re
 import requests
 
 import geopandas as gpd
 import pandas as pd
-import pyarrow.csv as csv
-from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
@@ -31,9 +21,9 @@ log = logging.getLogger(__name__)
 
 
 def download_slr_data_files_from_takiwa(
-        slr_data_dir,
-        url='https://zenodo.org/records/11398538/export/json'
-):
+    slr_data_dir: pathlib.Path,
+    url: str = 'https://zenodo.org/records/11398538/export/json'
+) -> None:
     """
     Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
 
@@ -41,6 +31,8 @@ def download_slr_data_files_from_takiwa(
     ----------
     slr_data_dir : pathlib.Path
         The directory where the downloaded sea level rise data files will be saved.
+    url: basestring
+        The url where sea level rise files need downloading
 
     Raises
     ------
@@ -76,8 +68,8 @@ def download_slr_data_files_from_takiwa(
 
 
 def read_slr_data_from_files(
-    slr_data_dir,
-):
+    slr_data_dir: pathlib.Path,
+) -> gpd.GeoDataFrame:
     """
     Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
 
@@ -161,6 +153,7 @@ def read_slr_data_from_files(
     slr_nz_with_geom = gpd.GeoDataFrame(slr_nz_df, geometry=geometry)
 
     return slr_nz_with_geom
+
 
 def store_slr_data_to_db(engine: Engine) -> None:
     """
