@@ -32,14 +32,13 @@ def download_slr_data_files_from_takiwa(
     slr_data_dir : pathlib.Path
         The directory where the downloaded sea level rise data files will be saved.
     url: basestring
-        The url where sea level rise files need downloading
+        The url where sea level rise files need downloading.
 
     Returns
     -------
     None
         This function does not return any value.
     """
-
     # Check if the directory exists and, if so, delete all files within it
     if slr_data_dir.exists():
         [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
