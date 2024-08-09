@@ -6,7 +6,7 @@ info:
 paths:
   "/":
     get:
-      summary: Returns message showing app is up
+      summary: Returns message showing app is up TEST
       responses:
         '200':
           description: OK - Backend is receiving requests
@@ -32,7 +32,7 @@ paths:
         '503 - Service Unavailable':
           $ref: '#/components/responses/NoCeleryWorkers'
 
-  "/models/generate":
+  "/models/flood/generate":
     post:
       summary: Starts generating a scenario model output.
       description: |-
@@ -230,14 +230,8 @@ components:
           schema:
             type: object
             properties:
-              lat1:
-                $ref: '#/components/schemas/Lat'
-              lng1:
-                $ref: '#/components/schemas/Lng'
-              lat2:
-                $ref: '#/components/schemas/Lat'
-              lng2:
-                $ref: '#/components/schemas/Lng'
+              bbox:
+                $ref: '#/components/schemas/BoundingBox'
               scenarioOptions:
                 type: object
                 properties:
@@ -265,7 +259,34 @@ components:
                     type: boolean
                     example: true
 
-
+    MedusaInput:
+      in: query
+      type: object
+      name: MedusaInput
+      description: The input parameters for the MEDUSA 2.0 model.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              antecedent_dry_days:
+                type: number
+                example: 1
+                minimum: 0
+              average_rain_intensity:
+                type: number
+                example: 1
+                minimum: 0
+              event_duration:
+                type: number
+                example: 1
+                minimum: 0
+              rainfall_ph:
+                type: number
+                example: 7
+                minimum: 0
+                maximum: 14
 
   schemas:
     Task:
@@ -325,6 +346,87 @@ components:
       example: 172.6644084
       minimum: -180
       maximum: 180
+
+    BoundingBox:
+      description: The bounding box of the area of interest.
+      type: object
+      properties:
+        lat1:
+          $ref: '#/components/schemas/Lat'
+        lng1:
+          $ref: '#/components/schemas/Lng'
+        lat2:
+          $ref: '#/components/schemas/Lat'
+        lng2:
+          $ref: '#/components/schemas/Lng'
+
+    MedusaOutput:
+      type: object
+      properties:
+        type:
+          type: string
+          example: FeatureCollection
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: Feature
+              Index:
+                type: string
+                example: building_flood_status.fid-30e8de35_18e117d7e39_-330c
+              SurfaceArea:
+                type: number
+                example: 1
+                minimum: 0
+              SurfaceType:
+                type: string
+                example: Cr
+              TSS:
+                type: number
+                description: Total suspended solids of this surface.
+                example: 1
+                minimum: 0
+              TCu:
+                type: number
+                description: Total copper this surface contributes.
+                example: 1
+                minimum: 0
+              TZn:
+                type: number
+                description: Total zinc this surface contributes.
+                example: 1
+                minimum: 0
+              DCu:
+                type: number
+                description: Total dissolved copper this surface contributes.
+                example: 1
+                minimum: 0
+              DZn:
+                type: number
+                description: Total dissolved zinc this surface contributes.
+                example: 1
+                minimum: 0
+              scenario_id:
+                type: string
+                description: Unique identifier for the rainfall event that this feature was processed with.
+              geometry:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: Polygon
+                  coordinates:
+                    type: array
+                    example: [ [ [ 172.6644084, -43.37660781 ], [ 172.66427505, -43.37659527 ], [ 172.66427906, -43.37657259 ], [ 172.66441241, -43.37658513 ], [ 172.6644084, -43.37660781 ] ] ]
+                    items:
+                      type: array
+                      items:
+                        type: array
+                        items:
+                          type: number
 
     BuildingFloodStatus:
       type: object

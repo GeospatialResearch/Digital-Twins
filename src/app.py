@@ -169,9 +169,9 @@ def remove_task(task_id: str) -> Response:
     return make_response("Task removed", ACCEPTED)
 
 
-@app.route('/models/generate', methods=["POST"])
+@app.route('/models/pollution/generate', methods=["POST"])
 @check_celery_alive
-def generate_model() -> Response:
+def generate_pollution_model() -> Response:
     """
     Generate a flood model for a given area.
     Supported methods: POST
@@ -208,6 +208,44 @@ def generate_model() -> Response:
         ACCEPTED
     )
 
+@app.route('/models/flood/generate', methods=["POST"])
+@check_celery_alive
+def generate_flood_model() -> Response:
+    """
+    Generate a flood model for a given area.
+    Supported methods: POST
+    POST values: {"bbox": {"lat1": number, "lat2": number, "lng1": number, "lng2": number}}
+
+    Returns
+    -------
+    Response
+        ACCEPTED is the expected response. Response body contains Celery taskId
+    """
+    try:
+        bbox = request.get_json()["bbox"]
+        lat1 = float(bbox.get("lat1"))
+        lng1 = float(bbox.get("lng1"))
+        lat2 = float(bbox.get("lat2"))
+        lng2 = float(bbox.get("lng2"))
+        scenario_options = request.get_json()["scenarioOptions"]
+    except ValueError:
+        return make_response(
+            "JSON values for bbox: lat1, lng1, lat2, lng2 must be valid floats", BAD_REQUEST
+        )
+    if any(coord is None for coord in [lat1, lng1, lat2, lng2]):
+        return make_response("JSON body parameters bbox: {lat1, lng1, lat2, lng2} mandatory", BAD_REQUEST)
+    if not valid_coordinates(lat1, lng1) or not valid_coordinates(lat2, lng2):
+        return make_response("lat & lng must fall in the range -90 < lat <= 90, -180 < lng <= 180", BAD_REQUEST)
+    if (lat1, lng1) == (lat2, lng2):
+        return make_response("lat1, lng1 must not equal lat2, lng2", BAD_REQUEST)
+
+    bbox_wkt = create_wkt_from_coords(lat1, lng1, lat2, lng2)
+    task = tasks.create_model_for_area(bbox_wkt, scenario_options)
+
+    return make_response(
+        jsonify({"taskId": task.id}),
+        ACCEPTED
+    )
 
 def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:
     """
