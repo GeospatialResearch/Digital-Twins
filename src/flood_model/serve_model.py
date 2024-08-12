@@ -19,7 +19,7 @@ _xml_header = {"Content-type": "text/xml"}
 
 def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
     """
-    Create a GeoTiff file from a netCDF model output. The Tiff represents the max flood height in the model output.
+    Create a GeoTiff file from a netCDF model output. The TIFF represents the max flood height in the model output.
 
     Parameters
     ----------
