@@ -14,33 +14,33 @@ class MEDUSA2ModelOutput(Base):
     ----------
     __tablename__ : str
         Name of the database table.
-    Index : int
-        Unique identifier for each entry (primary key).
-    SurfaceArea : float
+    scenario_id : int
+        The rainfall event scenario ID this feature was processed with, makes up part of the primary key.
+    spatial_feature_id: int
+        The id of the spatial feature this row is associated with, makes up part of the primary key.
+    surface_area : float
         Surface area in meters squared of this feature.
-    SurfaceType : str
+    surface_type : str
         The type of surface this is. Converted to string from Enum.
-    TSS : float
-        Total suspended solid of the surface.
-    TCu : float
+    total_suspended_solids : float
+        Total suspended solids of the surface.
+    total_copper : float
         Total copper of the surface.
-    TZn: float
+    total_zinc: float
         Total zinc of the surface.
-    DCu: float
+    dissolved_copper float
         Total dissolved copper of the surface.
-    DZn: float
+    dissolved_zinc: float
         Total dissolved zinc of the surface.
-    scenario_id: int
-        Unique identifier for the rainfall event that this feature was processed with.
     """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "medusa2_model_output"
-    Index = Column(Integer, primary_key=True)
-    SurfaceArea = Column(Float)
-    SurfaceType = Column(String)
-    TSS = Column(Float)
-    TCu = Column(Float)
-    TZn = Column(Float)
-    DCu = Column(Float)
-    DZn = Column(Float)
     scenario_id = Column(Integer, primary_key=True)
+    spatial_feature_id = Column(Integer, primary_key=True)
+    surface_area = Column(Float, nullable=False)
+    surface_type = Column(String, nullable=False)
+    total_suspended_solids = Column(Float, nullable=False)
+    total_copper = Column(Float, nullable=False)
+    total_zinc = Column(Float, nullable=False)
+    dissolved_copper = Column(Float, nullable=False)
+    dissolved_zinc = Column(Float, nullable=False)
