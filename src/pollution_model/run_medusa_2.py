@@ -14,16 +14,16 @@ from typing import Tuple
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql import text
 
+from src import geoserver
+from src.config import EnvVariable
 from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import create_table
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.pollution_model.pollution_tables import MEDUSA2ModelOutput
 
 log = logging.getLogger(__name__)
-
-Base = declarative_base()
 
 
 # Enum strings are assigned as they are described in the original paper
@@ -320,10 +320,10 @@ def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
     crs = area_of_interest.crs.to_epsg()
 
     # Select all relevant information from the appropriate table
-    query = f"""
+    query = text("""
     SELECT road_id, geometry FROM nz_roads
-    WHERE ST_INTERSECTS(nz_roads.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
-    """
+    WHERE ST_INTERSECTS(nz_roads.geometry, ST_GeomFromText(:aoi_wkt, :crs));
+    """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
 
     # Execute the SQL query
     result = gpd.GeoDataFrame.from_postgis(query, engine, index_col="road_id", geom_col="geometry")
