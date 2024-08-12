@@ -436,6 +436,53 @@ def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame,
     results.to_sql(MEDUSA2ModelOutput.__tablename__, engine, if_exists="append", index=True)
 
 
+def serve_pollution_model() -> None:
+    """Serve the geospatial data for pollution models visualisation and API use.
+    Joins the medusa2_model_output table to the corresponding geospatial feature tables.
+    """
+    # Create geoserver workspace for pollution data
+    db_name = EnvVariable.POSTGRES_DB
+    workspace_name = f"{db_name}-pollution"
+    geoserver.create_workspace_if_not_exists(workspace_name)
+
+    # Ensure workspace has access to database
+    data_store_name = f"{db_name} PostGIS"
+    geoserver.create_db_store_if_not_exists(db_name, workspace_name, data_store_name)
+
+    # Serve medusa2_model_output joined to geometry from associated spatial table
+    medusa_output_layer_name = "medusa2_model_output"
+    pollution_sql_xml_query = rf"""
+        <metadata>
+          <entry key="JDBC_VIRTUAL_TABLE">
+            <virtualTable>
+              <name>{medusa_output_layer_name}</name>
+              <sql>
+                SELECT medusa2_model_output.*, geometry&#xd;
+                FROM medusa2_model_output&#xd;
+                INNER JOIN nz_roads&#xd;
+                ON spatial_feature_id = road_id&#xd;
+                WHERE surface_type = &apos;Rd&apos;&#xd;
+                UNION&#xd;
+                SELECT medusa2_model_output.*, geometry&#xd;
+                FROM medusa2_model_output&#xd;
+                INNER JOIN nz_building_outlines&#xd;
+                ON spatial_feature_id = nz_building_outlines.building_id&#xd;
+                WHERE surface_type &lt;&gt; &apos;Rd&apos;
+              </sql>
+              <escapeSql>false</escapeSql>
+              <geometry>
+                <name>geometry</name>
+                <type>Geometry</type>
+                <srid>2193</srid>
+              </geometry>
+            </virtualTable>
+          </entry>
+        </metadata>
+        """
+    geoserver.create_datastore_layer(workspace_name, data_store_name, layer_name=MEDUSA2ModelOutput.__tablename__,
+                                     metadata_elem=pollution_sql_xml_query)
+
+
 def get_next_scenario_id(engine: Engine) -> int:
     """
     Read the database to find the latest scenario id. Returns that id + 1 to give the new scenario_id.
@@ -511,6 +558,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     scenario_id = get_next_scenario_id(engine)
     # Store the event information in a database
     store_pollution_model_in_database(engine=engine, results=results, scenario_id=scenario_id)
+    serve_pollution_model()
     return scenario_id
 
 
