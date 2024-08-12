@@ -278,24 +278,16 @@ def get_building_information(_engine: Engine, _area_of_interest: gpd.GeoDataFram
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    new_result = []
-
     buildings = gpd.GeoDataFrame.from_file("central_buildings.geojson")
-    for index, _ in buildings.iterrows():
-        # Append appropriate attribute data to the list. The attributes are Index, SurfaceArea, and SurfaceType.
-        # Additionally, a placeholder for TSS, TCu, TZn, DCu, and DZn are included and set to "None". These will be
-        # edited later.
-        surface_area = buildings.iloc[index]["geometry"].area
-        new_result.append({"spatial_feature_id": index, "surface_area": surface_area,
-                           "surface_type": buildings.iloc[index]["surface_type"],
-                           "total_suspended_solids": None,
-                           "total_copper": None,
-                           "total_zinc": None,
-                           "dissolved_copper": None,
-                           "dissolved_zinc": None})
+    buildings = buildings.set_index("building_id")
+    # Filter out irrelevant columns.
+    buildings_medusa_info = buildings[["surface_type", "geometry"]]
+    # Append columns specific to MEDUSA, to be filled later in the processing.
+    buildings_medusa_info[
+        ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]] = None
 
     # return the GeoDataFrame containing the relevant data about buildings
-    return gpd.GeoDataFrame(new_result)
+    return gpd.GeoDataFrame(buildings_medusa_info)
 
 
 def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -326,26 +318,18 @@ def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
     """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
 
     # Execute the SQL query
-    result = gpd.GeoDataFrame.from_postgis(query, engine, index_col="road_id", geom_col="geometry")
-    new_result = []
+    roads = gpd.GeoDataFrame.from_postgis(query, engine, index_col="road_id", geom_col="geometry")
 
-    for index, row in result.iterrows():
-        # Append appropriate attribute data to the list. The attributes are Index, SurfaceArea, and SurfaceType.
-        # Additionally, a placeholder for TSS, TCu, TZn, DCu, and DZn are included and set to "None". These will be
-        # edited later.
-        # Calculate surface area of roads. Currently, an approximation based on the length of the road * 5
-        surface_area = row["geometry"].length * 5
-        new_result.append({"spatial_feature_id": index,
-                           "surface_area": surface_area,
-                           "surface_type": SurfaceType.ASPHALT_ROAD,
-                           "total_suspended_solids": None,
-                           "total_copper": None,
-                           "total_zinc": None,
-                           "dissolved_copper": None,
-                           "dissolved_zinc": None})
+    # Filter columns that are useful for MEDUS model
+    roads_medusa_info = roads[["geometry"]]
+    # There is only one SurfaceType for roads.
+    roads_medusa_info["surface_type"] = SurfaceType.ASPHALT_ROAD
+    # Append columns specific to MEDUSA, to be filled later in the processing.
+    roads_medusa_info[
+        ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]] = None
 
-    # return the GeoDataFrame containing the relevant data about buildings
-    return gpd.GeoDataFrame(new_result)
+    # return the GeoDataFrame containing the relevant data about roads
+    return gpd.GeoDataFrame(roads_medusa_info)
 
 
 def run_pollution_model_rain_event(engine: Engine,
@@ -382,8 +366,8 @@ def run_pollution_model_rain_event(engine: Engine,
     all_roads = get_road_information(engine, area_of_interest)
 
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
-    for index, row in all_buildings.iterrows():
-        surface_area = float(row["surface_area"])
+    for building_id, row in all_buildings.iterrows():
+        surface_area = row.geometry.area
         surface_type = row["surface_type"]
         curr_tss = compute_tss_roof_road(surface_area=surface_area,
                                          antecedent_dry_days=antecedent_dry_days,
@@ -400,13 +384,16 @@ def run_pollution_model_rain_event(engine: Engine,
         curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
                                                                           total_zinc_load=curr_total_zinc,
                                                                           surface_type=surface_type)
-        all_buildings.loc[index] = [index, surface_area, surface_type, curr_tss,
-                                    curr_total_copper, curr_total_zinc, curr_dissolved_copper, curr_dissolved_zinc]
+        updated_values = {"total_suspended_solids": curr_tss,
+                          "total_copper": curr_total_copper,
+                          "total_zinc": curr_total_zinc, "dissolved_copper": curr_dissolved_copper,
+                          "dissolved_zinc": curr_dissolved_zinc}
+        all_buildings.loc[building_id, updated_values.keys()] = updated_values
 
     # Run through all the roads/car parks, and calculate TSS, total metal loads, and dissolved metal loads
-    for i in range(len(all_roads)):
-        surface_area = float(all_roads.iloc[i]["surface_area"])
-        surface_type = all_roads.iloc[i]["surface_type"]
+    for road_id, row in all_roads.iterrows():
+        surface_area = row.geometry.length * 5
+        surface_type = row["surface_type"]
         curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
                                          average_rain_intensity=average_rain_intensity, event_duration=event_duration,
                                          surface_type=surface_type)
@@ -416,10 +403,18 @@ def run_pollution_model_rain_event(engine: Engine,
                                                                           total_zinc_load=curr_total_zinc,
                                                                           surface_type=surface_type)
 
-        all_roads.iloc[i] = [all_roads.iloc[i]["spatial_feature_id"], surface_area, surface_type, curr_tss,
-                             curr_total_copper, curr_total_zinc, curr_dissolved_copper, curr_dissolved_zinc]
+        updated_values = {"total_suspended_solids": curr_tss,
+                          "total_copper": curr_total_copper,
+                          "total_zinc": curr_total_zinc,
+                          "dissolved_copper": curr_dissolved_copper,
+                          "dissolved_zinc": curr_dissolved_zinc}
+        all_roads.loc[road_id, updated_values.keys()] = updated_values
 
-    return gpd.GeoDataFrame(pd.concat([all_roads, all_buildings], ignore_index=True))
+    # Drop the geometry columns now, since they can be joined
+    all_roads = all_roads.drop('geometry', axis=1)
+    all_buildings = all_buildings.drop("geometry", axis=1)
+    # Return all pollution data
+    return pd.concat([all_buildings, all_roads])
 
 
 def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame, scenario_id: int) -> None:
@@ -437,8 +432,8 @@ def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame,
         The id of the current medusa2.0 model run, to associate with the results.
     """
     results["scenario_id"] = scenario_id
-    results.set_index("spatial_feature_id", inplace=True)
-    results.to_sql("medusa2_model_output", engine, if_exists="append", index=True)
+    results.index.names = ["spatial_feature_id"]
+    results.to_sql(MEDUSA2ModelOutput.__tablename__, engine, if_exists="append", index=True)
 
 
 def get_next_scenario_id(engine: Engine) -> int:
