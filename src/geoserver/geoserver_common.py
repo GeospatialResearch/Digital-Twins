@@ -58,7 +58,7 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
     if response.status_code == HTTPStatus.CREATED:
         log.info(f"Created new workspace {workspace_name}.")
     elif response.status_code == HTTPStatus.CONFLICT:
-        log.info(f"Workspace {workspace_name} already exists.")
+        log.debug(f"Workspace {workspace_name} already exists.")
     else:
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
