@@ -10,6 +10,7 @@ import logging
 import math
 from enum import StrEnum
 from typing import Tuple
+from xml.sax import saxutils
 
 import geopandas as gpd
 import pandas as pd
@@ -452,23 +453,29 @@ def serve_pollution_model() -> None:
 
     # Serve medusa2_model_output joined to geometry from associated spatial table
     medusa_output_layer_name = "medusa2_model_output"
-    pollution_sql_xml_query = rf"""
+
+    pollution_sql_query = """
+    SELECT medusa2_model_output.*, geometry
+    FROM medusa2_model_output
+             INNER JOIN nz_roads
+                        ON spatial_feature_id = road_id
+    WHERE surface_type = 'Rd'
+    UNION
+    SELECT medusa2_model_output.*, geometry
+    FROM medusa2_model_output
+             INNER JOIN nz_building_outlines
+                        ON spatial_feature_id = nz_building_outlines.building_id
+    WHERE surface_type <> 'Rd'
+    """
+    xml_escaped_sql = saxutils.escape(pollution_sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
+
+    pollution_metadata_xml = rf"""
         <metadata>
           <entry key="JDBC_VIRTUAL_TABLE">
             <virtualTable>
               <name>{medusa_output_layer_name}</name>
               <sql>
-                SELECT medusa2_model_output.*, geometry&#xd;
-                FROM medusa2_model_output&#xd;
-                INNER JOIN nz_roads&#xd;
-                ON spatial_feature_id = road_id&#xd;
-                WHERE surface_type = &apos;Rd&apos;&#xd;
-                UNION&#xd;
-                SELECT medusa2_model_output.*, geometry&#xd;
-                FROM medusa2_model_output&#xd;
-                INNER JOIN nz_building_outlines&#xd;
-                ON spatial_feature_id = nz_building_outlines.building_id&#xd;
-                WHERE surface_type &lt;&gt; &apos;Rd&apos;
+                {xml_escaped_sql}
               </sql>
               <escapeSql>false</escapeSql>
               <geometry>
@@ -481,7 +488,7 @@ def serve_pollution_model() -> None:
         </metadata>
         """
     geoserver.create_datastore_layer(workspace_name, data_store_name, layer_name=MEDUSA2ModelOutput.__tablename__,
-                                     metadata_elem=pollution_sql_xml_query)
+                                     metadata_elem=pollution_metadata_xml)
 
 
 def get_next_scenario_id(engine: Engine) -> int:
