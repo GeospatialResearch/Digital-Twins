@@ -386,7 +386,8 @@ def run_pollution_model_rain_event(engine: Engine,
                                                                           surface_type=surface_type)
         updated_values = {"total_suspended_solids": curr_tss,
                           "total_copper": curr_total_copper,
-                          "total_zinc": curr_total_zinc, "dissolved_copper": curr_dissolved_copper,
+                          "total_zinc": curr_total_zinc,
+                          "dissolved_copper": curr_dissolved_copper,
                           "dissolved_zinc": curr_dissolved_zinc}
         all_buildings.loc[building_id, updated_values.keys()] = updated_values
 
@@ -410,7 +411,7 @@ def run_pollution_model_rain_event(engine: Engine,
                           "dissolved_zinc": curr_dissolved_zinc}
         all_roads.loc[road_id, updated_values.keys()] = updated_values
 
-    # Drop the geometry columns now, since they can be joined
+    # Drop the geometry columns now, since they can be joined to the spatial tables so we reduce data duplication
     all_roads = all_roads.drop('geometry', axis=1)
     all_buildings = all_buildings.drop("geometry", axis=1)
     # Return all pollution data
@@ -558,6 +559,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     scenario_id = get_next_scenario_id(engine)
     # Store the event information in a database
     store_pollution_model_in_database(engine=engine, results=results, scenario_id=scenario_id)
+    # Ensure pollution model data is being served by geoserver
     serve_pollution_model()
     return scenario_id
 
