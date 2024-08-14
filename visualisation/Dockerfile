@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:lts as build-stage
+FROM node:lts AS build-stage
 
 WORKDIR /app
 # Install node_modules
@@ -14,7 +14,7 @@ COPY public/ public/
 # Build code for production style server
 RUN npm run build
 
-FROM nginx:stable as production-stage
+FROM nginx:stable AS production-stage
 
 # Serve built files using nginx
 RUN mkdir /app
