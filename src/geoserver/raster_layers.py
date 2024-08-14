@@ -66,6 +66,7 @@ def upload_gtiff_to_store(
     if not response.ok:
         # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
+    log.info(f"Uploaded {gtiff_filepath.name} to Geoserver workspace {workspace_name}.")
 
 
 def create_layer_from_store(geoserver_url: str, layer_name: str, native_crs: str, workspace_name: str) -> None:
@@ -145,7 +146,10 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, mo
 def create_viridis_style_if_not_exists() -> None:
     """Create a GeoServer style for rasters using the viridis color scale."""
     style_name = "viridis_raster"
-    if not style_exists(style_name):
+    log.info(f"Creating style '{style_name}.sld' if it does not exist.")
+    if style_exists(style_name):
+        log.debug(f"Style '{style_name}.sld' already exists.")
+    else:
         # Create the style base
         create_style_data = f"""
         <style>
@@ -169,3 +173,4 @@ def create_viridis_style_if_not_exists() -> None:
             auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
         )
     sld_response.raise_for_status()
+    log.info(f"Style '{style_name}.sld' created.")
