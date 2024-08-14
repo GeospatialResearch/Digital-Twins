@@ -96,7 +96,7 @@ ENTRYPOINT source /venv/bin/activate && \
            source /venv/bin/activate && \
            celery -A src.tasks worker -P threads --loglevel=INFO
 
-FROM docker.osgeo.org/geoserver:2.21.2 as geoserver
+FROM docker.osgeo.org/geoserver:2.21.2 AS geoserver
 
 RUN addgroup --system nonroot \
     && adduser --system --group nonroot \
