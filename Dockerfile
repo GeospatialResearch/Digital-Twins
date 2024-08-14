@@ -62,8 +62,7 @@ RUN mkdir /stored_data \
     && mkdir /stored_data/geoserver
 
 # Copy python virtual environment from build layer
-COPY --chmod=555 --from=build /venv /venv
-
+COPY --chown=root:root --chmod=555 --from=build /venv /venv
 USER nonroot
 
 # Copy source files and essential runtime files
