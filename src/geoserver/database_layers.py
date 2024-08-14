@@ -36,6 +36,8 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
         If geoserver responds with an error, raises it as an exception since it is unexpected.
 
     """
+    layer_full_name = f"{workspace_name}:{layer_name}"
+    log.info(f"Creating datastore layer '{layer_full_name}' if it does not already exist.")
     db_exists_response = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes.json',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
@@ -48,6 +50,7 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
     layer_names = [layer["name"] for layer in layers]
     if layer_name in layer_names:
         # If the layer already exists, we don't have to add it again, and can instead return
+        log.debug(f"Datastore layer '{layer_full_name}' already exists.")
         return
     # Construct new layer request
     data = f"""
@@ -86,7 +89,7 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if response.status_code == HTTPStatus.CREATED:
-        log.info(f"Created new datastore layer {workspace_name}:{layer_name}.")
+        log.info(f"Created new datastore layer '{layer_full_name}'.")
     else:
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
@@ -113,6 +116,8 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
         If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Create request to check if database store already exists
+    data_store_full_name = f"{new_data_store_name}:{workspace_name}"
+    log.info(f"Creating datastore '{data_store_full_name}' if it does not already exist.")
     db_exists_response = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
@@ -127,6 +132,7 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
 
     if new_data_store_name in data_store_names:
         # If the data store already exists we don't have to do anything
+        log.debug(f"Datastore '{data_store_full_name}' already exists.")
         return
 
     # Create request to create database store
@@ -152,7 +158,7 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if response.status_code == HTTPStatus.CREATED:
-        log.info(f"Created new db store {workspace_name}.")
+        log.info(f"Created new datastore '{data_store_full_name}'.")
     # Expected responses are CREATED if the new store is created or CONFLICT if one already exists.
     else:
         # If it does not meet the expected results then raise an error
