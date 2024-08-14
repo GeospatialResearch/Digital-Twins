@@ -47,13 +47,14 @@ Pin-Priority: 1000 \n\
  && apt-get install -y --no-install-recommends firefox \
 # Install geckodriver, webdriver for firefox, needed for selenium
  && curl --proto "=https" -L "https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz" | tar xz -C /usr/local/bin \
-# Install health-checker tool that allows us to run commands when checking root endpoint to check if service is available
- && curl --proto "=https" -L "https://github.com/gruntwork-io/health-checker/releases/download/v0.0.8/health-checker_linux_amd64" -o /usr/local/bin/health-checker \
- && chmod +x /usr/local/bin/health-checker \
 # Cleanup image and remove junk
  && rm -fr /var/lib/apt/lists/* \
 # Remove unused packages. Keep curl for health checking in docker-compose
  && apt-get purge -y ca-certificates
+
+# Install health-checker tool that allows us to run commands when checking root endpoint to check if service is available
+ADD --chmod=555 https://github.com/gruntwork-io/health-checker/releases/download/v0.0.8/health-checker_linux_amd64 \
+ /usr/local/bin/health-checker
 
 # Create stored data dir inside image, in case it does not get mounted (such as when deploying on AWS)
 RUN mkdir /stored_data \
