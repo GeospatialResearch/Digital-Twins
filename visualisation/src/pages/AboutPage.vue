@@ -35,7 +35,3 @@ export default Vue.extend({
   mixins: [titleMixin],
 });
 </script>
-
-<style scoped>
-
-</style>
