@@ -3,7 +3,7 @@
 This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
 storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
 in the provided tide data.
-"""
+""" # noqa: D400
 
 import logging
 import pathlib
@@ -165,11 +165,6 @@ def store_slr_data_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Define the table name for storing the sea level rise data
     table_name = "sea_level_rise"
