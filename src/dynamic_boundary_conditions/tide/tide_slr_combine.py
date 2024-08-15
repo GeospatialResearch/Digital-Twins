@@ -2,7 +2,7 @@
 """
 Generates combined tide and sea level rise (SLR) data for a specific projection year, taking into account the provided
 confidence level, SSP scenario, inclusion of Vertical Land Motion (VLM), percentile, and more.
-""" # noqa: D400
+"""  # noqa: D400
 
 import logging
 import re
@@ -169,7 +169,7 @@ def add_slr_to_tide(
         proj_year: int) -> pd.DataFrame:
     """
     Add sea level rise (SLR) data to the tide data for a specific projection year and
-    returns the combined tide and sea level rise value.
+    return the combined tide and sea level rise value.
 
     Parameters
     ----------
@@ -184,7 +184,7 @@ def add_slr_to_tide(
     -------
     pd.DataFrame
         A DataFrame that contains the combined tide and sea level rise data for the specified projection year.
-    
+
     Raises
     ------
     ValueError
