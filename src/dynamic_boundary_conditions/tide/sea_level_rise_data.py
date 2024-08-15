@@ -6,7 +6,7 @@ in the provided tide data.
 """  # noqa: D400
 
 import logging
-import pathlib
+import os.path
 
 import geopandas as gpd
 import pandas as pd
@@ -14,70 +14,15 @@ import requests
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
-from src import config
 from src.digitaltwin import tables
 
 log = logging.getLogger(__name__)
 
 
-def download_slr_data_files_from_takiwa(
-    slr_data_dir: pathlib.Path
-) -> None:
-    """
-    Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
-
-    Parameters
-    ----------
-    slr_data_dir : pathlib.Path
-        The directory where the downloaded sea level rise data files will be saved.
-
-    Raises
-    ------
-    ValueError
-        If the number of downloaded files does not match the number of datasets found on the web page.
-    """
-    # Check if the directory exists and, if so, delete all files within it
-    if slr_data_dir.exists():
-        for slr_file in slr_data_dir.glob("*"):
-            slr_file.unlink()
-    # Create the directory if it does not already exist
-    else:
-        slr_data_dir.mkdir(parents=True, exist_ok=True)
-    # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
-    log.info("Downloading regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
-
-    # Get the url where sea level rise files need downloading.
-    url: str = 'https://zenodo.org/records/11398538/export/json'
-
-    # Request export information json from Zenodo
-    response = requests.get(url)
-    response.raise_for_status()
-    export_json = response.json()
-    # Get necessary links from json file
-    for file_name, file_info in export_json['files']['entries'].items():
-        # Create request for downloading file from each export link
-        each_response = requests.get(file_info["links"]["content"])
-
-        # Check response for errors
-        response.raise_for_status()
-        # Write out csv file
-        with open(slr_data_dir / file_name, 'wb') as file:
-            file.write(each_response.content)
-
-    # Log that the files have been successfully downloaded
-    log.info("Successfully downloaded regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
-
-
 def read_slr_data_from_files(
-    slr_data_dir: pathlib.Path,
 ) -> gpd.GeoDataFrame:
     """
     Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
-
-    Parameters
-    ----------
-    slr_data_dir : pathlib.Path
-        The directory containing the downloaded sea level rise data files.
 
     Returns
     -------
@@ -89,18 +34,24 @@ def read_slr_data_from_files(
     FileNotFoundError
         If the sea level rise data directory does not exist or if there are no CSV files in the specified directory.
     """
-    # Check if the sea level rise data directory exists
-    if not slr_data_dir.exists():
-        raise FileNotFoundError(f"'sea_level_rise' data directory not found: '{slr_data_dir}'.")
-    # Check if there are any CSV files in the specified directory
-    if not any(slr_data_dir.glob("*.csv")):
-        raise FileNotFoundError(f"'sea_level_rise' data files not found in: '{slr_data_dir}'")
+    # Get the url where sea level rise files need downloading
+    url = 'https://zenodo.org/records/11398538/export/json'
 
     # Create dictionary to store the sea level rise dataset
     slr_nz_dict = {}
-    for dataset_path in slr_data_dir.glob("*.csv"):
-        name_dataset = dataset_path.stem
-        slr_nz_dict[name_dataset] = pd.read_csv(dataset_path)
+    # Request export information json from Zenodo
+    response = requests.get(url)
+    response.raise_for_status()
+    export_json = response.json()
+    # Get necessary links from json file
+    for file_name, file_info in export_json['files']['entries'].items():
+        # Get file name without extension
+        file_name_without_extension = os.path.splitext(file_name)[0]
+        # Collect sea level rise dataset and storing into dictionary
+        slr_nz_dict[file_name_without_extension] = pd.read_csv(file_info["links"]["content"])
+
+        # Check response for errors
+        response.raise_for_status()
 
     # Column name used to merge
     left_column_name = 'Site ID'
@@ -109,7 +60,7 @@ def read_slr_data_from_files(
     slr_nz_merge_vlm = pd.merge(
         slr_nz_dict["NZ_VLM_final_May24"], slr_nz_dict["NZSeaRise_proj_vlm"],
         left_on=left_column_name, right_on=right_column_name,
-        how='left', validate='1:1',
+        how='left', validate='1:m',
         suffixes=('_y', '')
     )
     slr_nz_merge_vlm['add_vlm'] = True
@@ -118,12 +69,12 @@ def read_slr_data_from_files(
     slr_nz_merge_novlm = pd.merge(
         slr_nz_dict["NZ_VLM_final_May24"], slr_nz_dict["NZSeaRise_proj_novlm"],
         left_on=left_column_name, right_on=right_column_name,
-        how='left', validate='1:1',
+        how='left', validate='1:m',
         suffixes=('_y', '')
     )
     slr_nz_merge_novlm['add_vlm'] = False
 
-    # Concatenate all the dataframes in the list
+    # Concatenate all the dataframes (both WITH VLM and WITHOUT VLM)
     slr_nz = pd.concat([slr_nz_merge_vlm, slr_nz_merge_novlm], axis=0).reset_index(drop=True)
 
     # Remove unnamed columns
@@ -177,12 +128,8 @@ def store_slr_data_to_db(engine: Engine) -> None:
     if tables.check_table_exists(engine, table_name):
         log.info(f"'{table_name}' data already exists in the database.")
     else:
-        # Get the data directory and append "slr_data" to specify the sea level rise data directory
-        slr_data_dir = config.EnvVariable.DATA_DIR / "slr_data"
-        # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
-        download_slr_data_files_from_takiwa(slr_data_dir)
         # Read sea level rise data from the NZ Sea level rise datasets
-        slr_nz = read_slr_data_from_files(slr_data_dir)
+        slr_nz = read_slr_data_from_files()
         # Store the sea level rise data to the database table
         log.info(f"Adding '{table_name}' data to the database.")
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
