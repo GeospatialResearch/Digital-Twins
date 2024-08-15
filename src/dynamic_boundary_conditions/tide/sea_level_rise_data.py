@@ -48,18 +48,20 @@ def download_slr_data_files_from_takiwa(
     # Get the url where sea level rise files need downloading.
     url: str = 'https://zenodo.org/records/11398538/export/json'
 
-    # Using url and request to get information from json file
-    request = requests.get(url)
-    json_file = request.json()
+    # Request export informaiton json from Zenodo
+    response = requests.get(url)
+    response.raise_for_status()
+    export_json = response.json()
     # Get necessary links from json file
-    for file_name, file_info in json_file['files']['entries'].items():
-        # Create request for downloading file from each link
-        each_request = requests.get(file_info["links"]["content"])
+    for file_name, file_info in export_json['files']['entries'].items():
+        # Create request for downloading file from each export link
+        each_response = requests.get(file_info["links"]["content"])
 
+        # Check response for errors
+        response.raise_for_status()
         # Write out csv file
-        if each_request.status_code == 200:
-            with open(fr"{slr_data_dir}/{file_name}", 'wb') as file:
-                file.write(each_request.content)
+        with open(slr_data_dir / file_name, 'wb') as file:
+            file.write(each_response.content)
 
     # Log that the files have been successfully downloaded
     log.info("Successfully downloaded regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
@@ -93,20 +95,22 @@ def read_slr_data_from_files(
     if not any(slr_data_dir.glob("*.csv")):
         raise FileNotFoundError(f"'sea_level_rise' data files not found in: '{slr_data_dir}'")
 
-    # Create an empty list to store the sea level rise datasets
-    slr_nz_list = [
-        pd.read_csv(file_path) for file_path in slr_data_dir.glob("*.csv")
-    ]
+    # Create dictionary to store the sea level rise dataset
+    slr_nz_dict = {}
+    for dataset_path in slr_data_dir.glob("*.csv"):
+        name_dataset = dataset_path.stem
+        slr_nz_dict[name_dataset] = pd.read_csv(dataset_path)
 
-    # Merge Site Details dataframe and Sea level projections tables with VLM
+    # Merge Site Details dataframe and Sea level projections tables WITH VLM
     slr_nz_merge_vlm = pd.merge(
-        slr_nz_list[0], slr_nz_list[1], left_on='Site ID', right_on='site',
+        slr_nz_dict["NZ_VLM_final_May24"], slr_nz_dict["NZSeaRise_proj_vlm"],
+        left_on='Site ID', right_on='site',
         how='left',
         suffixes=('_y', '')
     )
     slr_nz_merge_vlm['add_vlm'] = True
 
-    # Merge Site Details dataframe and Sea level projections tables with VLM
+    # Merge Site Details dataframe and Sea level projections tables WITHOUT VLM
     slr_nz_merge_novlm = pd.merge(
         slr_nz_list[0], slr_nz_list[2], left_on='Site ID', right_on='site',
         how='left',
@@ -174,7 +178,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
         log.info(f"'{table_name}' data already exists in the database.")
     else:
         # Get the data directory and append "slr_data" to specify the sea level rise data directory
-        slr_data_dir = config.get_env_variable("DATA_DIR", cast_to=pathlib.Path) / "slr_data"
+        slr_data_dir = config.EnvVariable.DATA_DIR / "slr_data"
         # Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website
         download_slr_data_files_from_takiwa(slr_data_dir)
         # Read sea level rise data from the NZ Sea level rise datasets
