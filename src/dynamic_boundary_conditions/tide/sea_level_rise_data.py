@@ -21,8 +21,7 @@ log = logging.getLogger(__name__)
 
 
 def download_slr_data_files_from_takiwa(
-    slr_data_dir: pathlib.Path,
-    url: str = 'https://zenodo.org/records/11398538/export/json'
+    slr_data_dir: pathlib.Path
 ) -> None:
     """
     Download regional sea level rise (SLR) data files from the NZ SeaRise Takiwa website.
@@ -31,8 +30,6 @@ def download_slr_data_files_from_takiwa(
     ----------
     slr_data_dir : pathlib.Path
         The directory where the downloaded sea level rise data files will be saved.
-    url: basestring
-        The url where sea level rise files need downloading.
 
     Returns
     -------
@@ -47,6 +44,9 @@ def download_slr_data_files_from_takiwa(
         slr_data_dir.mkdir(parents=True, exist_ok=True)
     # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
     log.info("Downloading regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
+
+    # Get the url where sea level rise files need downloading.
+    url: str = 'https://zenodo.org/records/11398538/export/json'
 
     # Using url and request to get information from json file
     request = requests.get(url)
