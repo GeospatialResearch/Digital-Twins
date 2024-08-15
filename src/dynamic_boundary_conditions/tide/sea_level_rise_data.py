@@ -48,7 +48,7 @@ def download_slr_data_files_from_takiwa(
     # Get the url where sea level rise files need downloading.
     url: str = 'https://zenodo.org/records/11398538/export/json'
 
-    # Request export informaiton json from Zenodo
+    # Request export information json from Zenodo
     response = requests.get(url)
     response.raise_for_status()
     export_json = response.json()
