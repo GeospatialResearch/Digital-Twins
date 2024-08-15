@@ -31,14 +31,15 @@ def download_slr_data_files_from_takiwa(
     slr_data_dir : pathlib.Path
         The directory where the downloaded sea level rise data files will be saved.
 
-    Returns
-    -------
-    None
-        This function does not return any value.
+    Raises
+    ------
+    ValueError
+        If the number of downloaded files does not match the number of datasets found on the web page.
     """
     # Check if the directory exists and, if so, delete all files within it
     if slr_data_dir.exists():
-        [slr_file.unlink() for slr_file in slr_data_dir.glob("*")]
+        for slr_file in slr_data_dir.glob("*"):
+            slr_file.unlink()
     # Create the directory if it does not already exist
     else:
         slr_data_dir.mkdir(parents=True, exist_ok=True)
@@ -101,19 +102,23 @@ def read_slr_data_from_files(
         name_dataset = dataset_path.stem
         slr_nz_dict[name_dataset] = pd.read_csv(dataset_path)
 
+    # Column name used to merge
+    left_column_name = 'Site ID'
+    right_column_name = 'site'
     # Merge Site Details dataframe and Sea level projections tables WITH VLM
     slr_nz_merge_vlm = pd.merge(
         slr_nz_dict["NZ_VLM_final_May24"], slr_nz_dict["NZSeaRise_proj_vlm"],
-        left_on='Site ID', right_on='site',
-        how='left',
+        left_on=left_column_name, right_on=right_column_name,
+        how='left', validate='1:1',
         suffixes=('_y', '')
     )
     slr_nz_merge_vlm['add_vlm'] = True
 
     # Merge Site Details dataframe and Sea level projections tables WITHOUT VLM
     slr_nz_merge_novlm = pd.merge(
-        slr_nz_list[0], slr_nz_list[2], left_on='Site ID', right_on='site',
-        how='left',
+        slr_nz_dict["NZ_VLM_final_May24"], slr_nz_dict["NZSeaRise_proj_novlm"],
+        left_on=left_column_name, right_on=right_column_name,
+        how='left', validate='1:1',
         suffixes=('_y', '')
     )
     slr_nz_merge_novlm['add_vlm'] = False
@@ -127,7 +132,7 @@ def read_slr_data_from_files(
     slr_nz_df = slr_nz_df.drop(columns=['site'])
     # Rename the columns
     slr_nz_df = slr_nz_df.rename(columns={
-        'Site ID': 'siteid',
+        left_column_name: 'siteid',
         'Lon': 'lon',
         'Lat': 'lat',
         'Vertical Rate (mm/yr)': 'vertical_rate',
