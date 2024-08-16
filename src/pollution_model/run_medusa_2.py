@@ -363,10 +363,14 @@ def run_pollution_model_rain_event(engine: Engine,
     gpd.GeoDataFrame
         The combined results of all buildings and roads from the MEDUSA2.0 pollution model
     """
+    log.info("Running MEDUSA2 pollution model for the area of interest.")
+    calculation_pending_log_message = "Calculating pollutant load contributions for {features} in the area of interest."
+    calculation_complete_log_message = "Pollutant load contributions calculated for {features} in the area of interest."
     all_buildings = get_building_information(engine, area_of_interest)
     all_roads = get_road_information(engine, area_of_interest)
 
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
+    log.info(calculation_pending_log_message.format(features="buildings"))
     for building_id, row in all_buildings.iterrows():
         surface_area = row.geometry.area
         surface_type = row["surface_type"]
@@ -391,8 +395,10 @@ def run_pollution_model_rain_event(engine: Engine,
                           "dissolved_copper": curr_dissolved_copper,
                           "dissolved_zinc": curr_dissolved_zinc}
         all_buildings.loc[building_id, updated_values.keys()] = updated_values
+    log.info(calculation_complete_log_message.format(features="buildings"))
 
     # Run through all the roads/car parks, and calculate TSS, total metal loads, and dissolved metal loads
+    log.info(calculation_pending_log_message.format("roads and car parks"))
     for road_id, row in all_roads.iterrows():
         surface_area = row.geometry.length * 5
         surface_type = row["surface_type"]
@@ -411,6 +417,7 @@ def run_pollution_model_rain_event(engine: Engine,
                           "dissolved_copper": curr_dissolved_copper,
                           "dissolved_zinc": curr_dissolved_zinc}
         all_roads.loc[road_id, updated_values.keys()] = updated_values
+    log.info(calculation_complete_log_message.format(features="roads and car parks"))
 
     # Drop the geometry columns now, since they can be joined to the spatial tables so we reduce data duplication
     all_roads = all_roads.drop('geometry', axis=1)
@@ -435,7 +442,9 @@ def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame,
     """
     results["scenario_id"] = scenario_id
     results.index.names = ["spatial_feature_id"]
+    log.info("Saving MEDUSA2 pollution model output to the database.")
     results.to_sql(MEDUSA2ModelOutput.__tablename__, engine, if_exists="append", index=True)
+    log.info("MEDUSA2 pollution model output saved to the database.")
 
 
 def serve_pollution_model() -> None:
