@@ -100,7 +100,8 @@ services:
     # Webserver for the website interface
     image: lparkinson/www-flood-resilience-dt:1.1
     build:
-      context: ./visualisation
+      context: .
+      dockerfile: visualisation/Dockerfile
     container_name: www_digital_twin
     environment:
       - VUE_APP_CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
