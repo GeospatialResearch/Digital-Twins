@@ -9,7 +9,7 @@ DOI of the model paper: https://doi.org/10.3390/w12040969
 import logging
 import math
 from enum import StrEnum
-from typing import Tuple
+from typing import NamedTuple, Tuple
 from xml.sax import saxutils
 
 import geopandas as gpd
@@ -21,7 +21,7 @@ from src import geoserver
 from src.config import EnvVariable
 from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import create_table
-from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
+from src.digitaltwin.utils import LogLevel, setup_logging
 from src.pollution_model.pollution_tables import MEDUSA2ModelOutput
 
 log = logging.getLogger(__name__)
@@ -53,10 +53,29 @@ class SurfaceType(StrEnum):
     CAR_PARK = "CrP"  # CarParks are classified the same as roads
 
 
+class MedusaRainfallEvent(NamedTuple):
+    """
+    Rainfall event parameters for MEDUSA 2.0 model.
+
+    Attributes
+    ----------
+    antecedent_dry_days: float
+        Length of antecedent dry period (days).
+    average_rain_intensity: float
+        Average rainfall intensity of the event (mm/h).
+    event_duration: float
+        Duration of the rainfall event (h).
+    rainfall_ph: float
+        The acidity level of the rainfall.
+    """
+    antecedent_dry_days: float
+    average_rain_intensity: float
+    event_duration: float
+    rainfall_ph: float
+
+
 def compute_tss_roof_road(surface_area: float,
-                          antecedent_dry_days: float,
-                          average_rain_intensity: float,
-                          event_duration: float,
+                          rainfall_event: MedusaRainfallEvent,
                           surface_type: SurfaceType) -> float:
     """
     Calculate the total suspended solids (TSS) for a surface, given the following parameters.
@@ -65,12 +84,8 @@ def compute_tss_roof_road(surface_area: float,
     ----------
     surface_area: float
         surface area of the given surface type
-    antecedent_dry_days: float
-        length of antecedent dry period (days)
-    average_rain_intensity: float
-        average rainfall intensity of the event (mm/h)
-    event_duration: float
-        duration of the rainfall event (h)
+    rainfall_event: MedusaRainfallEvent
+        Rainfall event parameters for MEDUSA 2.0 model.
     surface_type: SurfaceType
         the type of surface we are computing the TSS for
 
@@ -105,6 +120,7 @@ def compute_tss_roof_road(surface_area: float,
             a1, a2, a3 = 2.9, 0.16, 0.0008
         case _:
             raise ValueError(invalid_surface_error)
+    antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
     first_term = surface_area * a1 * antecedent_dry_days ** a2 * capacity_factor
     second_term = 1 - math.exp(a3 * average_rain_intensity * event_duration)
 
@@ -112,10 +128,7 @@ def compute_tss_roof_road(surface_area: float,
 
 
 def total_metal_load_roof(surface_area: float,
-                          antecedent_dry_days: float,
-                          average_rain_intensity: float,
-                          event_duration: float,
-                          rainfall_ph: float,
+                          rainfall_event: MedusaRainfallEvent,
                           surface_type: SurfaceType) -> Tuple[float, float]:
     """
     Calculate the total metal load for a given roof.
@@ -124,14 +137,8 @@ def total_metal_load_roof(surface_area: float,
     ----------
     surface_area: float
         surface area of the given surface type
-    antecedent_dry_days: float
-        length of antecedent dry period (days)
-    average_rain_intensity: float
-        average rainfall intensity of the event (mm/h)
-    event_duration: float
-        duration of the rainfall event (h)
-    rainfall_ph: float
-        the acidity level of the rainfall
+    rainfall_event: MedusaRainfallEvent
+        Rainfall event parameters for MEDUSA 2.0 model.
     surface_type: SurfaceType
         the type of roof we are calculating the metal load for. Some coefficients depend on this.
 
@@ -162,6 +169,8 @@ def total_metal_load_roof(surface_area: float,
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.990]
         case _:
             raise ValueError(invalid_surface_error)
+
+    antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph = rainfall_event
     # Define the initial and second stage metal concentrations (X_0 and X_est)
     initial_copper_concentration = b[0] * rainfall_ph ** b[1] * b[2] * antecedent_dry_days ** b[3] * (
         b[4] * average_rain_intensity ** b[5])
@@ -335,10 +344,8 @@ def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
 
 def run_pollution_model_rain_event(engine: Engine,
                                    area_of_interest: gpd.GeoDataFrame,
-                                   antecedent_dry_days: float,
-                                   average_rain_intensity: float,
-                                   event_duration: float,
-                                   rainfall_ph: float) -> gpd.GeoDataFrame:
+                                   rainfall_event: MedusaRainfallEvent,
+                                   ) -> gpd.GeoDataFrame:
     """
     Run the pollution model for buildings (roofs), roads, and car parks.
     For each of these it calculates the TSS, total metal load, and dissolved metal load. This runs for one rain event.
@@ -347,16 +354,10 @@ def run_pollution_model_rain_event(engine: Engine,
     ----------
     engine: Engine
        The sqlalchemy database connection engine
-    area_of_interest : gpd.GeoDataFrame
+    area_of_interest: gpd.GeoDataFrame
         A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
-    antecedent_dry_days: float
-        The number of dry days between rainfall events.
-    average_rain_intensity: float
-        The intensity of the rainfall event in mm/h.
-    event_duration: float
-        The number of hours of the rainfall event.
-    rainfall_ph: float
-        The pH level of the rainfall, a measure of acidity.
+    rainfall_event: MedusaRainfallEvent
+        Rainfall event parameters for MEDUSA 2.0 model.
 
     Returns
     -------
@@ -374,18 +375,10 @@ def run_pollution_model_rain_event(engine: Engine,
     for building_id, row in all_buildings.iterrows():
         surface_area = row.geometry.area
         surface_type = row["surface_type"]
-        curr_tss = compute_tss_roof_road(surface_area=surface_area,
-                                         antecedent_dry_days=antecedent_dry_days,
-                                         average_rain_intensity=average_rain_intensity,
-                                         event_duration=event_duration,
-                                         surface_type=surface_type)
+        curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
 
-        curr_total_copper, curr_total_zinc = total_metal_load_roof(surface_area=surface_area,
-                                                                   antecedent_dry_days=antecedent_dry_days,
-                                                                   average_rain_intensity=average_rain_intensity,
-                                                                   event_duration=event_duration,
-                                                                   rainfall_ph=rainfall_ph,
-                                                                   surface_type=surface_type)
+        curr_total_copper, curr_total_zinc = total_metal_load_roof(surface_area, rainfall_event, surface_type)
+        
         curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
                                                                           total_zinc_load=curr_total_zinc,
                                                                           surface_type=surface_type)
@@ -402,9 +395,7 @@ def run_pollution_model_rain_event(engine: Engine,
     for road_id, row in all_roads.iterrows():
         surface_area = row.geometry.length * 5
         surface_type = row["surface_type"]
-        curr_tss = compute_tss_roof_road(surface_area=surface_area, antecedent_dry_days=antecedent_dry_days,
-                                         average_rain_intensity=average_rain_intensity, event_duration=event_duration,
-                                         surface_type=surface_type)
+        curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
 
         curr_total_copper, curr_total_zinc = total_metal_load_road_carpark(curr_tss)
         curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
@@ -563,12 +554,11 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Get catchment area
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
 
+    # Wrap all paramters for MEDUSA rainfall event into a NamedTuple
+    rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
+
     # Run the pollution model
-    results = run_pollution_model_rain_event(engine=engine, area_of_interest=catchment_area,
-                                             antecedent_dry_days=antecedent_dry_days,
-                                             average_rain_intensity=average_rain_intensity,
-                                             event_duration=event_duration,
-                                             rainfall_ph=rainfall_ph)
+    results = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
     # Create the table medusa2_model_output in the database if it doesn't already exist
     create_table(engine, MEDUSA2ModelOutput)
     # Get the scenario ID for the current event
