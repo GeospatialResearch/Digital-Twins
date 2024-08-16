@@ -6,7 +6,7 @@ in the provided tide data.
 """  # noqa: D400
 
 import logging
-import os.path
+import pathlib
 
 import geopandas as gpd
 import pandas as pd
@@ -19,8 +19,7 @@ from src.digitaltwin import tables
 log = logging.getLogger(__name__)
 
 
-def read_slr_data_from_files(
-) -> gpd.GeoDataFrame:
+def get_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     """
     Read sea level rise data from the NZ Sea level rise datasets and return a GeoDataFrame.
 
@@ -37,6 +36,9 @@ def read_slr_data_from_files(
     # Get the url where sea level rise files need downloading
     url = 'https://zenodo.org/records/11398538/export/json'
 
+    # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
+    log.info("Reading regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
+
     # Create dictionary to store the sea level rise dataset
     slr_nz_dict = {}
     # Request export information json from Zenodo
@@ -46,44 +48,41 @@ def read_slr_data_from_files(
     # Get necessary links from json file
     for file_name, file_info in export_json['files']['entries'].items():
         # Get file name without extension
-        file_name_without_extension = os.path.splitext(file_name)[0]
+        file_name_without_extension = pathlib.Path(file_name).stem
         # Collect sea level rise dataset and storing into dictionary
         slr_nz_dict[file_name_without_extension] = pd.read_csv(file_info["links"]["content"])
+        # Log that the file has been successfully read
+        log.info(f"Successfully read the '{file_name}' data file.")
 
         # Check response for errors
         response.raise_for_status()
 
-    # Column name used to merge
-    left_column_name = 'Site ID'
-    right_column_name = 'site'
-    # Merge Site Details dataframe and Sea level projections tables WITH VLM
-    slr_nz_merge_vlm = pd.merge(
-        slr_nz_dict["NZ_VLM_final_May24"], slr_nz_dict["NZSeaRise_proj_vlm"],
-        left_on=left_column_name, right_on=right_column_name,
-        how='left', validate='1:m',
-        suffixes=('_y', '')
-    )
-    slr_nz_merge_vlm['add_vlm'] = True
+    # Log that the files have been successfully downloaded
+    log.info("Successfully read all regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
 
-    # Merge Site Details dataframe and Sea level projections tables WITHOUT VLM
-    slr_nz_merge_novlm = pd.merge(
-        slr_nz_dict["NZ_VLM_final_May24"], slr_nz_dict["NZSeaRise_proj_novlm"],
-        left_on=left_column_name, right_on=right_column_name,
-        how='left', validate='1:m',
-        suffixes=('_y', '')
-    )
-    slr_nz_merge_novlm['add_vlm'] = False
-
+    # Create a copy dataframe for NZ_VLM_final_May24
+    slr_nz = slr_nz_dict["NZ_VLM_final_May24"].copy(deep=True)
+    # Merge Site Details dataframe and Sea level projections tables WITH and WITHOUT VLM
+    slr_nz_merge_list = []
+    for vlm_name in ["NZSeaRise_proj_vlm", "NZSeaRise_proj_novlm"]:
+        slr_nz_merge = slr_nz.merge(
+            slr_nz_dict[vlm_name],
+            left_on='Site ID', right_on='site',
+            how='left', validate='1:m',
+            suffixes=('_y', '')
+        )
+        slr_nz_merge['add_vlm'] = True if vlm_name == "NZSeaRise_proj_vlm" else False
+        slr_nz_merge_list.append(slr_nz_merge)
     # Concatenate all the dataframes (both WITH VLM and WITHOUT VLM)
-    slr_nz = pd.concat([slr_nz_merge_vlm, slr_nz_merge_novlm], axis=0).reset_index(drop=True)
+    slr_nz_df = pd.concat([slr_nz_merge_list[0], slr_nz_merge_list[1]], axis=0).reset_index(drop=True)
 
     # Remove unnamed columns
-    slr_nz_df = slr_nz.loc[:, ~slr_nz.columns.str.contains('^Unnamed')]
+    slr_nz_df = slr_nz_df.loc[:, ~slr_nz_df.columns.str.contains('^Unnamed')]
     # Remove site column
     slr_nz_df = slr_nz_df.drop(columns=['site'])
     # Rename the columns
     slr_nz_df = slr_nz_df.rename(columns={
-        left_column_name: 'siteid',
+        'Site ID': 'siteid',
         'Lon': 'lon',
         'Lat': 'lat',
         'Vertical Rate (mm/yr)': 'vertical_rate',
@@ -101,10 +100,6 @@ def read_slr_data_from_files(
 
     # Remove '_confidence' in confidence_level column
     slr_nz_df['confidence_level'] = slr_nz_df['confidence_level'].str.split('_').str[0]
-    # Merge SSP and scenario into one column 'ssp_scenario'
-    slr_nz_df['ssp_scenario'] = slr_nz_df['ssp'].astype(str) + '-' + slr_nz_df['scenario'].astype(str)
-    # Remove 'ssp' and 'scenario' column
-    slr_nz_df = slr_nz_df.drop(columns=['ssp', 'scenario'])
 
     # Add geometry
     geometry = gpd.points_from_xy(slr_nz_df['lon'], slr_nz_df['lat'], crs=4326)
@@ -129,7 +124,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
         log.info(f"'{table_name}' data already exists in the database.")
     else:
         # Read sea level rise data from the NZ Sea level rise datasets
-        slr_nz = read_slr_data_from_files()
+        slr_nz = get_slr_data_from_takiwa()
         # Store the sea level rise data to the database table
         log.info(f"Adding '{table_name}' data to the database.")
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")

@@ -57,6 +57,11 @@ def get_slr_scenario_data(
     """
     log.info("Extracting the requested 'sea_level_rise' scenario data.")
 
+    # Merge ssp and scenario into one column
+    slr_data['ssp_scenario'] = slr_data['ssp'].astype(str) + '-' + slr_data['scenario'].astype(str)
+    # Remove 'ssp' and 'scenario' column
+    slr_data = slr_data.drop(columns=['ssp', 'scenario'])
+
     # Check if the provided confidence level is valid
     valid_conf_level = slr_data['confidence_level'].unique().tolist()
     if confidence_level not in valid_conf_level:
