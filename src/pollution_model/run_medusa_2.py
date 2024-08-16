@@ -9,7 +9,7 @@ DOI of the model paper: https://doi.org/10.3390/w12040969
 import logging
 import math
 from enum import StrEnum
-from typing import NamedTuple, Tuple
+from typing import NamedTuple
 from xml.sax import saxutils
 
 import geopandas as gpd
@@ -74,6 +74,21 @@ class MedusaRainfallEvent(NamedTuple):
     rainfall_ph: float
 
 
+class MetalLoads(NamedTuple):
+    """
+    Contributing metal load results for the pollutant model.
+
+    Attributes
+    ----------
+    cu_load: float
+        Amount of copper load contributed by a step in the pollutant model (micrograms).
+    zn_load: float
+        Amount of zinc load contributed by a step in the pollutant model (micrograms).
+    """
+    cu_load: float
+    zn_load: float
+
+
 def compute_tss_roof_road(surface_area: float,
                           rainfall_event: MedusaRainfallEvent,
                           surface_type: SurfaceType) -> float:
@@ -108,7 +123,6 @@ def compute_tss_roof_road(surface_area: float,
     invalid_surface_error = (f"Given surface is not valid for computing TSS."
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
 
-    a1, a2, a3 = 0, 0, 0
     match surface_type:
         case SurfaceType.CONCRETE_ROOF:
             a1, a2, a3 = 0.6, 0.25, 0.00933
@@ -129,7 +143,7 @@ def compute_tss_roof_road(surface_area: float,
 
 def total_metal_load_roof(surface_area: float,
                           rainfall_event: MedusaRainfallEvent,
-                          surface_type: SurfaceType) -> Tuple[float, float]:
+                          surface_type: SurfaceType) -> MetalLoads:
     """
     Calculate the total metal load for a given roof.
 
@@ -144,7 +158,7 @@ def total_metal_load_roof(surface_area: float,
 
     Returns
     -------
-    Tuple[float, float]
+    MetalLoads
        Returns the total copper and zinc loads from the given parameters (micrograms)
 
     Raises
@@ -201,10 +215,10 @@ def total_metal_load_roof(surface_area: float,
         total_zinc_load = total_zinc_load * factor + second_stage_zinc * surface_area * bias_factor
         total_copper_load *= total_copper_load * factor + second_stage_copper * surface_area * bias_factor
 
-    return total_copper_load, total_zinc_load
+    return MetalLoads(total_copper_load, total_zinc_load)
 
 
-def total_metal_load_road_carpark(tss_surface: float) -> Tuple[float, float]:
+def total_metal_load_road_carpark(tss_surface: float) -> MetalLoads:
     """
     Calculate the total metal load for a car park or road from their total suspended solids.
 
@@ -215,8 +229,8 @@ def total_metal_load_road_carpark(tss_surface: float) -> Tuple[float, float]:
 
     Returns
     -------
-    Tuple[float, float]
-       Returns the total copper and zinc loads for this surface
+    MetalLoads
+       Returns the total copper and zinc loads for this surface (micrograms)
        [Total Copper, Total Zinc]
     """
     # Define constants
@@ -225,11 +239,11 @@ def total_metal_load_road_carpark(tss_surface: float) -> Tuple[float, float]:
     total_cu_load = tss_surface * proportionality_constant_cu
     total_zn_load = tss_surface * proportionality_constant_zn
     # Return total copper load, total zinc load
-    return total_cu_load, total_zn_load
+    return MetalLoads(total_cu_load, total_zn_load)
 
 
 def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
-                         surface_type: SurfaceType) -> Tuple[float, float]:
+                         surface_type: SurfaceType) -> MetalLoads:
     """
     Calculate the dissolved metal load for all surfaces from their total suspended solids.
 
@@ -244,7 +258,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
 
     Returns
     -------
-    Tuple[float, float]
+    MetalLoads
         Returns the dissolved copper and zinc load for this surface
         [Dissolved Copper Load, Dissolved Zinc Load]
 
@@ -272,7 +286,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
             g = 0.43
         case _:
             raise ValueError(invalid_surface_error)
-    return f * total_copper_load, g * total_zinc_load
+    return MetalLoads(f * total_copper_load, g * total_zinc_load)
 
 
 def get_building_information(_engine: Engine, _area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -373,7 +387,7 @@ def run_pollution_model_rain_event(engine: Engine,
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
     log.info(calculation_pending_log_message.format(features="buildings"))
     for building_id, row in all_buildings.iterrows():
-        surface_area = row.geometry.area
+        surface_area = row.geometry.area  # todo
         surface_type = row["surface_type"]
         curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
 
@@ -398,9 +412,9 @@ def run_pollution_model_rain_event(engine: Engine,
         curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
 
         curr_total_copper, curr_total_zinc = total_metal_load_road_carpark(curr_tss)
-        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
-                                                                          total_zinc_load=curr_total_zinc,
-                                                                          surface_type=surface_type)
+        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(curr_total_copper,
+                                                                          curr_total_zinc,
+                                                                          surface_type)
 
         updated_values = {"total_suspended_solids": curr_tss,
                           "total_copper": curr_total_copper,
@@ -582,3 +596,13 @@ if __name__ == "__main__":
         event_duration=1,
         rainfall_ph=7
     )
+
+
+def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
+                                            antecedent_dry_dats: float,
+                                            average_rain_intensity: float,
+                                            event_duration: float,
+                                            rainfall_ph: float
+
+                                            ) -> gpd.GeoDataFrame:
+    pass
