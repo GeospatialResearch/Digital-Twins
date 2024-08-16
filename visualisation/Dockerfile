@@ -1,19 +1,21 @@
-FROM node:lts as build-stage
+FROM node:lts AS build-stage
 
 WORKDIR /app
 # Install node_modules
 COPY visualisation/package*.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 # Copy License file into image root
 COPY ./LICENSE ../LICENSE
 # Copy visualisation source files into image
-COPY visualisation/ .
+COPY ["visualisation/*.js", "visualisation/*.json", "visualisation/.env.production", "./"]
+COPY visualisation/src/ src/
+COPY visualisation/public/ public/
 
 # Build code for production style server
 RUN npm run build
 
-FROM nginx:stable as production-stage
+FROM nginx:stable AS production-stage
 
 # Serve built files using nginx
 RUN mkdir /app

@@ -33,9 +33,9 @@ USER root
 
 # Install dependencies
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl wget acl \
+ && apt-get install -y --no-install-recommends ca-certificates curl acl \
 # Install firefox from mozilla .deb repository, not snap package as is default for ubuntu (snap does not work for docker)
- && wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null \
+ && curl --proto "=https" -L "https://packages.mozilla.org/apt/repo-signing-key.gpg" | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null \
  && echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null \
  && echo $' \n\
 Package: * \n\
@@ -46,31 +46,30 @@ Pin-Priority: 1000 \n\
  && apt-get update \
  && apt-get install -y --no-install-recommends firefox \
 # Install geckodriver, webdriver for firefox, needed for selenium
- && curl --proto "=https" -L https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz | tar xz -C /usr/local/bin \
-# Install health-checker tool that allows us to run commands when checking root endpoint to check if service is available
- && wget -q https://github.com/gruntwork-io/health-checker/releases/download/v0.0.8/health-checker_linux_amd64 -O /usr/local/bin/health-checker \
- && chmod +x /usr/local/bin/health-checker \
+ && curl --proto "=https" -L "https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz" | tar xz -C /usr/local/bin \
 # Cleanup image and remove junk
  && rm -fr /var/lib/apt/lists/* \
 # Remove unused packages. Keep curl for health checking in docker-compose
- && apt-get purge -y ca-certificates wget
+ && apt-get purge -y ca-certificates
+
+# Install health-checker tool that allows us to run commands when checking root endpoint to check if service is available
+ADD --chmod=555 https://github.com/gruntwork-io/health-checker/releases/download/v0.0.8/health-checker_linux_amd64 \
+ /usr/local/bin/health-checker
 
 # Create stored data dir inside image, in case it does not get mounted (such as when deploying on AWS)
 RUN mkdir /stored_data \
     && setfacl -R -d -m u:nonroot:rwx /stored_data \
     && setfacl -R -m u:nonroot:rwx /stored_data \
-    && mkdir /stored_data/geoserver \
-    && mkdir /stored_data/model_output
-
-USER nonroot
+    && mkdir /stored_data/geoserver
 
 # Copy python virtual environment from build layer
-COPY --chown=nonroot:nonroot --chmod=544 --from=build /venv /venv
+COPY --chown=root:root --chmod=555 --from=build /venv /venv
+USER nonroot
 
 # Copy source files and essential runtime files
-COPY --chown=nonroot:nonroot --chmod=444 selected_polygon.geojson .
+COPY --chown=root:root --chmod=444 selected_polygon.geojson .
 COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
-COPY --chown=nonroot:nonroot --chmod=544 src/ src/
+COPY --chown=root:root --chmod=555 src/ src/
 
 
 FROM runtime-base AS backend
@@ -97,7 +96,7 @@ ENTRYPOINT source /venv/bin/activate && \
            source /venv/bin/activate && \
            celery -A src.tasks worker -P threads --loglevel=INFO
 
-FROM docker.osgeo.org/geoserver:2.21.2 as geoserver
+FROM docker.osgeo.org/geoserver:2.21.2 AS geoserver
 
 RUN addgroup --system nonroot \
     && adduser --system --group nonroot \
