@@ -21,7 +21,7 @@ from src import geoserver
 from src.config import EnvVariable
 from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import create_table
-from src.digitaltwin.utils import LogLevel, setup_logging
+from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
 from src.pollution_model.pollution_tables import MEDUSA2ModelOutput
 
 log = logging.getLogger(__name__)
@@ -378,10 +378,10 @@ def run_pollution_model_rain_event(engine: Engine,
         curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
 
         curr_total_copper, curr_total_zinc = total_metal_load_roof(surface_area, rainfall_event, surface_type)
-        
-        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
-                                                                          total_zinc_load=curr_total_zinc,
-                                                                          surface_type=surface_type)
+
+        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load,
+                                                                          total_zinc_load,
+                                                                          surface_type)
         updated_values = {"total_suspended_solids": curr_tss,
                           "total_copper": curr_total_copper,
                           "total_zinc": curr_total_zinc,
@@ -487,7 +487,9 @@ def serve_pollution_model() -> None:
           </entry>
         </metadata>
         """
-    geoserver.create_datastore_layer(workspace_name, data_store_name, layer_name=MEDUSA2ModelOutput.__tablename__,
+    geoserver.create_datastore_layer(workspace_name,
+                                     data_store_name,
+                                     layer_name=MEDUSA2ModelOutput.__tablename__,
                                      metadata_elem=pollution_metadata_xml)
 
 
@@ -552,9 +554,9 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area
-    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
+    area_of_interest = get_catchment_area(selected_polygon_gdf, to_crs=2193)
 
-    # Wrap all paramters for MEDUSA rainfall event into a NamedTuple
+    # Wrap all parameters for MEDUSA rainfall event into a NamedTuple
     rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
 
     # Run the pollution model
@@ -564,7 +566,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Get the scenario ID for the current event
     scenario_id = get_next_scenario_id(engine)
     # Store the event information in a database
-    store_pollution_model_in_database(engine=engine, results=results, scenario_id=scenario_id)
+    store_pollution_model_in_database(engine, results, scenario_id)
     # Ensure pollution model data is being served by geoserver
     serve_pollution_model()
     return scenario_id
