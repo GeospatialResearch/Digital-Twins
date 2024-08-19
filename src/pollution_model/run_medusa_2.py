@@ -13,7 +13,6 @@ from typing import NamedTuple
 from xml.sax import saxutils
 
 import geopandas as gpd
-import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
@@ -22,7 +21,7 @@ from src.config import EnvVariable
 from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import create_table
 from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
-from src.pollution_model.pollution_tables import MEDUSA2ModelOutput
+from src.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Medusa2ModelOutputRoads
 
 log = logging.getLogger(__name__)
 
@@ -72,6 +71,7 @@ class MedusaRainfallEvent(NamedTuple):
     rainfall_ph: float
         The acidity level of the rainfall.
     """
+
     antecedent_dry_days: float
     average_rain_intensity: float
     event_duration: float
@@ -89,6 +89,7 @@ class MetalLoads(NamedTuple):
     zn_load: float
         Amount of zinc load contributed by a step in the pollutant model (micrograms).
     """
+
     cu_load: float
     zn_load: float
 
@@ -441,9 +442,9 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
 def run_pollution_model_rain_event(engine: Engine,
                                    area_of_interest: gpd.GeoDataFrame,
                                    rainfall_event: MedusaRainfallEvent,
-                                   ) -> gpd.GeoDataFrame:
+                                   ) -> int:
     """
-    Run the pollution model for buildings (roofs), roads, and car parks.
+    Run the pollution model for buildings (roofs), roads, and car parks and adds the results to the database.
     For each of these it calculates the TSS, total metal load, and dissolved metal load. This runs for one rain event.
 
     Parameters
@@ -457,8 +458,8 @@ def run_pollution_model_rain_event(engine: Engine,
 
     Returns
     -------
-    gpd.GeoDataFrame
-        The combined results of all buildings and roads from the MEDUSA2.0 pollution model
+    int
+        The scenario ID of the pollution model run
     """
     log.info("Running MEDUSA2 pollution model for the area of interest.")
     calculation_pending_log_message = "Calculating pollutant load contributions for {features} in the area of interest."
@@ -469,40 +470,34 @@ def run_pollution_model_rain_event(engine: Engine,
 
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
     log.info(calculation_pending_log_message.format(features="buildings"))
-    all_buildings = run_medusa_model_for_surface_geometries(all_buildings, rainfall_event)
+    run_medusa_model_for_surface_geometries(all_buildings, rainfall_event)
     log.info(calculation_complete_log_message.format(features="buildings"))
 
     # Run through all the roads/car parks, and calculate TSS, total metal loads, and dissolved metal loads
     log.info(calculation_pending_log_message.format(features="roads and car parks"))
-    all_roads = run_medusa_model_for_surface_geometries(all_roads, rainfall_event)
+    run_medusa_model_for_surface_geometries(all_roads, rainfall_event)
     log.info(calculation_complete_log_message.format(features="roads and car parks"))
 
     # Drop the geometry columns now, since they can be joined to the spatial tables so we reduce data duplication
-    all_roads = all_roads.drop('geometry', axis=1)
     all_buildings = all_buildings.drop("geometry", axis=1)
-    # Return all pollution data
-    return pd.concat([all_buildings, all_roads])
+    all_roads = all_roads.drop('geometry', axis=1)
 
-
-def store_pollution_model_in_database(engine: Engine, results: gpd.GeoDataFrame, scenario_id: int) -> None:
-    """
-    Append the details of the output of the MEDUSA 2.0 pollution model into the database, with an assigned scenario_id.
-
-    Parameters
-    ----------
-    engine: Engine
-        The sqlalchemy database connection engine
-    results : gpd.GeoDataFrame
-        GeoDataFrame containing a mapping of geospatial features (roads, roofs) to their MEDUSA2.0 outputs for the
-        current model run
-    scenario_id : int
-        The id of the current medusa2.0 model run, to associate with the results.
-    """
-    results["scenario_id"] = scenario_id
-    results.index.names = ["spatial_feature_id"]
     log.info("Saving MEDUSA2 pollution model output to the database.")
-    results.to_sql(MEDUSA2ModelOutput.__tablename__, engine, if_exists="append", index=True)
+    # Create the medusa2_model_output tables in the database if they don't already exist.
+    create_table(engine, Medusa2ModelOutputBuildings)
+    create_table(engine, Medusa2ModelOutputRoads)
+
+    # Get the scenario ID for the current event
+    scenario_id = get_next_scenario_id(engine)
+
+    # Assign all rows in the local dataframe the same scenario ID. For some reason pylint gives a warning for this.
+    all_buildings["scenario_id"] = scenario_id  # pylint: disable=unsupported-assignment-operation
+    all_roads["scenario_id"] = scenario_id  # pylint: disable=unsupported-assignment-operation
+
+    all_buildings.to_sql(Medusa2ModelOutputBuildings.__tablename__, engine, if_exists="append", index=True)
+    all_roads.to_sql(Medusa2ModelOutputRoads.__tablename__, engine, if_exists="append", index=True)
     log.info("MEDUSA2 pollution model output saved to the database.")
+    return scenario_id
 
 
 def serve_pollution_model() -> None:
@@ -518,46 +513,46 @@ def serve_pollution_model() -> None:
     data_store_name = f"{db_name} PostGIS"
     geoserver.create_db_store_if_not_exists(db_name, workspace_name, data_store_name)
 
-    # Serve medusa2_model_output joined to geometry from associated spatial table
-    medusa_output_layer_name = "medusa2_model_output"
+    # Serve each medusa2_model_output table joined to geometry from associated spatial table
+    for medusa_table_class in [Medusa2ModelOutputRoads, Medusa2ModelOutputBuildings]:
+        # Gather the names of the tables and columns
+        medusa_table_name = medusa_table_class.__tablename__
+        geometry_table_name = medusa_table_class.geometry_table
+        spatial_id_column = medusa_table_class.spatial_feature_id.name
 
-    pollution_sql_query = """
-    SELECT medusa2_model_output.*, geometry
-    FROM medusa2_model_output
-             INNER JOIN nz_roads
-                        ON spatial_feature_id = road_id
-    WHERE surface_type = 'Rd'
-    UNION
-    SELECT medusa2_model_output.*, geometry
-    FROM medusa2_model_output
-             INNER JOIN nz_building_outlines
-                        ON spatial_feature_id = nz_building_outlines.building_id
-    WHERE surface_type <> 'Rd'
-    """
-    xml_escaped_sql = saxutils.escape(pollution_sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
-
-    pollution_metadata_xml = rf"""
-        <metadata>
-          <entry key="JDBC_VIRTUAL_TABLE">
-            <virtualTable>
-              <name>{medusa_output_layer_name}</name>
-              <sql>
-                {xml_escaped_sql}
-              </sql>
-              <escapeSql>false</escapeSql>
-              <geometry>
-                <name>geometry</name>
-                <type>Geometry</type>
-                <srid>2193</srid>
-              </geometry>
-            </virtualTable>
-          </entry>
-        </metadata>
+        # Construct query linking medusa_table_class to its geometry table
+        pollution_sql_query = f"""
+        SELECT medusa.*, geometry
+        FROM {medusa_table_name} as medusa
+             INNER JOIN {geometry_table_name} as spatial
+                ON medusa.{spatial_id_column}=spatial.{spatial_id_column}
         """
-    geoserver.create_datastore_layer(workspace_name,
-                                     data_store_name,
-                                     layer_name=MEDUSA2ModelOutput.__tablename__,
-                                     metadata_elem=pollution_metadata_xml)
+        # Escape characters in SQL query so that it is valid Geoserver XML
+        xml_escaped_sql = saxutils.escape(pollution_sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
+
+        pollution_metadata_xml = rf"""
+            <metadata>
+              <entry key="JDBC_VIRTUAL_TABLE">
+                <virtualTable>
+                  <name>{medusa_table_name}</name>
+                  <sql>
+                    {xml_escaped_sql}
+                  </sql>
+                  <escapeSql>false</escapeSql>
+                  <geometry>
+                    <name>geometry</name>
+                    <type>Geometry</type>
+                    <srid>2193</srid>
+                  </geometry>
+                </virtualTable>
+              </entry>
+            </metadata>
+            """
+        # Add layer to geoserver based on SQL
+        geoserver.create_datastore_layer(workspace_name,
+                                         data_store_name,
+                                         layer_name=medusa_table_name,
+                                         metadata_elem=pollution_metadata_xml)
 
 
 def get_next_scenario_id(engine: Engine) -> int:
@@ -575,7 +570,7 @@ def get_next_scenario_id(engine: Engine) -> int:
         The scenario_id for the current output about to be appended to the database.
     """
     with engine.begin() as conn:
-        result = conn.execute("SELECT MAX(scenario_id) FROM medusa2_model_output").fetchone()[0]
+        result = conn.execute(f"SELECT MAX(scenario_id) FROM {Medusa2ModelOutputBuildings.__tablename__}").fetchone()[0]
         max_scenario_id = result if result is not None else 0
         return max_scenario_id + 1
 
@@ -627,13 +622,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
 
     # Run the pollution model
-    results = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
-    # Create the table medusa2_model_output in the database if it doesn't already exist
-    create_table(engine, MEDUSA2ModelOutput)
-    # Get the scenario ID for the current event
-    scenario_id = get_next_scenario_id(engine)
-    # Store the event information in a database
-    store_pollution_model_in_database(engine, results, scenario_id)
+    scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
     # Ensure pollution model data is being served by geoserver
     serve_pollution_model()
     return scenario_id
