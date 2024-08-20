@@ -59,7 +59,8 @@ class _BaseMedusa2ModelOutput(Base):
 
     @property
     @abc.abstractmethod
-    def spatial_feature_id(self) -> Column:
+    def spatial_feature_id(self) -> int:
+
         """
         The road_id this row is associated with, makes up part of the primary key.
         This must be overridden in the child class.
