@@ -150,12 +150,12 @@ def total_metal_load_surface(surface_area: float,
                              surface_type: SurfaceType,
                              tss_surface: float) -> MetalLoads:
     """
-    Calculate the total metal load for a given surface. Works for roofs, carparks, and roads..
+    Calculate the total metal load for a given surface. Works for roofs, carparks, and roads.
 
     Parameters
     ----------
     surface_area: float
-        Surface area of the given surface type
+        Surface area of the given surface type.
     rainfall_event: MedusaRainfallEvent
         Rainfall event parameters for MEDUSA 2.0 model.
     surface_type: SurfaceType
@@ -166,7 +166,7 @@ def total_metal_load_surface(surface_area: float,
     Returns
     -------
     MetalLoads
-       Returns the total copper and zinc loads from the given parameters (micrograms)
+       Returns the total copper and zinc loads from the given parameters (micrograms).
 
     Raises
     ----------
@@ -198,7 +198,7 @@ def total_metal_load_roof(surface_area: float,
     Returns
     -------
     MetalLoads
-       Returns the total copper and zinc loads from the given parameters (micrograms)
+       Returns the total copper and zinc loads from the given parameters (micrograms).
 
     Raises
     ----------
@@ -450,7 +450,7 @@ def run_pollution_model_rain_event(engine: Engine,
     Parameters
     ----------
     engine: Engine
-       The sqlalchemy database connection engine
+       The sqlalchemy database connection engine.
     area_of_interest: gpd.GeoDataFrame
         A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
     rainfall_event: MedusaRainfallEvent
