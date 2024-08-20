@@ -27,6 +27,11 @@
               About
             </router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :to="{name: 'License'}">
+              License
+            </router-link>
+          </li>
         </ul>
       </div>
     </div>

@@ -8,7 +8,7 @@ VITE_ENV_VARS=$(printenv | grep -o "VITE_\w*")
 
 echo "Replacing env constants in JS"
 echo "Env constants = ${VITE_ENV_VARS}"
-for FILE in "$ROOT_DIR"/assets/index-*.js* "$ROOT_DIR"/index.html "$ROOT_DIR"/precache-manifest*.js;
+for FILE in "$ROOT_DIR"/assets/index-*.js* "$ROOT_DIR"/index.html
 do
   echo "Processing $FILE ...";
 
@@ -20,6 +20,8 @@ do
     sed -i 's|'"${VAR_NAME}"'|'"${VAR_VALUE}"'|g' $FILE || true
   done
 done
+echo "Finished processing files for env constants"
 
+echo "Starting nginx server now."
 # Run the nginx server
 nginx -g 'daemon off;'
