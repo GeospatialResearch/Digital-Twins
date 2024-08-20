@@ -44,7 +44,7 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
     os.makedirs(geoserver_data_root / "data" / workspace_name, exist_ok=True)
 
     # Create the geoserver REST API request to create the workspace
-    log.info(f"Creating geoserver workspace {workspace_name} if it does not already exist.")
+    log.info(f"Creating geoserver workspace '{workspace_name}' if it does not already exist.")
     req_body = {
         "workspace": {
             "name": workspace_name
