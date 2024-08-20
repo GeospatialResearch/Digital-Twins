@@ -9,6 +9,8 @@ const spec = require('../../src/static/api_documentation.yml');
 const ui = SwaggerUI({
   spec,
   dom_id: '#swagger',
+  // Disable 'Try it out' for all HTTP methods.
+  supportedSubmitMethods: [],
 });
 
 ui.initOAuth({
