@@ -2,19 +2,20 @@
 """
 This script handles the task of obtaining REC river inflow data along with the corresponding river input points used
 for the BG-Flood model.
-"""
+"""  # noqa: D400
 
 import logging
 
 import geopandas as gpd
-import pandas as pd
 import numpy as np
-import xarray as xr
-from sqlalchemy.engine import Engine
+import pandas as pd
 import pyproj
+import xarray as xr
 from newzealidar.utils import get_dem_band_and_resolution_by_geometry
+from sqlalchemy.engine import Engine
 
-from src.dynamic_boundary_conditions.river import main_river, align_rec_osm
+from src.dynamic_boundary_conditions.river import align_rec_osm
+from src.flood_model import process_hydro_dem
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ def get_elevations_near_rec_entry_point(
         rec_inflows_row: pd.Series,
         hydro_dem: xr.Dataset) -> gpd.GeoDataFrame:
     """
-    Extracts elevation values and their corresponding coordinates from the Hydrologically Conditioned DEM in the
+    Extract elevation values and their corresponding coordinates from the Hydrologically Conditioned DEM in the
     vicinity of the entry point of the REC river inflow segment.
 
     Parameters
@@ -39,7 +40,7 @@ def get_elevations_near_rec_entry_point(
     gpd.GeoDataFrame
         A GeoDataFrame containing elevation values and their corresponding coordinates extracted from the
         Hydrologically Conditioned DEM in the vicinity of the entry point of the REC river inflow segment.
-    """
+    """  # noqa: D400
     # Clip the Hydro DEM using the buffered DEM boundary line
     clipped_hydro_dem = hydro_dem.rio.clip([rec_inflows_row['dem_boundary_line_buffered']])
     # Get the x and y coordinates of the aligned REC entry point
@@ -90,7 +91,7 @@ def get_min_elevation_river_input_point(rec_inflows_row: pd.Series, hydro_dem: x
     gpd.GeoDataFrame
         A GeoDataFrame containing the river input point with the lowest elevation, used for BG-Flood model river input,
         from the Hydrologically Conditioned DEM for the specific REC river inflow segment.
-    """
+    """  # noqa: D400
     # Extracts elevation values and their corresponding coordinates near the REC inflow entry point from the Hydro DEM
     nearby_elevations = get_elevations_near_rec_entry_point(rec_inflows_row, hydro_dem)
     # Determine the midpoint by calculating the centroid of all 'river_input_point' coordinates
@@ -140,7 +141,7 @@ def get_rec_inflows_with_input_points(
     ------
     NoRiverDataException
         If no REC river segment is found crossing the catchment boundary.
-    """
+    """  # noqa: D400
     # Obtain data for REC river inflow segments whose boundary points align with the boundary points of OSM waterways
     # within a specified distance threshold
     aligned_rec_inflows = align_rec_osm.get_rec_inflows_aligned_to_osm(
@@ -148,7 +149,7 @@ def get_rec_inflows_with_input_points(
 
     log.info("Determining the river input points used for the BG-Flood model.")
     # Get the boundary lines of the Hydrologically Conditioned DEM
-    dem_boundary_lines = main_river.get_hydro_dem_boundary_lines(engine, catchment_area)
+    dem_boundary_lines = process_hydro_dem.get_hydro_dem_boundary_lines(engine, catchment_area)
     # Perform a spatial join between the REC inflow data and the Hydro DEM boundary lines
     rec_inflows = gpd.sjoin(aligned_rec_inflows, dem_boundary_lines, how="left", predicate="intersects")
     # Merge with the Hydro DEM boundary lines data and remove unnecessary columns

@@ -20,8 +20,7 @@ log = logging.getLogger(__name__)
 
 def get_sites_within_aoi(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
-    Get all rainfall sites within the area of interest from the database and return the required data as a
-    GeoDataFrame.
+    Get all rainfall sites within the area of interest from the database and return the required data as a GeoDataFrame.
 
     Parameters
     ----------
@@ -75,7 +74,7 @@ def thiessen_polygons_calculator(
     ValueError
         - If the provided 'area_of_interest' GeoDataFrame does not contain any data.
         - If the provided 'sites_in_aoi' GeoDataFrame does not contain any data.
-    """
+    """  # noqa: D400
     # Check if the area of interest GeoDataFrame is empty
     if area_of_interest.empty:
         raise ValueError("No data available for 'area_of_interest' passed as argument.")
@@ -87,7 +86,8 @@ def thiessen_polygons_calculator(
     # Extract the geometry of the area of interest
     aoi_polygon = area_of_interest["geometry"].iloc[0]
     # Generate Voronoi regions from the coordinates within the area of interest
-    region_polys, region_pts = voronoi_regions_from_coords(coordinates, aoi_polygon, per_geom=False)
+    region_polys_pts = voronoi_regions_from_coords(coordinates, aoi_polygon, per_geom=False)
+    region_polys, region_pts = region_polys_pts[:2]
     voronoi_regions = list(region_polys.values())
     sites_in_voronoi_order = pd.DataFrame()
     for site_index in region_pts.values():
@@ -110,12 +110,7 @@ def thiessen_polygons_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
+    """  # noqa: D400
     table_name = "rainfall_sites_voronoi"
     # Check if the table already exists in the database
     if tables.check_table_exists(engine, table_name):

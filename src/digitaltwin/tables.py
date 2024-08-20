@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-This script contains SQLAlchemy models for various database tables and utility functions for database operations.
-"""
+"""This script contains SQLAlchemy models for various database tables and utility functions for database operations."""
 
 from datetime import datetime, timezone
 
@@ -10,7 +8,7 @@ from sqlalchemy import Boolean, Column, DateTime, inspect, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 from sqlalchemy.schema import CheckConstraint, PrimaryKeyConstraint
 
 Base = declarative_base()
@@ -38,7 +36,8 @@ class GeospatialLayers(Base):
         Coverage area of the geospatial data, e.g. 'New Zealand'.
     url : str
         URL pointing to the geospatial layer.
-    """
+    """  # pylint: disable=too-few-public-methods
+
     __tablename__ = "geospatial_layers"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     data_provider = Column(String, nullable=False)
@@ -73,7 +72,8 @@ class UserLogInfo(Base):
         Timestamp indicating when the log entry was created.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
-    """
+    """  # pylint: disable=too-few-public-methods
+
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
@@ -97,7 +97,8 @@ class RiverNetworkExclusions(Base):
         Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
     geometry : LineString
         Geometric representation of the excluded REC river features.
-    """
+    """  # pylint: disable=too-few-public-methods
+
     __tablename__ = "rec_network_exclusions"
     rec_network_id = Column(Integer, primary_key=True,
                             comment="An identifier for the river network associated with each run")
@@ -129,7 +130,8 @@ class RiverNetwork(Base):
         Timestamp indicating when the output was created.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
-    """
+    """  # pylint: disable=too-few-public-methods
+
     __tablename__ = "rec_network"
     rec_network_id = Column(Integer, primary_key=True,
                             comment="An identifier for the river network associated with each run")
@@ -157,7 +159,8 @@ class BGFloodModelOutput(Base):
         Timestamp indicating when the output was created.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
-    """
+    """  # pylint: disable=too-few-public-methods
+
     __tablename__ = "bg_flood_model_output"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     file_name = Column(String, comment="name of the flood model output file")
@@ -183,7 +186,8 @@ class BuildingFloodStatus(Base):
         If the building is flooded or not
     flood_model_id: int.
         Foreign key mathing the unique_id from bg_flood_model_output table
-    """
+    """  # pylint: disable=too-few-public-methods
+
     __tablename__ = "building_flood_status"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     building_outline_id = Column(Integer, comment="The building outline id matching from nz_building_outlines table")
@@ -201,11 +205,6 @@ def create_table(engine: Engine, table: Base) -> None:
         The engine used to connect to the database.
     table : Base
         Class representing the table to create.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     table.__table__.create(bind=engine, checkfirst=True)
 
@@ -232,7 +231,7 @@ def check_table_exists(engine: Engine, table_name: str, schema: str = "public") 
     return inspector.has_table(table_name, schema=schema)
 
 
-def execute_query(engine: Engine, query) -> None:
+def execute_query(engine: Engine, query: Query) -> None:
     """
     Execute the given query on the provided engine using a session.
 
@@ -240,13 +239,8 @@ def execute_query(engine: Engine, query) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-    query
+    query : Query
         The query to be executed.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
 
     Raises
     ------
