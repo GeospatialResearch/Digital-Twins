@@ -43,6 +43,11 @@ class _BaseMedusa2ModelOutput(Base):
         """
         Name of the database table.
         This must be overridden in the child class. e.g. __tablename__ = "medusa2_model_output_buildings."
+
+        Returns
+        ----------
+        str
+            The name of the database table.
         """
         raise NotImplementedError("""__tablename__ must be overridden in the child class.
                                   e.g. __tablename__ = "medusa2_model_output_buildings". """)
@@ -53,6 +58,11 @@ class _BaseMedusa2ModelOutput(Base):
         """
         Name of the spatial feature table this table is associated with.
         This must be overridden in the child class. e.g. geometry_table = "nz_buildings".
+
+        Returns
+        ----------
+        str
+            The name of the spatial feature table this table is associated with.
         """
         raise NotImplementedError("""geometry_table must be overridden in the child class.
                                   e.g. geometry_table = "nz_buildings". """)
@@ -60,11 +70,15 @@ class _BaseMedusa2ModelOutput(Base):
     @property
     @abc.abstractmethod
     def spatial_feature_id(self) -> int:
-
         """
-        The road_id this row is associated with, makes up part of the primary key.
+        The ID of the spatial feature this row is associated with, makes up part of the primary key.
         This must be overridden in the child class.
         e.g. spatial_feature_id = Column(Integer, primary_key=True, name="building_id").
+
+        Returns
+        ----------
+        int
+            The ID of the spatial feature this row is associated with.
         """
         raise NotImplementedError("""spatial_feature_id must be overridden in the child class.
                                   eg. spatial_feature_id = Column(Integer, primary_key=True, name="building_id"). """)
