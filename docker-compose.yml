@@ -104,10 +104,10 @@ services:
       dockerfile: visualisation/Dockerfile
     container_name: www_digital_twin
     environment:
-      - VUE_APP_CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
-      - VUE_APP_GEOSERVER_HOST=$GEOSERVER_HOST
-      - VUE_APP_GEOSERVER_PORT=$GEOSERVER_PORT
-      - VUE_APP_POSTGRES_DB=$POSTGRES_DB
+      - VITE_CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
+      - VITE_GEOSERVER_HOST=$GEOSERVER_HOST
+      - VITE_GEOSERVER_PORT=$GEOSERVER_PORT
+      - VITE_POSTGRES_DB=$POSTGRES_DB
     ports:
       - "${WWW_PORT}:80"
     healthcheck:

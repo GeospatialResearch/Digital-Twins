@@ -5,21 +5,12 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import titleMixin from "@/mixins/title"
-import license from "../../../LICENSE"
+<script setup lang="ts">
+import license from "../../../LICENSE?raw"
+import {usePageTitlePrefix} from "./composables/title";
 
-export default Vue.extend({
-  name: "LicensePage",
-  title: "License",
-  mixins: [titleMixin],
-  data() {
-    return {
-      license: license
-    }
-  },
-});
+// Add page title prefix to webpage title
+usePageTitlePrefix("License");
 </script>
 
 <style scoped>

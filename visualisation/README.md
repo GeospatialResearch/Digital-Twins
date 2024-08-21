@@ -25,4 +25,4 @@
    ```bash
    npm run serve
    ```
-1. Access website: [localhost:8080](https://localhost:8080)
+1. Access website: [localhost:5173](https://localhost:5173)
