@@ -44,7 +44,7 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
     os.makedirs(geoserver_data_root / "data" / workspace_name, exist_ok=True)
 
     # Create the geoserver REST API request to create the workspace
-    log.info(f"Creating geoserver workspace {workspace_name} if it does not already exist.")
+    log.info(f"Creating geoserver workspace '{workspace_name}' if it does not already exist.")
     req_body = {
         "workspace": {
             "name": workspace_name
@@ -56,9 +56,9 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if response.status_code == HTTPStatus.CREATED:
-        log.info(f"Created new workspace {workspace_name}.")
+        log.info(f"Created new workspace '{workspace_name}'.")
     elif response.status_code == HTTPStatus.CONFLICT:
-        log.debug(f"Workspace {workspace_name} already exists.")
+        log.debug(f"Workspace '{workspace_name}' already exists.")
     else:
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
