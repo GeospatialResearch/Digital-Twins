@@ -19,57 +19,20 @@ from src.digitaltwin import tables
 log = logging.getLogger(__name__)
 
 
-def get_slr_data_from_takiwa() -> dict[str, pd.DataFrame]:
-    """
-    Read sea level rise data from the NZ Sea level rise datasets and return a dictionary.
-
-    Returns
-    -------
-    dict
-        A dictionary containing the sea level rise data from the NZ Sea level rise datasets.
-    """
-    # Get the url where sea level rise files need downloading
-    url = 'https://zenodo.org/records/11398538/export/json'
-
-    # Log that the downloading of regional sea level rise data files from NZ SeaRise Takiwa has started
-    log.info("Reading regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
-
-    # Create a dictionary to store the sea level rise dataset
-    slr_nz_dict = {}
-    # Request export information json from Zenodo
-    response = requests.get(url)
-    response.raise_for_status()
-    export_json = response.json()
-    # Get necessary links from json file
-    for file_name, file_info in export_json['files']['entries'].items():
-        # Get file name without extension
-        file_name_without_extension = pathlib.Path(file_name).stem
-        # Collect sea level rise dataset and storing into dictionary
-        slr_nz_dict[file_name_without_extension] = pd.read_csv(file_info["links"]["content"])
-        # Log that the file has been successfully read
-        log.info(f"Successfully read the '{file_name}' data file.")
-
-        # Check response for errors
-        response.raise_for_status()
-
-    # Log that the files have been successfully downloaded
-    log.info("Successfully read all regional 'sea_level_rise' data files from NZ SeaRise Takiwa.")
-
-    return slr_nz_dict
-
-
-def modify_slr_data_from_takiwa() -> gpd.GeoDataFrame:
+def modify_slr_data_from_takiwa(slr_nz_dict) -> gpd.GeoDataFrame:
     """
     Modify sea level rise data stored under dictionary to a GeoDataFrame and return.
+
+    Parameters
+    ----------
+    slr_nz_dict: Dictionary
+        A dictionary containing the sea level rise data from the NZ Sea level rise datasets.
 
     Returns
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the sea level rise data from the NZ Sea level rise datasets.
     """
-    # Generate a dictionary to store the sea level rise dataset
-    slr_nz_dict = get_slr_data_from_takiwa()
-
     # Create a copy dataframe for NZ_VLM_final_May24
     slr_nz = slr_nz_dict["NZ_VLM_final_May24"].copy(deep=True)
     # Merge Site Details dataframe and Sea level projections tables WITH and WITHOUT VLM
@@ -77,9 +40,9 @@ def modify_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     for vlm_name in ["NZSeaRise_proj_vlm", "NZSeaRise_proj_novlm"]:
         slr_nz_merge = slr_nz.merge(
             slr_nz_dict[vlm_name],
-            left_on='Site ID', right_on='site',
-            how='left', validate='1:m',
-            suffixes=('_y', '')
+            left_on='Site ID',
+            right_on='site',
+            how='left'
         )
         slr_nz_merge['add_vlm'] = True if vlm_name == "NZSeaRise_proj_vlm" else False
         slr_nz_merge_list.append(slr_nz_merge)
@@ -117,6 +80,44 @@ def modify_slr_data_from_takiwa() -> gpd.GeoDataFrame:
 
     return slr_nz_with_geom
 
+def get_slr_data_from_takiwa() -> dict[str, pd.DataFrame]:
+    """
+    Fetch sea level rise data from the NZ SeaRise Takiwa website.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the sea level rise data from the NZ Sea level rise datasets.
+    """
+    #  The URL for retrieving the sea level rise files
+    url = 'https://zenodo.org/records/11398538/export/json'
+
+    # Log that the fetching of sea level rise data from NZ SeaRise Takiwa has started
+    log.info("Fetching 'sea_level_rise' data from NZ SeaRise Takiwa.")
+
+    # Create a dictionary to store the sea level rise dataset
+    slr_nz_dict = {}
+    # Request export information json from Zenodo
+    response = requests.get(url)
+    response.raise_for_status()
+    export_json = response.json()
+    # Get necessary links from json file
+    for file_name, file_info in export_json['files']['entries'].items():
+        # Get file name without extension
+        file_name_without_extension = pathlib.Path(file_name).stem
+        # Collect sea level rise dataset and storing into dictionary
+        slr_nz_dict[file_name_without_extension] = pd.read_csv(file_info["links"]["content"])
+        # Log that the data has been successfully fetched
+        log.info(f"Successfully fetched the '{file_name}' data.")
+
+    # Log that all data have been successfully fetched
+    log.info("Successfully fetched all the 'sea_level_rise' data from NZ SeaRise Takiwa.")
+
+    # Edit and convert dictionary into a GeoDataframe
+    slr_nz_with_geom = modify_slr_data_from_takiwa(slr_nz_dict)
+
+    return slr_nz_with_geom
+
 
 def store_slr_data_to_db(engine: Engine) -> None:
     """
@@ -134,7 +135,7 @@ def store_slr_data_to_db(engine: Engine) -> None:
         log.info(f"'{table_name}' data already exists in the database.")
     else:
         # Read sea level rise data from the NZ Sea level rise datasets
-        slr_nz = modify_slr_data_from_takiwa()
+        slr_nz = get_slr_data_from_takiwa()
         # Store the sea level rise data to the database table
         log.info(f"Adding '{table_name}' data to the database.")
         slr_nz.to_postgis(table_name, engine, index=False, if_exists="replace")
