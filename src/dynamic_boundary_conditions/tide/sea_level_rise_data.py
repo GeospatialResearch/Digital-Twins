@@ -5,6 +5,7 @@ storing the data in the database, and retrieving the closest sea level rise data
 in the provided tide data.
 """  # noqa: D400
 
+from io import StringIO
 import logging
 import pathlib
 from typing import Dict
@@ -107,8 +108,12 @@ def get_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     for file_name, file_info in export_json['files']['entries'].items():
         # Get file name without extension
         file_name_without_extension = pathlib.Path(file_name).stem
-        # Collect sea level rise dataset and storing into dictionary
-        slr_nz_dict[file_name_without_extension] = pd.read_csv(file_info["links"]["content"])
+        # Request csv dataset using requests module, since it does not cause 401 errors like pd.read_csv
+        csv_contents_response = requests.get(file_info["links"]["content"])
+        # Form into file-like buffer for reading into dataframe
+        csv_contents_buffer = StringIO(csv_contents_response.text)
+        # Collect sea level rise dataframe and store into dictionary
+        slr_nz_dict[file_name_without_extension] = pd.read_csv(csv_contents_buffer)
         # Log that the data has been successfully fetched
         log.info(f"Successfully fetched the '{file_name}' data.")
 
