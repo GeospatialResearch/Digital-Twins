@@ -7,6 +7,7 @@ in the provided tide data.
 
 import logging
 import pathlib
+from typing import Dict
 
 import geopandas as gpd
 import pandas as pd
@@ -19,13 +20,13 @@ from src.digitaltwin import tables
 log = logging.getLogger(__name__)
 
 
-def modify_slr_data_from_takiwa(slr_nz_dict) -> gpd.GeoDataFrame:
+def modify_slr_data_from_takiwa(slr_nz_dict: Dict[str, pd.DataFrame]) -> gpd.GeoDataFrame:
     """
     Modify sea level rise data stored under dictionary to a GeoDataFrame and return.
 
     Parameters
     ----------
-    slr_nz_dict: Dictionary
+    slr_nz_dict : Dict[str, pd.DataFrame]
         A dictionary containing the sea level rise data from the NZ Sea level rise datasets.
 
     Returns
@@ -81,14 +82,14 @@ def modify_slr_data_from_takiwa(slr_nz_dict) -> gpd.GeoDataFrame:
     return slr_nz_with_geom
 
 
-def get_slr_data_from_takiwa() -> dict[str, pd.DataFrame]:
+def get_slr_data_from_takiwa() -> gpd.GeoDataFrame:
     """
     Fetch sea level rise data from the NZ SeaRise Takiwa website.
 
     Returns
     -------
-    dict
-        A dictionary containing the sea level rise data from the NZ Sea level rise datasets.
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the sea level rise data from the NZ Sea level rise datasets.
     """
     #  The URL for retrieving the sea level rise files
     url = 'https://zenodo.org/records/11398538/export/json'
