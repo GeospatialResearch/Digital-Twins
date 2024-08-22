@@ -80,6 +80,7 @@ def modify_slr_data_from_takiwa(slr_nz_dict) -> gpd.GeoDataFrame:
 
     return slr_nz_with_geom
 
+
 def get_slr_data_from_takiwa() -> dict[str, pd.DataFrame]:
     """
     Fetch sea level rise data from the NZ SeaRise Takiwa website.
