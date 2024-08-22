@@ -35,11 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import type {AxiosError} from "axios";
+import axios, {type AxiosError} from "axios";
 import * as Cesium from "cesium";
 import type {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components";
 import {MapViewer} from 'geo-visualisation-components';
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 
 import {usePageTitlePrefix} from "./composables/title";
 
@@ -110,6 +110,36 @@ const selectedParameters = reactive<Record<string, number | string>>({
   eventDuration: 10,
   rainfallPh: 12,
 });
+
+onMounted(async () => {
+  console.log("onMOunted")
+  console.log(env);
+  const geojson = await loadMEDUSABuildings()
+  dataSources.value = {
+    geoJsonDataSources: [geojson]
+  }
+})
+
+async function loadMEDUSABuildings(): Promise<Cesium.GeoJsonDataSource> {
+  const geoserverUrl = axios.getUri({
+        url: `${env.geoserver.host}:${env.geoserver.port}/geoserver/db-pollution/ows`,
+        params: {
+          service: "WFS",
+          version: "1.0.0",
+          request: "GetFeature",
+          outputFormat: "application/json",
+          typeName: "db-pollution:medusa2_model_output_buildings",
+          srsName: "EPSG:4326",
+        }
+      })
+
+      const sa1s = await Cesium.GeoJsonDataSource.load(geoserverUrl, {
+        fill: Cesium.Color.fromAlpha(Cesium.Color.ROYALBLUE, 1),
+        stroke: Cesium.Color.ROYALBLUE.darken(0.5, new Cesium.Color()),
+        strokeWidth: 10
+      });
+      return sa1s;
+}
 
 
 /**
