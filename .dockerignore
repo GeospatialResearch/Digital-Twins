@@ -6,7 +6,6 @@ tests
 fredt.tar
 build_dep.tar
 # Ignore local environment variables when building with docker
-**/.env*.local
 **/.env
 
 .git

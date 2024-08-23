@@ -1,4 +1,4 @@
-FROM node:lts AS build-stage
+FROM node:lts AS base-stage
 
 WORKDIR /app
 # Install node_modules
@@ -12,6 +12,15 @@ COPY ["visualisation/*.js", "visualisation/*.json", "visualisation/.env.producti
 COPY visualisation/src/ src/
 COPY visualisation/public/ public/
 
+FROM base-stage AS dev
+# Run local code as dev server
+# Copy development environment variables
+COPY visualisation/.env.local .env.local
+
+EXPOSE 5173
+CMD npm run serve
+
+FROM base-stage AS build-stage
 # Build code for production style server
 RUN npm run build
 

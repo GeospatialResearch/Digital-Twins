@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:23.10.0-1 AS build
+FROM continuumio/miniconda3:23.10.0-1 AS conda-build
 # Miniconda layer for building conda environment
 WORKDIR /app
 
@@ -33,24 +33,9 @@ USER root
 
 # Install dependencies
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl acl \
-# Install firefox from mozilla .deb repository, not snap package as is default for ubuntu (snap does not work for docker)
- && curl --proto "=https" -L "https://packages.mozilla.org/apt/repo-signing-key.gpg" | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null \
- && echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null \
- && echo $' \n\
-Package: * \n\
-Pin: origin packages.mozilla.org \n\
-Pin-Priority: 1000 \n\
-' | tee /etc/apt/preferences.d/mozilla \
- && cat /etc/apt/preferences.d/mozilla \
- && apt-get update \
- && apt-get install -y --no-install-recommends firefox \
-# Install geckodriver, webdriver for firefox, needed for selenium
- && curl --proto "=https" -L "https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz" | tar xz -C /usr/local/bin \
-# Cleanup image and remove junk
- && rm -fr /var/lib/apt/lists/* \
-# Remove unused packages. Keep curl for health checking in docker-compose
- && apt-get purge -y ca-certificates
+  && apt-get install -y --no-install-recommends curl acl \
+  # Cleanup image and remove junk
+  && rm -fr /var/lib/apt/lists/*
 
 # Install health-checker tool that allows us to run commands when checking root endpoint to check if service is available
 ADD --chmod=555 https://github.com/gruntwork-io/health-checker/releases/download/v0.0.8/health-checker_linux_amd64 \
@@ -62,8 +47,28 @@ RUN mkdir /stored_data \
     && setfacl -R -m u:nonroot:rwx /stored_data \
     && mkdir /stored_data/geoserver
 
-# Copy python virtual environment from build layer
-COPY --chown=root:root --chmod=555 --from=build /venv /venv
+FROM runtime-base AS dev
+# Image build target for devcontainers
+
+# Install git
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends git \
+  # Cleanup image and remove junk
+  && rm -fr /var/lib/apt/lists/*
+
+# Copy full conda enviornment
+COPY --from=conda-build /opt/conda/. /opt/conda/
+ENV PATH=/opt/conda/bin:$PATH
+
+# Copy source files and essential runtime files
+COPY --chown=root:root --chmod=444 selected_polygon.geojson .
+COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
+COPY --chown=root:root --chmod=555 src/ src/
+
+
+FROM runtime-base AS prod-base
+# Copy python virtual environment from conda-build layer
+COPY --chown=root:root --chmod=555 --from=conda-build /venv /venv
 USER nonroot
 
 # Copy source files and essential runtime files
@@ -72,7 +77,7 @@ COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
 COPY --chown=root:root --chmod=555 src/ src/
 
 
-FROM runtime-base AS backend
+FROM prod-base AS backend
 # Image build target for backend
 # Using separate build targets for each image because the Orbica platform does not allow for modifying entrypoints
 # and using multiple dockerfiles was creating increase complexity problems keeping things in sync
@@ -83,7 +88,7 @@ ENTRYPOINT source /venv/bin/activate && \
            gunicorn --bind 0.0.0.0:5000 src.app:app
 
 
-FROM runtime-base AS celery_worker
+FROM prod-base AS celery_worker
 # Image build target for celery_worker
 
 EXPOSE 5001
@@ -95,6 +100,7 @@ ENTRYPOINT source /venv/bin/activate && \
              --script "celery -A src.tasks inspect ping"  & \
            source /venv/bin/activate && \
            celery -A src.tasks worker -P threads --loglevel=INFO
+
 
 FROM docker.osgeo.org/geoserver:2.21.2 AS geoserver
 
