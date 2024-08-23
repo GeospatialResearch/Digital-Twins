@@ -2,7 +2,7 @@
 """
 Generates combined tide and sea level rise (SLR) data for a specific projection year, taking into account the provided
 confidence level, SSP scenario, inclusion of Vertical Land Motion (VLM), percentile, and more.
-"""
+"""  # noqa: D400
 
 import logging
 import re
@@ -14,32 +14,6 @@ import shapely.wkt
 from scipy.interpolate import interp1d
 
 log = logging.getLogger(__name__)
-
-
-def split_slr_measurementname_column(slr_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    """
-    Split the 'measurementname' column in the sea level rise data to extract and add additional information.
-
-    Parameters
-    ----------
-    slr_data : gpd.GeoDataFrame
-        A GeoDataFrame containing the sea level rise data.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the sea level rise data with additional columns for extracted information:
-        'confidence_level', 'ssp_scenario', and 'add_vlm'.
-    """
-    # Create a copy of the sea level rise data
-    slr_data_split = slr_data.copy()
-    # Extract the 'confidence_level' information from the 'measurementname' column
-    slr_data_split['confidence_level'] = slr_data_split['measurementname'].str.extract(r'(low|medium) confidence')
-    # Extract the 'ssp_scenario' information from the 'measurementname' column
-    slr_data_split['ssp_scenario'] = slr_data_split['measurementname'].str.extract(r'(\w+-\d\.\d)')
-    # Extract for the presence of '+ VLM' in the 'measurementname' column
-    slr_data_split['add_vlm'] = slr_data_split['measurementname'].str.contains(r'\+ VLM')
-    return slr_data_split
 
 
 def get_slr_scenario_data(
@@ -83,15 +57,17 @@ def get_slr_scenario_data(
     """
     log.info("Extracting the requested 'sea_level_rise' scenario data.")
 
-    # Split 'measurementname' column to extract and add additional information
-    slr_data_split = split_slr_measurementname_column(slr_data)
+    # Merge ssp and scenario into one column
+    slr_data['ssp_scenario'] = slr_data['ssp'].astype(str) + '-' + slr_data['scenario'].astype(str)
+    # Remove 'ssp' and 'scenario' column
+    slr_data = slr_data.drop(columns=['ssp', 'scenario'])
 
     # Check if the provided confidence level is valid
-    valid_conf_level = slr_data_split['confidence_level'].unique().tolist()
+    valid_conf_level = slr_data['confidence_level'].unique().tolist()
     if confidence_level not in valid_conf_level:
         raise ValueError(f"Invalid value '{confidence_level}' for confidence_level. Must be one of {valid_conf_level}.")
     # Filter the sea level rise data based on the desired confidence level
-    slr_scenario = slr_data_split[slr_data_split["confidence_level"] == confidence_level]
+    slr_scenario = slr_data[slr_data["confidence_level"] == confidence_level]
 
     # Check if the provided SSP scenario is valid
     valid_ssp_scenario = slr_scenario['ssp_scenario'].unique().tolist()
@@ -197,8 +173,8 @@ def add_slr_to_tide(
         slr_interp_scenario: gpd.GeoDataFrame,
         proj_year: int) -> pd.DataFrame:
     """
-    Adds sea level rise (SLR) data to the tide data for a specific projection year and
-    returns the combined tide and sea level rise value.
+    Add sea level rise (SLR) data to the tide data for a specific projection year and
+    return the combined tide and sea level rise value.
 
     Parameters
     ----------
@@ -213,7 +189,12 @@ def add_slr_to_tide(
     -------
     pd.DataFrame
         A DataFrame that contains the combined tide and sea level rise data for the specified projection year.
-    """
+
+    Raises
+    ------
+    ValueError
+        If an invalid 'proj_year' value is provided.
+    """  # noqa: D400
     log.info("Adding 'sea_level_rise' data to 'tide' data for the requested scenario.")
 
     # Make a copy of the tide_data DataFrame to avoid modifying the original data
@@ -274,7 +255,7 @@ def get_combined_tide_slr_data(
         increment_year: int = 1,
         interp_method: str = "linear") -> pd.DataFrame:
     """
-    Generates the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
+    Generate the combined tide and sea level rise (SLR) data for a specific projection year, considering the given
     confidence_level, ssp_scenario, add_vlm, percentile, and more.
 
     Parameters
@@ -305,7 +286,7 @@ def get_combined_tide_slr_data(
     pd.DataFrame
         A DataFrame containing the combined tide and sea level rise data for the specified projection year,
         taking into account the provided confidence_level, ssp_scenario, add_vlm, percentile, and more.
-    """
+    """  # noqa: D400
     # Get sea level rise scenario data based on the specified confidence_level, ssp_scenario, add_vlm, and percentile
     slr_scenario_data = get_slr_scenario_data(slr_data, confidence_level, ssp_scenario, add_vlm, percentile)
     # Interpolate sea level rise scenario data based on the specified year interval and interpolation method
