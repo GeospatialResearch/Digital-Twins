@@ -160,6 +160,7 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
     parameters["proj_year"] = scenario_options["Projected Year"]
     parameters["add_vlm"] = scenario_options["Add Vertical Land Movement"]
     parameters["confidence_level"] = scenario_options["Confidence Level"]
+    parameters["ssp_scenario"] = scenario_options["ssp_scenario"]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_tide_slr.main(selected_polygon, **parameters)
 
