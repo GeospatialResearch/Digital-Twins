@@ -1,0 +1,42 @@
+name: Deploy instance of digital twin on RCC server
+on:
+  workflow_dispatch:
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.RCC_PRIV_KEY }}" > ~/.ssh/id_rcc
+          echo "${{ secrets.RCC_PUB_KEY }}" > ~/.ssh/id_rcc.pub
+          chmod 600 ~/.ssh/id_rcc
+          chmod 600 ~/.ssh/id_rcc.pub
+          ssh-keyscan -H ${{ secrets.RCC_HOST }} >> ~/.ssh/known_hosts
+      - name: Update RCC git repo
+        run: |
+          ssh ${{ secrets.RCC_HOST }} "cd Digital-Twins && git reset --hard HEAD && git fetch && git checkout master && git pull"
+      - name: Docker build
+        run: |
+          ssh ${{ secrets.RCC_HOST }} "cd Digital-Twins && docker compose build"
+      - name: Restart docker services
+        run: |
+          ssh ${{ secrets.RCC_HOST }} "cd Digital-Twins && docker compose up -d"
+      - name: Copy Logs
+        id: copy_logs
+        run: |
+          COMPOSE_LOG_PATH=docker-compose-logs.txt
+          ssh ${{ secrets.RCC_HOST }} "cd Digital-Twins && docker compose logs > $COMPOSE_LOG_PATH && docker compose logs"
+          scp ${{ secrets.RCC_HOST }}:~/Digital-Twins/$COMPOSE_LOG_PATH $COMPOSE_LOG_PATH"
+          echo "compose_log_path=$COMPOSE_LOG_PATH" >> $GITHUB_OUTPUT
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          name: "docker-compose_logs.txt"
+          path: ${{ steps.copy_logs.outputs.compose_log_path }}
