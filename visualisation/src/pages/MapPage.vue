@@ -63,9 +63,9 @@ export default Vue.extend({
       selectionOptions: {
         year: {
           name: "Projected Year",
-          min: 2020,
+          min: new Date().getFullYear() + 1,
           max: 2150,
-          step: 10
+          step: 1
         },
         sspScenario: {name: "SSP Scenario", data: ['SSP1-1.9', 'SSP1-2.6', 'SSP2-4.5', 'SSP3-7.0', 'SSP5-8.5']},
         confidenceLevel: {name: "Confidence Level", data: ['low', 'medium']},
