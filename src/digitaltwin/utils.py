@@ -73,7 +73,7 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         - LogLevel.NOTSET (0)
     """  # noqa: D400
     # Define the logging format and date format
-    logging_format = "%(asctime)s | %(levelname)-8s | %(name)-30s %(lineno)4d | %(funcName)-50s | %(message)s"
+    logging_format = "%(asctime)s | %(levelname)-8s | %(name)-75s %(lineno)4d | %(funcName)-50s | %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"
     # Create and configure the root logger with the specified log level and formats
     logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format)
@@ -92,7 +92,9 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         "scrapy",
         "distributed",
         "selenium",
-        "s3transfer"
+        "s3transfer",
+        "charset_normalizer",
+        "boto3"
     ]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:

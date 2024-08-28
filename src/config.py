@@ -112,6 +112,12 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     GEOSERVER_ADMIN_NAME = _get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
     GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
 
+    # aws s3 bucket
+    USE_AWS_S3_BUCKET = _get_bool_env_variable("USE_AWS_S3_BUCKET", default=False)
+    AWS_ACCESS_KEY_ID = _get_env_variable("AWS_ACCESS_KEY_ID", allow_empty=True)
+    AWS_SECRET_ACCESS_KEY = _get_env_variable("AWS_SECRET_ACCESS_KEY", allow_empty=True)
+    AWS_BUCKET_NAME = _get_env_variable("AWS_BUCKET_NAME", allow_empty=True)
+
     # NewZealidar config that we must ensure have values.
     _LIDAR_DIR = _get_env_variable("LIDAR_DIR")
     _DEM_DIR = _get_env_variable("DEM_DIR")
