@@ -20,7 +20,7 @@ jobs:
           chmod 600 ~/.ssh/id_rcc
           chmod 600 ~/.ssh/id_rcc.pub
           echo "Adding RCC server to known_hosts"
-          ssh-keyscan -T 10 -Hv ${{ secrets.RCC_HOST }}
+          ssh-keyscan -T 100 -Hv ${{ secrets.RCC_HOST }}
           echo "that one worked"
           ssh-keyscan -T 10 -Hv ${{ secrets.RCC_HOST }} >> ~/.ssh/known_hosts
       - name: Update RCC git repo
