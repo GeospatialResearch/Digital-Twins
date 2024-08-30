@@ -1,20 +1,18 @@
-# -*- coding: utf-8 -*-
 """
 Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
 Allows the frontend to send tasks and retrieve status later.
 """
 import logging
 import traceback
-from typing import Dict, List, NamedTuple, Tuple
+from typing import List, NamedTuple, Dict, Union
 
-import billiard.einfo
+from src.config import EnvVariable
 import geopandas as gpd
 import shapely
 import xarray
 from celery import Celery, states, result
 from pyproj import Transformer
 
-from src.config import EnvVariable
 from src.digitaltwin import retrieve_static_boundaries, setup_environment
 from src.digitaltwin.utils import setup_logging
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
@@ -22,6 +20,8 @@ from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.flood_model import bg_flood_model, process_hydro_dem
 from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
+
+from src.pollution_model.run_medusa_2 import retrieve_input_parameters
 
 # Setup celery backend task management
 message_broker_url = f"redis://{EnvVariable.MESSAGE_BROKER_HOST}:6379/0"
@@ -32,23 +32,9 @@ log = logging.getLogger(__name__)
 
 
 class OnFailureStateTask(app.Task):
-    """Task that switches state to FAILURE if an exception occurs."""  # pylint: disable=too-few-public-methods
+    """Task that switches state to FAILURE if an exception occurs"""
 
-    # noinspection PyIncorrectDocstring
-    def on_failure(self,
-                   exc: Exception,
-                   _task_id: str,
-                   _args: Tuple,
-                   _kwargs: Dict,
-                   _einfo: billiard.einfo.ExceptionInfo) -> None:
-        """
-        Change state to FAILURE and add exception to task data if an exception occurs.
-
-        Parameters
-        ----------
-        exc : Exception
-            The exception raised by the task.
-        """
+    def on_failure(self, exc, _task_id, _args, _kwargs, _einfo):
         self.update_state(state=states.FAILURE, meta={
             "exc_type": type(exc).__name__,
             "exc_message": traceback.format_exc().split('\n'),
@@ -60,7 +46,7 @@ class DepthTimePlot(NamedTuple):
     """
     Represents the depths over time for a particular pixel location in a raster.
     Uses tuples and lists instead of Arrays or Dataframes because it needs to be easily serializable when communicating
-    over message_broker.
+    over message_broker
 
     Attributes
     ----------
@@ -69,21 +55,18 @@ class DepthTimePlot(NamedTuple):
     times : List[float]
         A list of all of the times in s for the pixel. Parallels the depts list
     """
-
     depths: List[float]
     times: List[float]
 
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
     """
-    Create a model for the area using series of chained (sequential) sub-tasks.
+    Creates a model for the area using series of chained (sequential) sub-tasks.
 
     Parameters
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to run the model for. Defined in WKT form.
-    scenario_options: dict
-        Options for scenario modelling inputs.
 
     Returns
     -------
@@ -91,24 +74,29 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
         The task result for the long-running group of tasks. The task ID represents the final task in the group.
     """
     return (
-        add_base_data_to_db.si(selected_polygon_wkt) |
-        process_dem.si(selected_polygon_wkt) |
-        generate_rainfall_inputs.si(selected_polygon_wkt) |
-        generate_tide_inputs.si(selected_polygon_wkt, scenario_options) |
-        generate_river_inputs.si(selected_polygon_wkt) |
-        run_flood_model.si(selected_polygon_wkt)
+            add_base_data_to_db.si(selected_polygon_wkt) |
+            # process_dem.si(selected_polygon_wkt) |
+            # generate_rainfall_inputs.si(selected_polygon_wkt) |
+            generate_tide_inputs.si(selected_polygon_wkt, scenario_options)
+            # generate_river_inputs.si(selected_polygon_wkt) |
+            # run_flood_model.si(selected_polygon_wkt)
     )()
 
 
 @app.task(base=OnFailureStateTask)
 def add_base_data_to_db(selected_polygon_wkt: str) -> None:
     """
-    Task to ensure static base data for the given area is added to the database.
+    Task to ensure static base data for the given area is added to the database
 
     Parameters
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add base data for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_static_boundaries]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
@@ -116,7 +104,7 @@ def add_base_data_to_db(selected_polygon_wkt: str) -> None:
 
 
 @app.task(base=OnFailureStateTask)
-def process_dem(selected_polygon_wkt: str) -> None:
+def process_dem(selected_polygon_wkt: str):
     """
     Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.
 
@@ -124,6 +112,11 @@ def process_dem(selected_polygon_wkt: str) -> None:
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to process the DEM for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[process_hydro_dem]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
@@ -131,7 +124,7 @@ def process_dem(selected_polygon_wkt: str) -> None:
 
 
 @app.task(base=OnFailureStateTask)
-def generate_rainfall_inputs(selected_polygon_wkt: str) -> None:
+def generate_rainfall_inputs(selected_polygon_wkt: str):
     """
     Task to ensure rainfall input data for the given area is added to the database and model input files are created.
 
@@ -139,6 +132,11 @@ def generate_rainfall_inputs(selected_polygon_wkt: str) -> None:
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add rainfall data for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[main_rainfall]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
@@ -146,7 +144,7 @@ def generate_rainfall_inputs(selected_polygon_wkt: str) -> None:
 
 
 @app.task(base=OnFailureStateTask)
-def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict) -> None:
+def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
     """
     Task to ensure tide input data for the given area is added to the database and model input files are created.
 
@@ -154,8 +152,11 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict) -> N
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add tide data for. Defined in WKT form.
-    scenario_options: dict
-        Options for scenario modelling inputs.
+
+    Returns
+    -------
+    None
+        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr]
     parameters["proj_year"] = scenario_options["Projected Year"]
@@ -166,7 +167,7 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict) -> N
 
 
 @app.task(base=OnFailureStateTask)
-def generate_river_inputs(selected_polygon_wkt: str) -> None:
+def generate_river_inputs(selected_polygon_wkt: str):
     """
     Task to ensure river input data for the given area is added to the database and model input files are created.
 
@@ -174,6 +175,11 @@ def generate_river_inputs(selected_polygon_wkt: str) -> None:
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add river data for. Defined in WKT form.
+
+    Returns
+    -------
+    None
+        This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[main_river]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
@@ -205,14 +211,19 @@ def run_flood_model(selected_polygon_wkt: str) -> int:
 def refresh_lidar_datasets() -> None:
     """
     Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
-    Takes a long time to run but needs to be run periodically so that the datasets are up to date.
+    Takes a long time to run but needs to be run periodically so that the datasets are up to date
+
+    Returns
+    -------
+    None
+        This task does not return anything
     """
     process_hydro_dem.refresh_lidar_datasets()
 
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
     """
-    Transform a WKT string polygon into a GeoDataFrame.
+    Transforms a WKT string polygon into a GeoDataFrame
 
     Parameters
     ----------
@@ -248,7 +259,7 @@ def get_model_output_filepath_from_model_id(model_id: int) -> str:
     Returns
     -------
     str
-        Serialized posix-style str version of the filepath.
+        Serialized posix-style str version of the filepath
     """
     engine = setup_environment.get_connection_from_profile()
     return bg_flood_model.model_output_from_db_by_id(engine, model_id).as_posix()
@@ -287,9 +298,43 @@ def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> DepthTi
 
 
 @app.task(base=OnFailureStateTask)
+def retrieve_medusa_input_parameters(scenario_id: int) -> Dict[str, Union[str, float]]:
+    """
+    Retrieve input parameters for the current scenario id. This is used for app file
+
+    Parameters
+    ----------
+    scenario_id: int
+        The scenario ID of the pollution model run
+
+    Returns
+    -------
+    MedusaRainfallEventGeometry: class
+        Rainfall event parameters for MEDUSA 2.0 model with geometry
+    """
+    # Get rainfall information
+    medusa_rainfall_event = retrieve_input_parameters(scenario_id)
+
+    if medusa_rainfall_event != None:
+        # Write rainfall information into a dictionary
+        medusa_rainfall_dictionary = {
+            "antecedent_dry_days": float(medusa_rainfall_event.antecedent_dry_days),
+            "average_rain_intensity": float(medusa_rainfall_event.average_rain_intensity),
+            "event_duration": float(medusa_rainfall_event.event_duration),
+            "rainfall_ph": float(medusa_rainfall_event.rainfall_ph),
+            "geometry": str(medusa_rainfall_event.geometry)
+        }
+        return medusa_rainfall_dictionary
+
+    else:
+        return None
+
+
+
+@app.task(base=OnFailureStateTask)
 def get_model_extents_bbox(model_id: int) -> str:
     """
-    Task to find the bounding box of a given model output.
+    Task to find the bounding box of a given model output
 
     Parameters
     ----------
@@ -298,8 +343,8 @@ def get_model_extents_bbox(model_id: int) -> str:
 
     Returns
     -------
-    str
-        The bounding box in 'x1,y1,x2,y2' format.
+    str:
+        The bounding box in 'x1,y1,x2,y2' format
     """
     engine = setup_environment.get_connection_from_profile()
     extents = bg_flood_model.model_extents_from_db_by_id(engine, model_id).geometry[0]

@@ -23,6 +23,8 @@ from src.digitaltwin.tables import create_table
 from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
 from src.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Medusa2ModelOutputRoads
 
+from src.digitaltwin.tables import MedusaScenarios, execute_query
+
 log = logging.getLogger(__name__)
 
 
@@ -76,6 +78,29 @@ class MedusaRainfallEvent(NamedTuple):
     average_rain_intensity: float
     event_duration: float
     rainfall_ph: float
+
+
+class MedusaRainfallEventGeometry(NamedTuple):
+    """
+    Rainfall event parameters for MEDUSA 2.0 model.
+
+    Attributes
+    ----------
+    antecedent_dry_days: float
+        Length of antecedent dry period (days).
+    average_rain_intensity: float
+        Average rainfall intensity of the event (mm/h).
+    event_duration: float
+        Duration of the rainfall event (h).
+    rainfall_ph: float
+        The acidity level of the rainfall.
+    """
+
+    antecedent_dry_days: float
+    average_rain_intensity: float
+    event_duration: float
+    rainfall_ph: float
+    geometry: str
 
 
 class MetalLoads(NamedTuple):
@@ -555,6 +580,8 @@ def serve_pollution_model() -> None:
                                          metadata_elem=pollution_metadata_xml)
 
 
+
+
 def get_next_scenario_id(engine: Engine) -> int:
     """
     Read the database to find the latest scenario id. Returns that id + 1 to give the new scenario_id.
@@ -573,6 +600,7 @@ def get_next_scenario_id(engine: Engine) -> int:
         result = conn.execute(f"SELECT MAX(scenario_id) FROM {Medusa2ModelOutputBuildings.__tablename__}").fetchone()[0]
         max_scenario_id = result if result is not None else 0
         return max_scenario_id + 1
+
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
@@ -625,12 +653,64 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
     # Ensure pollution model data is being served by geoserver
     serve_pollution_model()
+
+    # Create new table recording users' history
+    create_table(engine, MedusaScenarios)
+    # Create the query object
+    query = MedusaScenarios(
+        scenario_id=scenario_id,
+        antecedent_dry_days=antecedent_dry_days,
+        average_rain_intensity=average_rain_intensity,
+        event_duration=event_duration,
+        rainfall_ph=rainfall_ph,
+        geometry=area_of_interest['geometry'].to_wkt().iloc[0]
+    )
+    # Execute the query
+    execute_query(engine, query)
+
     return scenario_id
+
+
+def retrieve_input_parameters(scenario_id: int) -> MedusaRainfallEventGeometry:
+    """
+    Retrieve input parameters for the current scenario id.
+
+    Parameters
+    ----------
+    scenario_id: int
+        The scenario ID of the pollution model run
+
+    Returns
+    -------
+    MedusaRainfallEvent: class
+        Rainfall event parameters for MEDUSA 2.0 model
+    """
+    # Connect to the database
+    engine = setup_environment.get_database()
+
+    # Read from database
+    medusa_scenarios = gpd.GeoDataFrame.from_postgis(
+        """SELECT * FROM medusa_scenarios""",
+        con=engine,
+        geom_col="geometry"
+    )
+
+    if scenario_id in medusa_scenarios['scenario_id'].unique():
+        return MedusaRainfallEventGeometry(
+            antecedent_dry_days=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'antecedent_dry_days'].iloc[0],
+            average_rain_intensity=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'average_rain_intensity'].iloc[0],
+            event_duration=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'event_duration'].iloc[0],
+            rainfall_ph=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'rainfall_ph'].iloc[0],
+            geometry=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'geometry'].iloc[0]
+        )
+    else:
+        return None
+
 
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    main(
+    scenario_id = main(
         selected_polygon_gdf=sample_polygon,
         log_level=LogLevel.DEBUG,
         antecedent_dry_days=1,
@@ -638,3 +718,5 @@ if __name__ == "__main__":
         event_duration=1,
         rainfall_ph=7
     )
+
+    input_parameters = retrieve_input_parameters(scenario_id)
