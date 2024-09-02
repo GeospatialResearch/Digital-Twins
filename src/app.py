@@ -208,6 +208,7 @@ def generate_pollution_model() -> Response:
         ACCEPTED
     )
 
+
 @app.route('/models/flood/generate', methods=["POST"])
 @check_celery_alive
 def generate_flood_model() -> Response:
