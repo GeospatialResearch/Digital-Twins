@@ -31,10 +31,25 @@ paths:
                 example: "Healthy"
         '503 - Service Unavailable':
           $ref: '#/components/responses/NoCeleryWorkers'
+  "/models/pollution/generate":
+    post:
+      summary: Starts generating a MEDUSA 2.0 scenario model output.
+      description: |-
+        Starts generating a scenario model output according to the given scenario paramaters.
+        The task will run in the background. Use GET /tasks/{task_id} to get status about the task.
+      parameters:
+        - $ref: '#/components/parameters/MedusaInput'
+      responses:
+        '202 - Accepted':
+          $ref: '#/components/responses/TaskStarted'
+        '400 - Bad Request':
+          $ref: '#/components/responses/BadRequest'
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
 
   "/models/flood/generate":
     post:
-      summary: Starts generating a scenario model output.
+      summary: Starts generating a flood scenario model output.
       description: |-
         Starts generating a scenario model output according to the given scenario paramaters.
         The task will run in the background. Use GET /tasks/{task_id} to get status about the task.
@@ -73,6 +88,21 @@ paths:
       responses:
         '200 - OK':
           $ref: '#/components/responses/BuildingFloodStatus'
+        '404 - Not Found':
+          $ref: '#/components/responses/ScenarioNotFound'
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
+
+  "/models/{scenarioId}/getPollution":
+    get:
+      summary: Retrieves information on pollutant load for buildings, roads, and car parks, for a given MEDUSA model output id.
+      description: |-
+        It is recommended to use the geoserver API if it is possible, since this is a proxy around that to expose the functionality to all users.
+      parameters:
+        - $ref: '#/components/parameters/ScenarioId'
+      responses:
+        '200 - OK':
+          $ref: '#/components/responses/MedusaOutput'
         '404 - Not Found':
           $ref: '#/components/responses/ScenarioNotFound'
         '503 - Service Unavailable':
@@ -160,6 +190,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/BuildingFloodStatus'
+
+    MedusaOutput:
+      description: The pollution load for each feature in GeoJson format.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MedusaOutput'
 
     ScenarioNotFound:
       description: The scenario with that scenarioId could not be found
@@ -270,23 +307,28 @@ components:
           schema:
             type: object
             properties:
-              antecedent_dry_days:
-                type: number
-                example: 1
-                minimum: 0
-              average_rain_intensity:
-                type: number
-                example: 1
-                minimum: 0
-              event_duration:
-                type: number
-                example: 1
-                minimum: 0
-              rainfall_ph:
-                type: number
-                example: 7
-                minimum: 0
-                maximum: 14
+              bbox:
+                $ref: '#/components/schemas/BoundingBox'
+              scenarioOptions:
+                type: object
+                properties:
+                  antecedent_dry_days:
+                    type: number
+                    example: 1
+                    minimum: 0
+                  average_rain_intensity:
+                    type: number
+                    example: 1
+                    minimum: 0
+                  event_duration:
+                    type: number
+                    example: 1
+                    minimum: 0
+                  rainfall_ph:
+                    type: number
+                    example: 7
+                    minimum: 0
+                    maximum: 14
 
   schemas:
     Task:
