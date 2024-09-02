@@ -247,6 +247,7 @@ def generate_flood_model() -> Response:
         ACCEPTED
     )
 
+
 def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -> str:
     """
     Create a WKT bbox string from two points.
