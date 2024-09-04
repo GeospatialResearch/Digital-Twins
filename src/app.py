@@ -14,7 +14,6 @@ from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 from kombu.exceptions import OperationalError
 from shapely import box
-from werkzeug.exceptions import InternalServerError
 
 from src import tasks
 from src.config import EnvVariable
@@ -314,7 +313,7 @@ def get_rainfall_information(scenario_id: int) -> Response:
             "rainfall_ph": int
         }
         representing the values for the given point.
-    """
+    """  # noqa: D400
     # Get medusa rainfall information
     medusa_rainfall_dictionary = tasks.retrieve_medusa_input_parameters.delay(scenario_id).get()
 
@@ -323,8 +322,6 @@ def get_rainfall_information(scenario_id: int) -> Response:
         return make_response(f"Could not find rainfall scenario {scenario_id}", NOT_FOUND)
     else:
         return make_response(jsonify(medusa_rainfall_dictionary), OK)
-
-    return make_response(jsonify(medusa_rainfall_dictionary), OK)
 
 
 @app.route('/models/<int:model_id>/buildings', methods=["GET"])

@@ -4,7 +4,7 @@
 from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
-from sqlalchemy import Boolean, Column, DateTime, inspect, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, inspect, Integer, String, Float
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -77,42 +77,6 @@ class UserLogInfo(Base):
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
-    geometry = Column(Geometry("POLYGON", srid=2193))
-
-
-class MedusaScenarios(Base):
-    """
-    Class representing the 'MedusaUserLogInfo' table.
-
-    Attributes
-    ----------
-    __tablename__ : str
-        Name of the database table.
-    scenario_id: int
-        Returns the model id of the new flood_model produce
-    antecedent_dry_days: float
-        The number of dry days between rainfall events.
-    average_rain_intensity: float
-        The intensity of the rainfall event in mm/h.
-    event_duration: float
-        The number of hours of the rainfall event.
-    rainfall_ph: float
-        The pH level of the rainfall, a measure of acidity.
-    created_at : datetime
-        Timestamp indicating when the log entry was created.
-    geometry : Polygon
-        Geometric representation of the catchment area coverage.
-    """  # pylint: disable=too-few-public-methods
-
-    __tablename__ = "medusa_scenarios"
-    scenario_id = Column(Integer, primary_key=True, autoincrement=True)
-
-    antecedent_dry_days = Column(Integer, primary_key=True)
-    average_rain_intensity = Column(Integer, primary_key=True)
-    event_duration = Column(Integer, primary_key=True)
-    rainfall_ph = Column(Integer, primary_key=True)
-
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
 

@@ -32,7 +32,8 @@ log = logging.getLogger(__name__)
 
 
 class OnFailureStateTask(app.Task):
-    """Task that switches state to FAILURE if an exception occurs"""
+    """Task that switches state to FAILURE if an exception occurs
+    """  # noqa: D400
 
     def on_failure(self, exc, _task_id, _args, _kwargs, _einfo):
         self.update_state(state=states.FAILURE, meta={
@@ -318,11 +319,11 @@ def retrieve_medusa_input_parameters(scenario_id: int) -> Dict[str, Union[str, f
     if medusa_rainfall_event != None:
         # Write rainfall information into a dictionary
         medusa_rainfall_dictionary = {
-            "antecedent_dry_days": float(medusa_rainfall_event.antecedent_dry_days),
-            "average_rain_intensity": float(medusa_rainfall_event.average_rain_intensity),
-            "event_duration": float(medusa_rainfall_event.event_duration),
-            "rainfall_ph": float(medusa_rainfall_event.rainfall_ph),
-            "geometry": str(medusa_rainfall_event.geometry)
+            "antecedent_dry_days": float(medusa_rainfall_event['antecedent_dry_days']),
+            "average_rain_intensity": float(medusa_rainfall_event['average_rain_intensity']),
+            "event_duration": float(medusa_rainfall_event['event_duration']),
+            "rainfall_ph": float(medusa_rainfall_event['rainfall_ph']),
+            "geometry": str(medusa_rainfall_event['geometry'])
         }
         return medusa_rainfall_dictionary
 

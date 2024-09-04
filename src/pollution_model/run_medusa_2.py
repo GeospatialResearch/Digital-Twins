@@ -15,6 +15,7 @@ from xml.sax import saxutils
 import geopandas as gpd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
+from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
 
 from src import geoserver
 from src.config import EnvVariable
@@ -22,8 +23,10 @@ from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import create_table
 from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
 from src.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Medusa2ModelOutputRoads
+from sqlalchemy.engine.row import LegacyRow
 
-from src.digitaltwin.tables import MedusaScenarios, execute_query
+from src.digitaltwin.tables import execute_query
+from src.pollution_model.pollution_tables import MedusaScenarios
 
 log = logging.getLogger(__name__)
 
@@ -78,29 +81,6 @@ class MedusaRainfallEvent(NamedTuple):
     average_rain_intensity: float
     event_duration: float
     rainfall_ph: float
-
-
-class MedusaRainfallEventGeometry(NamedTuple):
-    """
-    Rainfall event parameters for MEDUSA 2.0 model.
-
-    Attributes
-    ----------
-    antecedent_dry_days: float
-        Length of antecedent dry period (days).
-    average_rain_intensity: float
-        Average rainfall intensity of the event (mm/h).
-    event_duration: float
-        Duration of the rainfall event (h).
-    rainfall_ph: float
-        The acidity level of the rainfall.
-    """
-
-    antecedent_dry_days: float
-    average_rain_intensity: float
-    event_duration: float
-    rainfall_ph: float
-    geometry: str
 
 
 class MetalLoads(NamedTuple):
@@ -580,8 +560,6 @@ def serve_pollution_model() -> None:
                                          metadata_elem=pollution_metadata_xml)
 
 
-
-
 def get_next_scenario_id(engine: Engine) -> int:
     """
     Read the database to find the latest scenario id. Returns that id + 1 to give the new scenario_id.
@@ -600,7 +578,6 @@ def get_next_scenario_id(engine: Engine) -> int:
         result = conn.execute(f"SELECT MAX(scenario_id) FROM {Medusa2ModelOutputBuildings.__tablename__}").fetchone()[0]
         max_scenario_id = result if result is not None else 0
         return max_scenario_id + 1
-
 
 
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
@@ -671,7 +648,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     return scenario_id
 
 
-def retrieve_input_parameters(scenario_id: int) -> MedusaRainfallEventGeometry:
+def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
     """
     Retrieve input parameters for the current scenario id.
 
@@ -682,30 +659,29 @@ def retrieve_input_parameters(scenario_id: int) -> MedusaRainfallEventGeometry:
 
     Returns
     -------
-    MedusaRainfallEvent: class
+    row: LegacyRow
         Rainfall event parameters for MEDUSA 2.0 model
     """
     # Connect to the database
     engine = setup_environment.get_database()
 
-    # Read from database
-    medusa_scenarios = gpd.GeoDataFrame.from_postgis(
-        """SELECT * FROM medusa_scenarios""",
-        con=engine,
-        geom_col="geometry"
-    )
+    # Set up query command to pull information from medusa_scenarios table
+    query = text(
+        "SELECT * FROM medusa_scenarios WHERE scenario_id = :scenario_id"
+    ).bindparams(scenario_id=scenario_id)
 
-    if scenario_id in medusa_scenarios['scenario_id'].unique():
-        return MedusaRainfallEventGeometry(
-            antecedent_dry_days=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'antecedent_dry_days'].iloc[0],
-            average_rain_intensity=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'average_rain_intensity'].iloc[0],
-            event_duration=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'event_duration'].iloc[0],
-            rainfall_ph=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'rainfall_ph'].iloc[0],
-            geometry=medusa_scenarios.loc[medusa_scenarios['scenario_id'] == scenario_id, 'geometry'].iloc[0]
-        )
-    else:
+    # Check table exists before querying
+    if not check_table_exists(engine, 'medusa_scenarios'):
+        raise FileNotFoundError(f"medusa_scenarios table does not exist in database")
+
+    # Get information by using scenario_id from medusa_scenarios table in the dataset
+    row = engine.execute(query).fetchone()
+
+    # If the row is empty then we could not find the model output
+    if row is None:
         return None
-
+    else:
+        return row
 
 
 if __name__ == "__main__":
