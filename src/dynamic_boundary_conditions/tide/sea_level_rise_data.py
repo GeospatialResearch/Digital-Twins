@@ -19,6 +19,7 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
 
 from src import config
 from src.digitaltwin import tables
@@ -226,17 +227,20 @@ def get_closest_slr_data(engine: Engine, single_query_loc: pd.Series) -> gpd.Geo
     # relevant data, which includes the calculated distance. By matching the closest location's 'siteid' from the
     # inner subquery with the corresponding data in the sea_level_rise table using the JOIN clause, the outer query
     # obtains the sea level rise data for the closest location, along with its associated distance value.
-    query = f"""
+    command_text = """
     SELECT slr.*, distances.distance
     FROM sea_level_rise AS slr
     JOIN (
         SELECT siteid,
-        ST_Distance(ST_Transform(geometry, 2193), ST_GeomFromText('{query_loc_geom["geometry"][0]}', 2193)) AS distance
+        ST_Distance(ST_Transform(geometry, 2193), ST_GeomFromText(:geom, 2193)) AS distance
         FROM sea_level_rise
         ORDER BY distance
         LIMIT 1
     ) AS distances ON slr.siteid = distances.siteid;
     """
+    query = text(command_text).bindparams(
+        geom=str(query_loc_geom["geometry"][0])
+    )
     # Execute the query and retrieve the data as a GeoDataFrame
     query_data = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
     # Add the position information to the retrieved data
