@@ -1,9 +1,8 @@
 """This script contains a SQLAlchemy model for the medusa 2.0 database table."""
 import abc
-
-from geoalchemy2 import Geometry
 from datetime import datetime, timezone
 
+from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import DeclarativeMeta

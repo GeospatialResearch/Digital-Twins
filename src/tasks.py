@@ -4,7 +4,7 @@ Allows the frontend to send tasks and retrieve status later.
 """
 import logging
 import traceback
-from typing import Dict, List, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Tuple, Union
 
 import billiard.einfo
 import geopandas as gpd
@@ -20,9 +20,8 @@ from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.flood_model import bg_flood_model, process_hydro_dem
-from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
-
 from src.pollution_model.run_medusa_2 import retrieve_input_parameters
+from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
 
 # Setup celery backend task management
 message_broker_url = f"redis://{EnvVariable.MESSAGE_BROKER_HOST}:6379/0"
@@ -290,23 +289,25 @@ def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> DepthTi
 @app.task(base=OnFailureStateTask)
 def retrieve_medusa_input_parameters(scenario_id: int) -> Dict[str, Union[str, float]]:
     """
-    Retrieve input parameters for the current scenario id. This is used for app file
+    Retrieve input parameters for the current scenario id. This is used for app file.
 
     Parameters
     ----------
     scenario_id: int
         The scenario ID of the pollution model run
 
+
     Returns
     -------
-    MedusaRainfallEventGeometry: class
-        Rainfall event parameters for MEDUSA 2.0 model with geometry
+    Dict[Point, int]
+        A dictionary contain information from Rainfall MEDUSA 2.0 database
     """
     # Get rainfall information
     medusa_rainfall_event = retrieve_input_parameters(scenario_id)
 
-    if medusa_rainfall_event != None:
-        # Write rainfall information into a dictionary
+    # Write rainfall information into a dictionary
+    if medusa_rainfall_event is not None:
+
         medusa_rainfall_dictionary = {
             "antecedent_dry_days": float(medusa_rainfall_event['antecedent_dry_days']),
             "average_rain_intensity": float(medusa_rainfall_event['average_rain_intensity']),
@@ -314,11 +315,11 @@ def retrieve_medusa_input_parameters(scenario_id: int) -> Dict[str, Union[str, f
             "rainfall_ph": float(medusa_rainfall_event['rainfall_ph']),
             "geometry": str(medusa_rainfall_event['geometry'])
         }
-        return medusa_rainfall_dictionary
 
     else:
-        return None
+        medusa_rainfall_dictionary = None
 
+    return medusa_rainfall_dictionary
 
 
 @app.task(base=OnFailureStateTask)

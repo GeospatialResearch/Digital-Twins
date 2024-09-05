@@ -4,7 +4,7 @@
 from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
-from sqlalchemy import Boolean, Column, DateTime, inspect, Integer, String, Float
+from sqlalchemy import Boolean, Column, DateTime, inspect, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base

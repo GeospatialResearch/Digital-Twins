@@ -14,18 +14,16 @@ from xml.sax import saxutils
 
 import geopandas as gpd
 from sqlalchemy.engine import Engine
+from sqlalchemy.engine.row import LegacyRow
 from sqlalchemy.sql import text
-from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
 
 from src import geoserver
 from src.config import EnvVariable
 from src.digitaltwin import setup_environment
-from src.digitaltwin.tables import create_table
+from src.digitaltwin.tables import create_table, check_table_exists
+from src.digitaltwin.tables import execute_query
 from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
 from src.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Medusa2ModelOutputRoads
-from sqlalchemy.engine.row import LegacyRow
-
-from src.digitaltwin.tables import execute_query
 from src.pollution_model.pollution_tables import MedusaScenarios
 
 log = logging.getLogger(__name__)
@@ -502,6 +500,7 @@ def run_pollution_model_rain_event(engine: Engine,
     all_buildings.to_sql(Medusa2ModelOutputBuildings.__tablename__, engine, if_exists="append", index=True)
     all_roads.to_sql(Medusa2ModelOutputRoads.__tablename__, engine, if_exists="append", index=True)
     log.info("MEDUSA2 pollution model output saved to the database.")
+
     return scenario_id
 
 
@@ -627,7 +626,10 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
 
     # Run the pollution model
-    scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
+    scenario_id = run_pollution_model_rain_event(
+        engine, area_of_interest, rainfall_event
+    )  # pylint: disable=unsupported-assignment-operation
+
     # Ensure pollution model data is being served by geoserver
     serve_pollution_model()
 
@@ -649,6 +651,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
 
 
 def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
+    # pylint: disable=unsupported-assignment-operation
     """
     Retrieve input parameters for the current scenario id.
 
@@ -657,10 +660,16 @@ def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
     scenario_id: int
         The scenario ID of the pollution model run
 
+
     Returns
     -------
-    row: LegacyRow
-        Rainfall event parameters for MEDUSA 2.0 model
+    LegacyRow
+        A row selected from Rainfall MEDUSA 2.0 database based on scenario ID
+
+    Raises
+    -------
+    FileNotFoundError
+        Error raised if `medusa_scenarios` table is not found or does not contain the `scenario_id`.
     """
     # Connect to the database
     engine = setup_environment.get_database()
@@ -672,7 +681,7 @@ def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
 
     # Check table exists before querying
     if not check_table_exists(engine, 'medusa_scenarios'):
-        raise FileNotFoundError(f"medusa_scenarios table does not exist in database")
+        raise FileNotFoundError("medusa_scenarios table does not exist in database")
 
     # Get information by using scenario_id from medusa_scenarios table in the dataset
     row = engine.execute(query).fetchone()
@@ -686,7 +695,7 @@ def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
-    scenario_id = main(
+    main(
         selected_polygon_gdf=sample_polygon,
         log_level=LogLevel.DEBUG,
         antecedent_dry_days=1,
@@ -694,5 +703,3 @@ if __name__ == "__main__":
         event_duration=1,
         rainfall_ph=7
     )
-
-    input_parameters = retrieve_input_parameters(scenario_id)
