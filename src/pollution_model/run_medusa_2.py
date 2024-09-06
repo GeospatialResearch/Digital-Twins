@@ -687,10 +687,7 @@ def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
     row = engine.execute(query).fetchone()
 
     # If the row is empty then we could not find the model output
-    if row is None:
-        return None
-    else:
-        return row
+    return row
 
 
 if __name__ == "__main__":
