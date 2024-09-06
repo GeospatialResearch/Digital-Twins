@@ -299,7 +299,7 @@ def retrieve_medusa_input_parameters(scenario_id: int) -> Dict[str, Union[str, f
 
     Returns
     -------
-    Dict[Point, int]
+    Dict[src, Union[str, float]]
         A dictionary contain information from Rainfall MEDUSA 2.0 database
     """
     # Get rainfall information
