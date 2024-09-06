@@ -305,21 +305,11 @@ def retrieve_medusa_input_parameters(scenario_id: int) -> Dict[str, Union[str, f
     # Get rainfall information
     medusa_rainfall_event = retrieve_input_parameters(scenario_id)
 
-    # Write rainfall information into a dictionary
-    if medusa_rainfall_event is not None:
+    # Return a dictionary format of these parameters or None if no ID found
+    if medusa_rainfall_event is None:
+        return None
 
-        medusa_rainfall_dictionary = {
-            "antecedent_dry_days": float(medusa_rainfall_event['antecedent_dry_days']),
-            "average_rain_intensity": float(medusa_rainfall_event['average_rain_intensity']),
-            "event_duration": float(medusa_rainfall_event['event_duration']),
-            "rainfall_ph": float(medusa_rainfall_event['rainfall_ph']),
-            "geometry": str(medusa_rainfall_event['geometry'])
-        }
-
-    else:
-        medusa_rainfall_dictionary = None
-
-    return medusa_rainfall_dictionary
+    return dict(medusa_rainfall_event)
 
 
 @app.task(base=OnFailureStateTask)

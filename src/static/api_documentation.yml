@@ -193,7 +193,7 @@ components:
         text/plain:
           schema:
             type: string
-            example: Could not find the model output 31
+            example: Could not find rainfall scenario 31
 
     ModelOutput:
       description: The BG-Flood model output NetCDF file for the given scenario.
@@ -239,7 +239,7 @@ components:
 
     MedusaScenarioID:
       in: path
-      name: MedusaScenarioID
+      name: MedusaScenarioInput
       schema:
         type: integer
       required: true
@@ -345,7 +345,7 @@ components:
             type: number
           example: [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
 
-    MedusaScenarioID:
+    MedusaScenarioInput:
       type: object
       properties:
         antecedent_dry_days:

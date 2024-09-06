@@ -9,12 +9,11 @@ DOI of the model paper: https://doi.org/10.3390/w12040969
 import logging
 import math
 from enum import StrEnum
-from typing import NamedTuple
+from typing import NamedTuple, Dict, Union
 from xml.sax import saxutils
 
 import geopandas as gpd
 from sqlalchemy.engine import Engine
-from sqlalchemy.engine.row import LegacyRow
 from sqlalchemy.sql import text
 
 from src import geoserver
@@ -650,7 +649,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     return scenario_id
 
 
-def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
+def retrieve_input_parameters(scenario_id: int) -> Dict[str, Union[str, float]]:
     # pylint: disable=unsupported-assignment-operation
     """
     Retrieve input parameters for the current scenario id.
@@ -663,8 +662,8 @@ def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
 
     Returns
     -------
-    LegacyRow
-        A row selected from Rainfall MEDUSA 2.0 database based on scenario ID
+    Dict[str, Union[str, float]]
+        A dictionary with information selected from Rainfall MEDUSA 2.0 database based on scenario ID
 
     Raises
     -------
@@ -686,7 +685,6 @@ def retrieve_input_parameters(scenario_id: int) -> LegacyRow:
     # Get information by using scenario_id from medusa_scenarios table in the dataset
     row = engine.execute(query).fetchone()
 
-    # If the row is empty then we could not find the model output
     return row
 
 
