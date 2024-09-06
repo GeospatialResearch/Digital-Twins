@@ -4,7 +4,7 @@ Allows the frontend to send tasks and retrieve status later.
 """
 import logging
 import traceback
-from typing import Dict, List, NamedTuple, Tuple, Union
+from typing import Dict, List, NamedTuple, Tuple, Union, Optional
 
 import billiard.einfo
 import geopandas as gpd
@@ -287,9 +287,9 @@ def get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> DepthTi
 
 
 @app.task(base=OnFailureStateTask)
-def retrieve_medusa_input_parameters(scenario_id: int) -> Dict[str, Union[str, float]]:
+def retrieve_medusa_input_parameters(scenario_id: int) -> Optional[Dict[str, Union[str, float]]]:
     """
-    Retrieve input parameters for the current scenario id. This is used for app file.
+    Retrieve input parameters for the current scenario id.
 
     Parameters
     ----------
@@ -300,7 +300,7 @@ def retrieve_medusa_input_parameters(scenario_id: int) -> Dict[str, Union[str, f
     Returns
     -------
     Dict[src, Union[str, float]]
-        A dictionary contain information from Rainfall MEDUSA 2.0 database
+        A dictionary contain information from Rainfall MEDUSA 2.0 database or None if scenario does not exist.
     """
     # Get rainfall information
     medusa_rainfall_event = retrieve_input_parameters(scenario_id)

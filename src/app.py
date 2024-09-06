@@ -311,6 +311,8 @@ def get_rainfall_information(scenario_id: int) -> Response:
             "average_rain_intensity": int,
             "event_duration": int,
             "rainfall_ph": int
+            "created_at": datetime.datetime,
+            "geometry": polygon
         }
         representing the values for the given point.
     """  # noqa: D400

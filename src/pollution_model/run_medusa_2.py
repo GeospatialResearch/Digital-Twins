@@ -625,17 +625,15 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
 
     # Run the pollution model
-    scenario_id = run_pollution_model_rain_event(
-        engine, area_of_interest, rainfall_event
-    )  # pylint: disable=unsupported-assignment-operation
+    scenario_id = scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
 
     # Ensure pollution model data is being served by geoserver
     serve_pollution_model()
 
     # Create new table recording users' history
     create_table(engine, MedusaScenarios)
-    # Create the query object
-    query = MedusaScenarios(
+    # Record the input parameters used to create the scenario
+    record_scenario_input_query = MedusaScenarios(
         scenario_id=scenario_id,
         antecedent_dry_days=antecedent_dry_days,
         average_rain_intensity=average_rain_intensity,
@@ -644,13 +642,12 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
         geometry=area_of_interest['geometry'].to_wkt().iloc[0]
     )
     # Execute the query
-    execute_query(engine, query)
+    execute_query(engine, record_scenario_input_query)
 
     return scenario_id
 
 
 def retrieve_input_parameters(scenario_id: int) -> Dict[str, Union[str, float]]:
-    # pylint: disable=unsupported-assignment-operation
     """
     Retrieve input parameters for the current scenario id.
 
@@ -683,7 +680,7 @@ def retrieve_input_parameters(scenario_id: int) -> Dict[str, Union[str, float]]:
         raise FileNotFoundError("medusa_scenarios table does not exist in database")
 
     # Get information by using scenario_id from medusa_scenarios table in the dataset
-    row = engine.execute(query).fetchone()
+    row = dict(engine.execute(query).fetchone())
 
     return row
 
