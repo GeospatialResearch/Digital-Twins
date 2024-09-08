@@ -12,10 +12,13 @@ class _DeclarativeABCMeta(DeclarativeMeta, abc.ABCMeta):
     """Metaclass to allow abstract base class to be used with a declarative base."""
 
 
-Base = declarative_base(metaclass=_DeclarativeABCMeta)
+# Base for standard tables
+Base = declarative_base()
+# Base for AbstractBaseClass tables
+ABCMetaBase = declarative_base(metaclass=_DeclarativeABCMeta)
 
 
-class _BaseMedusa2ModelOutput(Base):
+class _BaseMedusa2ModelOutput(ABCMetaBase):
     """
     Abstract Base Class (abc) representing each of 'medusa_2_model_output' tables.
 
