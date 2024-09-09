@@ -43,7 +43,7 @@ def generate_flood_model() -> str:
         }
     }
     print(f"Requesting backend to generate flood model for {request_data}")
-    generate_model_response = requests.post(f"{backend_url}/models/generate", json=request_data)
+    generate_model_response = requests.post(f"{backend_url}/models/flood/generate", json=request_data)
     # Check for errors (400/500 codes)
     generate_model_response.raise_for_status()
     # Load the body JSON into a python dict
@@ -74,7 +74,7 @@ def poll_for_completion(task_id: str) -> int:
 
 def get_building_statuses(model_id: int) -> GeoDataFrame:
     # Retrieve building statuses
-    building_response = requests.get(f"{backend_url}/models/{model_id}/buildings")
+    building_response = requests.get(f"{backend_url}/models/flood/{model_id}/buildings")
     # Check for errors (400/500 codes)
     building_response.raise_for_status()
     # Read response GeoJSON into python dict

@@ -324,7 +324,7 @@ def get_depth_at_point(task_id: str) -> Response:
     }), OK)
 
 
-@app.route('/models/<int:model_id>/buildings', methods=["GET"])
+@app.route('/models/flood/<int:model_id>/buildings', methods=["GET"])
 @check_celery_alive
 def retrieve_building_flood_status(model_id: int) -> Response:
     """
@@ -379,7 +379,7 @@ def retrieve_building_flood_status(model_id: int) -> Response:
     )
 
 
-@app.route('/models/<int:model_id>', methods=['GET'])
+@app.route('/models/flood/<int:model_id>', methods=['GET'])
 @check_celery_alive
 def serve_model_output(model_id: int) -> Response:
     """

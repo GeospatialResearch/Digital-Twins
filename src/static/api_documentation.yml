@@ -6,7 +6,7 @@ info:
 paths:
   "/":
     get:
-      summary: Returns message showing app is up TEST
+      summary: Returns message showing app is up
       responses:
         '200':
           description: OK - Backend is receiving requests
@@ -63,7 +63,7 @@ paths:
         '503 - Service Unavailable':
           $ref: '#/components/responses/NoCeleryWorkers'
 
-  "/models/{scenarioId}":
+  "/models/flood/{scenarioId}":
     get:
       summary: Serves the output of a previously run flood model scenario.
       parameters:
@@ -78,7 +78,7 @@ paths:
 
 
 
-  "/models/{scenarioId}/buildings":
+  "/models/flood/{scenarioId}/buildings":
     get:
       summary: Retrieves information on building flood status, for a given flood model output id.
       description: |-
@@ -93,7 +93,7 @@ paths:
         '503 - Service Unavailable':
           $ref: '#/components/responses/NoCeleryWorkers'
 
-  "/models/{scenarioId}/getPollution":
+  "/models/pollution/{scenarioId}":
     get:
       summary: Retrieves information on pollutant load for buildings, roads, and car parks, for a given MEDUSA model output id.
       description: |-
@@ -204,7 +204,7 @@ components:
         text/plain:
           schema:
             type: string
-            example: Could not find flood model output 17
+            example: Could not find model output 17
 
     ModelOutput:
       description: The BG-Flood model output NetCDF file for the given scenario.
