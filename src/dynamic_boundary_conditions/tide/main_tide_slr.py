@@ -13,7 +13,7 @@ import pandas as pd
 from sqlalchemy import engine, text
 
 from src import config
-from src.digitaltwin import setup_environment
+from src.digitaltwin import setup_environment, tables
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 from src.dynamic_boundary_conditions.tide.tide_enum import ApproachType
@@ -146,6 +146,11 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Union[str, int
     """
     # Connect to database
     engine = setup_environment.get_database()
+    slr_table_name = 'sea_level_rise'
+    if not tables.check_table_exists(engine, slr_table_name):
+        # Sea Level Rise data has not been initialised, so initialise it.
+        sea_level_rise_data.store_slr_data_to_db(engine)
+
     # Find all distinct combinations of confidence_level with the dependant columns.
     query = text(f"""
         SELECT DISTINCT

@@ -217,6 +217,8 @@ export default Vue.extend({
           this.errorMessage = "Backend celery worker could not be reached. Please refresh the page to try again.";
         } else {
           // Unexpected or unknown error.
+          this.isLoading = false;
+          this.errorMessage = "An unexpected error occurred. Please refresh the page to try again.";
           throw error;
         }
       }
