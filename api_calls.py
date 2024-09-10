@@ -36,10 +36,10 @@ def generate_flood_model() -> str:
             "lat2": -43.400136655560765
         },
         "scenarioOptions": {
-            "Projected Year": 2050,
-            "SSP Scenario": "SSP2-4.5",
-            "Confidence Level": "medium",
-            "Add Vertical Land Movement": True
+            "projectedYear": 2050,
+            "sspScenario": "SSP2-4.5",
+            "confidenceLevel": "medium",
+            "addVerticalLandMovement": True
         }
     }
     print(f"Requesting backend to generate flood model for {request_data}")

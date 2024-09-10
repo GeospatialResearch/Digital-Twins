@@ -4,7 +4,7 @@ Allows the frontend to send tasks and retrieve status later.
 """
 import logging
 import traceback
-from typing import List, NamedTuple
+from typing import Dict, List, NamedTuple, Union
 
 import geopandas as gpd
 import shapely
@@ -157,10 +157,10 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
         This task does not return anything
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr]
-    parameters["proj_year"] = scenario_options["Projected Year"]
-    parameters["add_vlm"] = scenario_options["Add Vertical Land Movement"]
-    parameters["confidence_level"] = scenario_options["Confidence Level"]
-    parameters["ssp_scenario"] = scenario_options["ssp_scenario"]
+    parameters["proj_year"] = scenario_options["projectedYear"]
+    parameters["add_vlm"] = scenario_options["addVerticalLandMovement"]
+    parameters["confidence_level"] = scenario_options["confidenceLevel"]
+    parameters["ssp_scenario"] = scenario_options["sspScenario"]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_tide_slr.main(selected_polygon, **parameters)
 
@@ -317,3 +317,43 @@ def get_model_extents_bbox(model_id: int) -> str:
     bbox_corners = extents.bounds
     # Convert the tuple into a string in x1,y1,x2,y2 form
     return ",".join(map(str, bbox_corners))
+
+
+@app.task(base=OnFailureStateTask)
+def get_valid_parameters_based_on_confidence_level() -> Dict[str, Union[str, int]]:
+    """
+    Task to get information on valid tide and sea-level-rise parameters based on the valid values in the database.
+    These parameters are mostly dependent on the "confidence_level" parameter, so that is the key in the returned dict.
+
+    Returns
+    -------
+    Dict[str, Union[str, int]]
+        Dictionary with confidence_level as the key, and the allowed values for other items as values.
+    """
+    return main_tide_slr.get_valid_parameters_based_on_confidence_level()
+
+
+@app.task(base=OnFailureStateTask)
+def validate_slr_parameters(scenario_options: dict) -> main_tide_slr.ValidationResult:
+    """
+    Task to validate each of the sea-level-rise parameters.
+
+    Parameters
+    ----------
+    scenario_options : dict
+        Options for scenario modelling inputs.
+
+    Returns
+    -------
+    ValidationResult
+        Result of the validation, with validation failure reason if applicable
+    """
+    engine = setup_environment.get_connection_from_profile()
+    return main_tide_slr.validate_slr_parameters(
+        engine,
+        scenario_options["projectedYear"],
+        scenario_options["confidenceLevel"],
+        scenario_options["sspScenario"],
+        scenario_options["addVerticalLandMovement"],
+        percentile=50
+    )
