@@ -46,7 +46,7 @@ def modify_slr_data_from_takiwa(slr_nz_dict: Dict[str, pd.DataFrame]) -> gpd.Geo
             right_on='site',
             how='left'
         )
-        slr_nz_merge['add_vlm'] = True if vlm_name == "NZSeaRise_proj_vlm" else False
+        slr_nz_merge['add_vlm'] = vlm_name == "NZSeaRise_proj_vlm"
         slr_nz_merge_list.append(slr_nz_merge)
     # Concatenate all the dataframes (both WITH VLM and WITHOUT VLM)
     slr_nz_df = pd.concat([slr_nz_merge_list[0], slr_nz_merge_list[1]], axis=0).reset_index(drop=True)
