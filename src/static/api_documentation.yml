@@ -130,7 +130,7 @@ paths:
     get:
       summary: Finds the depth values and corresponding time values for a particular point for a given model output task.
       parameters:
-        - $ref: '#/components/parameters/MedusaScenarioID'
+        - $ref: '#/components/parameters/MedusaScenarioInput'
       responses:
         '200 - OK':
           content:
