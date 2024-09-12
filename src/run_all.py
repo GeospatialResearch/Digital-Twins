@@ -97,7 +97,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "antecedent_dry_days": 1,
         "average_rain_intensity": 1,
         "event_duration": 1,
-        "rainfall_ph": 8
+        "rainfall_ph": 7
     }
 }
 

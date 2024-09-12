@@ -9,7 +9,7 @@ DOI of the model paper: https://doi.org/10.3390/w12040969
 import logging
 import math
 from enum import StrEnum
-from typing import NamedTuple, Dict, Union
+from typing import NamedTuple, Dict, Union, Optional
 from xml.sax import saxutils
 
 import geopandas as gpd
@@ -625,7 +625,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
 
     # Run the pollution model
-    scenario_id = scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
+    scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
 
     # Ensure pollution model data is being served by geoserver
     serve_pollution_model()
@@ -647,7 +647,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     return scenario_id
 
 
-def retrieve_input_parameters(scenario_id: int) -> Dict[str, Union[str, float]]:
+def retrieve_input_parameters(scenario_id: int) -> Optional[Dict[str, Union[str, float]]]:
     """
     Retrieve input parameters for the current scenario id.
 
@@ -661,28 +661,28 @@ def retrieve_input_parameters(scenario_id: int) -> Dict[str, Union[str, float]]:
     -------
     Dict[str, Union[str, float]]
         A dictionary with information selected from Rainfall MEDUSA 2.0 database based on scenario ID
-
-    Raises
-    -------
-    FileNotFoundError
-        Error raised if `medusa_scenarios` table is not found or does not contain the `scenario_id`.
     """
     # Connect to the database
     engine = setup_environment.get_database()
 
-    # Set up query command to pull information from medusa_scenarios table
-    query = text(
-        "SELECT * FROM medusa_scenarios WHERE scenario_id = :scenario_id"
-    ).bindparams(scenario_id=scenario_id)
-
     # Check table exists before querying
     if not check_table_exists(engine, 'medusa_scenarios'):
-        raise FileNotFoundError("medusa_scenarios table does not exist in database")
+        return None
 
-    # Get information by using scenario_id from medusa_scenarios table in the dataset
-    row = dict(engine.execute(query).fetchone())
+    else:
+        # Set up query command to pull information from medusa_scenarios table
+        query = text(
+            "SELECT * FROM medusa_scenarios WHERE scenario_id = :scenario_id"
+        ).bindparams(scenario_id=scenario_id)
 
-    return row
+        # Get information by using scenario_id from medusa_scenarios table in the dataset
+        row = engine.execute(query).fetchone()
+
+        # Return
+        if row is None:
+            return None
+        else:
+            return dict(row)
 
 
 if __name__ == "__main__":
