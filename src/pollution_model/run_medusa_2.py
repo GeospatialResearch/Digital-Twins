@@ -676,13 +676,7 @@ def retrieve_input_parameters(scenario_id: int) -> Optional[Dict[str, Union[str,
         ).bindparams(scenario_id=scenario_id)
 
         # Get information by using scenario_id from medusa_scenarios table in the dataset
-        row = engine.execute(query).fetchone()
-
-        # Return
-        if row is None:
-            return None
-        else:
-            return dict(row)
+        return engine.execute(query).fetchone()
 
 
 if __name__ == "__main__":
