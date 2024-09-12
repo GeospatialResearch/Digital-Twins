@@ -34,19 +34,6 @@ USER root
 # Install dependencies
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl acl \
-# Install firefox from mozilla .deb repository, not snap package as is default for ubuntu (snap does not work for docker)
- && curl --proto "=https" -L "https://packages.mozilla.org/apt/repo-signing-key.gpg" | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null \
- && echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null \
- && echo $' \n\
-Package: * \n\
-Pin: origin packages.mozilla.org \n\
-Pin-Priority: 1000 \n\
-' | tee /etc/apt/preferences.d/mozilla \
- && cat /etc/apt/preferences.d/mozilla \
- && apt-get update \
- && apt-get install -y --no-install-recommends firefox \
-# Install geckodriver, webdriver for firefox, needed for selenium
- && curl --proto "=https" -L "https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz" | tar xz -C /usr/local/bin \
 # Cleanup image and remove junk
  && rm -fr /var/lib/apt/lists/* \
 # Remove unused packages. Keep curl for health checking in docker-compose
