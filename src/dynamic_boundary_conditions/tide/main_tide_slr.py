@@ -11,7 +11,6 @@ from typing import Dict, NamedTuple, Union, Optional
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy import text
-from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin import setup_environment, tables
@@ -45,7 +44,6 @@ class ValidationResult(NamedTuple):
 
 
 def validate_slr_parameters(
-    engine: Engine,
     proj_year: int,
     confidence_level: str,
     ssp_scenario: str,
@@ -59,8 +57,6 @@ def validate_slr_parameters(
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
     proj_year : int
         The projection year for which the combined tide and sea level rise data should be generated.
     confidence_level : str
@@ -102,7 +98,9 @@ def validate_slr_parameters(
         return ValidationResult(False,
                                 f"Invalid value '{add_vlm}' for add_vlm. Must be one of {valid_add_vlms}.")
 
-    if percentile not in valid_parameters[confidence_level]['percentile']:
+    # Check if the provided percentile is valid
+    valid_percentiles = valid_parameters[confidence_level]['percentiles']
+    if percentile not in valid_percentiles:
         return ValidationResult(
             False,
             f"Invalid value '{percentile}' for percentile. Must be one of {valid_percentiles}.")
@@ -142,7 +140,7 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Unio
         SELECT DISTINCT
             confidence_level,
             CONCAT(ssp, '-', scenario) AS ssp_scenarios,
-            DATE_PART('year', now())::NUMERIC::BIGINT AS min_year,
+            (DATE_PART('year', now()) + 1)::NUMERIC::BIGINT AS min_year,
             MAX(year) AS max_year
         FROM {slr_table_name}
         GROUP BY
@@ -172,8 +170,8 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Unio
     confidence_level_to_valid_params: Dict[str, Dict[str, Union[str, int]]] = {}
     for confidence_level, group in query_result.groupby(['confidence_level']):
         # Create nested dict of valid parameter values for each confidence level value
-        confidence_level = str(confidence_level) # Only for type-checking purposes, does not functionally change str
-        valid_params = {"percentile": valid_percentiles}
+        confidence_level = str(confidence_level)  # Only for type-checking purposes, does not functionally change str
+        valid_params = {"percentiles": valid_percentiles}
         for column in group:
             # We already have confidence_level at the highest level in the dict
             if column != 'confidence_level':
@@ -288,7 +286,6 @@ def main(
         # Validate input parameters
         increment_year = 1
         is_valid, invalid_reason = validate_slr_parameters(
-            engine,
             proj_year,
             confidence_level,
             ssp_scenario,

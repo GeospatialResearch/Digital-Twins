@@ -65,6 +65,8 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to run the model for. Defined in WKT form.
+    scenario_options : Dict[str, Union[str, float, int, bool]]
+        Options for scenario modelling inputs, coming from JSON body.
 
     Returns
     -------
@@ -73,10 +75,10 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
     """
     return (
             add_base_data_to_db.si(selected_polygon_wkt) |
-            # process_dem.si(selected_polygon_wkt) |
-            # generate_rainfall_inputs.si(selected_polygon_wkt) |
+            process_dem.si(selected_polygon_wkt) |
+            generate_rainfall_inputs.si(selected_polygon_wkt) |
             generate_tide_inputs.si(selected_polygon_wkt, scenario_options) |
-            # generate_river_inputs.si(selected_polygon_wkt) |
+            generate_river_inputs.si(selected_polygon_wkt) |
             run_flood_model.si(selected_polygon_wkt)
     )()
 
@@ -142,7 +144,7 @@ def generate_rainfall_inputs(selected_polygon_wkt: str):
 
 
 @app.task(base=OnFailureStateTask)
-def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
+def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: Dict[str, Union[str, float, int, bool]]):
     """
     Task to ensure tide input data for the given area is added to the database and model input files are created.
 
@@ -349,12 +351,10 @@ def validate_slr_parameters(scenario_options: Dict[str, Union[str, float, int, b
     ValidationResult
         Result of the validation, with validation failure reason if applicable
     """
-    engine = setup_environment.get_connection_from_profile()
     return main_tide_slr.validate_slr_parameters(
-        engine,
         scenario_options["projectedYear"],
         scenario_options["confidenceLevel"],
         scenario_options["sspScenario"],
         scenario_options["addVerticalLandMovement"],
-        percentile=50
+        scenario_options["percentile"],
     )

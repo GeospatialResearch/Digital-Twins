@@ -39,7 +39,8 @@ def generate_flood_model() -> str:
             "projectedYear": 2050,
             "sspScenario": "SSP2-4.5",
             "confidenceLevel": "medium",
-            "addVerticalLandMovement": True
+            "addVerticalLandMovement": True,
+            "percentile": 50
         }
     }
     print(f"Requesting backend to generate flood model for {request_data}")
