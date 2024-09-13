@@ -102,22 +102,7 @@ def validate_slr_parameters(
         return ValidationResult(False,
                                 f"Invalid value '{add_vlm}' for add_vlm. Must be one of {valid_add_vlms}.")
 
-    # Get the percentiles from the column names and check if the provided percentile value is valid
-    column_names_query = text(r"""
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE
-            table_name = 'sea_level_rise'
-            AND table_catalog=:db_name
-            AND column_name ~ '^p\d+'
-        """).bindparams(db_name=config.get_env_variable("POSTGRES_DB"))
-    percentile_col_tuples = engine.execute(column_names_query).fetchall()
-    # Flatten the result of the query
-    percentile_cols = [col_tuple[0] for col_tuple in percentile_col_tuples]
-    # Remove the leading 'p'
-    valid_percentiles = [int(col[1:]) for col in percentile_cols]
-
-    if percentile not in valid_percentiles:
+    if percentile not in valid_parameters[confidence_level]['percentile']:
         return ValidationResult(
             False,
             f"Invalid value '{percentile}' for percentile. Must be one of {valid_percentiles}.")
@@ -157,7 +142,7 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Unio
         SELECT DISTINCT
             confidence_level,
             CONCAT(ssp, '-', scenario) AS ssp_scenarios,
-            (DATE_PART('year', now()) + 1)::NUMERIC::BIGINT AS min_year,
+            DATE_PART('year', now())::NUMERIC::BIGINT AS min_year,
             MAX(year) AS max_year
         FROM {slr_table_name}
         GROUP BY
@@ -167,13 +152,28 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Unio
     """)
     query_result = pd.read_sql(query, engine)
 
+    # Get the list of percentiles from the column names
+    column_names_query = text(r"""
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE
+            table_name = 'sea_level_rise'
+            AND table_catalog=:db_name
+            AND column_name ~ '^p\d+'
+        """).bindparams(db_name=config.get_env_variable("POSTGRES_DB"))
+    percentile_col_tuples = engine.execute(column_names_query).fetchall()
+    # Flatten the result of the query
+    percentile_cols = [col_tuple[0] for col_tuple in percentile_col_tuples]
+    # Remove the leading 'p'
+    valid_percentiles = [int(col[1:]) for col in percentile_cols]
+
     # Construct result dict pairing confidence level to dependant variables.
     # noinspection PyTypeChecker
     confidence_level_to_valid_params: Dict[str, Dict[str, Union[str, int]]] = {}
     for confidence_level, group in query_result.groupby(['confidence_level']):
         # Create nested dict of valid parameter values for each confidence level value
         confidence_level = str(confidence_level) # Only for type-checking purposes, does not functionally change str
-        valid_params = {}
+        valid_params = {"percentile": valid_percentiles}
         for column in group:
             # We already have confidence_level at the highest level in the dict
             if column != 'confidence_level':
@@ -296,7 +296,6 @@ def main(
             percentile,
             increment_year,
         )
-
         if not is_valid:
             raise ValueError(invalid_reason)
 

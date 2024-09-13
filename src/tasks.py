@@ -73,10 +73,10 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
     """
     return (
             add_base_data_to_db.si(selected_polygon_wkt) |
-            process_dem.si(selected_polygon_wkt) |
-            generate_rainfall_inputs.si(selected_polygon_wkt) |
+            # process_dem.si(selected_polygon_wkt) |
+            # generate_rainfall_inputs.si(selected_polygon_wkt) |
             generate_tide_inputs.si(selected_polygon_wkt, scenario_options) |
-            generate_river_inputs.si(selected_polygon_wkt) |
+            # generate_river_inputs.si(selected_polygon_wkt) |
             run_flood_model.si(selected_polygon_wkt)
     )()
 
@@ -161,6 +161,7 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict):
     parameters["add_vlm"] = scenario_options["addVerticalLandMovement"]
     parameters["confidence_level"] = scenario_options["confidenceLevel"]
     parameters["ssp_scenario"] = scenario_options["sspScenario"]
+    parameters["percentile"] = scenario_options["percentile"]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_tide_slr.main(selected_polygon, **parameters)
 

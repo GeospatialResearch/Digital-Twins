@@ -73,7 +73,8 @@ type FetchedSelectionOptions = {
   projectedYear: SelectionOption,
   sspScenario: SelectionOption,
   confidenceLevel: SelectionOption,
-  addVerticalLandMovement: SelectionOption
+  addVerticalLandMovement: SelectionOption,
+  percentile: SelectionOption,
 }
 
 export default Vue.extend({
@@ -98,7 +99,8 @@ export default Vue.extend({
       backendScenarioOptions: null as Record<string, {
         min_year: number,
         max_year: number,
-        ssp_scenarios: string[]
+        ssp_scenarios: string[],
+        percentiles: number[],
       }> | null,
       // Default selected options for parameters
       selectedOption: {
@@ -106,6 +108,7 @@ export default Vue.extend({
         sspScenario: 'SSP2-4.5',
         confidenceLevel: "medium",
         addVerticalLandMovement: true,
+        percentile: 50,
       } as Record<keyof FetchedSelectionOptions, string | number | boolean>,
       // Environment variables
       env: {
@@ -160,6 +163,10 @@ export default Vue.extend({
           min: validSelectionOptions.min_year,
           max: validSelectionOptions.max_year
         },
+        percentile: {
+          name: "Percentile",
+          data: validSelectionOptions.percentiles
+        },
       }
     },
 
@@ -187,11 +194,14 @@ export default Vue.extend({
       const isAddVerticalValid =
         selectionOptions.addVerticalLandMovement.data!.includes(this.selectedOption.addVerticalLandMovement);
 
+      const isPercentileValid = selectionOptions.percentile.data!.includes(this.selectedOption.percentile);
+
       return {
         projectedYear: isYearValid,
         sspScenario: isSspScenarioValid,
         confidenceLevel: isConfidenceValid,
         addVerticalLandMovement: isAddVerticalValid,
+        percentile: isPercentileValid,
       }
     },
   },
