@@ -72,6 +72,7 @@ def validate_slr_parameters(
         The desired percentile for the sea level rise data. Valid values are 17, 50, or 83.
     increment_year : int = 1
         The year interval used for interpolating the sea level rise data. Defaults to 1 year.
+
     Returns
     -------
     ValidationResult

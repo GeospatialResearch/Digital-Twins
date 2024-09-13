@@ -337,7 +337,9 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Unio
 
 
 @app.task(base=OnFailureStateTask)
-def validate_slr_parameters(scenario_options: Dict[str, Union[str, float, int, bool]]) -> main_tide_slr.ValidationResult:
+def validate_slr_parameters(
+    scenario_options: Dict[str, Union[str, float, int, bool]]
+) -> main_tide_slr.ValidationResult:
     """
     Task to validate each of the sea-level-rise parameters.
 
