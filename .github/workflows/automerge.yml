@@ -28,10 +28,10 @@ jobs:
     steps:
     - name: Merge with master
       run: |
-        git clone ${{env.MY_REPO}} -b ${{env.LONG_LIVED_BRANCH}} tmp
+        git clone ${{env.MY_REPO}} -b ${{env.DEFAULT_BRANCH}} tmp
         cd tmp
         git config user.name "Automerge Bot"
         git config user.email "bot@example.com"
         git config pull.rebase false
-        git pull ${{env.MASTER_REPO}} ${{env.DEFAULT_BRANCH}}
+        git pull ${{env.MASTER_REPO}} ${{env.LONG_LIVED_BRANCH}}
         git push
