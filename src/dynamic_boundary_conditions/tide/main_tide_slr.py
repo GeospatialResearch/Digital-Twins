@@ -10,7 +10,8 @@ from typing import Dict, NamedTuple, Union, Optional
 
 import geopandas as gpd
 import pandas as pd
-from sqlalchemy import engine, text
+from sqlalchemy import text
+from sqlalchemy.engine import Engine
 
 from src import config
 from src.digitaltwin import setup_environment, tables
@@ -44,7 +45,7 @@ class ValidationResult(NamedTuple):
 
 
 def validate_slr_parameters(
-    engine: engine.Engine,
+    engine: Engine,
     proj_year: int,
     confidence_level: str,
     ssp_scenario: str,
@@ -74,7 +75,7 @@ def validate_slr_parameters(
     percentile : int
         The desired percentile for the sea level rise data. Valid values are 17, 50, or 83.
     increment_year : int = 1
-
+        The year interval used for interpolating the sea level rise data. Defaults to 1 year.
     Returns
     -------
     ValidationResult
@@ -134,7 +135,7 @@ def validate_slr_parameters(
     return ValidationResult(True, None)
 
 
-def get_valid_parameters_based_on_confidence_level() -> Dict[str, Union[str, int]]:
+def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Union[str, int]]]:
     """
     Get information on valid tide and sea-level-rise parameters based on the valid values in the database.
     These parameters are mostly dependent on the "confidence_level" parameter, so that is the key in the returned dict.
@@ -167,9 +168,11 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Union[str, int
     query_result = pd.read_sql(query, engine)
 
     # Construct result dict pairing confidence level to dependant variables.
-    confidence_level_to_valid_params = {}
+    # noinspection PyTypeChecker
+    confidence_level_to_valid_params: Dict[str, Dict[str, Union[str, int]]] = {}
     for confidence_level, group in query_result.groupby(['confidence_level']):
         # Create nested dict of valid parameter values for each confidence level value
+        confidence_level = str(confidence_level) # Only for type-checking purposes, does not functionally change str
         valid_params = {}
         for column in group:
             # We already have confidence_level at the highest level in the dict

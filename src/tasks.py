@@ -320,7 +320,7 @@ def get_model_extents_bbox(model_id: int) -> str:
 
 
 @app.task(base=OnFailureStateTask)
-def get_valid_parameters_based_on_confidence_level() -> Dict[str, Union[str, int]]:
+def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Union[str, int]]]:
     """
     Task to get information on valid tide and sea-level-rise parameters based on the valid values in the database.
     These parameters are mostly dependent on the "confidence_level" parameter, so that is the key in the returned dict.
@@ -334,14 +334,14 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Union[str, int
 
 
 @app.task(base=OnFailureStateTask)
-def validate_slr_parameters(scenario_options: dict) -> main_tide_slr.ValidationResult:
+def validate_slr_parameters(scenario_options: Dict[str, Union[str, float, int, bool]]) -> main_tide_slr.ValidationResult:
     """
     Task to validate each of the sea-level-rise parameters.
 
     Parameters
     ----------
-    scenario_options : dict
-        Options for scenario modelling inputs.
+    scenario_options : Dict[str, Union[str, float, int, bool]]
+        Options for scenario modelling inputs, coming from JSON body.
 
     Returns
     -------

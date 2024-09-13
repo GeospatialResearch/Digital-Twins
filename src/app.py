@@ -162,7 +162,6 @@ def generate_model() -> Response:
     """
     Generates a flood model for a given area.
     Supported methods: POST
-    POST values: {"bbox": {"lat1": number, "lat2": number, "lng1": number, "lng2": number}}
 
     Returns
     -------

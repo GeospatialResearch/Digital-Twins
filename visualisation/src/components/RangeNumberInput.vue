@@ -42,7 +42,8 @@ export default defineComponent({
 
   methods: {
     /**
-     *
+     * Intercepts Change events to ensure the target value is within it's minimum and maximum values.
+     * Modifies the target value to achieve this.
      * @param event : Event The Change event from the input element.
      * */
     preventOutOfRange(event: Event) {
