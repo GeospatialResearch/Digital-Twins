@@ -91,7 +91,6 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         "rasterio",
         "scrapy",
         "distributed",
-        "selenium",
         "s3transfer"
     ]
     # Iterate through the loggers to exclude
