@@ -346,7 +346,20 @@ def retrieve_building_flood_status(model_id: int) -> Response:
 
 @app.route('/models/<int:model_id>', methods=['GET'])
 @check_celery_alive
-def serve_model_output(model_id: int):
+def serve_model_output(model_id: int) -> Response:
+    """
+    Serve the specified model output as a raw file.
+
+    Parameters
+    ----------
+    model_id: int
+        The ID of the model output to be served.
+
+    Returns
+    -------
+    Response
+        HTTP Response containing the model output file.
+    """
     try:
         model_filepath = tasks.get_model_output_filepath_from_model_id.delay(model_id).get()
         return send_file(pathlib.Path(model_filepath))

@@ -254,12 +254,12 @@ components:
               scenarioOptions:
                 type: object
                 properties:
-                  "Projected Year":
+                  "projectedYear":
                     type: number
-                    minimum: 2023
+                    minimum: 2025
                     maximum: 2300
                     example: 2025
-                  "SSP Scenario":
+                  "sspScenario":
                     type: string
                     example: SSP1-1.9
                     enum:
@@ -268,15 +268,22 @@ components:
                       - 'SSP2-4.5'
                       - 'SSP3-7.0'
                       - 'SSP5-8.5'
-                  "Confidence Level":
+                  "confidenceLevel":
                     type: string
                     example: medium
                     enum:
                       - low
                       - medium
-                  "Add Vertical Land Movement":
+                  "addVerticalLandMovement":
                     type: boolean
                     example: true
+                  "percentile":
+                    type: number
+                    example: 50
+                    enum:
+                      - 17
+                      - 50
+                      - 83
 
 
 
@@ -326,6 +333,11 @@ components:
               items:
                 type: string
               example: ["SSP1-2.6", "SSP5-8.5"]
+            percentile:
+              type: array
+              items:
+                type: number
+              example: [17, 50, 83]
         medium:
           type: object
           properties:
@@ -340,6 +352,11 @@ components:
               items:
                 type: string
               example: ["SSP1-1.9", "SSP1-2.6", "SSP2-4.5", "SSP3-7", "SSP5-8.5"]
+            percentile:
+              type: array
+              items:
+                type: number
+              example: [17, 50, 83]
 
     PointDepths:
       type: object

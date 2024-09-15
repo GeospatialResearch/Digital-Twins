@@ -57,7 +57,10 @@ class DepthTimePlot(NamedTuple):
     times: List[float]
 
 
-def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
+def create_model_for_area(
+    selected_polygon_wkt: str,
+    scenario_options: Dict[str, Union[str, float, int, bool]]
+) -> result.GroupResult:
     """
     Creates a model for the area using series of chained (sequential) sub-tasks.
 
@@ -132,6 +135,8 @@ def generate_rainfall_inputs(selected_polygon_wkt: str):
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add rainfall data for. Defined in WKT form.
+    scenario_options : Dict[str, Union[str, float, int, bool]]
+        Options for scenario modelling inputs, coming from JSON body.
 
     Returns
     -------
@@ -330,8 +335,8 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Unio
 
     Returns
     -------
-    Dict[str, Union[str, int]]
-        Dictionary with confidence_level as the key, and the allowed values for other items as values.
+    Dict[str, Dict[str, Union[str, int]]]
+        Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.
     """
     return main_tide_slr.get_valid_parameters_based_on_confidence_level()
 
@@ -350,7 +355,7 @@ def validate_slr_parameters(
 
     Returns
     -------
-    ValidationResult
+    main_tide_slr.ValidationResult
         Result of the validation, with validation failure reason if applicable
     """
     return main_tide_slr.validate_slr_parameters(

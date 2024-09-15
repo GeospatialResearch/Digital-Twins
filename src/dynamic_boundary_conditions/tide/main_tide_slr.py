@@ -126,8 +126,8 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Unio
 
     Returns
     -------
-    Dict[str, Union[str, int]]
-        Dictionary with confidence_level as the key, and the allowed values for other items as values.
+    Dict[str, Dict[str, Union[str, int]]]
+        Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.
     """
     # Connect to database
     engine = setup_environment.get_database()
