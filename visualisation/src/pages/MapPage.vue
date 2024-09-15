@@ -1,22 +1,35 @@
 <template>
   <!-- The page that shows the map for the Digital Twin -->
   <div class="full-height">
-    <div v-for="column of selectionOptions" :key="column.name">
-      <label>{{ column.name }}</label>
-      <select v-if="column.data" v-model="selectedOption[column.name]">
-        <option v-for="option of column.data" :value="option" :key="option">
-          {{ option }}
-        </option>
-      </select>
-      <input
-        v-if="column.min && column.max"
-        type="number"
-        v-model.number="selectedOption[column.name]"
-        :min="column.min"
-        :max="column.max"
-      >
+    <!--  Error messages  -->
+    <div v-show="errorMessage" class="card">
+      <h3>{{ errorMessage }}</h3>
     </div>
+    <!-- Loading symbol -->
+    <div v-show="isLoading" class="">
+      <LoadingSpinner />
+      <h2>Fetching parameter options</h2>
+    </div>
+    <!-- Model Input controls -->
+    <div v-for="(column, key) of selectionOptions" :key="key">
+      <label>{{ column.name }}
+        <select v-if="column.data" v-model="selectedOption[key]">
+          <option v-for="option of column.data" :value="option" :key="option">
+            {{ option }}
+          </option>
+        </select>
+        <RangeNumberInput
+          v-if="column.min != null && column.max != null"
+          v-model.number="selectedOption[key]"
+          :min="column.min"
+          :max="column.max"
+        />
+        <span v-if="!selectionValidations?.[key]">&#x274c;</span>
+      </label>
+    </div>
+    <!-- Map  -->
     <MapViewer
+      v-if="!errorMessage && !isLoading"
       :init-lat="kaiapoi.latitude"
       :init-long="kaiapoi.longitude"
       :init-height="8000"
@@ -35,17 +48,43 @@
 <script lang="ts">
 import Vue from "vue";
 import * as Cesium from "cesium";
-import {MapViewer} from 'geo-visualisation-components/src/components';
+import {LoadingSpinner, MapViewer} from 'geo-visualisation-components/src/components';
 import titleMixin from "@/mixins/title";
 import {Bbox, MapViewerDataSourceOptions, Scenario} from "geo-visualisation-components/src/types";
-import {AxiosError} from "axios";
+import axios, {AxiosError} from "axios";
+import RangeNumberInput from "@/components/RangeNumberInput.vue";
+
+
+interface DataOption {
+  data: (string | number | boolean)[]
+  min?: never;
+  max?: never;
+}
+
+interface RangeOption {
+  min: number;
+  max: number;
+  data?: never;
+}
+
+type SelectionOption = { name: string } & (RangeOption | DataOption)
+
+type FetchedSelectionOptions = {
+  projectedYear: SelectionOption,
+  sspScenario: SelectionOption,
+  confidenceLevel: SelectionOption,
+  addVerticalLandMovement: SelectionOption,
+  percentile: SelectionOption,
+}
 
 export default Vue.extend({
   name: "MapPage",
   title: "Map",
   mixins: [titleMixin],
   components: {
+    LoadingSpinner,
     MapViewer,
+    RangeNumberInput,
   },
   data() {
     return {
@@ -57,25 +96,20 @@ export default Vue.extend({
       // Features to display on map
       dataSources: {} as MapViewerDataSourceOptions,
       scenarios: [] as Scenario[],
-      // Drop down menu options for selecting parameters
-      selectionOptions: {
-        year: {
-          name: "Projected Year",
-          min: 2023,
-          max: 2300
-        },
-        sspScenario: {name: "SSP Scenario", data: ['SSP1-1.9', 'SSP1-2.6', 'SSP2-4.5', 'SSP3-7.0', 'SSP5-8.5']},
-        confidenceLevel: {name: "Confidence Level", data: ['low', 'medium']},
-        addVerticalLandMovement: {name: "Add Vertical Land Movement", data: [true, false]}
-      },
-      projYear: 2050,
+      backendScenarioOptions: null as Record<string, {
+        min_year: number,
+        max_year: number,
+        ssp_scenarios: string[],
+        percentiles: number[],
+      }> | null,
       // Default selected options for parameters
       selectedOption: {
-        "Projected Year": 2050,
-        "SSP Scenario": 'SSP2-4.5',
-        "Confidence Level": "medium",
-        "Add Vertical Land Movement": true
-      },
+        projectedYear: 2050,
+        sspScenario: 'SSP2-4.5',
+        confidenceLevel: "medium",
+        addVerticalLandMovement: true,
+        percentile: 50,
+      } as Record<keyof FetchedSelectionOptions, string | number | boolean>,
       // Environment variables
       env: {
         cesiumApiToken: process.env.VUE_APP_CESIUM_ACCESS_TOKEN,
@@ -87,9 +121,119 @@ export default Vue.extend({
           name: process.env.VUE_APP_POSTGRES_DB
         }
       },
+      // Error message to be displayed if there are any errors.
+      errorMessage: "",
+      // Flag to display a loading spinner.
+      isLoading: true,
     }
   },
+
+  async created() {
+    await this.fetchScenarioOptions();
+    this.isLoading = false;
+  },
+
+  computed: {
+    /**
+     * Object describing the valid values and the labels for each selection param depending on the current confidence level.
+     */
+    selectionOptions(): FetchedSelectionOptions | null {
+      // SelectionOptions cannot be initialised until backendScenarioOptions is initialised
+      if (this.backendScenarioOptions == null)
+        return null;
+      const selectedConfidenceLevel = this.selectedOption.confidenceLevel as string;
+      // Gather the valid values depending on the current selected confidence level
+      const validSelectionOptions = this.backendScenarioOptions[selectedConfidenceLevel];
+
+      return {
+        confidenceLevel: {
+          name: "Confidence Level",
+          data: Object.keys(this.backendScenarioOptions)
+        },
+        addVerticalLandMovement: {
+          name: "Add Vertical Land Movement",
+          data: [true, false]
+        },
+        sspScenario: {
+          name: "SSP Scenario",
+          data: validSelectionOptions.ssp_scenarios
+        },
+        projectedYear: {
+          name: "Projected Year",
+          min: validSelectionOptions.min_year,
+          max: validSelectionOptions.max_year
+        },
+        percentile: {
+          name: "Percentile",
+          data: validSelectionOptions.percentiles
+        },
+      }
+    },
+
+    /**
+     * Object containing booleans for whether each selected scenarioOption is valid.
+     * Will be null until selectionOptions is initialised.
+     */
+    selectionValidations(): Record<keyof FetchedSelectionOptions, boolean> | null {
+      // Type-hinting needs some help
+      const selectionOptions = this.selectionOptions as FetchedSelectionOptions | null
+      // Cannot have valid values until selectionOptions is initialised.
+      if (selectionOptions == null) {
+        return null;
+      }
+
+      // Validate each value against selectionOptions.
+      const isYearValid = selectionOptions.projectedYear.min! <= this.selectedOption.projectedYear
+        && this.selectedOption.projectedYear <= selectionOptions.projectedYear.max!;
+
+      const isSspScenarioValid = selectionOptions.sspScenario.data!.includes(this.selectedOption.sspScenario);
+
+      const isConfidenceValid =
+        selectionOptions.confidenceLevel.data!.includes(this.selectedOption.confidenceLevel);
+
+      const isAddVerticalValid =
+        selectionOptions.addVerticalLandMovement.data!.includes(this.selectedOption.addVerticalLandMovement);
+
+      const isPercentileValid = selectionOptions.percentile.data!.includes(this.selectedOption.percentile);
+
+      return {
+        projectedYear: isYearValid,
+        sspScenario: isSspScenarioValid,
+        confidenceLevel: isConfidenceValid,
+        addVerticalLandMovement: isAddVerticalValid,
+        percentile: isPercentileValid,
+      }
+    },
+  },
+
   methods: {
+    /**
+     * Queries the backend for the distinct combinations of valid scenario options.
+     */
+    async fetchScenarioOptions() {
+      try {
+        const response = await axios.get(
+          `${location.protocol}//${location.hostname}:5000/models/flood/parameters`,
+          {timeout: 10000});
+        // Store valid scenario options
+        this.backendScenarioOptions = response.data;
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError;
+        if (axiosError.code === "ECONNABORTED") {
+          // Timeout
+          this.errorMessage = "Could not reach the backend. Please refresh the page to try again.";
+        } else if (axiosError.response?.status === 503) {
+          // Service Unavailable
+          this.errorMessage = "Backend celery worker could not be reached. Please refresh the page to try again.";
+        } else {
+          // Unexpected or unknown error.
+          this.isLoading = false;
+          this.errorMessage = "An unexpected error occurred. Please refresh the page to try again.";
+          throw error;
+        }
+      }
+    },
+
     /**
      * When a task has been posted, loads building outlines for the bbox area.
      *
