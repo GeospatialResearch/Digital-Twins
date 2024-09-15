@@ -92,7 +92,7 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         "scrapy",
         "distributed",
         "selenium",
-        "s3transfer"
+        "charset_normalizer"
     ]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:
