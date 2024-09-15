@@ -135,8 +135,6 @@ def generate_rainfall_inputs(selected_polygon_wkt: str):
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add rainfall data for. Defined in WKT form.
-    scenario_options : Dict[str, Union[str, float, int, bool]]
-        Options for scenario modelling inputs, coming from JSON body.
 
     Returns
     -------
@@ -157,6 +155,8 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: Dict[str, 
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add tide data for. Defined in WKT form.
+    scenario_options : Dict[str, Union[str, float, int, bool]]
+        Options for scenario modelling inputs, coming from JSON body.
 
     Returns
     -------
