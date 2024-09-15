@@ -46,6 +46,8 @@ Functions
    src.tasks.get_model_output_filepath_from_model_id
    src.tasks.get_depth_by_time_at_point
    src.tasks.get_model_extents_bbox
+   src.tasks.get_valid_parameters_based_on_confidence_level
+   src.tasks.validate_slr_parameters
 
 
 Module Contents
@@ -98,12 +100,14 @@ Module Contents
       :type:  List[float]
 
 
-.. py:function:: create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> celery.result.GroupResult
+.. py:function:: create_model_for_area(selected_polygon_wkt: str, scenario_options: Dict[str, Union[str, float, int, bool]]) -> celery.result.GroupResult
 
    Creates a model for the area using series of chained (sequential) sub-tasks.
 
    :param selected_polygon_wkt: The polygon defining the selected area to run the model for. Defined in WKT form.
    :type selected_polygon_wkt: str
+   :param scenario_options: Options for scenario modelling inputs, coming from JSON body.
+   :type scenario_options: Dict[str, Union[str, float, int, bool]]
 
    :returns: The task result for the long-running group of tasks. The task ID represents the final task in the group.
    :rtype: result.GroupResult
@@ -137,12 +141,14 @@ Module Contents
 
    :param selected_polygon_wkt: The polygon defining the selected area to add rainfall data for. Defined in WKT form.
    :type selected_polygon_wkt: str
+   :param scenario_options: Options for scenario modelling inputs, coming from JSON body.
+   :type scenario_options: Dict[str, Union[str, float, int, bool]]
 
    :returns: This task does not return anything
    :rtype: None
 
 
-.. py:function:: generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict)
+.. py:function:: generate_tide_inputs(selected_polygon_wkt: str, scenario_options: Dict[str, Union[str, float, int, bool]])
 
    Task to ensure tide input data for the given area is added to the database and model input files are created.
 
@@ -230,5 +236,25 @@ Module Contents
 
    :returns: The bounding box in 'x1,y1,x2,y2' format
    :rtype: str
+
+
+.. py:function:: get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Union[str, int]]]
+
+   Task to get information on valid tide and sea-level-rise parameters based on the valid values in the database.
+   These parameters are mostly dependent on the "confidence_level" parameter, so that is the key in the returned dict.
+
+   :returns: Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.
+   :rtype: Dict[str, Dict[str, Union[str, int]]]
+
+
+.. py:function:: validate_slr_parameters(scenario_options: Dict[str, Union[str, float, int, bool]]) -> src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult
+
+   Task to validate each of the sea-level-rise parameters.
+
+   :param scenario_options: Options for scenario modelling inputs, coming from JSON body.
+   :type scenario_options: Dict[str, Union[str, float, int, bool]]
+
+   :returns: Result of the validation, with validation failure reason if applicable
+   :rtype: main_tide_slr.ValidationResult
 
 

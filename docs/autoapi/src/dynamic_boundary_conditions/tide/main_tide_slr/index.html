@@ -109,10 +109,26 @@ and generate the requested tide uniform boundary model input for BG-Flood etc.</
 </tbody>
 </table>
 </section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationResult</span></code></a></p></td>
+<td><p>Represents the result of checking validation on parameters.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters" title="src.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_slr_parameters</span></code></a>(→ ValidationResult)</p></td>
+<td><p>Validate each of the sea-level-rise parameters have valid values by querying the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level" title="src.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_parameters_based_on_confidence_level</span></code></a>(...)</p></td>
+<td><p>Get information on valid tide and sea-level-rise parameters based on the valid values in the database.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs" title="src.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_existing_boundary_inputs</span></code></a>(→ None)</p></td>
 <td><p>Remove existing uniform boundary input files from the specified directory.</p></td>
 </tr>
@@ -128,6 +144,88 @@ and generate the requested tide uniform boundary model input for BG-Flood etc.</
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.main_tide_slr.log">
 <span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.log" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">ValidationResult</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>Represents the result of checking validation on parameters.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult.is_valid">
+<span class="sig-name descname"><span class="pre">is_valid</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult.is_valid" title="Link to this definition"></a></dt>
+<dd><p>If True then the parameters are valid, if False then they are invalid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult.invalid_reason">
+<span class="sig-name descname"><span class="pre">invalid_reason</span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult.invalid_reason" title="Link to this definition"></a></dt>
+<dd><p>An error message describing the reason the validation has failed. Can be <cite>None</cite> if <cite>is_valid is True</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">is_valid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">invalid_reason</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">validate_slr_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proj_year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssp_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_vlm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult"><span class="pre">ValidationResult</span></a></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters" title="Link to this definition"></a></dt>
+<dd><p>Validate each of the sea-level-rise parameters have valid values by querying the database.
+Returns a ValidationResult so that you can easily check for validation and the reason for failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>proj_year</strong> (<em>int</em>) – The projection year for which the combined tide and sea level rise data should be generated.</p></li>
+<li><p><strong>confidence_level</strong> (<em>str</em>) – The desired confidence level for the sea level rise data. Valid values are ‘low’ or ‘medium’.</p></li>
+<li><p><strong>ssp_scenario</strong> (<em>str</em>) – The desired Shared Socioeconomic Pathways (SSP) scenario for the sea level rise data.
+Valid options for both low and medium confidence are: ‘SSP1-2.6’, ‘SSP2-4.5’, or ‘SSP5-8.5’.
+Additional options for medium confidence are: ‘SSP1-1.9’ or ‘SSP3-7.0’.</p></li>
+<li><p><strong>add_vlm</strong> (<em>bool</em>) – Indicates whether Vertical Land Motion (VLM) should be included in the sea level rise data.
+Set to True if VLM should be included, False otherwise.</p></li>
+<li><p><strong>percentile</strong> (<em>int</em>) – The desired percentile for the sea level rise data. Valid values are 17, 50, or 83.</p></li>
+<li><p><strong>increment_year</strong> (<em>int = 1</em>) – The year interval used for interpolating the sea level rise data. Defaults to 1 year.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Result of the validation, with validation failure reason if applicable.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult">ValidationResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level">
+<span class="sig-prename descclassname"><span class="pre">src.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">get_valid_parameters_based_on_confidence_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level" title="Link to this definition"></a></dt>
+<dd><p>Get information on valid tide and sea-level-rise parameters based on the valid values in the database.
+These parameters are mostly dependent on the “confidence_level” parameter, so that is the key in the returned dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, Dict[str, Union[str, int]]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs">

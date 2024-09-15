@@ -19,11 +19,21 @@ Attributes
    src.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon
 
 
+Classes
+-------
+
+.. autoapisummary::
+
+   src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult
+
+
 Functions
 ---------
 
 .. autoapisummary::
 
+   src.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters
+   src.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level
    src.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs
    src.dynamic_boundary_conditions.tide.main_tide_slr.main
 
@@ -32,6 +42,68 @@ Module Contents
 ---------------
 
 .. py:data:: log
+
+.. py:class:: ValidationResult
+
+   Bases: :py:obj:`NamedTuple`
+
+
+   Represents the result of checking validation on parameters.
+
+   .. attribute:: is_valid
+
+      If True then the parameters are valid, if False then they are invalid.
+
+      :type: bool
+
+   .. attribute:: invalid_reason
+
+      An error message describing the reason the validation has failed. Can be `None` if `is_valid is True`.
+
+      :type: Optional[str]
+
+
+   .. py:attribute:: is_valid
+      :type:  bool
+
+
+   .. py:attribute:: invalid_reason
+      :type:  Optional[str]
+
+
+.. py:function:: validate_slr_parameters(proj_year: int, confidence_level: str, ssp_scenario: str, add_vlm: bool, percentile: int, increment_year: int = 1) -> ValidationResult
+
+   Validate each of the sea-level-rise parameters have valid values by querying the database.
+   Returns a ValidationResult so that you can easily check for validation and the reason for failure.
+
+   :param proj_year: The projection year for which the combined tide and sea level rise data should be generated.
+   :type proj_year: int
+   :param confidence_level: The desired confidence level for the sea level rise data. Valid values are 'low' or 'medium'.
+   :type confidence_level: str
+   :param ssp_scenario: The desired Shared Socioeconomic Pathways (SSP) scenario for the sea level rise data.
+                        Valid options for both low and medium confidence are: 'SSP1-2.6', 'SSP2-4.5', or 'SSP5-8.5'.
+                        Additional options for medium confidence are: 'SSP1-1.9' or 'SSP3-7.0'.
+   :type ssp_scenario: str
+   :param add_vlm: Indicates whether Vertical Land Motion (VLM) should be included in the sea level rise data.
+                   Set to True if VLM should be included, False otherwise.
+   :type add_vlm: bool
+   :param percentile: The desired percentile for the sea level rise data. Valid values are 17, 50, or 83.
+   :type percentile: int
+   :param increment_year: The year interval used for interpolating the sea level rise data. Defaults to 1 year.
+   :type increment_year: int = 1
+
+   :returns: Result of the validation, with validation failure reason if applicable.
+   :rtype: ValidationResult
+
+
+.. py:function:: get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Union[str, int]]]
+
+   Get information on valid tide and sea-level-rise parameters based on the valid values in the database.
+   These parameters are mostly dependent on the "confidence_level" parameter, so that is the key in the returned dict.
+
+   :returns: Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.
+   :rtype: Dict[str, Dict[str, Union[str, int]]]
+
 
 .. py:function:: remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None
 
