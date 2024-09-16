@@ -32,19 +32,6 @@ paths:
         '503 - Service Unavailable':
           $ref: '#/components/responses/NoCeleryWorkers'
 
-  "/models/flood/parameters":
-    get:
-      summary: "Get information on possible valid flood model parameters."
-      description: |-
-        Get information on valid flood model parameters based on the valid values in the database.
-      responses:
-        '200 - OK':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidSlrParameters'
-        '503 - Service Unavailable':
-          $ref: '#/components/responses/NoCeleryWorkers'
   "/models/generate":
     post:
       summary: Starts generating a scenario model output.
@@ -254,12 +241,12 @@ components:
               scenarioOptions:
                 type: object
                 properties:
-                  "projectedYear":
+                  "Projected Year":
                     type: number
-                    minimum: 2025
+                    minimum: 2023
                     maximum: 2300
                     example: 2025
-                  "sspScenario":
+                  "SSP Scenario":
                     type: string
                     example: SSP1-1.9
                     enum:
@@ -268,22 +255,15 @@ components:
                       - 'SSP2-4.5'
                       - 'SSP3-7.0'
                       - 'SSP5-8.5'
-                  "confidenceLevel":
+                  "Confidence Level":
                     type: string
                     example: medium
                     enum:
                       - low
                       - medium
-                  "addVerticalLandMovement":
+                  "Add Vertical Land Movement":
                     type: boolean
                     example: true
-                  "percentile":
-                    type: number
-                    example: 50
-                    enum:
-                      - 17
-                      - 50
-                      - 83
 
 
 
@@ -315,48 +295,6 @@ components:
           description: Will contain a traceback if the environment variable `DEBUG_TRACEBACK` is `True`
           example: |-
             sqlalchemy.exc.OperationalError (psycopg2.OperationalError) connection to server at localhost (1), port 1234 failed Connection refused
-
-    ValidSlrParameters:
-      type: object
-      properties:
-        low:
-          type: object
-          properties:
-            min_year:
-              type: number
-              example: 2025
-            max_year:
-              type: number
-              example: 2300
-            ssp_scenarios:
-              type: array
-              items:
-                type: string
-              example: ["SSP1-2.6", "SSP5-8.5"]
-            percentile:
-              type: array
-              items:
-                type: number
-              example: [17, 50, 83]
-        medium:
-          type: object
-          properties:
-            min_year:
-              type: number
-              example: 2025
-            max_year:
-              type: number
-              example: 2150
-            ssp_scenarios:
-              type: array
-              items:
-                type: string
-              example: ["SSP1-1.9", "SSP1-2.6", "SSP2-4.5", "SSP3-7", "SSP5-8.5"]
-            percentile:
-              type: array
-              items:
-                type: number
-              example: [17, 50, 83]
 
     PointDepths:
       type: object
