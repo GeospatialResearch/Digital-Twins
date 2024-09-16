@@ -141,8 +141,6 @@ Module Contents
 
    :param selected_polygon_wkt: The polygon defining the selected area to add rainfall data for. Defined in WKT form.
    :type selected_polygon_wkt: str
-   :param scenario_options: Options for scenario modelling inputs, coming from JSON body.
-   :type scenario_options: Dict[str, Union[str, float, int, bool]]
 
    :returns: This task does not return anything
    :rtype: None
@@ -154,6 +152,8 @@ Module Contents
 
    :param selected_polygon_wkt: The polygon defining the selected area to add tide data for. Defined in WKT form.
    :type selected_polygon_wkt: str
+   :param scenario_options: Options for scenario modelling inputs, coming from JSON body.
+   :type scenario_options: Dict[str, Union[str, float, int, bool]]
 
    :returns: This task does not return anything
    :rtype: None

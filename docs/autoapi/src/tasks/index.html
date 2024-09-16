@@ -302,10 +302,7 @@ over message_broker</p>
 <dd><p>Task to ensure rainfall input data for the given area is added to the database and model input files are created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to add rainfall data for. Defined in WKT form.</p></li>
-<li><p><strong>scenario_options</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>float</em><em>, </em><em>int</em><em>, </em><em>bool</em><em>]</em><em>]</em>) – Options for scenario modelling inputs, coming from JSON body.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to add rainfall data for. Defined in WKT form.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>This task does not return anything</p>
@@ -322,7 +319,10 @@ over message_broker</p>
 <dd><p>Task to ensure tide input data for the given area is added to the database and model input files are created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to add tide data for. Defined in WKT form.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to add tide data for. Defined in WKT form.</p></li>
+<li><p><strong>scenario_options</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>float</em><em>, </em><em>int</em><em>, </em><em>bool</em><em>]</em><em>]</em>) – Options for scenario modelling inputs, coming from JSON body.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>This task does not return anything</p>
