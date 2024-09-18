@@ -1,5 +1,5 @@
 name: Automerge
-
+# This is a function to automerge master and branch
 on:
   push:
     branches:
@@ -7,18 +7,16 @@ on:
   workflow_dispatch:
 
 env:
-  # replace "github_username" with your GitHub username hello
-  # replace "github.com/username/repo.git" with your GitHub repo path
-  # do NOT replace ${{secrets.GITHUB_TOKEN}}, GitHub will take care of it
-  MY_REPO: https://GeospatialResearch:${{secrets.GITHUB_TOKEN}}@github.com/GeospatialResearch/Digital-Twins-191.git
+  # State github repository path
+  MY_REPO: https://GeospatialResearch:${{secrets.GITHUB_TOKEN}}@github.com/GeospatialResearch/Digital-Twins.git
 
-  # replace "long-lived_branch_name" with your branch name
+  # State master
   LONG_LIVED_BRANCH: master
 
-  # replace it with the path to master repo
-  MASTER_REPO: https://github.com/GeospatialResearch/Digital-Twins-191.git
+  # State path to master repository path
+  MASTER_REPO: https://github.com/GeospatialResearch/Digital-Twins.git
 
-  # replace "master" with your master branch name
+  # State branch
   DEFAULT_BRANCH: otakaro_digital_twin
 
 jobs:
@@ -26,9 +24,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Merge with master
-      run: |
-        git clone ${{env.MY_REPO}} -b ${{env.DEFAULT_BRANCH}} tmp
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PUSH_PAGES_PAT }}
+        run: |
         cd tmp
         git config user.name "Automerge Bot"
         git config user.email "bot@example.com"
