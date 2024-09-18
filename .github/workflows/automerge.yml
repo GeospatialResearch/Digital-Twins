@@ -33,9 +33,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PUSH_PAGES_PAT }}
         run: |
-        cd tmp
-        git config user.name "Automerge Bot"
-        git config user.email "bot@example.com"
-        git config pull.rebase false
-        git pull ${{env.MASTER_REPO}} ${{env.LONG_LIVED_BRANCH}}
-        git push
+      cd tmp
+      git config user.name "Automerge Bot"
+      git config user.email "bot@example.com"
+      git config pull.rebase false
+      git pull ${{env.MASTER_REPO}} ${{env.LONG_LIVED_BRANCH}}
+      git push
