@@ -7,6 +7,7 @@ from typing import List, NamedTuple, Optional
 
 import pandas as pd
 import requests
+from requests.structures import CaseInsensitiveDict
 
 
 def get_site_url_key(site_id: str, idf: bool) -> str:
@@ -26,9 +27,21 @@ def get_site_url_key(site_id: str, idf: bool) -> str:
         Unique URL key of the requested rainfall site.
     """
     url = "https://api.niwa.co.nz/hirds/report"
-    headers = {
-        "Referer": "https://hirds.niwa.co.nz/"
-    }
+    headers = CaseInsensitiveDict()
+    headers["Accept"] = "application/json, text/plain, */*"
+    headers["Accept-Language"] = "en-GB,en-US;q=0.9,en;q=0.8"
+    headers["Connection"] = "keep-alive"
+    headers["Content-Type"] = "application/json"
+    headers["Origin"] = "https://hirds.niwa.co.nz"
+    headers["Referer"] = "https://hirds.niwa.co.nz/"
+    headers["Sec-Fetch-Dest"] = "empty"
+    headers["Sec-Fetch-Mode"] = "cors"
+    headers["Sec-Fetch-Site"] = "same-site"
+    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
+            Chrome/96.0.4664.110 Safari/537.36"
+    headers["sec-ch-ua"] = '"" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96""'
+    headers["sec-ch-ua-mobile"] = "?0"
+    headers["sec-ch-ua-platform"] = '""Windows""'
     # Convert idf parameter to lowercase string
     idf = str(idf).lower()
     data = f'{{"site_id":"{site_id}","idf":{idf}}}'
@@ -63,9 +76,20 @@ def get_data_from_hirds(site_id: str, idf: bool) -> str:
     site_url_key = get_site_url_key(site_id, idf)
 
     url = rf"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
-    headers = {
-        "Referer": "https://hirds.niwa.co.nz/"
-    }
+    headers = CaseInsensitiveDict()
+    headers["Accept"] = "application/json, text/plain, */*"
+    headers["Accept-Language"] = "en-GB,en-US;q=0.9,en;q=0.8"
+    headers["Connection"] = "keep-alive"
+    headers["Origin"] = "https://hirds.niwa.co.nz"
+    headers["Referer"] = "https://hirds.niwa.co.nz/"
+    headers["Sec-Fetch-Dest"] = "empty"
+    headers["Sec-Fetch-Mode"] = "cors"
+    headers["Sec-Fetch-Site"] = "same-site"
+    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
+            Chrome/96.0.4664.110 Safari/537.36"
+    headers["sec-ch-ua"] = '"" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96""'
+    headers["sec-ch-ua-mobile"] = "?0"
+    headers["sec-ch-ua-platform"] = '""Windows""'
     # Send HTTP GET request to the specified URL with headers
     response = requests.get(url, headers=headers)
     # Return the response content as a text string
