@@ -14,7 +14,7 @@ from src.digitaltwin import tables
 log = logging.getLogger(__name__)
 
 
-def get_hirds_headers():
+def get_hirds_headers() -> CaseInsensitiveDict:
     """
     Generate a set of HTTP headers for making requests to HIRDS.
 
