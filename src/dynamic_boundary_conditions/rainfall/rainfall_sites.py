@@ -14,16 +14,15 @@ from src.digitaltwin import tables
 log = logging.getLogger(__name__)
 
 
-def get_rainfall_sites_data() -> str:
+def get_hirds_headers():
     """
-    Get rainfall sites data from the HIRDS website.
+    Generate a set of HTTP headers for making requests to HIRDS.
 
     Returns
     -------
-    str
-        The rainfall sites data as a string.
+    CaseInsensitiveDict
+        A dictionary containing HTTP headers required for requests to HIRDS.
     """
-    url = "https://api.niwa.co.nz/hirds/sites"
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json, text/plain, */*"
     headers["Accept-Language"] = "en-GB,en-US;q=0.9,en;q=0.8"
@@ -37,7 +36,21 @@ def get_rainfall_sites_data() -> str:
     headers["Sec-Fetch-Mode"] = "cors"
     headers["Sec-Fetch-Site"] = "same-site"
     headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
-            Chrome/96.0.4664.45 Safari/537.36"
+                Chrome/96.0.4664.45 Safari/537.36"
+    return headers
+
+
+def get_rainfall_sites_data() -> str:
+    """
+    Get rainfall sites data from the HIRDS website.
+
+    Returns
+    -------
+    str
+        The rainfall sites data as a string.
+    """
+    url = "https://api.niwa.co.nz/hirds/sites"
+    headers = get_hirds_headers()
     # Send HTTP GET request to the specified URL with headers
     response = requests.get(url, headers=headers)
     # Return the response content as a text string
