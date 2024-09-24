@@ -8,7 +8,7 @@ RUN npm ci --ignore-scripts
 # Copy License file into image root
 COPY ./LICENSE ../LICENSE
 # Copy visualisation source files into image
-COPY ["visualisation/*.js", "visualisation/*.json", "visualisation/.env.production", "./"]
+COPY ["visualisation/*.ts", "visualisation/*.json", "visualisation/.env.production", "visualisation/index.html", "./"]
 COPY visualisation/src/ src/
 COPY visualisation/public/ public/
 
