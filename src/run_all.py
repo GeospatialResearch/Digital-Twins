@@ -97,7 +97,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "antecedent_dry_days": 1,
         "average_rain_intensity": 1,
         "event_duration": 1,
-        "rainfall_ph": 7
+        "rainfall_ph": 6.5 # rainfall pH assumed for all of NZ is 6.5
     }
 }
 
