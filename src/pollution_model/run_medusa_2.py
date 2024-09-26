@@ -628,7 +628,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
 
     # Ensure pollution model data is being served by geoserver
-    serve_pollution_model()
+    # serve_pollution_model()
 
     # Create new table recording users' history
     create_table(engine, MedusaScenarios)
