@@ -27,6 +27,7 @@ from src.pollution_model.pollution_tables import MedusaScenarios
 
 log = logging.getLogger(__name__)
 
+
 def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     """
     Read and merge building data under points and polygons. Then store them into database.
@@ -47,16 +48,16 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     polygon_data = gpd.read_file("/home/martinnguyen204/Digital-Twin/polygons.geojson")
 
     # Merge point and polygon data using building_Id
-    merge_data = polygon_data.merge(point_data, left_on="building_Id", right_on="building_Id", how="left")
+    merging_data = polygon_data.merge(point_data, left_on="building_Id", right_on="building_Id", how="left")
     # Remove OBJECTID_x (as it is equal to building_Id), and change name of OBJECTID_y into OBJECTID_point
-    merge_data = merge_data.drop(columns=["OBJECTID_x"])
-    merge_data = merge_data.rename(columns={"OBJECTID_y": "OBJECTID_point"})
+    merging_data = merging_data.drop(columns=["OBJECTID_x"])
+    merging_data = merging_data.rename(columns={"OBJECTID_y": "OBJECTID_point"})
 
-    # Store the sea level rise data to the database table
-    log.info(f"Adding ROOF table data to the database.")
-    merge_data.to_postgis('ROOF table', engine, index=False, if_exists="replace")
+    # Store the ROOF table data to the database table
+    log.info("Adding ROOF table data to the database.")
+    merging_data.to_postgis('ROOF table', engine, index=False, if_exists="replace")
 
-    return merge_data
+    return merging_data
 
 
 # Enum strings are assigned as they are described in the original paper
