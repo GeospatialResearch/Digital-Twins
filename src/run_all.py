@@ -66,7 +66,7 @@ def create_sample_polygon() -> gpd.GeoDataFrame:
         A GeoDataFrame containing a single rectangular polygon for the area of interest.
     """
     # Read the area of interest file in
-    aoi = gpd.read_file("selected_polygon.geojson")
+    aoi = gpd.read_file("selected_taumutu.geojson")
     # Convert to WGS84 to deliberately introduce rounding errors. Ensures our development acts like production.
     # These rounding errors occur in production when serialising WGS84 polygons
     aoi = aoi.to_crs(4326)
