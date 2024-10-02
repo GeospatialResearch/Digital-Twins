@@ -91,6 +91,11 @@ def gen_query_param_list(
     -------
     List[Dict[str, Union[str, int]]]
         A list of API query parameters used to retrieve ArcGIS REST API data.
+
+    Raises
+    ------
+    ValueError
+        If `output_sr` is provided when `area_of_interest` is given.
     """
     # If no area_of_interest is provided and output_sr is not specified, default output_sr to 2193
     if area_of_interest is None and output_sr is None:
