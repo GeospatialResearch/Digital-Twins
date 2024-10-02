@@ -6,7 +6,6 @@ retrieve it for the requested area of interest.
 
 import asyncio
 import logging
-from datetime import datetime
 from http import HTTPStatus
 from io import StringIO
 from typing import List, Optional

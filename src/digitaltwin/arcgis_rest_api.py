@@ -2,7 +2,7 @@
 """
 This script provides functions to interact with ArcGIS REST API feature layers, generate query parameters, and
 retrieve geographic data for a specified area of interest.
-"""
+"""  # noqa: D400
 
 import asyncio
 import logging

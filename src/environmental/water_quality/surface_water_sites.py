@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Fetch surface water site data from ECAN using the ArcGIS REST API, store it in the database, and 
+Fetch surface water site data from ECAN using the ArcGIS REST API, store it in the database, and
 retrieve it for the requested area of interest.
 """  # noqa: D400
 

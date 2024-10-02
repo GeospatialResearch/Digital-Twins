@@ -40,7 +40,7 @@ def main(
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the latest water quality data for each site within the requested catchment area.
-    """
+    """  # noqa: D400
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database
