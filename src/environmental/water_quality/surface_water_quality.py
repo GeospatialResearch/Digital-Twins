@@ -281,8 +281,8 @@ def get_req_surface_water_quality_from_db(
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     year : Optional[int] = None
-        The year used to filter the latest surface water quality data for each site within the specified catchment area.
-        If not provided or set to `None`, all latest data will be included.
+        The year from which to include the latest surface water quality data for sites within the specified
+        catchment area. If not provided or set to `None`, all latest data will be included.
 
     Returns
     -------
