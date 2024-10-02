@@ -8,6 +8,8 @@ from typing import List, NamedTuple, Optional
 import pandas as pd
 import requests
 
+from src.dynamic_boundary_conditions.rainfall.rainfall_sites import get_hirds_headers
+
 
 def get_site_url_key(site_id: str, idf: bool) -> str:
     """
@@ -26,9 +28,7 @@ def get_site_url_key(site_id: str, idf: bool) -> str:
         Unique URL key of the requested rainfall site.
     """
     url = "https://api.niwa.co.nz/hirds/report"
-    headers = {
-        "Referer": "https://hirds.niwa.co.nz/"
-    }
+    headers = get_hirds_headers()
     # Convert idf parameter to lowercase string
     idf = str(idf).lower()
     data = f'{{"site_id":"{site_id}","idf":{idf}}}'
@@ -63,9 +63,7 @@ def get_data_from_hirds(site_id: str, idf: bool) -> str:
     site_url_key = get_site_url_key(site_id, idf)
 
     url = rf"https://api.niwa.co.nz/hirds/report/{site_url_key}/export"
-    headers = {
-        "Referer": "https://hirds.niwa.co.nz/"
-    }
+    headers = get_hirds_headers()
     # Send HTTP GET request to the specified URL with headers
     response = requests.get(url, headers=headers)
     # Return the response content as a text string
