@@ -78,10 +78,12 @@ class SurfaceType(StrEnum):
     CAR_PARK : str
         Car Park surface.
     """
-
-    CONCRETE_ROOF = "Cr"
-    COPPER_ROOF = "Cu"
-    GALVANISED_ROOF = "Gv"
+    COLOUR_STEEL = "Cs"
+    GALVANISED = "Gv"
+    METAL_OTHER = "Mo"
+    METAL_TILE = "Mt"
+    NON_METAL = "NoMt"
+    ZINCALUME = "ZnC"
     ASPHALT_ROAD = "Rd"
     CAR_PARK = "CrP"  # CarParks are classified the same as roads
 
@@ -162,12 +164,16 @@ def compute_tss_roof_road(surface_area: float,
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
 
     match surface_type:
-        case SurfaceType.CONCRETE_ROOF:
-            a1, a2, a3 = 0.6, 0.25, 0.00933
-        case SurfaceType.COPPER_ROOF:
-            a1, a2, a3 = 2.5, 0.95, 0.00933
-        case SurfaceType.GALVANISED_ROOF:
-            a1, a2, a3 = 0.6, 0.5, 0.00933
+        case SurfaceType.COLOUR_STEEL:
+            a1, a2, a3 = 0.4, 0.5, 0.008
+        case SurfaceType.GALVANISED:
+            a1, a2, a3 = 0.4, 0.5, 0.008
+        case SurfaceType.METAL_OTHER: # Using coefficients of Galvanised rather than Copper
+            a1, a2, a3 = 0.4, 0.5, 0.008
+        case SurfaceType.NON_METAL:
+            a1, a2, a3 = 0.6, 0.25, 0.008
+        case SurfaceType.ZINCALUME:
+            a1, a2, a3 = 0.4, 0.5, 0.008
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
             a1, a2, a3 = 2.9, 0.16, 0.0008
         case _:
@@ -245,15 +251,24 @@ def total_metal_load_roof(surface_area: float,
     # Define constants in a list
 
     match surface_type:
-        case SurfaceType.CONCRETE_ROOF:
-            b = [2, -2.8, 0.5, 0.217, 3.57, -0.09, 7, -3.73]
-            c = [50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
-        case SurfaceType.COPPER_ROOF:
-            b = [100, -2.8, 1.372, 0.217, 3.57, -1, 275, -3.3]
-            c = [-0.1, 2, 0.1, 0.01, 0.8, -1.3, -0.007, 0.056]
-        case SurfaceType.GALVANISED_ROOF:
-            b = [2, -2.8, 0.5, 0.217, 3.57, -0.09, 7, -3.73]
-            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.990]
+        case SurfaceType.COLOUR_STEEL:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+        case SurfaceType.GALVANISED:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+        case SurfaceType.METAL_OTHER: # Using coefficients of Galvanised rather than Copper
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+        case SurfaceType.METAL_TILE:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+        case SurfaceType.NON_METAL:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+        case SurfaceType.ZINCALUME:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
         case _:
             raise ValueError(invalid_surface_error)
 
@@ -354,6 +369,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
         case SurfaceType.GALVANISED_ROOF:
             f = 0.28
             g = 0.43
+
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
             f = 0.28
             g = 0.43
