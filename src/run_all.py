@@ -16,6 +16,7 @@ from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.pollution_model import run_medusa_2
 from src.flood_model import bg_flood_model, process_hydro_dem
+from src.environmental.water_quality import main_water_quality
 
 
 def main(
@@ -98,8 +99,12 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "average_rain_intensity": 1,
         "event_duration": 1,
         "rainfall_ph": 7
+    },
+    main_water_quality: {
+        "log_level": LogLevel.INFO
     }
 }
+
 
 if __name__ == '__main__':
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
