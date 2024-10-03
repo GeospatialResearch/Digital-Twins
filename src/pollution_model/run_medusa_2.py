@@ -88,7 +88,8 @@ class SurfaceType(StrEnum):
     CAR_PARK = "CrP"  # CarParks are classified the same as roads
 
 
-ROOF_SURFACE_TYPES = {SurfaceType.CONCRETE_ROOF, SurfaceType.GALVANISED_ROOF, SurfaceType.COPPER_ROOF}
+ROOF_SURFACE_TYPES = {SurfaceType.COLOUR_STEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER,
+                      SurfaceType.METAL_TILE, SurfaceType.NON_METAL, SurfaceType.ZINCALUME}
 ROAD_SURFACE_TYPES = {SurfaceType.ASPHALT_ROAD, SurfaceType.CAR_PARK}
 
 
@@ -285,7 +286,7 @@ def total_metal_load_roof(surface_area: float,
             z = 0.75
         case SurfaceType.NON_METAL:
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
-            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            c = [50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
             # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
             k = 0.00933
             # Duration of the event measured by hours - Roof
@@ -385,8 +386,8 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     # Set constant values based on surface type
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
-            f = 0.77
-            g = 0.67
+            f = 0.5
+            g = 0.43
         case SurfaceType.GALVANISED:
             f = 0.5
             g = 0.43
@@ -394,7 +395,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
             f = 0.5
             g = 0.43
         case SurfaceType.METAL_TILE:
-            f = 0.75
+            f = 0.5
             g = 0.43
         case SurfaceType.NON_METAL:
             f = 0.77
