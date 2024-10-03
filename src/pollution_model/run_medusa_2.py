@@ -360,16 +360,24 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
     # Set constant values based on surface type
     match surface_type:
-        case SurfaceType.CONCRETE_ROOF:
-            f = 0.46
-            g = 0.67
-        case SurfaceType.COPPER_ROOF:
+        case SurfaceType.COLOUR_STEEL:
             f = 0.77
-            g = 0.72
-        case SurfaceType.GALVANISED_ROOF:
-            f = 0.28
+            g = 0.67
+        case SurfaceType.GALVANISED:
+            f = 0.5
             g = 0.43
-
+        case SurfaceType.METAL_OTHER:
+            f = 0.5
+            g = 0.43
+        case SurfaceType.METAL_TILE:
+            f = 0.75
+            g = 0.43
+        case SurfaceType.NON_METAL:
+            f = 0.77
+            g = 0.67
+        case SurfaceType.ZINCALUME:
+            f = 0.5
+            g = 0.43
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
             f = 0.28
             g = 0.43
