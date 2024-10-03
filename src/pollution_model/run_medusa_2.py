@@ -254,21 +254,51 @@ def total_metal_load_roof(surface_area: float,
         case SurfaceType.COLOUR_STEEL:
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
         case SurfaceType.GALVANISED:
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
         case SurfaceType.METAL_OTHER: # Using coefficients of Galvanised rather than Copper
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
         case SurfaceType.METAL_TILE:
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
         case SurfaceType.NON_METAL:
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
         case SurfaceType.ZINCALUME:
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
         case _:
             raise ValueError(invalid_surface_error)
 
@@ -281,12 +311,6 @@ def total_metal_load_roof(surface_area: float,
     initial_zinc_concentration = c[0] * rainfall_ph + c[1] * c[2] * antecedent_dry_days ** c[3] * (
         c[4] * average_rain_intensity ** c[5])
     second_stage_zinc = c[6] * rainfall_ph + c[7]
-
-    # Define Z as per experimental data
-    z = 0.75
-
-    # Define K, the wash off coefficient.
-    k = 1
 
     # Initialise total copper and zinc loads as a guaranteed common factor
     total_copper_load = initial_copper_concentration * surface_area * 1 / k
