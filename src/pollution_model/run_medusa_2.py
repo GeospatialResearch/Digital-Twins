@@ -6,6 +6,9 @@ TZn (total zinc), and DZn (dissolved zinc).
 DOI of the model paper: https://doi.org/10.3390/w12040969
 """
 
+import os
+from src.digitaltwin import tables
+
 import logging
 import math
 from enum import StrEnum
@@ -28,6 +31,39 @@ from src.pollution_model.pollution_tables import MedusaScenarios
 log = logging.getLogger(__name__)
 
 
+# def merge_data(engine: Engine) -> gpd.GeoDataFrame:
+#     """
+#     Read and merge building data under points and polygons. Then store them into database.
+#
+#     Parameters
+#     ----------
+#     engine : Engine
+#         The engine used to connect to the database.
+#
+#     Returns
+#     -------
+#     gpd.GeoDataFrame
+#         A GeoDataFrame containing all the information in point and polygon files.
+#     """
+#     # Read point data
+#     point_data = gpd.read_file("/home/martinnguyen204/Digital-Twin/points.geojson")
+#     # Read polygon data
+#     polygon_data = gpd.read_file("/home/martinnguyen204/Digital-Twin/polygons.geojson")
+#
+#     # Merge point and polygon data using building_Id
+#     merging_data = polygon_data.merge(point_data, left_on="building_Id", right_on="building_Id", how="left")
+#     # Remove OBJECTID_x (as it is equal to building_Id), and change name of OBJECTID_y into OBJECTID_point
+#     merging_data = merging_data.drop(columns=["OBJECTID_x"])
+#     merging_data = merging_data.rename(columns={"OBJECTID_y": "OBJECTID_point"})
+#
+#     # Store the ROOF table data to the database table
+#     log.info("Adding ROOF table data to the database.")
+#     merging_data.to_postgis('ROOF table', engine, index=False, if_exists="replace")
+#
+#     return merging_data
+
+
+
 def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     """
     Read and merge building data under points and polygons. Then store them into database.
@@ -42,22 +78,65 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     gpd.GeoDataFrame
         A GeoDataFrame containing all the information in point and polygon files.
     """
-    # Read point data
-    point_data = gpd.read_file("/home/martinnguyen204/Digital-Twin/points.geojson")
-    # Read polygon data
-    polygon_data = gpd.read_file("/home/martinnguyen204/Digital-Twin/polygons.geojson")
+    # Change the proj path to avoid
+    # ERROR 1: PROJ: proj_create_from_database: Open of /home/martinnguyen204/miniconda3/envs/digitaltwin/share/proj failed
+    os.environ['PROJ_LIB'] = "/home/martinnguyen204/miniconda3/envs/digitaltwin/share/proj"
 
-    # Merge point and polygon data using building_Id
-    merging_data = polygon_data.merge(point_data, left_on="building_Id", right_on="building_Id", how="left")
-    # Remove OBJECTID_x (as it is equal to building_Id), and change name of OBJECTID_y into OBJECTID_point
-    merging_data = merging_data.drop(columns=["OBJECTID_x"])
-    merging_data = merging_data.rename(columns={"OBJECTID_y": "OBJECTID_point"})
+    # Read roof surface points from outside
+    roof_surface_points = gpd.read_file(
+        "/home/martinnguyen204/Digital-Twin/points.geojson"
+    )
+    # Check if the table already exist in the database
+    if tables.check_table_exists(engine, "roof_surface_points"):
+        log.info(f"roof_surface_points data already exists in the database.")
+    else:
+        # Store the building_point_data to the database table
+        log.info(f"Adding roof_surface_points table to the database.")
+        roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
 
-    # Store the ROOF table data to the database table
-    log.info("Adding ROOF table data to the database.")
-    merging_data.to_postgis('ROOF table', engine, index=False, if_exists="replace")
+    # Read roof surface points from outside
+    roof_surface_points = gpd.read_file(
+        "/home/martinnguyen204/Digital-Twin/polygons.geojson"
+    )
+    # Check if the table already exist in the database
+    if tables.check_table_exists(engine, "roof_surface_polygons"):
+        log.info(f"roof_surface_polygons data already exists in the database.")
+    else:
+        # Store the building_point_data to the database table
+        log.info(f"Adding roof_surface_polygons table to the database.")
+        roof_surface_points.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
 
-    return merging_data
+    # Merge building points and polygons
+    query = """
+        SELECT roof_surface_polygons.*, roof_surface_points.deeplearn_subclass
+        FROM roof_surface_polygons
+        LEFT JOIN roof_surface_points
+        USING ("building_Id")
+    """
+    roof_surface_merge = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+
+    # # Add column surface type
+    roof_surface_types = {
+        'ColourSteel': 'Cs',
+        'MetalTile': 'Mt',
+        'Galvanised': 'Gv',
+        'NonMetal': 'NoMt',
+        'MetalOther': 'Mo',
+        'Zincalume': 'Znc',
+        'AsphaltRoad': 'Rd',
+        'CarPark': 'CrP'
+    }
+    roof_surface_merge['surface_type'] = roof_surface_merge.deeplearn_subclass.map(roof_surface_types)
+
+    # Check if the table already exist in the database
+    if tables.check_table_exists(engine, "roof_surface"):
+        log.info(f"roof_surface data already exists in the database.")
+    else:
+        # Store the building_point_data to the database table
+        log.info(f"Adding roof_surface table to the database.")
+        roof_surface_merge.to_postgis("roof_surface", engine, index=False, if_exists="replace")
+
+    return roof_surface_merge
 
 
 # Enum strings are assigned as they are described in the original paper
@@ -87,11 +166,8 @@ class SurfaceType(StrEnum):
     ASPHALT_ROAD = "Rd"
     CAR_PARK = "CrP"  # CarParks are classified the same as roads
 
-
-ROOF_SURFACE_TYPES = {SurfaceType.COLOUR_STEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER,
-                      SurfaceType.METAL_TILE, SurfaceType.NON_METAL, SurfaceType.ZINCALUME}
+ROOF_SURFACE_TYPES = {SurfaceType.COLOUR_STEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER, SurfaceType.METAL_TILE, SurfaceType.NON_METAL, SurfaceType.ZINCALUME}
 ROAD_SURFACE_TYPES = {SurfaceType.ASPHALT_ROAD, SurfaceType.CAR_PARK}
-
 
 class MedusaRainfallEvent(NamedTuple):
     """
@@ -170,6 +246,8 @@ def compute_tss_roof_road(surface_area: float,
         case SurfaceType.GALVANISED:
             a1, a2, a3 = 0.4, 0.5, 0.008
         case SurfaceType.METAL_OTHER: # Using coefficients of Galvanised rather than Copper
+            a1, a2, a3 = 0.4, 0.5, 0.008
+        case SurfaceType.METAL_TILE:
             a1, a2, a3 = 0.4, 0.5, 0.008
         case SurfaceType.NON_METAL:
             a1, a2, a3 = 0.6, 0.25, 0.008
@@ -250,7 +328,6 @@ def total_metal_load_roof(surface_area: float,
     invalid_surface_error = (f"Given surface is not valid for computing total metal load."
                              f" Needed a roof, but got {SurfaceType(surface_type).name}.")
     # Define constants in a list
-
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
@@ -411,7 +488,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     return MetalLoads(f * total_copper_load, g * total_zinc_load)
 
 
-def get_building_information(_engine: Engine, _area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_building_information(engine: Engine, _area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Extract relevant information about buildings from central_buildings.geojson, since the input data is not finalised.
     Then formats them such that they are easy to use for pollution modeling purposes.
@@ -424,8 +501,8 @@ def get_building_information(_engine: Engine, _area_of_interest: gpd.GeoDataFram
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    buildings = gpd.GeoDataFrame.from_file("central_buildings.geojson")
-    buildings = buildings.set_index("building_id")
+    buildings = merge_data(engine)
+    buildings = buildings.set_index("building_Id")
     # Filter out irrelevant columns.
     buildings_medusa_info = buildings[["surface_type", "geometry"]]
     # Append columns specific to MEDUSA, to be filled later in the processing.
@@ -761,6 +838,8 @@ def retrieve_input_parameters(scenario_id: int) -> Optional[Dict[str, Union[str,
 
 
 if __name__ == "__main__":
+    # engine = setup_environment.get_database()
+    # merge_data(engine)
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     main(
         selected_polygon_gdf=sample_polygon,
