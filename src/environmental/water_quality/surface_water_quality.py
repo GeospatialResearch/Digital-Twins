@@ -22,6 +22,10 @@ from src.environmental.water_quality.surface_water_sites import get_surface_wate
 log = logging.getLogger(__name__)
 
 
+class NoSurfaceWaterSitesException(Exception):
+    """Exception raised when no surface water sites are found within the requested catchment area."""
+
+
 def clean_raw_surface_water_quality(surface_water_quality: pd.DataFrame) -> pd.DataFrame:
     """
     Clean and process the raw surface water quality data retrieved from ECAN.
@@ -116,7 +120,6 @@ async def fetch_surface_water_quality_for_aoi(surface_water_site_ids: List[str])
     pd.DataFrame
         A DataFrame containing surface water quality data from ECAN for the requested sites.
     """
-    log.info("Fetching surface water quality data from ECAN.")
     # Create a semaphore to limit the number of concurrent requests to 15
     sem = asyncio.Semaphore(15)
     tasks = []
@@ -148,13 +151,18 @@ def get_surface_water_quality_with_geom(engine: Engine, catchment_area: gpd.GeoD
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the surface water quality data from ECAN for the requested catchment area.
+
+    Raises
+    ------
+    NoSurfaceWaterSitesException
+        If no surface water sites are found within the requested catchment area.
     """
+    log.info("Fetching surface water quality data from ECAN.")
     # Retrieve surface water site data from the database for the requested catchment area
     surface_water_sites = get_surface_water_sites_from_db(engine, catchment_area)
-    # If no sites are found within the catchment area, log a message and return an empty GeoDataFrame
+    # If no sites are found within the catchment area, raise an exception
     if surface_water_sites.empty:
-        log.info("No surface water sites found within the requested catchment area.")
-        return gpd.GeoDataFrame()
+        raise NoSurfaceWaterSitesException("No surface water sites found within the requested catchment area.")
     # If sites are found, get a list of unique site IDs for fetching surface water quality data
     surface_water_site_ids = surface_water_sites["site_id"].unique().tolist()
     # Fetch surface water quality data from ECAN for the identified sites within the catchment area
@@ -243,27 +251,33 @@ def store_surface_water_quality_to_db(engine: Engine, catchment_area: gpd.GeoDat
     table_name = "surface_water_quality"
     # Check if the table already exists in the database
     if check_table_exists(engine, table_name):
-        # Retrieve surface water quality data from ECAN for the requested catchment area
-        # that is not already present in the existing database
-        water_quality_not_in_db = get_surface_water_quality_not_in_db(engine, catchment_area)
-        # Check if any new surface water quality data was retrieved
-        if water_quality_not_in_db.empty:
-            # If no new data is found, log a message indicating that no new data was found
-            log.info("No new surface water quality data found for the requested catchment area.")
-        else:
-            # If new data is found, add it to the relevant table in the database
-            log.info(f"Adding '{table_name}' for sites within the requested catchment area to the database.")
-            water_quality_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
-            log.info(f"Successfully added '{table_name}' to the database.")
+        try:
+            # Retrieve surface water quality data from ECAN for the requested catchment area
+            # that is not already present in the existing database
+            water_quality_not_in_db = get_surface_water_quality_not_in_db(engine, catchment_area)
+            # Check if any new surface water quality data was retrieved
+            if water_quality_not_in_db.empty:
+                # If no new data is found, log a message indicating that no new data was found
+                log.info("No new surface water quality data found for the requested catchment area.")
+            else:
+                # If new data is found, add it to the relevant table in the database
+                log.info(f"Adding '{table_name}' for sites within the requested catchment area to the database.")
+                water_quality_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
+                log.info(f"Successfully added '{table_name}' to the database.")
+        except NoSurfaceWaterSitesException:
+            # If no sites are found, log a message indicating that no water quality data is available
+            log.info("No surface water quality data found for the requested catchment area.")
     else:
-        # Fetch surface water quality data from ECAN for the requested catchment area
-        surface_water_quality = get_surface_water_quality_with_geom(engine, catchment_area)
-        # Check if any surface water quality data was fetched
-        if not surface_water_quality.empty:
+        try:
+            # Fetch surface water quality data from ECAN for the requested catchment area
+            surface_water_quality = get_surface_water_quality_with_geom(engine, catchment_area)
             # If data is found, add it to the relevant table in the database
             log.info(f"Adding '{table_name}' for sites within the requested catchment area to the database.")
             surface_water_quality.to_postgis(table_name, engine, index=False, if_exists="replace")
             log.info(f"Successfully added '{table_name}' to the database.")
+        except NoSurfaceWaterSitesException:
+            # If no sites are found, log a message indicating that no water quality data is available
+            log.info("No surface water quality data found for the requested catchment area.")
 
 
 def get_req_surface_water_quality_from_db(
@@ -289,6 +303,7 @@ def get_req_surface_water_quality_from_db(
         A GeoDataFrame containing the latest requested surface water quality data from the database for the
         specified catchment area.
     """
+    log.info("Retrieving requested surface water quality data from the database.")
     # Retrieve surface water quality data from the database for the requested catchment area
     swq = get_surface_water_quality_from_db(engine, catchment_area)
     # Group the data by site_id to obtain the latest collection_date for each site
