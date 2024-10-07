@@ -26,6 +26,11 @@ class NoSurfaceWaterSitesException(Exception):
     """Exception raised when no surface water sites are found within the requested catchment area."""
 
 
+class NoSurfaceWaterQualityException(Exception):
+    """Exception raised when the `surface_water_quality` table is missing or
+    when no surface water quality data is found for the requested catchment area."""
+
+
 def clean_raw_surface_water_quality(surface_water_quality: pd.DataFrame) -> pd.DataFrame:
     """
     Clean and process the raw surface water quality data retrieved from ECAN.
@@ -190,7 +195,15 @@ def get_surface_water_quality_from_db(engine: Engine, catchment_area: gpd.GeoDat
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing the retrieved surface water quality data for the requested catchment area.
+
+    Raises
+    ------
+    NoSurfaceWaterQualityException
+        If the `surface_water_quality` table does not exist in the database.
     """
+    # Raise an exception if the `surface_water_quality` table does not exist in the database
+    if not check_table_exists(engine, "surface_water_quality"):
+        raise NoSurfaceWaterQualityException("No surface water quality data is available in the database.")
     # Extract the geometry of the catchment area and its corresponding CRS
     catchment_polygon = catchment_area["geometry"][0]
     catchment_crs = catchment_area.crs.to_epsg()
@@ -283,7 +296,7 @@ def store_surface_water_quality_to_db(engine: Engine, catchment_area: gpd.GeoDat
 def get_req_surface_water_quality_from_db(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
-        year: Optional[int] = None) -> gpd.GeoDataFrame:
+        year: Optional[int] = None) -> Optional[gpd.GeoDataFrame]:
     """
     Retrieve the latest requested surface water quality data from the database for the specified catchment area.
 
@@ -299,21 +312,41 @@ def get_req_surface_water_quality_from_db(
 
     Returns
     -------
-    gpd.GeoDataFrame
+    Optional[gpd.GeoDataFrame]
         A GeoDataFrame containing the latest requested surface water quality data from the database for the
-        specified catchment area.
+        specified catchment area, or `None` if no records are found.
     """
     log.info("Retrieving requested surface water quality data from the database.")
-    # Retrieve surface water quality data from the database for the requested catchment area
-    swq = get_surface_water_quality_from_db(engine, catchment_area)
-    # Group the data by site_id to obtain the latest collection_date for each site
-    latest_dates = swq.groupby('site_id')['collection_date'].max().reset_index()
-    # Merge to obtain all records with the latest collection_date for each site
-    requested_records = latest_dates.merge(swq, on=['site_id', 'collection_date'], how='left')
-    # Check if a specific year is provided to filter the data
-    if year is not None:
-        # Filter for records where the year of collection_date is greater than or equal to the requested year
-        requested_records = requested_records[requested_records['collection_date'].dt.year >= year]
-    # Convert the result into a GeoDataFrame and reset the index
-    requested_records = gpd.GeoDataFrame(requested_records).reset_index(drop=True)
-    return requested_records
+
+    try:
+        # Retrieve surface water quality data from the database for the requested catchment area
+        swq = get_surface_water_quality_from_db(engine, catchment_area)
+
+        # Check if the retrieved data is empty
+        if swq.empty:
+            # Return None if no data is available
+            log.info(
+                "No surface water quality data is available for the specified catchment area.")
+        else:
+            # Group the data by site_id to obtain the latest collection_date for each site
+            latest_dates = swq.groupby('site_id')['collection_date'].max().reset_index()
+            # Merge to obtain all records with the latest collection_date for each site
+            requested_records = latest_dates.merge(swq, on=['site_id', 'collection_date'], how='left')
+            # Check if a specific year is provided to filter the data
+            if year is not None:
+                # Filter for records where the year of collection_date is greater than or equal to the requested year
+                requested_records = requested_records[requested_records['collection_date'].dt.year >= year]
+            # Convert the result into a GeoDataFrame and reset the index
+            requested_records = gpd.GeoDataFrame(requested_records).reset_index(drop=True)
+            # Log a message if no records are found
+            if requested_records.empty:
+                log.info(
+                    "No requested surface water quality data is available for the specified catchment area.")
+            # Log a success message and return the records if found
+            else:
+                log.info("Retrieved the requested surface water quality data from the database.")
+                return requested_records
+
+    except NoSurfaceWaterQualityException as e:
+        # Log a message to indicate that surface water quality data is absent in the database
+        log.info(e)
