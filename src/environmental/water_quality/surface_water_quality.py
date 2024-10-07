@@ -143,7 +143,7 @@ async def fetch_surface_water_quality_for_aoi(surface_water_site_ids: List[str])
     return surface_water_quality
 
 
-def get_surface_water_quality_with_geom(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_surface_water_quality_data(engine: Engine, catchment_area: gpd.GeoDataFrame) -> pd.DataFrame:
     """
     Fetch surface water quality data from ECAN for the specified catchment area.
 
@@ -156,8 +156,8 @@ def get_surface_water_quality_with_geom(engine: Engine, catchment_area: gpd.GeoD
 
     Returns
     -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the surface water quality data from ECAN for the requested catchment area.
+    pd.DataFrame
+        A DataFrame containing the surface water quality data from ECAN for the requested catchment area.
 
     Raises
     ------
@@ -174,12 +174,9 @@ def get_surface_water_quality_with_geom(engine: Engine, catchment_area: gpd.GeoD
     surface_water_site_ids = surface_water_sites["site_id"].unique().tolist()
     # Fetch surface water quality data from ECAN for the identified sites within the catchment area
     water_quality_data = asyncio.run(fetch_surface_water_quality_for_aoi(surface_water_site_ids))
-    # Merge the fetched water quality data with site geometries to add geometric information
-    sites_geometry = surface_water_sites[["site_id", "geometry"]]
-    water_quality_with_geom = water_quality_data.merge(sites_geometry, how="left", on="site_id", validate="many_to_one")
-    # Convert the merged result into a GeoDataFrame and reset the index
-    water_quality_with_geom = gpd.GeoDataFrame(water_quality_with_geom).reset_index(drop=True)
-    return water_quality_with_geom
+    # Reset the index
+    water_quality_data = water_quality_data.reset_index(drop=True)
+    return water_quality_data
 
 
 def get_surface_water_quality_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -211,20 +208,23 @@ def get_surface_water_quality_from_db(engine: Engine, catchment_area: gpd.GeoDat
     catchment_crs = catchment_area.crs.to_epsg()
     # Query to retrieve surface water quality data that intersects with the catchment polygon
     command_text = """
-        SELECT *
-        FROM surface_water_quality AS swq
-        WHERE ST_Intersects(swq.geometry, ST_GeomFromText(:catchment_polygon, :catchment_crs));
-        """
+        SELECT swq.*, sws.geometry
+        FROM surface_water_sites AS sws
+        LEFT JOIN surface_water_quality AS swq ON sws.site_id = swq.site_id
+        WHERE ST_Intersects(sws.geometry, ST_GeomFromText(:catchment_polygon, :catchment_crs));
+    """
     query = text(command_text).bindparams(
         catchment_polygon=str(catchment_polygon),
         catchment_crs=str(catchment_crs)
     )
     # Execute the query and create a GeoDataFrame from the result
     swq_data = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+    # Filter out sites where no surface water quality data is available
+    swq_data = swq_data[swq_data['site_id'].notna()]
     return swq_data
 
 
-def get_surface_water_quality_not_in_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_surface_water_quality_not_in_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> pd.DataFrame:
     """
     Retrieve surface water quality data from ECAN for the specified catchment area that is not already present
     in the existing database.
@@ -238,14 +238,15 @@ def get_surface_water_quality_not_in_db(engine: Engine, catchment_area: gpd.GeoD
 
     Returns
     -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing surface water quality data from ECAN for the requested catchment area that is
-        not already present in the existing database.
+    pd.DataFrame
+        A DataFrame containing surface water quality data from ECAN for the requested catchment area 
+        that is not already present in the existing database.
     """  # noqa: D400
     # Retrieve existing surface water quality data from the database for the requested catchment area
     water_quality_exist = get_surface_water_quality_from_db(engine, catchment_area)
+    water_quality_exist = water_quality_exist.drop(columns='geometry')
     # Fetch surface water quality data from ECAN for the requested catchment area
-    water_quality_new = get_surface_water_quality_with_geom(engine, catchment_area)
+    water_quality_new = get_surface_water_quality_data(engine, catchment_area)
     # Identify records in the new surface water quality data that are not present in the existing database
     water_quality_not_in_db = pd.concat([water_quality_exist, water_quality_new]).drop_duplicates(keep=False)
     return water_quality_not_in_db
@@ -277,7 +278,7 @@ def store_surface_water_quality_to_db(engine: Engine, catchment_area: gpd.GeoDat
             else:
                 # If new data is found, add it to the relevant table in the database
                 log.info(f"Adding '{table_name}' for sites within the requested catchment area to the database.")
-                water_quality_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
+                water_quality_not_in_db.to_sql(table_name, engine, index=False, if_exists="append")
                 log.info(f"Successfully added '{table_name}' to the database.")
         except NoSurfaceWaterSitesException:
             # If no sites are found, log a message indicating that no water quality data is available
@@ -285,10 +286,10 @@ def store_surface_water_quality_to_db(engine: Engine, catchment_area: gpd.GeoDat
     else:
         try:
             # Fetch surface water quality data from ECAN for the requested catchment area
-            surface_water_quality = get_surface_water_quality_with_geom(engine, catchment_area)
+            surface_water_quality = get_surface_water_quality_data(engine, catchment_area)
             # If data is found, add it to the relevant table in the database
             log.info(f"Adding '{table_name}' for sites within the requested catchment area to the database.")
-            surface_water_quality.to_postgis(table_name, engine, index=False, if_exists="replace")
+            surface_water_quality.to_sql(table_name, engine, index=False, if_exists="replace")
             log.info(f"Successfully added '{table_name}' to the database.")
         except NoSurfaceWaterSitesException:
             # If no sites are found, log a message indicating that no water quality data is available
