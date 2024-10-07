@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
-        log_level: LogLevel = LogLevel.DEBUG) -> gpd.GeoDataFrame:
+        log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
     Fetch and store water quality data from ECAN in the database, and retrieve the latest requested
     surface water quality data from the database for the specified catchment area.
@@ -35,11 +35,6 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the latest water quality data for each site within the requested catchment area.
     """  # noqa: D400
     # Set up logging with the specified log level
     setup_logging(log_level)
@@ -52,9 +47,6 @@ def main(
     surface_water_sites.store_surface_water_sites_to_db(engine)
     # Fetch surface water quality data for the requested catchment area and store it in the database
     surface_water_quality.store_surface_water_quality_to_db(engine, catchment_area)
-    # Retrieve the latest requested surface water quality data from the database for the specified catchment area
-    latest_swq = surface_water_quality.get_req_surface_water_quality_from_db(engine, catchment_area, year=2021)
-    return latest_swq
 
 
 if __name__ == "__main__":
