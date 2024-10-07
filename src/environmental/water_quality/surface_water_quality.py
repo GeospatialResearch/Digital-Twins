@@ -298,7 +298,7 @@ def store_surface_water_quality_to_db(engine: Engine, catchment_area: gpd.GeoDat
 def get_req_surface_water_quality_from_db(
         engine: Engine,
         catchment_area: gpd.GeoDataFrame,
-        year: Optional[int] = None) -> Optional[gpd.GeoDataFrame]:
+        year: Optional[int] = None) -> gpd.GeoDataFrame:
     """
     Retrieve the latest requested surface water quality data from the database for the specified catchment area.
 
@@ -314,9 +314,9 @@ def get_req_surface_water_quality_from_db(
 
     Returns
     -------
-    Optional[gpd.GeoDataFrame]
+    gpd.GeoDataFrame
         A GeoDataFrame containing the latest requested surface water quality data from the database for the
-        specified catchment area, or `None` if no records are found.
+        specified catchment area, or an empty GeoDataFrame if no records are found.
     """
     log.info("Retrieving requested surface water quality data from the database.")
 
@@ -329,6 +329,7 @@ def get_req_surface_water_quality_from_db(
             # Return None if no data is available
             log.info(
                 "No surface water quality data is available for the specified catchment area.")
+            return gpd.GeoDataFrame()
         else:
             # Group the data by site_id to obtain the latest collection_date for each site
             latest_dates = swq.groupby('site_id')['collection_date'].max().reset_index()
@@ -344,11 +345,12 @@ def get_req_surface_water_quality_from_db(
             if requested_records.empty:
                 log.info(
                     "No requested surface water quality data is available for the specified catchment area.")
+                return gpd.GeoDataFrame()
             # Log a success message and return the records if found
-            else:
-                log.info("Retrieved the requested surface water quality data from the database.")
-                return requested_records
+            log.info("Retrieved the requested surface water quality data from the database.")
+            return requested_records
 
     except NoSurfaceWaterQualityException as e:
         # Log a message to indicate that surface water quality data is absent in the database
         log.info(e)
+        return gpd.GeoDataFrame()
