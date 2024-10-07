@@ -205,8 +205,8 @@ async def fetch_geo_data_for_aoi(
         tasks = [_fetch_geo_data(session, url, query_param) for query_param in query_param_list]
         # Wait for all tasks to complete and retrieve the results
         query_results = await asyncio.gather(*tasks, return_exceptions=True)
-        # Concatenate the results into a single GeoDataFrame
-        geo_data = gpd.GeoDataFrame(pd.concat(query_results, ignore_index=True))
+        # Concatenate the results into a single GeoDataFrame and reset the index
+        geo_data = gpd.GeoDataFrame(pd.concat(query_results, ignore_index=True)).reset_index(drop=True)
         # Move the 'geometry' column to the last column
         geo_data['geometry'] = geo_data.pop('geometry')
         # Convert all column names to lowercase
