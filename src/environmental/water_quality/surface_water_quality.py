@@ -27,8 +27,10 @@ class NoSurfaceWaterSitesException(Exception):
 
 
 class NoSurfaceWaterQualityException(Exception):
-    """Exception raised when the `surface_water_quality` table is missing or
-    when no surface water quality data is found for the requested catchment area."""
+    """
+    Exception raised when the `surface_water_quality` table is missing or
+    when no surface water quality data is found for the requested catchment area.
+    """  # noqa: D400
 
 
 def clean_raw_surface_water_quality(surface_water_quality: pd.DataFrame) -> pd.DataFrame:
