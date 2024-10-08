@@ -1,0 +1,33 @@
+name: Automerge
+# This is a function to automerge master and branch
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  # State master
+  LONG_LIVED_BRANCH: master
+
+  # State branch
+  DEFAULT_BRANCH: otakaro_digital_twin
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ DEFAULT_BRANCH }}
+          fetch-depth: 0
+          token: ${{ secrets.PUSH_PAGES_PAT }}
+      - name: Merge with master
+        run: |
+          git config --global user.name 'GRI Admin'
+          git config --global user.email '175378150+GRI-Admin@users.noreply.github.com'
+          git config pull.rebase false
+          git pull ${{ env.LONG_LIVED_BRANCH }}
+          git push
