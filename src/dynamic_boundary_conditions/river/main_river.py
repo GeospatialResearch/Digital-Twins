@@ -2,7 +2,7 @@
 """
 Main river script used to read and store REC data in the database, fetch OSM waterways data, create a river network
 and its associated data, and generate the requested river model input for BG-Flood etc.
-"""  # noqa: D400
+"""
 
 import logging
 from typing import Union, Optional
@@ -62,7 +62,7 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-    """  # noqa: D400
+    """
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database

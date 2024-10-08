@@ -74,7 +74,7 @@ def thiessen_polygons_calculator(
     ValueError
         - If the provided 'area_of_interest' GeoDataFrame does not contain any data.
         - If the provided 'sites_in_aoi' GeoDataFrame does not contain any data.
-    """  # noqa: D400
+    """
     # Check if the area of interest GeoDataFrame is empty
     if area_of_interest.empty:
         raise ValueError("No data available for 'area_of_interest' passed as argument.")
@@ -110,7 +110,7 @@ def thiessen_polygons_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-    """  # noqa: D400
+    """
     table_name = "rainfall_sites_voronoi"
     # Check if the table already exists in the database
     if tables.check_table_exists(engine, table_name):

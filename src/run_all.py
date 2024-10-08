@@ -40,7 +40,7 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-    """  # noqa: D400
+    """
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
         # Call the main function of each module with the selected polygon and specified parameters

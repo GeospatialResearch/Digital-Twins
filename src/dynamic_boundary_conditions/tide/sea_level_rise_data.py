@@ -3,7 +3,7 @@
 This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
 storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
 in the provided tide data.
-"""  # noqa: D400
+"""
 
 from io import StringIO
 import logging

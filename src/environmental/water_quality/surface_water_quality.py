@@ -2,7 +2,7 @@
 """
 Fetch and clean surface water quality data from ECAN, store it in the database, and
 retrieve it for the requested area of interest.
-"""  # noqa: D400
+"""
 
 import asyncio
 import logging
@@ -30,7 +30,7 @@ class NoSurfaceWaterQualityException(Exception):
     """
     Exception raised when the `surface_water_quality` table is missing or
     when no surface water quality data is found for the requested catchment area.
-    """  # noqa: D400
+    """
 
 
 def clean_raw_surface_water_quality(surface_water_quality: pd.DataFrame) -> pd.DataFrame:
@@ -241,7 +241,7 @@ def get_surface_water_quality_not_in_db(engine: Engine, catchment_area: gpd.GeoD
     pd.DataFrame
         A DataFrame containing surface water quality data from ECAN for the requested catchment area
         that is not already present in the existing database.
-    """  # noqa: D400
+    """
     # Retrieve existing surface water quality data from the database for the requested catchment area
     water_quality_exist = get_surface_water_quality_from_db(engine, catchment_area)
     water_quality_exist = water_quality_exist.drop(columns='geometry')

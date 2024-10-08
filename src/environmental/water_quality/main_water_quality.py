@@ -2,7 +2,7 @@
 """
 Main water quality script used to fetch and store water quality data from ECAN in the database,
 and retrieve it for the requested area of interest.
-"""  # noqa: D400
+"""
 
 import logging
 
@@ -35,7 +35,7 @@ def main(
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-    """  # noqa: D400
+    """
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database

@@ -2,7 +2,7 @@
 """
 This script processes 'static_boundary_instructions' records, validates URLs and instruction fields, and stores them in
 the 'geospatial_layers' table of the database.
-"""  # noqa: D400
+"""
 
 import json
 import logging
