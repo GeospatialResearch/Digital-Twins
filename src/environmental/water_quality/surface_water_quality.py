@@ -239,7 +239,7 @@ def get_surface_water_quality_not_in_db(engine: Engine, catchment_area: gpd.GeoD
     Returns
     -------
     pd.DataFrame
-        A DataFrame containing surface water quality data from ECAN for the requested catchment area 
+        A DataFrame containing surface water quality data from ECAN for the requested catchment area
         that is not already present in the existing database.
     """  # noqa: D400
     # Retrieve existing surface water quality data from the database for the requested catchment area
