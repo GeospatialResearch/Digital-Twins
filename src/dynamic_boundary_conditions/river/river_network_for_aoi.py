@@ -276,7 +276,7 @@ def add_absent_edges_to_network(
         The REC river network, a directed graph, to which absent edges will be added.
     prepared_network_data : gpd.GeoDataFrame
         A GeoDataFrame containing the necessary data for constructing the river network for the catchment area.
-    """  # noqa: D400
+    """
     # Identify edges that are absent from the REC river network and require addition
     absent_edges_to_add = identify_absent_edges_to_add(rec_network, prepared_network_data)
 

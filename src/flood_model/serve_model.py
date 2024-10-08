@@ -2,7 +2,7 @@
 """
 Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
 or other clients.
-"""  # noqa: D400
+"""
 
 import logging
 import os

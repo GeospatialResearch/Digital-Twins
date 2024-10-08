@@ -315,7 +315,7 @@ def get_rainfall_information(scenario_id: int) -> Response:
             "geometry": polygon
         }
         representing the values for the given point.
-    """  # noqa: D400
+    """
     # Get medusa rainfall information
     medusa_rainfall_dictionary = tasks.retrieve_medusa_input_parameters.delay(scenario_id).get()
 
@@ -443,7 +443,7 @@ def valid_coordinates(latitude: float, longitude: float) -> bool:
     -------
     bool
         True if both latitude and longitude are within their valid ranges.
-    """  # noqa: D400
+    """
     return (-90 < latitude <= 90) and (-180 < longitude <= 180)
 
 

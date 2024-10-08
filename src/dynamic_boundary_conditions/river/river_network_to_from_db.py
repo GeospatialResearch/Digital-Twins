@@ -4,7 +4,7 @@ This script handles the following tasks: storing both the REC river network and 
 their metadata in the database, retrieving the existing REC river network and its associated data from the database,
 and managing the addition of REC geometries that have been excluded from the river network in the database,
 as well as retrieving them for an existing REC river network.
-"""  # noqa: D400
+"""
 
 import logging
 import pathlib
@@ -103,7 +103,7 @@ def get_new_network_output_paths() -> Tuple[pathlib.Path, pathlib.Path]:
     -------
     Tuple[pathlib.Path, pathlib.Path]
         A tuple containing the file path to the REC Network and the file path to the REC Network data.
-    """  # noqa: D400
+    """
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     # Get the data directory from the environment variable

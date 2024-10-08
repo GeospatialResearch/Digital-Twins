@@ -58,7 +58,7 @@ def find_flooded_buildings(engine: Engine,
     -------
     pd.DataFrame
         A pd.DataFrame specifying if each building is flooded or not.
-    """  # noqa: D400
+    """
     # Open flood output and read the maximum depth raster
     with xarray.open_dataset(flood_model_output_path, decode_coords="all") as ds:
         max_depth_raster = ds["hmax_P0"]
@@ -150,7 +150,7 @@ def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshol
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing polygons of the flooded areas
-    """  # noqa: D400
+    """
     # Find areas that are flooded to at least the flood_depth_threshold depth
     mask = flood_raster >= flood_depth_threshold
     # Turn the flood mask into a vector polygon form

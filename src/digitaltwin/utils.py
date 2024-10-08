@@ -32,7 +32,7 @@ class LogLevel(IntEnum):
         The debug logging level. Corresponds to logging.DEBUG (10).
     NOTSET : int
         The not-set logging level. Corresponds to logging.NOTSET (0).
-    """  # noqa: D400
+    """
 
     CRITICAL = logging.CRITICAL
     ERROR = logging.ERROR
@@ -71,7 +71,7 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-    """  # noqa: D400
+    """
     # Define the logging format and date format
     logging_format = "%(asctime)s | %(levelname)-8s | %(name)-30s %(lineno)4d | %(funcName)-50s | %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"
@@ -91,7 +91,8 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         "rasterio",
         "scrapy",
         "distributed",
-        "s3transfer"
+        "s3transfer",
+        "charset_normalizer"
     ]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:

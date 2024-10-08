@@ -30,7 +30,7 @@ class RecordCounts(NamedTuple):
         The maximum number of records that will be returned per query.
     total_record_count : int
         The total number of records available in the feature layer.
-    """
+    """  # pylint: disable=duplicate-code
 
     max_record_count: int
     total_record_count: int
@@ -54,7 +54,7 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     ------
     RuntimeError
         If there is an issue with retrieving the record counts from the REC feature layer.
-    """
+    """  # pylint: disable=duplicate-code
     # Set up parameters for the initial request to get the maximum record count
     params = {"f": "json"}
     response = requests.get(url=url, params=params)
