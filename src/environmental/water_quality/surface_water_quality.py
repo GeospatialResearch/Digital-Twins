@@ -110,7 +110,7 @@ async def _fetch_surface_water_quality_for_site(sem: asyncio.Semaphore, site_id:
             return None
         # For any other error, re-raise the original ClientResponseError
         else:
-            raise
+            raise e
 
 
 async def fetch_surface_water_quality_for_aoi(surface_water_site_ids: List[str]) -> pd.DataFrame:
