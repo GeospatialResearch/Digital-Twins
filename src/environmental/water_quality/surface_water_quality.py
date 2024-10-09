@@ -210,7 +210,7 @@ def get_surface_water_quality_from_db(engine: Engine, catchment_area: gpd.GeoDat
     command_text = """
         SELECT swq.*, sws.geometry
         FROM surface_water_sites AS sws
-        LEFT JOIN surface_water_quality AS swq ON sws.site_id = swq.site_id
+        INNER JOIN surface_water_quality AS swq ON sws.site_id = swq.site_id
         WHERE ST_Intersects(sws.geometry, ST_GeomFromText(:catchment_polygon, :catchment_crs));
     """
     query = text(command_text).bindparams(
@@ -219,8 +219,6 @@ def get_surface_water_quality_from_db(engine: Engine, catchment_area: gpd.GeoDat
     )
     # Execute the query and create a GeoDataFrame from the result
     swq_data = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-    # Filter out sites where no surface water quality data is available
-    swq_data = swq_data[swq_data['site_id'].notna()]
     return swq_data
 
 
