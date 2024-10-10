@@ -53,6 +53,7 @@ def main(
 
 
 if __name__ == "__main__":
+    # pylint: disable=duplicate-code
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     main(
         selected_polygon_gdf=sample_polygon,
