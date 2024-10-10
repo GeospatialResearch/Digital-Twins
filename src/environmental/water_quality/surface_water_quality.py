@@ -313,11 +313,11 @@ def serve_surface_water_quality() -> None:
 
     # Construct query linking surface_water_quality to its geometry table
     surface_water_query = """
-        SELECT swq.*, sws.geometry
-        FROM surface_water_quality AS swq
-        INNER JOIN surface_water_sites AS sws 
-        ON swq.site_id = sws.site_id
-        """
+    SELECT swq.*, sws.geometry
+    FROM surface_water_quality AS swq
+    INNER JOIN surface_water_sites AS sws 
+    ON swq.site_id = sws.site_id
+    """
 
     # Escape characters in SQL query so that it is valid Geoserver XML
     xml_escaped_sql = saxutils.escape(surface_water_query, entities={r"'": "&apos;", "\n": "&#xd;"})
