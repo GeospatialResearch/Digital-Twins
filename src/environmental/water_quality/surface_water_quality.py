@@ -315,7 +315,7 @@ def serve_surface_water_quality() -> None:
     surface_water_query = """
     SELECT swq.*, sws.geometry
     FROM surface_water_quality AS swq
-    INNER JOIN surface_water_sites AS sws 
+    INNER JOIN surface_water_sites AS sws
     ON swq.site_id = sws.site_id
     """
 
