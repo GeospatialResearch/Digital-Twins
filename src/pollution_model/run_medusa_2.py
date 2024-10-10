@@ -83,6 +83,7 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     os.environ['PROJ_LIB'] = "/home/martinnguyen204/miniconda3/envs/digitaltwin/share/proj"
 
     # Read roof surface points from outside
+    # This data has the deeplearn_matclass with roof types we need
     roof_surface_points = gpd.read_file(
         "/home/martinnguyen204/Digital-Twin/points.geojson"
     )
@@ -94,8 +95,8 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
         log.info(f"Adding roof_surface_points table to the database.")
         roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
 
-    # Read roof surface points from outside
-    roof_surface_points = gpd.read_file(
+    # Read roof surface polygons from outside
+    roof_surface_polygons = gpd.read_file(
         "/home/martinnguyen204/Digital-Twin/polygons.geojson"
     )
     # Check if the table already exist in the database
@@ -104,7 +105,7 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     else:
         # Store the building_point_data to the database table
         log.info(f"Adding roof_surface_polygons table to the database.")
-        roof_surface_points.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
+        roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
 
     # Merge building points and polygons
     query = """
@@ -122,11 +123,23 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
         'Galvanised': 'Gv',
         'NonMetal': 'NoMt',
         'MetalOther': 'Mo',
-        'Zincalume': 'Znc',
+        'Zincalume': 'ZnC',
         'AsphaltRoad': 'Rd',
         'CarPark': 'CrP'
     }
     roof_surface_merge['surface_type'] = roof_surface_merge.deeplearn_subclass.map(roof_surface_types)
+
+    # Remove all duplicates
+    # There are two cases
+    # Case 1: Everything is the same
+    # Case 2: Everything is the same except the surface_type
+    # Here we go with the case 1
+    roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_Id'])
+
+    # Remove all nan rows in building_Id
+    # REMOVING THE NAN IN <surface_type> IS JUST TEMPORARY
+    # BECAUSE OF USING THE SMALL VERSION
+    roof_surface_merge = roof_surface_merge.dropna(subset=['building_Id', 'surface_type'])
 
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface"):
