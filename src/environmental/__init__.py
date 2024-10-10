@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Package to handle data and operations specific to the environment,
+Package to handle data and operations specific to environmental data,
 such as water quality.
 """
