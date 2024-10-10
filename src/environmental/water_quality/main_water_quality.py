@@ -48,6 +48,9 @@ def main(
     # Fetch surface water quality data for the requested catchment area and store it in the database
     surface_water_quality.store_surface_water_quality_to_db(engine, catchment_area)
 
+    # Ensure surface water quality data is being served by geoserver
+    surface_water_quality.serve_surface_water_quality()
+
 
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
