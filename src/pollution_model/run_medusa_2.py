@@ -78,15 +78,26 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     gpd.GeoDataFrame
         A GeoDataFrame containing all the information in point and polygon files.
     """
-    # Change the proj path to avoid
-    # ERROR 1: PROJ: proj_create_from_database: Open of /home/martinnguyen204/miniconda3/envs/digitaltwin/share/proj failed
-    os.environ['PROJ_LIB'] = "/home/martinnguyen204/miniconda3/envs/digitaltwin/share/proj"
-
     # Read roof surface points from outside
     # This data has the deeplearn_matclass with roof types we need
     roof_surface_points = gpd.read_file(
-        "/home/martinnguyen204/Digital-Twin/points.geojson"
+        "/home/martinnguyen204/Digital-Twin/points_fullversion.shp"
     )
+    # Rename
+    roof_surface_points = roof_surface_points.rename(columns={
+        'deeplearn_': 'deeplearn_matclass',
+        'deeplear_1': 'deeplearn_metalconf',
+        'dvr_matcla': 'dvr_matclass',
+        'ensemble_m': 'ensemble_matclass',
+        'ensemble_1': 'ensemble_metalconf',
+        'decay_inde': 'decay_index',
+        'deeplear_2': 'deeplearn_subclass',
+        'subclass_c': 'subclass_conf',
+        'galvanised': 'galvanised_conf',
+        'building_I': 'building_id'
+    })
+    # Remove rows of building_Id and deeplearn_subclass that are NANs
+    roof_surface_points = roof_surface_points.dropna(subset=['building_id', 'deeplearn_subclass'])
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface_points"):
         log.info(f"roof_surface_points data already exists in the database.")
@@ -97,8 +108,13 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
 
     # Read roof surface polygons from outside
     roof_surface_polygons = gpd.read_file(
-        "/home/martinnguyen204/Digital-Twin/polygons.geojson"
+        "/home/martinnguyen204/Digital-Twin/polygons_fullversion.shp"
     )
+    # Rename building_Id to building_id
+    roof_surface_polygons = roof_surface_polygons.rename(columns={
+        'building_I': 'building_id',
+        'Shape_Leng': 'Shape_Length'
+    })
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface_polygons"):
         log.info(f"roof_surface_polygons data already exists in the database.")
@@ -107,16 +123,18 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
         log.info(f"Adding roof_surface_polygons table to the database.")
         roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
 
-    # Merge building points and polygons
+    # Merge building points and polygons using inner join,
+    # because there will be some building_id in polygon table
+    # that do not have roof surface type
     query = """
         SELECT roof_surface_polygons.*, roof_surface_points.deeplearn_subclass
         FROM roof_surface_polygons
-        LEFT JOIN roof_surface_points
-        USING ("building_Id")
+        INNER JOIN roof_surface_points
+        USING ("building_id")
     """
     roof_surface_merge = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
 
-    # # Add column surface type
+    # Add column surface type
     roof_surface_types = {
         'ColourSteel': 'Cs',
         'MetalTile': 'Mt',
@@ -133,13 +151,7 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     # There are two cases
     # Case 1: Everything is the same
     # Case 2: Everything is the same except the surface_type
-    # Here we go with the case 1
-    roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_Id'])
-
-    # Remove all nan rows in building_Id
-    # REMOVING THE NAN IN <surface_type> IS JUST TEMPORARY
-    # BECAUSE OF USING THE SMALL VERSION
-    roof_surface_merge = roof_surface_merge.dropna(subset=['building_Id', 'surface_type'])
+    roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_id'])
 
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface"):
@@ -515,7 +527,7 @@ def get_building_information(engine: Engine, _area_of_interest: gpd.GeoDataFrame
         attributes (Index, SurfaceArea, SurfaceType)
     """
     buildings = merge_data(engine)
-    buildings = buildings.set_index("building_Id")
+    buildings = buildings.set_index("building_id")
     # Filter out irrelevant columns.
     buildings_medusa_info = buildings[["surface_type", "geometry"]]
     # Append columns specific to MEDUSA, to be filled later in the processing.
@@ -798,8 +810,8 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Run the pollution model
     scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
 
-    # Ensure pollution model data is being served by geoserver
-    serve_pollution_model()
+    # # Ensure pollution model data is being served by geoserver
+    # serve_pollution_model()
 
     # Create new table recording users' history
     create_table(engine, MedusaScenarios)
