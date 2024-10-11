@@ -9,6 +9,7 @@ import logging
 from http import HTTPStatus
 from io import StringIO
 from typing import List, Optional
+from xml.sax import saxutils
 
 import aiohttp
 import geopandas as gpd
@@ -16,6 +17,8 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
+from src import geoserver
+from src.config import EnvVariable
 from src.digitaltwin.tables import check_table_exists
 from src.environmental.water_quality.surface_water_sites import get_surface_water_sites_from_db
 
@@ -210,7 +213,7 @@ def get_surface_water_quality_from_db(engine: Engine, catchment_area: gpd.GeoDat
     command_text = """
         SELECT swq.*, sws.geometry
         FROM surface_water_sites AS sws
-        LEFT JOIN surface_water_quality AS swq ON sws.site_id = swq.site_id
+        INNER JOIN surface_water_quality AS swq ON sws.site_id = swq.site_id
         WHERE ST_Intersects(sws.geometry, ST_GeomFromText(:catchment_polygon, :catchment_crs));
     """
     query = text(command_text).bindparams(
@@ -219,8 +222,6 @@ def get_surface_water_quality_from_db(engine: Engine, catchment_area: gpd.GeoDat
     )
     # Execute the query and create a GeoDataFrame from the result
     swq_data = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-    # Filter out sites where no surface water quality data is available
-    swq_data = swq_data[swq_data['site_id'].notna()]
     return swq_data
 
 
@@ -294,3 +295,54 @@ def store_surface_water_quality_to_db(engine: Engine, catchment_area: gpd.GeoDat
         except NoSurfaceWaterSitesException:
             # If no sites are found, log a message indicating that no water quality data is available
             log.info("No surface water quality data found for the requested catchment area.")
+
+
+def serve_surface_water_quality() -> None:
+    """
+    Serve the geospatial data for surface water quality visualisation and API use.
+    Joins the surface_water_quality table to the surface_water_sites geometry table.
+    """  # pylint: disable=duplicate-code
+    # Create geoserver workspace for surface water quality data
+    db_name = EnvVariable.POSTGRES_DB
+    workspace_name = f"{db_name}-surface-water"
+    geoserver.create_workspace_if_not_exists(workspace_name)
+
+    # Ensure workspace has access to database
+    data_store_name = f"{db_name} PostGIS"
+    geoserver.create_db_store_if_not_exists(db_name, workspace_name, data_store_name)
+
+    # Construct query linking surface_water_quality to its geometry table
+    surface_water_query = """
+        SELECT swq.*, sws.geometry
+        FROM surface_water_quality AS swq
+        INNER JOIN surface_water_sites AS sws
+        ON swq.site_id = sws.site_id
+        """
+
+    # Escape characters in SQL query so that it is valid Geoserver XML
+    xml_escaped_sql = saxutils.escape(surface_water_query, entities={r"'": "&apos;", "\n": "&#xd;"})
+
+    name = "surface_water"
+    surface_water_metadata_xml = rf"""
+        <metadata>
+          <entry key="JDBC_VIRTUAL_TABLE">
+            <virtualTable>
+              <name>{name}</name>
+              <sql>
+                {xml_escaped_sql}
+              </sql>
+              <escapeSql>false</escapeSql>
+              <geometry>
+                <name>geometry</name>
+                <type>Geometry</type>
+                <srid>2193</srid>
+              </geometry>
+            </virtualTable>
+          </entry>
+        </metadata>
+        """
+    # Add layer to geoserver based on SQL
+    geoserver.create_datastore_layer(workspace_name,
+                                     data_store_name,
+                                     layer_name=name,
+                                     metadata_elem=surface_water_metadata_xml)
