@@ -10,10 +10,32 @@ import geopandas as gpd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
+from src.digitaltwin import setup_environment
 from src.digitaltwin.arcgis_rest_api import fetch_arcgis_rest_api_data
 from src.digitaltwin.tables import check_table_exists
 
 log = logging.getLogger(__name__)
+
+# The URL for retrieving surface water site data from ECAN
+SURFACE_URL = "https://gis.ecan.govt.nz/arcgis/rest/services/Public/WaterQualityandMonitoring/MapServer/0"
+
+
+def refresh_surface_water_sites() -> None:
+    """
+    Fetch surface water site data from ECAN and store it in the database.
+    Needs to be run periodically so that the surface water site data is up to date.
+    """
+    # Connect to the database
+    engine = setup_environment.get_database()
+    # Define the table name for storing the surface water site data
+    table_name = "surface_water_sites"
+    # The URL for retrieving surface water site data from ECAN
+    # Fetch surface water site data for the area of interest using the ArcGIS REST API
+    surface_sites = fetch_arcgis_rest_api_data(SURFACE_URL)
+    # Store the surface water site data in the relevant table in the database
+    log.info(f"Adding '{table_name}' to the database.")
+    surface_sites.to_postgis(table_name, engine, index=False, if_exists="replace")
+    log.info(f"Successfully added '{table_name}' to the database.")
 
 
 def store_surface_water_sites_to_db(
@@ -39,10 +61,8 @@ def store_surface_water_sites_to_db(
     if check_table_exists(engine, table_name):
         log.info(f"'{table_name}' already exists in the database.")
     else:
-        # The URL for retrieving surface water site data from ECAN
-        surface_url = "https://gis.ecan.govt.nz/arcgis/rest/services/Public/WaterQualityandMonitoring/MapServer/0"
         # Fetch surface water site data for the area of interest using the ArcGIS REST API
-        surface_sites = fetch_arcgis_rest_api_data(surface_url, area_of_interest, output_sr)
+        surface_sites = fetch_arcgis_rest_api_data(SURFACE_URL, area_of_interest, output_sr)
         # Store the surface water site data in the relevant table in the database
         log.info(f"Adding '{table_name}' to the database.")
         surface_sites.to_postgis(table_name, engine, index=False, if_exists="replace")
