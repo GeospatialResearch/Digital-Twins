@@ -13,10 +13,12 @@ from flask import Flask, Response, jsonify, make_response, send_file, request
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 from kombu.exceptions import OperationalError
+from pywps import Service
 from shapely import box
 
 from src import tasks
 from src.config import EnvVariable
+from src.pollution_model.medusa_process_service import MedusaProcessService
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -79,6 +81,14 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
+processes = [
+    MedusaProcessService()
+]
+
+process_descriptor = {process.identifier: process.abstract for process in processes}
+
+service = Service(processes, ['pywps.cfg'])
+
 
 @app.route('/')
 def index() -> Response:
@@ -96,6 +106,11 @@ def index() -> Response:
     GET /health-check to check if celery workers active.
     GET /swagger to get API documentation.
     """, OK)
+
+
+@app.route('/wps', methods=['GET', 'POST'])
+def wps() -> Response:
+    return service
 
 
 @app.route('/health-check')
