@@ -115,6 +115,15 @@ services:
       timeout: 5s
       retries: 10
 
+  terria_map:
+    image: ghcr.io/terriajs/terriamap
+    volumes:
+      - ./terriajs/client_config.json:/app/wwwroot/config.json
+      - ./terriajs/catalog.json:/app/wwwroot/init/catalog.json
+#      - ./terriajs/server_config.json:/app/serverconfig.json
+    ports:
+      - "3001:3001"
+
 
   message_broker:
     # Communicates between backend and workers to assign tasks and store state
