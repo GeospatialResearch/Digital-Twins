@@ -17,6 +17,12 @@
       "supportsPagination": true
     },
     {
+      "type": "wms",
+      "name": "local geoserver test",
+      "url": "http://localhost:8088/geoserver/db-pollution/ows",
+      "layers": "db-pollution:medusa2_model_output_buildings"
+    },
+    {
       "id": "ZIdekvc10z",
       "type": "wms-group",
       "name": "Test",
