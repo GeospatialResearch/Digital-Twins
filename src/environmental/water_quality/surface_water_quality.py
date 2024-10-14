@@ -300,7 +300,7 @@ def store_surface_water_quality_to_db(engine: Engine, catchment_area: gpd.GeoDat
 def serve_surface_water_quality() -> None:
     """
     Serve the geospatial data for surface water quality visualisation and API use.
-    Joins the surface_water_quality table to its corresponding geometry feature table.
+    Joins the surface_water_quality table to the surface_water_sites geometry table.
     """  # pylint: disable=duplicate-code
     # Create geoserver workspace for surface water quality data
     db_name = EnvVariable.POSTGRES_DB
