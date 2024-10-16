@@ -1,10 +1,11 @@
 {
-    "initializationUrls" : [
-        "catalog"
-    ],
-    "parameters": {
-        "appName": "Ōtākaro Digital Twin",
-        "supportEmail": "luke.parkinson@canterbury.ac.nz",
-        "cesiumIonAccessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NDE2NGZmYy01MDRjLTQyOWUtYjdlYS05M2RmNTMyMGQzYzIiLCJpZCI6Nzk4NzUsImlhdCI6MTY0MjQ2MzEzNX0.bajvCxkIy698jp_y72DmHCqwN963H7yHmOoHLaxSTIU"
-    }
+  "initializationUrls": [
+    "catalog"
+  ],
+  "parameters": {
+    "appName": "Ōtākaro Digital Twin",
+    "supportEmail": "luke.parkinson@canterbury.ac.nz",
+    "cesiumIonAccessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NDE2NGZmYy01MDRjLTQyOWUtYjdlYS05M2RmNTMyMGQzYzIiLCJpZCI6Nzk4NzUsImlhdCI6MTY0MjQ2MzEzNX0.bajvCxkIy698jp_y72DmHCqwN963H7yHmOoHLaxSTIU",
+    "brandBarElements": []
+  }
 }

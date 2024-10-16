@@ -10,9 +10,8 @@ class MedusaProcessService(Process):
     def __init__(self):
         inputs = [
             LiteralInput("antecedentDryDays", "Antecedent Dry Days", data_type='float', allowed_values=AnyValue()),
-            LiteralInput("averageRainIntensity", "Average Rain Intensity", data_type='float', allowed_values=AnyValue()),
-            LiteralInput("eventDuration", "Event Duration", data_type='float', allowed_values=AnyValue()),
-            LiteralInput("rainfallPh", "Rainfall pH", data_type='float', allowed_values=AnyValue()),
+            LiteralInput("averageRainIntensity", "Average Rain Intensity (mm/hour)", data_type='float', allowed_values=AnyValue()),
+            LiteralInput("eventDuration", "Event Duration (hours)", data_type='float', allowed_values=AnyValue()),
         ]
         outputs = [
             ComplexOutput("roofs", "Output", supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
@@ -31,14 +30,14 @@ class MedusaProcessService(Process):
         response.outputs['roofs'].data = json.dumps({
             "type": "geojson",
             "url": "http://localhost:5000/outputs/MEDUSA_Roofs.geojson",
-            "name": "geojson example",
+            "name": "MEDUSA Roof Surfaces",
             "id": "some unique I111D"
         })
         response.outputs['roads'].data = json.dumps({
             "type": "geojson",
             "url": "http://localhost:5000/outputs/MEDUSA_Roads.geojson",
-            "name": "geojson example",
-            "id": "some unique I111D"
+            "name": "MEDUSA Road Surfaces",
+            "id": "some unique I111D2"
         })
 
 
