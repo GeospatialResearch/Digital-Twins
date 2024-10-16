@@ -15,7 +15,8 @@ class MedusaProcessService(Process):
             LiteralInput("rainfallPh", "Rainfall pH", data_type='float', allowed_values=AnyValue()),
         ]
         outputs = [
-            ComplexOutput("output", "Output", supported_formats=[Format("application/vnd.terriajs.catalog-member+json")])
+            ComplexOutput("roofs", "Output", supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
+            ComplexOutput("roads", "Output", supported_formats=[Format("application/vnd.terriajs.catalog-member+json")])
         ]
         super(MedusaProcessService, self).__init__(
             self._handler,
@@ -27,10 +28,15 @@ class MedusaProcessService(Process):
         )
 
     def _handler(self, request, response):
-        response.outputs['output'].output_format = "application/vnd.terriajs.catalog-member+json"
-        response.outputs['output'].data = json.dumps({
+        response.outputs['roofs'].data = json.dumps({
             "type": "geojson",
-            "url": "http://localhost:5000/outputs/selected_polygon.geojson",
+            "url": "http://localhost:5000/outputs/MEDUSA_Roofs.geojson",
+            "name": "geojson example",
+            "id": "some unique I111D"
+        })
+        response.outputs['roads'].data = json.dumps({
+            "type": "geojson",
+            "url": "http://localhost:5000/outputs/MEDUSA_Roads.geojson",
             "name": "geojson example",
             "id": "some unique I111D"
         })
