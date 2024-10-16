@@ -1,6 +1,7 @@
+import json
 import math
 
-from pywps import Process, LiteralInput, LiteralOutput, UOM, ComplexInput, FORMATS, Format
+from pywps import Process, LiteralInput, LiteralOutput, UOM, ComplexInput, ComplexOutput, FORMATS, Format
 from pywps.inout.literaltypes import AllowedValue, AnyValue
 from pywps.validator.allowed_value import ALLOWEDVALUETYPE, RANGECLOSURETYPE
 
@@ -14,7 +15,7 @@ class MedusaProcessService(Process):
             LiteralInput("rainfallPh", "Rainfall pH", data_type='float', allowed_values=AnyValue()),
         ]
         outputs = [
-            LiteralOutput("output", "Output", data_type='float')
+            ComplexOutput("output", "Output", supported_formats=[Format("application/vnd.terriajs.catalog-member+json")])
         ]
         super(MedusaProcessService, self).__init__(
             self._handler,
@@ -22,11 +23,17 @@ class MedusaProcessService(Process):
             title="Medusa",
             inputs=inputs,
             outputs=outputs,
+            store_supported=True
         )
 
     def _handler(self, request, response):
-        response.outputs['output'].data = request.inputs['antecedentDryDays'][0].data
-        response.outputs['output'].uom = UOM('metre')
+        response.outputs['output'].output_format = "application/vnd.terriajs.catalog-member+json"
+        response.outputs['output'].data = json.dumps({
+            "type": "geojson",
+            "url": "http://localhost:5000/outputs/selected_polygon.geojson",
+            "name": "geojson example",
+            "id": "some unique I111D"
+        })
 
 
 # run_medusa_2.main(

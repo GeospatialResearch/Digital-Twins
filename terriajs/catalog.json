@@ -36,7 +36,8 @@
           "name": "medusa",
           "url": "http://localhost:5000/wps",
           "type": "wps",
-          "identifier": "medusa"
+          "identifier": "medusa",
+          "storeSupported": true
         },
         {
           "name": "boundingbox",
