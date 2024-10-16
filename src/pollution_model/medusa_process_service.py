@@ -1,13 +1,17 @@
-from pywps import Process, LiteralInput, LiteralOutput, UOM
+import math
+
+from pywps import Process, LiteralInput, LiteralOutput, UOM, ComplexInput, FORMATS, Format
+from pywps.inout.literaltypes import AllowedValue, AnyValue
+from pywps.validator.allowed_value import ALLOWEDVALUETYPE, RANGECLOSURETYPE
 
 
 class MedusaProcessService(Process):
     def __init__(self):
         inputs = [
-            LiteralInput("antecedentDryDays", "Antecedent Dry Days", data_type='float'),
-            LiteralInput("averageRainIntensity", "Average Rain Intensity", data_type='float'),
-            LiteralInput("eventDuration", "Event Duration", data_type='float'),
-            LiteralInput("rainfallPh", "Rainfall pH", data_type='float'),
+            LiteralInput("antecedentDryDays", "Antecedent Dry Days", data_type='float', allowed_values=AnyValue()),
+            LiteralInput("averageRainIntensity", "Average Rain Intensity", data_type='float', allowed_values=AnyValue()),
+            LiteralInput("eventDuration", "Event Duration", data_type='float', allowed_values=AnyValue()),
+            LiteralInput("rainfallPh", "Rainfall pH", data_type='float', allowed_values=AnyValue()),
         ]
         outputs = [
             LiteralOutput("output", "Output", data_type='float')

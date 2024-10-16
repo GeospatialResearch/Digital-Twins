@@ -23,6 +23,156 @@
       "layers": "db-pollution:medusa2_model_output_buildings"
     },
     {
+      "type": "wps-getCapabilities",
+      "name": "DT Custom auto",
+      "url": "http://localhost:5000/wps",
+
+    },
+    {
+      "name": "Ōtākaro Digital Twin Custom Analysis",
+      "type": "group",
+      "members": [
+        {
+          "name": "medusa",
+          "url": "http://localhost:5000/wps",
+          "type": "wps",
+          "identifier": "medusa"
+        },
+        {
+          "name": "boundingbox",
+          "url": "http://localhost:5000/wps",
+          "type": "wps",
+          "identifier": "boundingbox"
+        },
+        {
+          "name": "say_hello",
+          "url": "http://localhost:5000/wps",
+          "type": "wps",
+          "identifier": "say_hello"
+        },
+        {
+          "name": "ultimate_question",
+          "url": "http://localhost:5000/wps",
+          "type": "wps",
+          "identifier": "ultimate_question"
+        }
+      ]
+    },
+    {
+      "name": "GeoGLAM WPS",
+      "type": "group",
+      "description": "The Analysis Tools provide time-series data for selected points (pixels) or regions (polygons). \n\nThe \"Mean for point or region\" function returns the mean value for the vegetation fractional cover fractions and precipitation for a given region or pixel.\n\nThe \"Proportion of region within a Total Vegetation Cover range\" function returns the proportion of a given region within a range of Total Vegetation Cover that you can select. \n\nSimply click on the function and follow the instructions. ",
+      "members": [
+        {
+          "name": "Mean for point or region (Monthly)",
+          "url": "http://gsky.nci.org.au/ows/geoglam",
+          "type": "wps",
+          "identifier": "geometryDrill",
+          "description": "This function returns the mean value for the monthly vegetation fractional cover fractions and precipitation for a given region or pixel. Fractional cover includes green cover, non-green cover and bare ground. Total vegetation cover is green+non-green. \n\nYou can provide the name of the polygon or pixel. You can click on a point, draw a polygon or select a polygon already displayed in the screen.\n\nThe output is a graph and the data can be downloaded as a csv file. "
+        },
+        {
+          "name": "Mean for point or region (8-day)",
+          "url": "http://gsky.nci.org.au/ows/geoglam",
+          "type": "wps",
+          "identifier": "geometryDrill_8day",
+          "description": "This function returns the mean value for the 8-day vegetation fractional cover fractions and precipitation for a given region or pixel. Fractional cover includes green cover, non-green cover and bare ground. Total vegetation cover is green+non-green. \n\nYou can provide the name of the polygon or pixel. You can click on a point, draw a polygon or select a polygon already displayed in the screen.\n\nThe output is a graph and the data can be downloaded as a csv file. "
+        },
+        {
+          "name": "Proportion of region within a Total Vegetation Cover range (Monthly)",
+          "url": "http://gsky.nci.org.au/ows/geoglam",
+          "type": "wps",
+          "identifier": "geometryDrillPixelFraction",
+          "description": "This function returns the proportion of a given region within a range of Total Vegetation Cover. Total cover is the sum of green and non-green cover. You can provide the name of the polygon. You must provide the lower and upper limits of total vegetation cover. You can click on a point, draw a polygon or select a polygon already diplayed in the screen.\n\nThe output is a graph and the data can be downloaded as a csv file. "
+        },
+        {
+          "name": "Proportion of region within a Total Vegetation Cover range (8-day)",
+          "url": "http://gsky.nci.org.au/ows/geoglam",
+          "type": "wps",
+          "identifier": "geometryDrillPixelFraction_8day",
+          "description": "This function returns the proportion of a given region within a range of Total Vegetation Cover. Total cover is the sum of green and non-green cover. You can provide the name of the polygon. You must provide the lower and upper limits of total vegetation cover. You can click on a point, draw a polygon or select a polygon already diplayed in the screen.\n\nThe output is a graph and the data can be downloaded as a csv file. "
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "Australian Wave Energy Atlas PyWPS Server",
+      "members": [
+        {
+          "name": "monthly-variations",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "monthly-variations"
+        },
+        {
+          "name": "monthly-waverose",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "monthly-waverose",
+          "statusSupported": true
+        },
+        {
+          "name": "annual-waverose",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "annual-waverose"
+        },
+        {
+          "name": "monthly-power-distribution",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "monthly-power-distribution"
+        },
+        {
+          "name": "annual-power-distribution",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "annual-power-distribution"
+        },
+        {
+          "name": "return-period-level",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "return-period-level"
+        },
+        {
+          "name": "extract_data_atPoint",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "extract_data_atPoint"
+        },
+        {
+          "name": "spectra_referenceBB",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "spectra_referenceBB"
+        },
+        {
+          "name": "tidal-data-point",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "tidal-data-point"
+        },
+        {
+          "name": "tidal-rose-vel",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "tidal-rose-vel"
+        },
+        {
+          "name": "tidal-pdf-vel",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "tidal-pdf-vel"
+        },
+        {
+          "name": "tidal-pdf-kef",
+          "url": "http://oa-gis.csiro.au/wps",
+          "type": "wps",
+          "identifier": "tidal-pdf-kef"
+        }
+      ]
+    },
+    {
       "id": "ZIdekvc10z",
       "type": "wms-group",
       "name": "Test",
