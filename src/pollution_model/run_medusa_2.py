@@ -6,8 +6,6 @@ TZn (total zinc), and DZn (dissolved zinc).
 DOI of the model paper: https://doi.org/10.3390/w12040969
 """
 
-import os
-from src.digitaltwin import tables
 
 import logging
 import math
@@ -22,6 +20,7 @@ from sqlalchemy.sql import text
 from src import geoserver
 from src.config import EnvVariable
 from src.digitaltwin import setup_environment
+from src.digitaltwin import tables
 from src.digitaltwin.tables import create_table, check_table_exists
 from src.digitaltwin.tables import execute_query
 from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
@@ -29,39 +28,6 @@ from src.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Me
 from src.pollution_model.pollution_tables import MedusaScenarios
 
 log = logging.getLogger(__name__)
-
-
-# def merge_data(engine: Engine) -> gpd.GeoDataFrame:
-#     """
-#     Read and merge building data under points and polygons. Then store them into database.
-#
-#     Parameters
-#     ----------
-#     engine : Engine
-#         The engine used to connect to the database.
-#
-#     Returns
-#     -------
-#     gpd.GeoDataFrame
-#         A GeoDataFrame containing all the information in point and polygon files.
-#     """
-#     # Read point data
-#     point_data = gpd.read_file("/home/martinnguyen204/Digital-Twin/points.geojson")
-#     # Read polygon data
-#     polygon_data = gpd.read_file("/home/martinnguyen204/Digital-Twin/polygons.geojson")
-#
-#     # Merge point and polygon data using building_Id
-#     merging_data = polygon_data.merge(point_data, left_on="building_Id", right_on="building_Id", how="left")
-#     # Remove OBJECTID_x (as it is equal to building_Id), and change name of OBJECTID_y into OBJECTID_point
-#     merging_data = merging_data.drop(columns=["OBJECTID_x"])
-#     merging_data = merging_data.rename(columns={"OBJECTID_y": "OBJECTID_point"})
-#
-#     # Store the ROOF table data to the database table
-#     log.info("Adding ROOF table data to the database.")
-#     merging_data.to_postgis('ROOF table', engine, index=False, if_exists="replace")
-#
-#     return merging_data
-
 
 
 def merge_data(engine: Engine) -> gpd.GeoDataFrame:
@@ -100,10 +66,10 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     roof_surface_points = roof_surface_points.dropna(subset=['building_id', 'deeplearn_subclass'])
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface_points"):
-        log.info(f"roof_surface_points data already exists in the database.")
+        log.info("roof_surface_points data already exists in the database.")
     else:
         # Store the building_point_data to the database table
-        log.info(f"Adding roof_surface_points table to the database.")
+        log.info("Adding roof_surface_points table to the database.")
         roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
 
     # Read roof surface polygons from outside
@@ -117,10 +83,10 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     })
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface_polygons"):
-        log.info(f"roof_surface_polygons data already exists in the database.")
+        log.info("roof_surface_polygons data already exists in the database.")
     else:
         # Store the building_point_data to the database table
-        log.info(f"Adding roof_surface_polygons table to the database.")
+        log.info("Adding roof_surface_polygons table to the database.")
         roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
 
     # Merge building points and polygons using inner join,
@@ -153,12 +119,14 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     # Case 2: Everything is the same except the surface_type
     roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_id'])
 
+    roof_surface_merge = roof_surface_merge[0:1000].copy(deep=True)
+
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface"):
-        log.info(f"roof_surface data already exists in the database.")
+        log.info("roof_surface data already exists in the database.")
     else:
         # Store the building_point_data to the database table
-        log.info(f"Adding roof_surface table to the database.")
+        log.info("Adding roof_surface table to the database.")
         roof_surface_merge.to_postgis("roof_surface", engine, index=False, if_exists="replace")
 
     return roof_surface_merge
@@ -171,17 +139,24 @@ class SurfaceType(StrEnum):
 
     Attributes
     ----------
-    CONCRETE_ROOF : str
-        Concrete Roof surface.
-    COPPER_ROOF : str
-        Copper Roof surface.
-    GALVANISED_ROOF : str
-        Galvanised Roof surface.
-    ASPHALT_ROAD : str
-        Asphalt Road surface.
+    COLOUR_STEEL : str
+        Colour Steel surface
+    GALVANISED : str
+        Galvanised surface.
+    METAL_OTHER : str
+        Metal Other surface.
+    METAL_TILE : str
+        Metal Tile surface.
+    NON_METAL : str
+        Non-Metal surface.
+    ZINCALUME : str
+        Zincalume surface.
+    ASPHALT_ROAD: str
+        Asphalt Road.
     CAR_PARK : str
-        Car Park surface.
+        Car park.
     """
+
     COLOUR_STEEL = "Cs"
     GALVANISED = "Gv"
     METAL_OTHER = "Mo"
@@ -191,8 +166,11 @@ class SurfaceType(StrEnum):
     ASPHALT_ROAD = "Rd"
     CAR_PARK = "CrP"  # CarParks are classified the same as roads
 
-ROOF_SURFACE_TYPES = {SurfaceType.COLOUR_STEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER, SurfaceType.METAL_TILE, SurfaceType.NON_METAL, SurfaceType.ZINCALUME}
+
+ROOF_SURFACE_TYPES = {SurfaceType.COLOUR_STEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER, SurfaceType.METAL_TILE,
+                      SurfaceType.NON_METAL, SurfaceType.ZINCALUME}
 ROAD_SURFACE_TYPES = {SurfaceType.ASPHALT_ROAD, SurfaceType.CAR_PARK}
+
 
 class MedusaRainfallEvent(NamedTuple):
     """
@@ -270,7 +248,8 @@ def compute_tss_roof_road(surface_area: float,
             a1, a2, a3 = 0.4, 0.5, 0.008
         case SurfaceType.GALVANISED:
             a1, a2, a3 = 0.4, 0.5, 0.008
-        case SurfaceType.METAL_OTHER: # Using coefficients of Galvanised rather than Copper
+        case SurfaceType.METAL_OTHER:
+            # Using coefficients of Galvanised rather than Copper
             a1, a2, a3 = 0.4, 0.5, 0.008
         case SurfaceType.METAL_TILE:
             a1, a2, a3 = 0.4, 0.5, 0.008
@@ -370,7 +349,8 @@ def total_metal_load_roof(surface_area: float,
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
-        case SurfaceType.METAL_OTHER: # Using coefficients of Galvanised rather than Copper
+        case SurfaceType.METAL_OTHER:
+            # Using coefficients of Galvanised rather than Copper
             b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
@@ -519,6 +499,11 @@ def get_building_information(engine: Engine, _area_of_interest: gpd.GeoDataFrame
     Then formats them such that they are easy to use for pollution modeling purposes.
 
     Github Issue to resolve the input_data: https://github.com/GeospatialResearch/Digital-Twins/issues/198
+
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine
 
     Returns
     -------

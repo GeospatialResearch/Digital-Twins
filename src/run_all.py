@@ -9,12 +9,12 @@ import geopandas as gpd
 
 from src.digitaltwin import retrieve_static_boundaries
 from src.digitaltwin.utils import LogLevel
-from src.dynamic_boundary_conditions.rainfall import main_rainfall
-from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
-from src.dynamic_boundary_conditions.river import main_river
-from src.dynamic_boundary_conditions.river.river_enum import BoundType
-from src.dynamic_boundary_conditions.tide import main_tide_slr
-from src.flood_model import bg_flood_model, process_hydro_dem
+# from src.dynamic_boundary_conditions.rainfall import main_rainfall
+# from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
+# from src.dynamic_boundary_conditions.river import main_river
+# from src.dynamic_boundary_conditions.river.river_enum import BoundType
+# from src.dynamic_boundary_conditions.tide import main_tide_slr
+# from src.flood_model import bg_flood_model, process_hydro_dem
 from src.pollution_model import run_medusa_2
 
 
@@ -97,7 +97,8 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "antecedent_dry_days": 1,
         "average_rain_intensity": 1,
         "event_duration": 1,
-        "rainfall_ph": 6.5 # rainfall pH assumed for all of NZ is 6.5
+        # rainfall pH assumed for all of NZ is 6.5
+        "rainfall_ph": 6.5
     }
 }
 
