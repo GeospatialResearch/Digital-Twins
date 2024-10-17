@@ -44,92 +44,89 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     gpd.GeoDataFrame
         A GeoDataFrame containing all the information in point and polygon files.
     """
-    # Read roof surface points from outside
-    # This data has the deeplearn_matclass with roof types we need
-    roof_surface_points = gpd.read_file(
-        "/home/martinnguyen204/Digital-Twin/points_fullversion.shp"
-    )
-    # Rename
-    roof_surface_points = roof_surface_points.rename(columns={
-        'deeplearn_': 'deeplearn_matclass',
-        'deeplear_1': 'deeplearn_metalconf',
-        'dvr_matcla': 'dvr_matclass',
-        'ensemble_m': 'ensemble_matclass',
-        'ensemble_1': 'ensemble_metalconf',
-        'decay_inde': 'decay_index',
-        'deeplear_2': 'deeplearn_subclass',
-        'subclass_c': 'subclass_conf',
-        'galvanised': 'galvanised_conf',
-        'building_I': 'building_id'
-    })
-    # Remove rows of building_Id and deeplearn_subclass that are NANs
-    roof_surface_points = roof_surface_points.dropna(subset=['building_id', 'deeplearn_subclass'])
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface_points"):
         log.info("roof_surface_points data already exists in the database.")
     else:
+        # Read roof surface points from outside
+        # This data has the deeplearn_matclass with roof types we need
+        roof_surface_points = gpd.read_file(
+            "/home/martinnguyen204/Digital-Twin/points_fullversion.shp"
+        )
+        # Rename
+        roof_surface_points = roof_surface_points.rename(columns={
+            'deeplearn_': 'deeplearn_matclass',
+            'deeplear_1': 'deeplearn_metalconf',
+            'dvr_matcla': 'dvr_matclass',
+            'ensemble_m': 'ensemble_matclass',
+            'ensemble_1': 'ensemble_metalconf',
+            'decay_inde': 'decay_index',
+            'deeplear_2': 'deeplearn_subclass',
+            'subclass_c': 'subclass_conf',
+            'galvanised': 'galvanised_conf',
+            'building_I': 'building_id'
+        })
+        # Remove rows of building_Id and deeplearn_subclass that are NANs
+        roof_surface_points = roof_surface_points.dropna(subset=['building_id', 'deeplearn_subclass'])
         # Store the building_point_data to the database table
         log.info("Adding roof_surface_points table to the database.")
         roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
 
-    # Read roof surface polygons from outside
-    roof_surface_polygons = gpd.read_file(
-        "/home/martinnguyen204/Digital-Twin/polygons_fullversion.shp"
-    )
-    # Rename building_Id to building_id
-    roof_surface_polygons = roof_surface_polygons.rename(columns={
-        'building_I': 'building_id',
-        'Shape_Leng': 'Shape_Length'
-    })
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface_polygons"):
         log.info("roof_surface_polygons data already exists in the database.")
     else:
+        # Read roof surface polygons from outside
+        roof_surface_polygons = gpd.read_file(
+            "/home/martinnguyen204/Digital-Twin/polygons_fullversion.shp"
+        )
+        # Rename building_Id to building_id
+        roof_surface_polygons = roof_surface_polygons.rename(columns={
+            'building_I': 'building_id',
+            'Shape_Leng': 'Shape_Length'
+        })
         # Store the building_point_data to the database table
         log.info("Adding roof_surface_polygons table to the database.")
         roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
-
-    # Merge building points and polygons using inner join,
-    # because there will be some building_id in polygon table
-    # that do not have roof surface type
-    query = """
-        SELECT roof_surface_polygons.*, roof_surface_points.deeplearn_subclass
-        FROM roof_surface_polygons
-        INNER JOIN roof_surface_points
-        USING ("building_id")
-    """
-    roof_surface_merge = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-
-    # Add column surface type
-    roof_surface_types = {
-        'ColourSteel': 'Cs',
-        'MetalTile': 'Mt',
-        'Galvanised': 'Gv',
-        'NonMetal': 'NoMt',
-        'MetalOther': 'Mo',
-        'Zincalume': 'ZnC',
-        'AsphaltRoad': 'Rd',
-        'CarPark': 'CrP'
-    }
-    roof_surface_merge['surface_type'] = roof_surface_merge.deeplearn_subclass.map(roof_surface_types)
-
-    # Remove all duplicates
-    # There are two cases
-    # Case 1: Everything is the same
-    # Case 2: Everything is the same except the surface_type
-    roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_id'])
-
-    roof_surface_merge = roof_surface_merge[0:1000].copy(deep=True)
 
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface"):
         log.info("roof_surface data already exists in the database.")
     else:
+        # Merge building points and polygons using inner join,
+        # because there will be some building_id in polygon table
+        # that do not have roof surface type
+        query = """
+            SELECT roof_surface_polygons.*, roof_surface_points.deeplearn_subclass
+            FROM roof_surface_polygons
+            INNER JOIN roof_surface_points
+            USING ("building_id")
+        """
+        roof_surface_merge = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+
+        # Add column surface type
+        roof_surface_types = {
+            'ColourSteel': 'Cs',
+            'MetalTile': 'Mt',
+            'Galvanised': 'Gv',
+            'NonMetal': 'NoMt',
+            'MetalOther': 'Mo',
+            'Zincalume': 'ZnC',
+            'AsphaltRoad': 'Rd',
+            'CarPark': 'CrP'
+        }
+        roof_surface_merge['surface_type'] = roof_surface_merge.deeplearn_subclass.map(roof_surface_types)
+
+        # Remove all duplicates
+        # There are two cases
+        # Case 1: Everything is the same
+        # Case 2: Everything is the same except the surface_type
+        roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_id'])
+
+        roof_surface_merge = roof_surface_merge[0:1000].copy(deep=True)
         # Store the building_point_data to the database table
         log.info("Adding roof_surface table to the database.")
         roof_surface_merge.to_postgis("roof_surface", engine, index=False, if_exists="replace")
-
-    return roof_surface_merge
 
 
 # Enum strings are assigned as they are described in the original paper
@@ -493,7 +490,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     return MetalLoads(f * total_copper_load, g * total_zinc_load)
 
 
-def get_building_information(engine: Engine, _area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Extract relevant information about buildings from central_buildings.geojson, since the input data is not finalised.
     Then formats them such that they are easy to use for pollution modeling purposes.
@@ -503,7 +500,10 @@ def get_building_information(engine: Engine, _area_of_interest: gpd.GeoDataFrame
     Parameters
     ----------
     engine: Engine
-        The sqlalchemy database connection engine
+        The sqlalchemy database connection engine.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
+
 
     Returns
     -------
@@ -511,8 +511,23 @@ def get_building_information(engine: Engine, _area_of_interest: gpd.GeoDataFrame
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    buildings = merge_data(engine)
-    buildings = buildings.set_index("building_id")
+    # Get building information
+    merge_data(engine)
+    # buildings = buildings.set_index("building_id")
+
+    # Convert current area of interest format into the format can be used by SQL
+    aoi_wkt = area_of_interest["geometry"][0].wkt
+    crs = area_of_interest.crs.to_epsg()
+
+    # Select all relevant information from the appropriate table
+    query = text("""
+       SELECT building_id, surface_type, geometry FROM roof_surface
+       WHERE ST_INTERSECTS(roof_surface.geometry, ST_GeomFromText(:aoi_wkt, :crs));
+       """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
+
+    # Execute the SQL query
+    buildings = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_id", geom_col="geometry")
+
     # Filter out irrelevant columns.
     buildings_medusa_info = buildings[["surface_type", "geometry"]]
     # Append columns specific to MEDUSA, to be filled later in the processing.
