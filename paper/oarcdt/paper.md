@@ -1,5 +1,5 @@
 ---
-title: 'Ōtākaro Digital Twin - A case study in a modular open-source Framework for Geospatial Digital Twins'
+title: 'OSDT-MEDUSA, an extension for Open Spatial Digital Twin'
 tags:
   - digital twin
   - stormwater
@@ -35,20 +35,22 @@ authors:
   
   - name: Sam
     affiliation: 3
-  - name: [@@]todo others as needed
+  - name: todo others as needed
     
 affiliations:
-[@@]todo consider affiliations appropriate for this particular paper
   - name: Geospatial Research Institute | Toi Hangarau, New Zealand
     index: 1
   - name: Building Innovation Partnership, New Zealand
     index: 2
-  - name: Auckland
+  - name: Auckland todo
+    index: 3
 
 date: 17 October 2024
-bibliography: paper.bib
+bibliography: paper_oarcdt.bib
 ---
-[@@ Matt notes -- Use this as a case study, and focus on the OARCDT. Also describe how our changes have impacted the core digital twin by creating a modular framework to allow for more domains. cut out core digital things as much as possible]
+[@todo] Matt notes -- Use this as a case study, and focus on the OARCDT. Also describe how our changes have impacted the core digital twin by creating a modular framework to allow for more domains. cut out core digital things as much as possible
+
+
 # Summary
 Why the Ōtākaro is in need of a digital twin...
 
@@ -63,38 +65,20 @@ How this impacted the core of the digital twin project (give this project a name
 Overview of the digital twin project evolving from FReDT, to an open-source framework.
 
 
-There is a lack of open-source solutions to geospatial digital twins [@@ provide reference]
-
-# Aim
-[@@ XANDER's notes - provide more context about exactly what we have built, so it does not come across as fluff that has little real world impact]
-[@@ Cut down on this aim]
-
-Establish an accessible and innovative platform, to collect and communicate knowledge about the Ōtākaro River, serving as a tool to give voice to the Ōtākaro and its importance to the community. 
-
-The platform aims to foster collaboration to support and encourage: 
-
-* Holistic decision making & governance. 
-* Environmental health and resilience outcomes 
-* Representation of the mauri of the Ōtākaro and; 
-* Amplify the significance of the Ōtākaro to the region and people by allowing users to model potential future narratives and tell stories of the Ōtākaro’s past & present. 
-
-The Ōtākaro Digital Twin purpose is guided by the Te Mana o te Wai framework and aims to be adaptable to other locations and environments.  
-
-
+There is a lack of open-source solutions to geospatial digital twins [@todo] provide reference
 
 
 # Background
-[Introduce our digital twin framework...]
+[@todo] Introduce our digital twin framework...
+The Open Spatial Digital Twin (OSDT) is a software framework for building geospatial environmental digital twins [@OSDT]. It began as the Flood Resilience Digital Twin [@FREDT, @FREDT-JOSS], before developing into a modular framework capable of being extended into multiple environmental domains through plugin-style extensions, and interoperability with other spatial digital twins and services.
 
-The Ōtākaro/Avon River Corridor (ŌARC) in Christchurch, New Zealand is undergoing significant development as part of the ŌARC Regeneration Plan (ref). It is an initiative by central government (?) and Christchurch City Council (CCC) to restore the health of the river, and bring people back as part of the recovery after the 2011-20XX Christchurch Earthquake Sequence. [@@ tie this back to the language found in the council documents]
+The Ōtākaro/Avon River Corridor (ŌARC) in Christchurch, New Zealand is undergoing significant development as part of the ŌARC Regeneration Plan (ref). It is an initiative by central government (?) and Christchurch City Council (CCC) to restore the health of the river, and bring people back as part of the recovery after the 2011-20XX Christchurch Earthquake Sequence. [@todo] tie this back to the language found in the council documents
 
 After the earthquakes, XX households were displaced...
 
 The OARC Regeneration will... (revitalise wetlands, recreation areas, water treatment, biodiversity etc.)
 
 To aid in decision making CCC is making use of (DigitalTwinFramework)
-
-
 
 
 # Statement of need
@@ -119,15 +103,31 @@ To aid in decision making CCC is making use of (DigitalTwinFramework)
 * Making it open source can help other communities by...
 
 
+# Aim
+[@todo] XANDER's notes - provide more context about exactly what we have built, so it does not come across as fluff that has little real world impact
+[@todo] Cut down on this aim
+
+Establish an accessible and innovative platform, to collect and communicate knowledge about the Ōtākaro River, serving as a tool to give voice to the Ōtākaro and its importance to the community. 
+
+The platform aims to foster collaboration to support and encourage: 
+
+* Holistic decision making & governance. 
+* Environmental health and resilience outcomes 
+* Representation of the mauri of the Ōtākaro and; 
+* Amplify the significance of the Ōtākaro to the region and people by allowing users to model potential future narratives and tell stories of the Ōtākaro’s past & present. 
+
+The Ōtākaro Digital Twin purpose is guided by the Te Mana o te Wai framework and aims to be adaptable to other locations and environments. 
+
+
 # Modular plugins framework
-[Discuss modifying FReDT into a modular framework that can act across many domains]
+[@todo]Discuss modifying FReDT into a modular framework that can act across many domains
 A framework for open-source digital twin with modular ecosystems allows...
 - Benefits
 - Open Source and closed source examples
 - Make it clear the plugin was created for CCC, to fit into our new modular framework.
 
 # Case study
- CCC's needed a module for pollution. The first implementation of this module focuses on moduling pollutant sources from storm events [@@medusa ref] based on MEDUSA 2.0 [@@describe].
+ CCC needed a module for pollution. The first implementation of this module focuses on modelling pollutant sources from storm events based on MEDUSA 2.0 [@medusa, @todo] describe.
  
  * Some ideas on why it is appropriate and important for MEDUSA module to be open-source
 
@@ -142,7 +142,7 @@ A framework for open-source digital twin with modular ecosystems allows...
 * Ability to compare our MEDUSA implementation to other closed-source implementations. AND/OR how our implementation accuracy is similar.
 * Why our implentation may be advantageous over closed-source versions?
 
-[@@ Have some additional thoughts about QGIS WPS plugin, and if that is worth mentioning]
+[@todo Have some additional thoughts about QGIS WPS plugin, and if that is worth mentioning
 
 # Acknowledgements
 * CCC
@@ -155,6 +155,6 @@ A framework for open-source digital twin with modular ecosystems allows...
 * OpenPlan
 * Ngāi Tūāhuriri
 * Pounamu Ngāi Tahu
-* [@@]todo
+* [@todo]todo
 
 # References
