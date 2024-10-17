@@ -38,11 +38,6 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
     ----------
     engine : Engine
         The engine used to connect to the database.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing all the information in point and polygon files.
     """
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface_points"):
