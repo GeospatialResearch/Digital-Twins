@@ -30,9 +30,9 @@ from src.pollution_model.pollution_tables import MedusaScenarios
 log = logging.getLogger(__name__)
 
 
-def merge_data(engine: Engine) -> gpd.GeoDataFrame:
+def read_roof_surface_polygons(engine: Engine) -> gpd.GeoDataFrame:
     """
-    Read and merge building data under points and polygons. Then store them into database.
+    Read building data under polygons. Then store them into database.
 
     Parameters
     ----------
@@ -67,6 +67,16 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
         log.info("Adding roof_surface_points table to the database.")
         roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
 
+
+def read_roof_surface_points(engine: Engine) -> gpd.GeoDataFrame:
+    """
+    Read building data under points. Then store them into database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    """
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface_polygons"):
         log.info("roof_surface_polygons data already exists in the database.")
@@ -83,6 +93,22 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
         # Store the building_point_data to the database table
         log.info("Adding roof_surface_polygons table to the database.")
         roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
+
+
+def merge_roof_surface(engine: Engine) -> gpd.GeoDataFrame:
+    """
+    Merge building data under polygons and points. Then store them into database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    """
+    # Read building data under polygon format
+    read_roof_surface_polygons(engine)
+
+    # Read building data under point format
+    read_roof_surface_points(engine)
 
     # Check if the table already exist in the database
     if tables.check_table_exists(engine, "roof_surface"):
@@ -112,13 +138,11 @@ def merge_data(engine: Engine) -> gpd.GeoDataFrame:
         }
         roof_surface_merge['surface_type'] = roof_surface_merge.deeplearn_subclass.map(roof_surface_types)
 
-        # Remove all duplicates
-        # There are two cases
+        # Remove all duplicates. There are two cases:
         # Case 1: Everything is the same
         # Case 2: Everything is the same except the surface_type
         roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_id'])
 
-        roof_surface_merge = roof_surface_merge[0:1000].copy(deep=True)
         # Store the building_point_data to the database table
         log.info("Adding roof_surface table to the database.")
         roof_surface_merge.to_postgis("roof_surface", engine, index=False, if_exists="replace")
@@ -507,7 +531,7 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
         attributes (Index, SurfaceArea, SurfaceType)
     """
     # Get building information
-    merge_data(engine)
+    merge_roof_surface(engine)
     # buildings = buildings.set_index("building_id")
 
     # Convert current area of interest format into the format can be used by SQL
