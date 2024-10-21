@@ -79,7 +79,7 @@ def get_new_model_output_path() -> pathlib.Path:
 
 def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
     """
-    Stores the BG-Flood model output located at the provided local `model_output_path` in the AWS S3 bucket.
+    Store the BG-Flood model output located at the provided local `model_output_path` in the AWS S3 bucket.
 
     Parameters
     ----------
