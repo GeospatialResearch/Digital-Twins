@@ -43,7 +43,7 @@ def retrieve_hydro_dem_info(
     Tuple[xr.Dataset, LineString, Union[int, float]]
         A tuple containing the Hydro DEM data as a xarray Dataset, the spatial extent of the Hydro DEM as a LineString,
         and the resolution of the Hydro DEM as either an integer or a float.
-    """  # noqa: D400
+    """
     # Retrieve the Hydro DEM data and resolution for the specified catchment area
     hydro_dem, res_no = get_dem_band_and_resolution_by_geometry(engine, catchment_area)
     # Extract the Coordinate Reference System (CRS) information from the 'hydro_dem' dataset

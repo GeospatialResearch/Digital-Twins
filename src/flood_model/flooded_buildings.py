@@ -8,6 +8,7 @@ import rasterio as rio
 import shapely
 import xarray as xr
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
 
 from src.flood_model.serve_model import create_building_database_views_if_not_exists
 
@@ -57,7 +58,7 @@ def find_flooded_buildings(engine: Engine,
     -------
     pd.DataFrame
         A pd.DataFrame specifying if each building is flooded or not.
-    """  # noqa: D400
+    """
     # Open flood output and read the maximum depth raster
     with xr.open_dataset(flood_model_output_path, decode_coords="all") as ds:
         max_depth_raster = ds["hmax_P0"]
@@ -119,10 +120,14 @@ def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFram
     aoi_wkt = area_of_interest["geometry"][0].wkt
     crs = area_of_interest.crs.to_epsg()
     # Construct the query to find buildings within the area of interest
-    query = f"""
+    command_text = """
     SELECT building_outline_id, geometry FROM nz_building_outlines
-    WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText('{aoi_wkt}', {crs}));
+    WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText(:aoi_wkt, :crs));
     """
+    query = text(command_text).bindparams(
+        aoi_wkt=str(aoi_wkt),
+        crs=str(crs)
+    )
     # Execute the query and retrieve the result as a GeoDataFrame
     gdf = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_outline_id", geom_col="geometry")
     return gdf
@@ -145,7 +150,7 @@ def polygonize_flooded_area(flood_raster: xr.DataArray, flood_depth_threshold: f
     -------
     gpd.GeoDataFrame
         A GeoDataFrame containing polygons of the flooded areas
-    """  # noqa: D400
+    """
     # Find areas that are flooded to at least the flood_depth_threshold depth
     mask = flood_raster >= flood_depth_threshold
     # Turn the flood mask into a vector polygon form

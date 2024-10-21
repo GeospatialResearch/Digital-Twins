@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install flake8
         run: |
-          python -m pip install flake8 flake8-docstrings flake8-annotations
+          python -m pip install flake8==7.1.0 flake8-docstrings==1.7.0 flake8-annotations==3.1.1
       - name: Run lint with flake8
         run: |
           flake8 src
@@ -43,7 +43,7 @@ jobs:
           conda config --show
       - name: Install pylint
         run: |
-          python -m pip install pylint
+          python -m pip install pylint==3.2.6
       - name: Run lint with pylint
         run: |
           pylint src
@@ -63,6 +63,22 @@ jobs:
         run: npm ci
       - name: Run linting
         run: npm run lint
+
+  type-check-ts:
+    name: Type check TypeScript front-end
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./visualisation
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Run type check
+        run: npm run type-check
 
   unit-tests:
     name: Run unit tests with pytest

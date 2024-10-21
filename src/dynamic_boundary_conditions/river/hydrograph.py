@@ -2,7 +2,7 @@
 """
 This script handles the task of obtaining REC river inflow scenario data, whether it's Mean Annual Flood (MAF) or
 Average Recurrence Interval (ARI)-based, and generates corresponding hydrograph data for the requested scenarios.
-"""  # noqa: D400
+"""
 
 import logging
 from typing import List, Union, Optional
@@ -107,7 +107,7 @@ def get_rec_inflow_scenario_data(
         - If 'ari' is provided when 'maf' is set to True (i.e. 'maf' is True and 'ari' is not set to None).
         - If 'ari' is not provided when 'maf' is set to False (i.e. 'maf' is False and 'ari' is set to None).
         - If an invalid 'ari' value is provided.
-    """  # noqa: D400
+    """
     # Selects and renames specific columns that represent REC river inflow data
     rec_inflow_data = clean_rec_inflow_data(rec_inflows_w_input_points)
 

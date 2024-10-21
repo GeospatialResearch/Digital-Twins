@@ -3,7 +3,7 @@
 Generate the requested rainfall model input for BG-Flood, which can be either
 spatially uniform rain input ('rain_forcing.txt' text file) or
 spatially varying rain input ('rain_forcing.nc' NetCDF file).
-"""  # noqa: D400
+"""
 
 import logging
 import pathlib
@@ -53,7 +53,7 @@ def sites_voronoi_intersect_catchment(
     gpd.GeoDataFrame
         A GeoDataFrame containing the intersection of the rainfall sites coverage areas (Thiessen Polygons) and
         the catchment area.
-    """  # noqa: D400
+    """
     # Perform overlay operation to find the intersection
     intersections = gpd.overlay(sites_in_catchment, catchment_area, how="intersection")
     return intersections
@@ -78,7 +78,7 @@ def sites_coverage_in_catchment(
     gpd.GeoDataFrame
         A GeoDataFrame containing the intersection of the rainfall sites coverage areas (Thiessen Polygons) and
         the catchment area, with calculated size and percentage of the catchment area covered by each rainfall site.
-    """  # noqa: D400
+    """
     # Get the intersection of the rainfall sites coverage areas (Thiessen Polygons) and the catchment area
     sites_coverage = sites_voronoi_intersect_catchment(sites_in_catchment, catchment_area)
     # Calculate the size of each site's intersecting area in square kilometers
@@ -109,7 +109,7 @@ def mean_catchment_rainfall(hyetograph_data: pd.DataFrame, sites_coverage: gpd.G
     -------
     pd.DataFrame
         A DataFrame containing the mean catchment rainfall intensities across all durations.
-    """  # noqa: D400
+    """
     # Create a copy of the hyetograph data to store the mean catchment rainfall
     mean_catchment_rain = hyetograph_data.copy()
     # Get the list of rainfall site IDs
@@ -144,7 +144,7 @@ def spatial_uniform_rain_input(
         including the size and percentage of the catchment area covered by each site.
     bg_flood_dir : pathlib.Path
         BG-Flood model directory.
-    """  # noqa: D400
+    """
     # Calculate the mean catchment rainfall
     mean_catchment_rain = mean_catchment_rainfall(hyetograph_data, sites_coverage)
     # Select the relevant columns for spatially uniform rain input
@@ -170,7 +170,7 @@ def create_rain_data_cube(hyetograph_data: pd.DataFrame, sites_coverage: gpd.Geo
     -------
     xr.Dataset
         Rainfall intensities data cube in the form of xarray dataset.
-    """  # noqa: D400
+    """
     # Convert the wide hyetograph data to long format
     hyetograph_data_long = hyetograph.hyetograph_data_wide_to_long(hyetograph_data)
     # Merge hyetograph data with sites coverage information
@@ -237,7 +237,7 @@ def generate_rain_model_input(
     input_type: RainInputType
         The type of rainfall model input to be generated. Valid options are 'uniform' or 'varying',
         representing spatially uniform rain input (text file) or spatially varying rain input (NetCDF file).
-    """  # noqa: D400
+    """
     # Remove any existing rainfall model inputs in the BG-Flood directory
     remove_existing_rain_inputs(bg_flood_dir)
     # Generate the requested type of rainfall model input

@@ -2,7 +2,7 @@
 """
 This script handles the processing of input files for the BG-Flood Model, executes the flood model, stores the
 resulting model output metadata in the database, and incorporates the model output into GeoServer for visualization.
-"""  # noqa: D400
+"""
 
 import logging
 import os
@@ -541,7 +541,7 @@ def main(
     -------
     int
        Returns the model id of the new flood_model produced
-    """  # noqa: D400
+    """
     # Set up logging with the specified log level
     setup_logging(log_level)
     # Connect to the database

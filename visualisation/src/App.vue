@@ -6,14 +6,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
+<script setup lang="ts">
 import TheNavBar from "@/components/TheNavBar.vue";
-
-export default Vue.extend({
-  name: 'App',
-  components: {TheNavBar},
-});
 </script>
 
 <style>

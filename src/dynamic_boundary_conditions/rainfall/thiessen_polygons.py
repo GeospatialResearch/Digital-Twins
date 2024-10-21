@@ -10,6 +10,7 @@ import geopandas as gpd
 import pandas as pd
 from geovoronoi import voronoi_regions_from_coords, points_to_coords
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql import text
 
 from src.digitaltwin import tables
 from src.digitaltwin.utils import get_nz_boundary
@@ -36,11 +37,12 @@ def get_sites_within_aoi(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
     # Extract the geometry of the area of interest
     aoi_polygon = area_of_interest["geometry"].iloc[0]
     # Construct the query to fetch rainfall sites within the area of interest
-    query = f"""
+    command_text = """
     SELECT *
     FROM rainfall_sites AS rs
-    WHERE ST_Within(rs.geometry, ST_GeomFromText('{aoi_polygon}', 4326));
+    WHERE ST_Within(rs.geometry, ST_GeomFromText(:aoi_polygon, 4326));
     """
+    query = text(command_text).bindparams(aoi_polygon=str(aoi_polygon))
     # Execute the query and retrieve the results as a GeoDataFrame
     sites_in_aoi = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
     # Reset the index
@@ -72,7 +74,7 @@ def thiessen_polygons_calculator(
     ValueError
         - If the provided 'area_of_interest' GeoDataFrame does not contain any data.
         - If the provided 'sites_in_aoi' GeoDataFrame does not contain any data.
-    """  # noqa: D400
+    """
     # Check if the area of interest GeoDataFrame is empty
     if area_of_interest.empty:
         raise ValueError("No data available for 'area_of_interest' passed as argument.")
@@ -108,7 +110,7 @@ def thiessen_polygons_to_db(engine: Engine) -> None:
     ----------
     engine : Engine
         The engine used to connect to the database.
-    """  # noqa: D400
+    """
     table_name = "rainfall_sites_voronoi"
     # Check if the table already exists in the database
     if tables.check_table_exists(engine, table_name):
@@ -146,13 +148,20 @@ def thiessen_polygons_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) 
     # Extract the geometry of the catchment area
     catchment_polygon = catchment_area["geometry"].iloc[0]
     # Construct the query to get rainfall sites coverage areas (Thiessen polygons)
-    query = f"""
+    command_text = """
     SELECT *
     FROM rainfall_sites_voronoi AS rsv
-    WHERE ST_Intersects(rsv.geometry, ST_GeomFromText('{catchment_polygon}', 4326));
+    WHERE ST_Intersects(rsv.geometry, ST_GeomFromText(:catchment_polygon, 4326));
     """
+    query = text(command_text).bindparams(
+        catchment_polygon=str(catchment_polygon)
+    )
     # Retrieve the data from the database
-    sites_in_catchment = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry", crs=4326)
+    sites_in_catchment = gpd.GeoDataFrame.from_postgis(
+        query,
+        engine,
+        geom_col="geometry", crs=4326
+    )
     # Reset the index
     sites_in_catchment.reset_index(drop=True, inplace=True)
     return sites_in_catchment
