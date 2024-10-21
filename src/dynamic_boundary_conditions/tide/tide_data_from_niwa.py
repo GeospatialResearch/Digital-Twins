@@ -13,7 +13,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-from src import config
+from src.config import EnvVariable
 from src.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
 
 log = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ def gen_tide_query_param_list(
         raise ValueError(f"interval is {interval_mins}, must range from 10 to 1440.")
 
     # Get the NIWA API key
-    niwa_api_key = config.EnvVariable.NIWA_API_KEY
+    niwa_api_key = EnvVariable.NIWA_API_KEY
 
     # Create an empty list to store the API query parameters
     query_param_list = []

@@ -4,7 +4,7 @@ import unittest
 import pytest
 from sqlalchemy.exc import OperationalError
 
-from src import config
+from src.config import EnvVariable
 from src.digitaltwin import setup_environment
 
 
@@ -14,7 +14,7 @@ class SetupEnvironmentTest(unittest.TestCase):
     def setUpClass(cls):
         """Set up arguments used for testing."""
         # flag for checking if tests requiring database to be active should run
-        cls.run_database_integration_tests = config.EnvVariable.TEST_DATABASE_INTEGRATION
+        cls.run_database_integration_tests = EnvVariable.TEST_DATABASE_INTEGRATION
         cls.DATABASE_SKIP_REASON = """TEST_DATABASE_INTEGRATION env var is not True, so the test is skipped.
             This is intentional at all times on the GitHub Actions."""
 
