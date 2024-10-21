@@ -225,9 +225,7 @@ class S3Manager:
         log.info(f"Successfully downloaded `{s3_object_key}` from the S3 bucket.")
 
     def clear_bucket(self) -> None:
-        """
-        Clear the entire S3 bucket by removing all objects.
-        """
+        """Clear the entire S3 bucket by removing all objects."""
         # Access the S3 bucket
         bucket = self.s3_resource.Bucket(self.bucket_name)
         # Delete all objects within the bucket
