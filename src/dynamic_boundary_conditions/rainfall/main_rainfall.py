@@ -2,7 +2,7 @@
 """
 Main rainfall script used to fetch and store rainfall data in the database, and to generate the requested
 rainfall model input for BG-Flood, etc.
-"""  # noqa: D400
+"""
 
 from typing import Optional, Union
 

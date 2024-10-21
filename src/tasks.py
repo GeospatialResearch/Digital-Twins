@@ -21,6 +21,7 @@ from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.flood_model import bg_flood_model, process_hydro_dem
 from src.pollution_model.run_medusa_2 import retrieve_input_parameters
+from src.environmental.water_quality import surface_water_sites
 from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
 
 # Setup celery backend task management
@@ -333,3 +334,12 @@ def get_model_extents_bbox(model_id: int) -> str:
     bbox_corners = extents.bounds
     # Convert the tuple into a string in x1,y1,x2,y2 form
     return ",".join(map(str, bbox_corners))
+
+
+@app.task(base=OnFailureStateTask)
+def refresh_surface_water_sites() -> None:
+    """
+    Fetch surface water site data from ECAN and store it in the database.
+    Needs to be run periodically so that the surface water site data is up to date.
+    """
+    surface_water_sites.refresh_surface_water_sites()

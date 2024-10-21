@@ -315,7 +315,7 @@ def get_rainfall_information(scenario_id: int) -> Response:
             "geometry": polygon
         }
         representing the values for the given point.
-    """  # noqa: D400
+    """
     # Get medusa rainfall information
     medusa_rainfall_dictionary = tasks.retrieve_medusa_input_parameters.delay(scenario_id).get()
 
@@ -427,6 +427,29 @@ def refresh_lidar_data_sources() -> Response:
     )
 
 
+@app.route('/surface-water-sites/update', methods=["POST"])
+@check_celery_alive
+def refresh_surface_water_data_sources() -> Response:
+    """
+    Update surface water site data to the most recent.
+    Fetch surface water site data from ECAN and store it in the database.
+    Needs to be run periodically so that the surface water site data is up to date.
+    Supported methods: POST
+
+    Returns
+    -------
+    Response
+        ACCEPTED is the expected response. Response body contains Celery taskId.
+    """
+    # Start task to refresh surface water sites
+    task = tasks.refresh_surface_water_sites.delay()
+    # Return HTTP Response with task id so it can be monitored with get_status(taskId)
+    return make_response(
+        jsonify({"taskId": task.id}),
+        ACCEPTED
+    )
+
+
 def valid_coordinates(latitude: float, longitude: float) -> bool:
     """
     Validate that coordinates are within the valid range of WGS84,
@@ -443,7 +466,7 @@ def valid_coordinates(latitude: float, longitude: float) -> bool:
     -------
     bool
         True if both latitude and longitude are within their valid ranges.
-    """  # noqa: D400
+    """
     return (-90 < latitude <= 90) and (-180 < longitude <= 180)
 
 

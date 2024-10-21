@@ -2,7 +2,7 @@
 """
 This script handles storing REC data in the database, and retrieving REC data enriched with sea-draining catchment
 information from the database.
-"""  # noqa: D400
+"""
 
 import logging
 
@@ -103,7 +103,7 @@ def get_rec_data_with_sdc_from_db(
     gpd.GeoDataFrame
         A GeoDataFrame containing the retrieved REC data for the specified catchment area with an additional column
         that identifies the associated sea-draining catchment for each REC geometry.
-    """  # noqa: D400
+    """
     # Get sea-draining catchment data from the database
     sdc_data = get_sdc_data_from_db(engine, catchment_area)
     # Unify the sea-draining catchment polygons into a single polygon
