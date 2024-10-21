@@ -85,11 +85,6 @@ def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
     ----------
     model_output_path : pathlib.Path
         The path to the BG-Flood model output file.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
     use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
