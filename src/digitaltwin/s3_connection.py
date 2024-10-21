@@ -75,7 +75,9 @@ class S3Manager:
         return object_keys
 
     def store_object(
-            self, s3_object_key: Union[str, pathlib.Path], data: Union[nx.DiGraph, gpd.GeoDataFrame]) -> None:
+            self,
+            s3_object_key: Union[str, pathlib.Path],
+            data: Union[nx.DiGraph, gpd.GeoDataFrame]) -> None:
         """
         Stores an object in the S3 bucket.
 
@@ -175,7 +177,10 @@ class S3Manager:
         # Log a message confirming successful deletion from the S3 bucket
         log.info(f"Successfully deleted '{s3_object_key}' from the S3 bucket.")
 
-    def store_file(self, s3_object_key: Union[str, pathlib.Path], file_path: Union[str, pathlib.Path]) -> None:
+    def store_file(
+            self,
+            s3_object_key: Union[str, pathlib.Path],
+            file_path: Union[str, pathlib.Path]) -> None:
         """
         Uploads a file to the S3 bucket.
 
@@ -196,10 +201,14 @@ class S3Manager:
         # Log a message confirming successful storage in the S3 bucket
         log.info(f"Successfully stored `{s3_object_key}` in the S3 bucket.")
 
-    def retrieve_file(self, s3_object_key, file_path):
+    def retrieve_file(
+            self,
+            s3_object_key: Union[str, pathlib.Path],
+            file_path: Union[str, pathlib.Path]) -> None:
         """
         Downloads a S3 object to a local file.
 
+        Parameters
         ----------
         s3_object_key : Union[str, pathlib.Path]
             They key of the object to download from the S3 bucket. If a pathlib.Path object is provided,
