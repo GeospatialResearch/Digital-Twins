@@ -143,6 +143,9 @@ def merge_roof_surface(engine: Engine) -> gpd.GeoDataFrame:
         # Case 2: Everything is the same except the surface_type
         roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_id'])
 
+        # THIS IS JUST FOR TESTING A SMALL DATASET
+        # REMOVE THIS IN THE FUTURE
+        roof_surface_merge = roof_surface_merge[0:1000].copy(deep=True)
         # Store the building_point_data to the database table
         log.info("Adding roof_surface table to the database.")
         roof_surface_merge.to_postgis("roof_surface", engine, index=False, if_exists="replace")
