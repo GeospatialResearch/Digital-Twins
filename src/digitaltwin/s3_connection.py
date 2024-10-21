@@ -40,7 +40,7 @@ class S3Manager:
 
     def _create_session(self) -> boto3.session.Session:
         """
-        Creates a boto3 session using the provided AWS credentials.
+        Create a boto3 session using the provided AWS credentials.
 
         Returns
         -------
@@ -55,7 +55,7 @@ class S3Manager:
 
     def list_objects(self) -> List[str]:
         """
-        Retrieves a list of keys for objects stored in the S3 bucket.
+        Retrieve a list of keys for objects stored in the S3 bucket.
 
         Returns
         -------
@@ -79,7 +79,7 @@ class S3Manager:
             s3_object_key: Union[str, pathlib.Path],
             data: Union[nx.DiGraph, gpd.GeoDataFrame]) -> None:
         """
-        Stores an object in the S3 bucket.
+        Store an object in the S3 bucket.
 
         Parameters
         ----------
@@ -108,7 +108,7 @@ class S3Manager:
     def retrieve_object(
             self, s3_object_key: Union[str, pathlib.Path]) -> Union[nx.DiGraph, xr.Dataset, gpd.GeoDataFrame]:
         """
-        Retrieves an object from the S3 bucket.
+        Retrieve an object from the S3 bucket.
 
         Parameters
         ----------
@@ -160,7 +160,7 @@ class S3Manager:
 
     def remove_object(self, s3_object_key: Union[str, pathlib.Path]) -> None:
         """
-        Removes an object from the S3 bucket.
+        Remove an object from the S3 bucket.
 
         Parameters
         ----------
@@ -182,7 +182,7 @@ class S3Manager:
             s3_object_key: Union[str, pathlib.Path],
             file_path: Union[str, pathlib.Path]) -> None:
         """
-        Uploads a file to the S3 bucket.
+        Upload a file to the S3 bucket.
 
         Parameters
         ----------
@@ -206,7 +206,7 @@ class S3Manager:
             s3_object_key: Union[str, pathlib.Path],
             file_path: Union[str, pathlib.Path]) -> None:
         """
-        Downloads a S3 object to a local file.
+        Download a S3 object to a local file.
 
         Parameters
         ----------
@@ -226,7 +226,7 @@ class S3Manager:
 
     def clear_bucket(self) -> None:
         """
-        Clears the entire S3 bucket by removing all objects.
+        Clear the entire S3 bucket by removing all objects.
         """
         # Access the S3 bucket
         bucket = self.s3_resource.Bucket(self.bucket_name)
