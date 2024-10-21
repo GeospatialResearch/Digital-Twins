@@ -20,7 +20,7 @@ from src.pollution_model import run_medusa_2
 from src.environmental.water_quality import main_water_quality
 
 
-def validate_aws_env_vars():
+def validate_aws_env_vars() -> None:
     """
     Validate that necessary AWS environment variables are set when S3 usage is enabled.
 
