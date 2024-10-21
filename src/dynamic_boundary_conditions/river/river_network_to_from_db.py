@@ -47,6 +47,7 @@ class NetworkMetadata(NamedTuple):
     catchment_geom : str
         The Well-Known Text (WKT) representation of the catchment area's geometry.
     """
+
     network_path: str
     network_data_path: str
     catchment_geom: str
