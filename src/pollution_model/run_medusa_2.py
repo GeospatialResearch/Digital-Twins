@@ -91,6 +91,17 @@ class MedusaRainfallEvent(NamedTuple):
     event_duration: float
     rainfall_ph: float
 
+    def as_dict(self) -> Dict[str, float]:
+        """
+        Convert the MedusaRainfallEvent parameters to a dictionary.
+
+        Returns
+        -------
+        Dict[str, float]
+            Returns the MedusaRainfallEvent parameters as a dictionary."""
+        # NamedTuple has a documented _asdict method, that is hidden only to prevent conflicts.
+        return self._asdict()
+
 
 class MetalLoads(NamedTuple):
     """
@@ -732,6 +743,56 @@ def get_next_scenario_id(engine: Engine) -> int:
         return max_scenario_id + 1
 
 
+def find_existing_pollution_scenario(engine: Engine,
+                                     area_of_interest: gpd.GeoDataFrame,
+                                     rainfall_event: MedusaRainfallEvent) -> Optional[int]:
+    """
+    Searches the database for a pollution scenario with the same rainfall event parameters that covers the area.
+
+    Parameters
+    ----------
+    engine: Engine
+       The sqlalchemy database connection engine.
+    area_of_interest: gpd.GeoDataFrame
+        A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
+    rainfall_event: MedusaRainfallEvent
+        Rainfall event parameters for MEDUSA 2.0 model.
+
+    Returns
+    -------
+    Optional[int]
+        The scenario ID of the pollution model retrieved, or None if it does not exist
+    """
+    if not check_table_exists(engine, MedusaScenarios.__tablename__):
+        # If there are no MedusaScenarios, then we will not be able to find one, return None
+        return None
+
+    # Retrieve geometry info in form ready for SQL query
+    aoi_wkt = area_of_interest["geometry"][0].wkt
+    crs = str(area_of_interest.crs.to_epsg())
+
+    query = text("""
+    SELECT scenario_id FROM medusa_scenarios WHERE
+        antecedent_dry_days=:antecedent_dry_days
+        AND average_rain_intensity=:average_rain_intensity
+        AND event_duration=:event_duration
+        AND rainfall_ph=:rainfall_ph
+        AND ST_CONTAINS(geometry, ST_GeomFromText(:aoi_wkt, :crs))
+    ORDER BY created_at
+    LIMIT 1
+    """).bindparams(aoi_wkt=aoi_wkt, crs=crs, **rainfall_event.as_dict())
+
+    result = engine.execute(query).fetchone()
+    if result is None:
+        # No scenario found
+        return None
+
+    # Scenario found, pull from the result row
+    scenario_id = result[0]
+    log.info(f"Found existing MEDUSA scenario with matching parameters with id {scenario_id}.")
+    return scenario_id
+
+
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
          log_level: LogLevel = LogLevel.DEBUG,
          antecedent_dry_days: float = 1,
@@ -777,6 +838,11 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
 
     # Wrap all parameters for MEDUSA rainfall event into a NamedTuple
     rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
+
+    # Search for a scenario that already exist, and return that one if it does.
+    existing_scenario_id = find_existing_pollution_scenario(engine, area_of_interest, rainfall_event)
+    if existing_scenario_id is not None:
+        return existing_scenario_id
 
     # Run the pollution model
     scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
