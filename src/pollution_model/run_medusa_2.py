@@ -167,7 +167,7 @@ def compute_tss_roof_road(surface_area: float,
         case SurfaceType.ZINCALUME:
             a1, a2, a3 = 0.4, 0.5, 0.008
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
-            a1, a2, a3 = 2.9, 0.16, 0.0008
+            a1, a2, a3 = 190, 0.16, 0.0125
         case _:
             raise ValueError(invalid_surface_error)
     antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
