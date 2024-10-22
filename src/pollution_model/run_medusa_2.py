@@ -6,7 +6,6 @@ TZn (total zinc), and DZn (dissolved zinc).
 DOI of the model paper: https://doi.org/10.3390/w12040969
 """
 
-
 import logging
 import math
 from enum import StrEnum
@@ -20,9 +19,7 @@ from sqlalchemy.sql import text
 from src import geoserver
 from src.config import EnvVariable
 from src.digitaltwin import setup_environment
-from src.digitaltwin import tables
-from src.digitaltwin.tables import create_table, check_table_exists
-from src.digitaltwin.tables import execute_query
+from src.digitaltwin.tables import create_table, check_table_exists, execute_query
 from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
 from src.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Medusa2ModelOutputRoads
 from src.pollution_model.pollution_tables import MedusaScenarios
@@ -30,9 +27,9 @@ from src.pollution_model.pollution_tables import MedusaScenarios
 log = logging.getLogger(__name__)
 
 
-def read_roof_surface_polygons(engine: Engine) -> gpd.GeoDataFrame:
+def read_roof_surface_points(engine: Engine) -> None:
     """
-    Read building data under polygons. Then store them into database.
+    Read building data under points. Then store them into database.
 
     Parameters
     ----------
@@ -40,14 +37,14 @@ def read_roof_surface_polygons(engine: Engine) -> gpd.GeoDataFrame:
         The engine used to connect to the database.
     """
     # Check if the table already exist in the database
-    if tables.check_table_exists(engine, "roof_surface_points"):
+    if check_table_exists(engine, "roof_surface_points"):
         log.info("roof_surface_points data already exists in the database.")
     else:
         # Read roof surface points from outside
         # This data has the deeplearn_matclass with roof types we need
-        roof_surface_points = gpd.read_file(
-            "/home/martinnguyen204/Digital-Twin/points_fullversion.shp"
-        )
+        roof_points_file = pathlib.Path("./tmp/medusa_shapefiles/ccc/points_fullversion.shp")
+        log.info(f"Reading roof surface points file {roof_points_file}.")
+        roof_surface_points = gpd.read_file(roof_points_file)
         # Rename
         roof_surface_points = roof_surface_points.rename(columns={
             'deeplearn_': 'deeplearn_matclass',
@@ -68,7 +65,7 @@ def read_roof_surface_polygons(engine: Engine) -> gpd.GeoDataFrame:
         roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
 
 
-def read_roof_surface_points(engine: Engine) -> gpd.GeoDataFrame:
+def read_roof_surface_polygons(engine: Engine) -> None:
     """
     Read building data under points. Then store them into database.
 
@@ -78,13 +75,13 @@ def read_roof_surface_points(engine: Engine) -> gpd.GeoDataFrame:
         The engine used to connect to the database.
     """
     # Check if the table already exist in the database
-    if tables.check_table_exists(engine, "roof_surface_polygons"):
+    if check_table_exists(engine, "roof_surface_polygons"):
         log.info("roof_surface_polygons data already exists in the database.")
     else:
         # Read roof surface polygons from outside
-        roof_surface_polygons = gpd.read_file(
-            "/home/martinnguyen204/Digital-Twin/polygons_fullversion.shp"
-        )
+        roof_polygon_file = pathlib.Path("./tmp/medusa_shapefiles/ccc/polygons_fullversion.shp")
+        log.info(f"Reading roof surface polygons file {roof_polygon_file}.")
+        roof_surface_polygons = gpd.read_file(roof_polygon_file)
         # Rename building_Id to building_id
         roof_surface_polygons = roof_surface_polygons.rename(columns={
             'building_I': 'building_id',
@@ -95,9 +92,9 @@ def read_roof_surface_points(engine: Engine) -> gpd.GeoDataFrame:
         roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
 
 
-def merge_roof_surface(engine: Engine) -> gpd.GeoDataFrame:
+def merge_roof_surface(engine: Engine) -> None:
     """
-    Merge building data under polygons and points. Then store them into database.
+    Merge surface type points with roof surface polygons. Then store them into database.
 
     Parameters
     ----------
@@ -111,7 +108,7 @@ def merge_roof_surface(engine: Engine) -> gpd.GeoDataFrame:
     read_roof_surface_points(engine)
 
     # Check if the table already exist in the database
-    if tables.check_table_exists(engine, "roof_surface"):
+    if check_table_exists(engine, "roof_surface"):
         log.info("roof_surface data already exists in the database.")
     else:
         # Merge building points and polygons using inner join,
@@ -143,10 +140,7 @@ def merge_roof_surface(engine: Engine) -> gpd.GeoDataFrame:
         # Case 2: Everything is the same except the surface_type
         roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_id'])
 
-        # THIS IS JUST FOR TESTING A SMALL DATASET
-        # REMOVE THIS IN THE FUTURE
-        roof_surface_merge = roof_surface_merge[0:1000].copy(deep=True)
-        # Store the building_point_data to the database table
+        # Store the combined roof surface types and polygons to the database table
         log.info("Adding roof_surface table to the database.")
         roof_surface_merge.to_postgis("roof_surface", engine, index=False, if_exists="replace")
 
@@ -535,7 +529,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     """
     # Get building information
     merge_roof_surface(engine)
-    # buildings = buildings.set_index("building_id")
 
     # Convert current area of interest format into the format can be used by SQL
     aoi_wkt = area_of_interest["geometry"][0].wkt
@@ -833,7 +826,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
 
     # # Ensure pollution model data is being served by geoserver
-    # serve_pollution_model()
+    serve_pollution_model()
 
     # Create new table recording users' history
     create_table(engine, MedusaScenarios)
@@ -885,8 +878,6 @@ def retrieve_input_parameters(scenario_id: int) -> Optional[Dict[str, Union[str,
 
 
 if __name__ == "__main__":
-    # engine = setup_environment.get_database()
-    # merge_data(engine)
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     main(
         selected_polygon_gdf=sample_polygon,
@@ -894,5 +885,5 @@ if __name__ == "__main__":
         antecedent_dry_days=1,
         average_rain_intensity=1,
         event_duration=1,
-        rainfall_ph=7
+        rainfall_ph=6.5
     )

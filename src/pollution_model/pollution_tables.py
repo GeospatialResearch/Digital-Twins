@@ -126,7 +126,7 @@ class Medusa2ModelOutputBuildings(_BaseMedusa2ModelOutput):
     """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "medusa2_model_output_buildings"
-    geometry_table = "nz_building_outlines"
+    geometry_table = "roof_surface_polygons"
     spatial_feature_id = Column(Integer, primary_key=True, name="building_id")
 
 
