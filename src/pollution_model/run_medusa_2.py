@@ -490,6 +490,11 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
 
     # Execute the SQL query
     buildings = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_Id", geom_col="geometry")
+
+    # Some buildings have multiple points, we can only define a building as one surface type without duplicating area.
+    # So we drop duplicates by building_Id (index).
+    buildings = buildings[~buildings.index.duplicated(keep='first')]
+
     return buildings
 
 
@@ -909,8 +914,8 @@ if __name__ == "__main__":
     main(
         selected_polygon_gdf=sample_polygon,
         log_level=LogLevel.DEBUG,
-        antecedent_dry_days=1,
-        average_rain_intensity=1,
-        event_duration=1,
+        antecedent_dry_days=1.45833333333333,
+        average_rain_intensity=0.5,
+        event_duration=2,
         rainfall_ph=6.5
     )
