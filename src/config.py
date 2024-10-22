@@ -93,10 +93,14 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     DEBUG_TRACEBACK = _get_bool_env_variable("DEBUG_TRACEBACK", default=False)
     TEST_DATABASE_INTEGRATION = _get_bool_env_variable("TEST_DATABASE_INTEGRATION", default=True)
 
+    ROOF_SURFACE_POLYGON_PATH = pathlib.Path(_get_env_variable("ROOF_SURFACE_POLYGON_FILE"))
+    ROOF_SURFACE_TYPE_POINTS_PATH = pathlib.Path(_get_env_variable("ROOF_SURFACE_TYPE_POINTS_FILE"))
+
     DATA_DIR = pathlib.Path(_get_env_variable("DATA_DIR"))
     DATA_DIR_MODEL_OUTPUT = pathlib.Path(_get_env_variable("DATA_DIR_MODEL_OUTPUT"))
     DATA_DIR_GEOSERVER = pathlib.Path(_get_env_variable("DATA_DIR_GEOSERVER"))
     FLOOD_MODEL_DIR = pathlib.Path(_get_env_variable("FLOOD_MODEL_DIR"))
+
 
     POSTGRES_HOST = _get_env_variable("POSTGRES_HOST", default="localhost")
     POSTGRES_PORT = _get_env_variable("POSTGRES_PORT", default="5431")

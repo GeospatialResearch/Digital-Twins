@@ -30,7 +30,7 @@ from src.pollution_model.pollution_tables import MedusaScenarios
 log = logging.getLogger(__name__)
 
 
-def read_roof_surface_points(engine: Engine) -> None:
+def save_roof_surface_type_points_to_db(engine: Engine) -> None:
     """
     Read building data under points. Then store them into database.
 
@@ -45,9 +45,8 @@ def read_roof_surface_points(engine: Engine) -> None:
     else:
         # Read roof surface points from outside
         # This data has the deeplearn_matclass with roof types we need
-        roof_points_file = pathlib.Path("./tmp/medusa_shapefiles/ccc/points_fullversion.shp")
-        log.info(f"Reading roof surface points file {roof_points_file}.")
-        roof_surface_points = gpd.read_file(roof_points_file)
+        log.info(f"Reading roof surface points file {EnvVariable.ROOF_SURFACE_TYPE_POINTS_PATH}.")
+        roof_surface_points = gpd.read_file(EnvVariable.ROOF_SURFACE_TYPE_POINTS_PATH)
         # Rename
         roof_surface_points = roof_surface_points.rename(columns={
             'deeplearn_': 'deeplearn_matclass',
@@ -68,7 +67,7 @@ def read_roof_surface_points(engine: Engine) -> None:
         roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
 
 
-def read_roof_surface_polygons(engine: Engine) -> None:
+def save_roof_surface_polygons_to_db(engine: Engine) -> None:
     """
     Read building data under points. Then store them into database.
 
@@ -82,9 +81,8 @@ def read_roof_surface_polygons(engine: Engine) -> None:
         log.info("roof_surface_polygons data already exists in the database.")
     else:
         # Read roof surface polygons from outside
-        roof_polygon_file = pathlib.Path("./tmp/medusa_shapefiles/ccc/polygons_fullversion.shp")
-        log.info(f"Reading roof surface polygons file {roof_polygon_file}.")
-        roof_surface_polygons = gpd.read_file(roof_polygon_file)
+        log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_POLYGON_PATH}.")
+        roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_POLYGON_PATH)
         # Rename building_Id to building_id
         roof_surface_polygons = roof_surface_polygons.rename(columns={
             'building_I': 'building_id',
@@ -93,59 +91,6 @@ def read_roof_surface_polygons(engine: Engine) -> None:
         # Store the building_point_data to the database table
         log.info("Adding roof_surface_polygons table to the database.")
         roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
-
-
-def merge_roof_surface(engine: Engine) -> None:
-    """
-    Merge surface type points with roof surface polygons. Then store them into database.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    # Read building data under polygon format
-    read_roof_surface_polygons(engine)
-
-    # Read building data under point format
-    read_roof_surface_points(engine)
-
-    # Check if the table already exist in the database
-    if check_table_exists(engine, "roof_surface"):
-        log.info("roof_surface data already exists in the database.")
-    else:
-        # Merge building points and polygons using inner join,
-        # because there will be some building_id in polygon table
-        # that do not have roof surface type
-        query = """
-            SELECT roof_surface_polygons.*, roof_surface_points.deeplearn_subclass
-            FROM roof_surface_polygons
-            INNER JOIN roof_surface_points
-            USING ("building_id")
-        """
-        roof_surface_merge = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
-
-        # Add column surface type
-        roof_surface_types = {
-            'ColourSteel': 'Cs',
-            'MetalTile': 'Mt',
-            'Galvanised': 'Gv',
-            'NonMetal': 'NoMt',
-            'MetalOther': 'Mo',
-            'Zincalume': 'ZnC',
-            'AsphaltRoad': 'Rd',
-            'CarPark': 'CrP'
-        }
-        roof_surface_merge['surface_type'] = roof_surface_merge.deeplearn_subclass.map(roof_surface_types)
-
-        # Remove all duplicates. There are two cases:
-        # Case 1: Everything is the same
-        # Case 2: Everything is the same except the surface_type
-        roof_surface_merge = roof_surface_merge.drop_duplicates(subset=['building_id'])
-
-        # Store the combined roof surface types and polygons to the database table
-        log.info("Adding roof_surface table to the database.")
-        roof_surface_merge.to_postgis("roof_surface", engine, index=False, if_exists="replace")
 
 
 # Enum strings are assigned as they are described in the original paper
@@ -173,14 +118,14 @@ class SurfaceType(StrEnum):
         Car park.
     """
 
-    COLOUR_STEEL = "Cs"
-    GALVANISED = "Gv"
-    METAL_OTHER = "Mo"
-    METAL_TILE = "Mt"
-    NON_METAL = "NoMt"
-    ZINCALUME = "ZnC"
-    ASPHALT_ROAD = "Rd"
-    CAR_PARK = "CrP"  # CarParks are classified the same as roads
+    COLOUR_STEEL = "ColourSteel"
+    GALVANISED = "Galvanised"
+    METAL_OTHER = "MetalOther"
+    METAL_TILE = "MetalTile"
+    NON_METAL = "NonMetal"
+    ZINCALUME = "Zincalume"
+    ASPHALT_ROAD = "AsphaltRoad"
+    CAR_PARK = "CarPark"  # CarParks are classified the same as roads
 
 
 ROOF_SURFACE_TYPES = {SurfaceType.COLOUR_STEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER, SurfaceType.METAL_TILE,
@@ -530,8 +475,10 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    # Get building information
-    merge_roof_surface(engine)
+    # Add roof surface polygons to database
+    save_roof_surface_polygons_to_db(engine)
+    # Add roof surface type points to database.
+    save_roof_surface_type_points_to_db(engine)
 
     # Convert current area of interest format into the format can be used by SQL
     aoi_wkt = area_of_interest["geometry"][0].wkt
@@ -539,21 +486,19 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
 
     # Select all relevant information from the appropriate table
     query = text("""
-       SELECT building_id, surface_type, geometry FROM roof_surface
-       WHERE ST_INTERSECTS(roof_surface.geometry, ST_GeomFromText(:aoi_wkt, :crs));
-       """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
+        SELECT 
+            polygons.building_id,
+            points.deeplearn_subclass AS surface_type, 
+            polygons.geometry
+        FROM roof_surface_polygons AS polygons
+            INNER JOIN roof_surface_points AS points
+        USING ("building_id")
+        WHERE ST_INTERSECTS(points.geometry, ST_GeomFromText(:aoi_wkt, :crs))
+    """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
 
     # Execute the SQL query
     buildings = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_id", geom_col="geometry")
-
-    # Filter out irrelevant columns.
-    buildings_medusa_info = buildings[["surface_type", "geometry"]]
-    # Append columns specific to MEDUSA, to be filled later in the processing.
-    buildings_medusa_info[
-        ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]] = None
-
-    # return the GeoDataFrame containing the relevant data about buildings
-    return gpd.GeoDataFrame(buildings_medusa_info)
+    return buildings
 
 
 def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
