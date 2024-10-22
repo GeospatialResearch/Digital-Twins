@@ -17,6 +17,7 @@ import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
+from tqdm import tqdm
 
 from src import geoserver
 from src.config import EnvVariable
@@ -657,11 +658,14 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
     gpd.GeoDataFrame
         The MEDUSA results for the given surfaces and rainfall_event.
     """
-    # Add empty columns for each of the new medusa columns to be added
+    # Add empty columns for each of the new medusa columns
     for medusa_column in ("total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"):
         surfaces[medusa_column] = pd.Series(dtype='float')
+    # Wrap DataFrame.apply with progress_apply to add tqdm progress bar.
+    tqdm.pandas()
     # Use vectorised operations to add all medusa columns to each row/surface
-    surfaces = surfaces.apply(lambda surface: run_medusa_model_for_single_surface(surface, rainfall_event), axis=1)
+    surfaces = surfaces.progress_apply(lambda surface: run_medusa_model_for_single_surface(surface, rainfall_event),
+                                       axis=1)
     return surfaces
 
 
