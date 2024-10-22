@@ -45,23 +45,11 @@ def save_roof_surface_type_points_to_db(engine: Engine) -> None:
     else:
         # Read roof surface points from outside
         # This data has the deeplearn_matclass with roof types we need
-        log.info(f"Reading roof surface points file {EnvVariable.ROOF_SURFACE_TYPE_POINTS_PATH}.")
-        roof_surface_points = gpd.read_file(EnvVariable.ROOF_SURFACE_TYPE_POINTS_PATH)
-        # Rename
-        roof_surface_points = roof_surface_points.rename(columns={
-            'deeplearn_': 'deeplearn_matclass',
-            'deeplear_1': 'deeplearn_metalconf',
-            'dvr_matcla': 'dvr_matclass',
-            'ensemble_m': 'ensemble_matclass',
-            'ensemble_1': 'ensemble_metalconf',
-            'decay_inde': 'decay_index',
-            'deeplear_2': 'deeplearn_subclass',
-            'subclass_c': 'subclass_conf',
-            'galvanised': 'galvanised_conf',
-            'building_I': 'building_id'
-        })
+        log.info(f"Reading roof surface points from {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
+        roof_surface_points = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH,
+                                            layer="CCC_Lynker_RoofMaterial_Update_2023")
         # Remove rows of building_Id and deeplearn_subclass that are NANs
-        roof_surface_points = roof_surface_points.dropna(subset=['building_id', 'deeplearn_subclass'])
+        roof_surface_points = roof_surface_points.dropna(subset=['building_Id', 'deeplearn_subclass'])
         # Store the building_point_data to the database table
         log.info("Adding roof_surface_points table to the database.")
         roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
@@ -81,13 +69,8 @@ def save_roof_surface_polygons_to_db(engine: Engine) -> None:
         log.info("roof_surface_polygons data already exists in the database.")
     else:
         # Read roof surface polygons from outside
-        log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_POLYGON_PATH}.")
-        roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_POLYGON_PATH)
-        # Rename building_Id to building_id
-        roof_surface_polygons = roof_surface_polygons.rename(columns={
-            'building_I': 'building_id',
-            'Shape_Leng': 'Shape_Length'
-        })
+        log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
+        roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH, layer="BuildingPolygons")
         # Store the building_point_data to the database table
         log.info("Adding roof_surface_polygons table to the database.")
         roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
@@ -459,8 +442,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     Extract relevant information about buildings from central_buildings.geojson, since the input data is not finalised.
     Then formats them such that they are easy to use for pollution modeling purposes.
 
-    Github Issue to resolve the input_data: https://github.com/GeospatialResearch/Digital-Twins/issues/198
-
     Parameters
     ----------
     engine: Engine
@@ -487,17 +468,17 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     # Select all relevant information from the appropriate table
     query = text("""
         SELECT 
-            polygons.building_id,
+            polygons."building_Id",
             points.deeplearn_subclass AS surface_type, 
             polygons.geometry
         FROM roof_surface_polygons AS polygons
             INNER JOIN roof_surface_points AS points
-        USING ("building_id")
+        USING ("building_Id")
         WHERE ST_INTERSECTS(points.geometry, ST_GeomFromText(:aoi_wkt, :crs))
     """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
 
     # Execute the SQL query
-    buildings = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_id", geom_col="geometry")
+    buildings = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_Id", geom_col="geometry")
     return buildings
 
 
