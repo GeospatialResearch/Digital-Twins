@@ -8,7 +8,6 @@ DOI of the model paper: https://doi.org/10.3390/w12040969
 
 import logging
 import math
-import pathlib
 from enum import StrEnum
 from typing import NamedTuple, Dict, Union, Optional
 from xml.sax import saxutils
@@ -98,9 +97,10 @@ class MedusaRainfallEvent(NamedTuple):
         Returns
         -------
         Dict[str, float]
-            Returns the MedusaRainfallEvent parameters as a dictionary."""
+            Returns the MedusaRainfallEvent parameters as a dictionary.
+        """
         # NamedTuple has a documented _asdict method, that is hidden only to prevent conflicts.
-        return self._asdict()
+        return self._asdict()  # pylint: disable=no-member
 
 
 class MetalLoads(NamedTuple):
@@ -478,9 +478,9 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
 
     # Select all relevant information from the appropriate table
     query = text("""
-        SELECT 
+        SELECT
             polygons."building_Id",
-            points.deeplearn_subclass AS surface_type, 
+            points.deeplearn_subclass AS surface_type,
             polygons.geometry
         FROM roof_surface_polygons AS polygons
             INNER JOIN roof_surface_points AS points
@@ -747,7 +747,7 @@ def find_existing_pollution_scenario(engine: Engine,
                                      area_of_interest: gpd.GeoDataFrame,
                                      rainfall_event: MedusaRainfallEvent) -> Optional[int]:
     """
-    Searches the database for a pollution scenario with the same rainfall event parameters that covers the area.
+    Search the database for a pollution scenario with the same rainfall event parameters that covers the area.
 
     Parameters
     ----------
