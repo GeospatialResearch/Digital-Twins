@@ -8,11 +8,13 @@ DOI of the model paper: https://doi.org/10.3390/w12040969
 
 import logging
 import math
+import pathlib
 from enum import StrEnum
 from typing import NamedTuple, Dict, Union, Optional
 from xml.sax import saxutils
 
 import geopandas as gpd
+import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
@@ -595,6 +597,48 @@ def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
     return gpd.GeoDataFrame(roads_medusa_info)
 
 
+def run_medusa_model_for_single_surface(row: gpd.GeoSeries, rainfall_event: MedusaRainfallEvent) -> gpd.GeoSeries:
+    """
+    Run the pollution model for one surface geometry.
+    Calculate the TSS, total metal load, and dissolved metal load and add to the surface. This runs for one rain event.
+
+    Parameters
+    ----------
+    row: gpd.GeoSeries
+        A Polygon containing the surface's geometry with surface type info to run MEDUSA model on.
+    rainfall_event: MedusaRainfallEvent
+        Rainfall event parameters for MEDUSA model.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        The MEDUSA results for the given surfaces and rainfall_event.
+    """
+    surface_type = row["surface_type"]
+    if surface_type == SurfaceType.ASPHALT_ROAD:
+        surface_area = row.geometry.length * 5
+    else:
+        surface_area = row.geometry.area
+
+    curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
+
+    curr_total_copper, curr_total_zinc = total_metal_load_surface(surface_area,
+                                                                  rainfall_event,
+                                                                  surface_type,
+                                                                  curr_tss)
+
+    curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
+                                                                      total_zinc_load=curr_total_zinc,
+                                                                      surface_type=surface_type)
+    updated_values = {"total_suspended_solids": curr_tss,
+                      "total_copper": curr_total_copper,
+                      "total_zinc": curr_total_zinc,
+                      "dissolved_copper": curr_dissolved_copper,
+                      "dissolved_zinc": curr_dissolved_zinc}
+    row.update(updated_values)
+    return row
+
+
 def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
                                             rainfall_event: MedusaRainfallEvent) -> gpd.GeoDataFrame:
     """
@@ -613,29 +657,11 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
     gpd.GeoDataFrame
         The MEDUSA results for the given surfaces and rainfall_event.
     """
-    for feature_id, row in surfaces.iterrows():
-        surface_type = row["surface_type"]
-        if surface_type == SurfaceType.ASPHALT_ROAD:
-            surface_area = row.geometry.length * 5
-        else:
-            surface_area = row.geometry.area
-
-        curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
-
-        curr_total_copper, curr_total_zinc = total_metal_load_surface(surface_area,
-                                                                      rainfall_event,
-                                                                      surface_type,
-                                                                      curr_tss)
-
-        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
-                                                                          total_zinc_load=curr_total_zinc,
-                                                                          surface_type=surface_type)
-        updated_values = {"total_suspended_solids": curr_tss,
-                          "total_copper": curr_total_copper,
-                          "total_zinc": curr_total_zinc,
-                          "dissolved_copper": curr_dissolved_copper,
-                          "dissolved_zinc": curr_dissolved_zinc}
-        surfaces.loc[feature_id, updated_values.keys()] = updated_values
+    # Add empty columns for each of the new medusa columns to be added
+    for medusa_column in ("total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"):
+        surfaces[medusa_column] = pd.Series(dtype='float')
+    # Use vectorised operations to add all medusa columns to each row/surface
+    surfaces = surfaces.apply(lambda surface: run_medusa_model_for_single_surface(surface, rainfall_event), axis=1)
     return surfaces
 
 
@@ -670,12 +696,12 @@ def run_pollution_model_rain_event(engine: Engine,
 
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
     log.info(calculation_pending_log_message.format(features="buildings"))
-    run_medusa_model_for_surface_geometries(all_buildings, rainfall_event)
+    all_buildings = run_medusa_model_for_surface_geometries(all_buildings, rainfall_event)
     log.info(calculation_complete_log_message.format(features="buildings"))
 
     # Run through all the roads/car parks, and calculate TSS, total metal loads, and dissolved metal loads
     log.info(calculation_pending_log_message.format(features="roads and car parks"))
-    run_medusa_model_for_surface_geometries(all_roads, rainfall_event)
+    all_roads = run_medusa_model_for_surface_geometries(all_roads, rainfall_event)
     log.info(calculation_complete_log_message.format(features="roads and car parks"))
 
     # Drop the geometry columns now, since they can be joined to the spatial tables so we reduce data duplication
