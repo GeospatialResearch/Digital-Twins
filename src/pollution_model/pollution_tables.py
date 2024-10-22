@@ -127,7 +127,7 @@ class Medusa2ModelOutputBuildings(_BaseMedusa2ModelOutput):
 
     __tablename__ = "medusa2_model_output_buildings"
     geometry_table = "roof_surface_polygons"
-    spatial_feature_id = Column(Integer, primary_key=True, name="building_id")
+    spatial_feature_id = Column(Integer, primary_key=True, name="building_Id")
 
 
 class Medusa2ModelOutputRoads(_BaseMedusa2ModelOutput):
