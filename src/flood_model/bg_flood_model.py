@@ -20,8 +20,9 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import text
 
-from src import config
+from src.config import EnvVariable
 from src.digitaltwin import setup_environment
+from src.digitaltwin.s3_connection import S3Manager
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.flood_model.flooded_buildings import find_flooded_buildings
@@ -48,7 +49,7 @@ def get_valid_bg_flood_dir() -> pathlib.Path:
         If the BG-Flood Model directory is not found or is not a valid directory.
     """
     # Get the BG-Flood Model directory from the environment variable
-    bg_flood_dir = config.EnvVariable.FLOOD_MODEL_DIR
+    bg_flood_dir = EnvVariable.FLOOD_MODEL_DIR
     # Check if the directory exists and is a valid directory
     if bg_flood_dir.exists() and bg_flood_dir.is_dir():
         return bg_flood_dir
@@ -58,46 +59,63 @@ def get_valid_bg_flood_dir() -> pathlib.Path:
 
 def get_new_model_output_path() -> pathlib.Path:
     """
-    Get a new file path for saving the BG Flood model output with the current timestamp included in the filename.
+    Get a new file path for saving the BG-Flood model output with the current timestamp included in the filename.
 
     Returns
     -------
     pathlib.Path
-        The path to the BG Flood model output file.
+        The path to the BG-Flood model output file.
     """
-    # Get the BG Flood model output directory from the environment variable
-    model_output_dir = config.EnvVariable.DATA_DIR_MODEL_OUTPUT
-    # Create the BG Flood model output directory if it does not already exist
+    # Get the BG-Flood model output directory from the environment variable
+    model_output_dir = EnvVariable.DATA_DIR / "model_output"
+    # Create the BG-Flood model output directory if it does not already exist
     model_output_dir.mkdir(parents=True, exist_ok=True)
     # Get the current timestamp in "YYYY_MM_DD_HH_MM_SS" format
     dt_string = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    # Create the BG Flood model output path with the current timestamp
+    # Create the BG-Flood model output path with the current timestamp
     model_output_path = model_output_dir / f"output_{dt_string}.nc"
     return model_output_path
+
+
+def store_model_output_to_s3(model_output_path: pathlib.Path) -> None:
+    """
+    Store the BG-Flood model output located at the provided local `model_output_path` in the AWS S3 bucket.
+
+    Parameters
+    ----------
+    model_output_path : pathlib.Path
+        The path to the BG-Flood model output file.
+    """
+    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
+    use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
+    # If using S3 bucket, store the BG-Flood model output in the S3 bucket
+    if use_aws_s3_bucket:
+        s3_manager = S3Manager()
+        s3_manager.store_file(s3_object_key=model_output_path, file_path=model_output_path)
 
 
 def get_model_output_metadata(
         model_output_path: pathlib.Path,
         catchment_area: gpd.GeoDataFrame) -> Tuple[str, str, str]:
     """
-    Get metadata related to the BG Flood model output.
+    Get metadata related to the BG-Flood model output.
 
     Parameters
     ----------
     model_output_path : pathlib.Path
-        The path to the BG Flood model output file.
+        The path to the BG-Flood model output file.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     Tuple[str, str, str]
-        A tuple containing three elements: the name of the BG Flood model output file, its absolute path as a string,
+        A tuple containing three elements: the name of the BG-Flood model output file, its absolute path as a string,
         and the Well-Known Text (WKT) representation of the catchment area's geometry.
     """
-    # Get the name of the BG Flood model output file
+    # Get the name of the BG-Flood model output file
     output_name = model_output_path.name
-    # Get the absolute path of the BG Flood model output file as a string
+    # Get the absolute path of the BG-Flood model output file as a string
     output_path = model_output_path.as_posix()
     # Get the WKT representation of the catchment area's geometry
     catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
@@ -110,29 +128,29 @@ def store_model_output_metadata_to_db(
         model_output_path: pathlib.Path,
         catchment_area: gpd.GeoDataFrame) -> int:
     """
-    Store metadata related to the BG Flood model output in the database.
+    Store metadata related to the BG-Flood model output in the database.
 
     Parameters
     ----------
     engine : Engine
         The engine used to connect to the database.
     model_output_path : pathlib.Path
-        The path to the BG Flood model output file.
+        The path to the BG-Flood model output file.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
 
     Returns
     -------
     int
-        Returns the model id of the new flood_model produced
+        Returns the model id of the new flood model produced
     """
     # Create the 'bg_flood_model_output' table in the database if it doesn't exist
     create_table(engine, BGFloodModelOutput)
-    # Get the metadata related to the BG Flood model output
+    # Get the metadata related to the BG-Flood model output
     output_name, output_path, geometry = get_model_output_metadata(model_output_path, catchment_area)
     # Create a new query object representing the BG-Flood model output metadata
     query = insert(BGFloodModelOutput).values(file_name=output_name, file_path=output_path, geometry=geometry)
-    # Execute the query to store the BG Flood model output metadata in the database while retrieving id
+    # Execute the query to store the BG-Flood model output metadata in the database while retrieving id
     with engine.begin() as conn:
         result = conn.execute(query)
     model_id = result.inserted_primary_key[0]
@@ -212,24 +230,20 @@ def model_extents_from_db_by_id(engine: Engine, model_id: int) -> gpd.GeoDataFra
     return geometry
 
 
-def add_crs_to_model_output(engine: Engine, flood_model_output_id: int) -> None:
+def add_crs_to_model_output(model_output_path: pathlib.Path) -> None:
     """
-    Add Coordinate Reference System (CRS) to the BG-Flood model output.
+    Add Coordinate Reference System (CRS) to the latest BG-Flood model output.
 
     Parameters
     ----------
-    engine: Engine
-        The sqlalchemy database connection engine
-    flood_model_output_id: int
-        The ID of the flood model output being queried for
+    model_output_path : pathlib.Path
+        The path to the BG-Flood model output file.
     """
-    # Get the path to the latest BG-Flood model output file from the database
-    model_output_file = model_output_from_db_by_id(engine, flood_model_output_id)
     # Create a temporary file path for saving modifications before replacing the current latest model output file
-    temp_file = model_output_file.with_name(f"{model_output_file.stem}_temp{model_output_file.suffix}")
+    temp_file = model_output_path.with_name(f"{model_output_path.stem}_temp{model_output_path.suffix}")
 
     # Open the latest model output file as a xarray dataset
-    with xr.open_dataset(model_output_file, decode_coords="all") as latest_output:
+    with xr.open_dataset(model_output_path, decode_coords="all") as latest_output:
         # Check if the dataset lacks a Coordinate Reference System (CRS)
         if latest_output.rio.crs is None:
             # Add the Coordinate Reference System (CRS) information to the dataset
@@ -242,10 +256,10 @@ def add_crs_to_model_output(engine: Engine, flood_model_output_id: int) -> None:
             latest_output.to_netcdf(temp_file)
 
     # Check if both the original and temporary files exist
-    if model_output_file.exists() and temp_file.exists():
+    if model_output_path.exists() and temp_file.exists():
         # Replace the original file with the modified temporary file
-        temp_file.replace(model_output_file)
-    log.debug(f"Added CRS info to {model_output_file}")
+        temp_file.replace(model_output_path)
+        log.debug(f"Added CRS info to {model_output_path}")
 
 
 def process_rain_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) -> None:
@@ -343,7 +357,7 @@ def prepare_bg_flood_model_inputs(
     bg_flood_dir : pathlib.Path
         The BG-Flood Model directory.
     model_output_path : pathlib.Path
-        The new file path for saving the BG Flood model output with the current timestamp included in the filename.
+        The new file path for saving the BG-Flood model output with the current timestamp included in the filename.
     hydro_dem_path : pathlib.Path,
         The file path of the Hydrologically conditioned DEM (Hydro DEM) for the specified catchment area.
     resolution : Union[int, float]
@@ -411,7 +425,7 @@ def run_bg_flood_model(
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     model_output_path : pathlib.Path
-        The new file path for saving the BG Flood model output with the current timestamp included in the filename.
+        The new file path for saving the BG-Flood model output with the current timestamp included in the filename.
     output_timestep : Union[int, float]
         Time step between model outputs in seconds. If the value is set to 0 then no output is generated.
     end_time : Union[int, float]
@@ -470,7 +484,7 @@ def run_bg_flood_model(
         subprocess.run([bg_flood_dir / "BG_Flood"], check=True)
     # Change the current working directory back to the original directory (cwd)
     os.chdir(cwd)
-    log.info(f"Saved new flood model to {model_output_path}")
+    log.info(f"Saved the new flood model to {model_output_path}")
 
 
 def main(
@@ -529,7 +543,7 @@ def main(
     engine = setup_environment.get_database()
     # Get catchment area
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
-    # Get a new file path for saving the BG Flood model output with the current timestamp included in the filename
+    # Get a new file path for saving the BG-Flood model output with the current timestamp included in the filename
     model_output_path = get_new_model_output_path()
 
     # Run the BG-Flood Model for the specified catchment area
@@ -544,11 +558,14 @@ def main(
         gpu_device=gpu_device,
         small_nc=small_nc
     )
-
-    # Store metadata related to the BG Flood model output in the database
-    model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
     # Add CRS to the latest BG-Flood model output
-    add_crs_to_model_output(engine, model_id)
+    add_crs_to_model_output(model_output_path)
+
+    # If using S3 Bucket, then store the BG-Flood model output in the S3 bucket
+    store_model_output_to_s3(model_output_path)
+    # Store metadata related to the BG-Flood model output in the database
+    model_id = store_model_output_metadata_to_db(engine, model_output_path, catchment_area)
+
     # Find buildings that are flooded to a depth greater than or equal to 0.1m
     log.info("Analysing flooded buildings")
     flooded_buildings = find_flooded_buildings(engine, catchment_area, model_output_path, flood_depth_threshold=0.1)
@@ -563,11 +580,11 @@ if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
     main(
         selected_polygon_gdf=sample_polygon,
-        output_timestep=100,
-        end_time=900,
+        output_timestep=1,
+        end_time=2,
         resolution=None,
         mask=9999,
-        gpu_device=0,
+        gpu_device=-1,
         small_nc=0,
         log_level=LogLevel.DEBUG
     )

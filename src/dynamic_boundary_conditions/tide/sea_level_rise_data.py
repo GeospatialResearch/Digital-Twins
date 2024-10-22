@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
+This script handles the fetching and reading of sea level rise data from the NZ Sea level rise datasets,
 storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
 in the provided tide data.
 """

@@ -7,7 +7,7 @@ import geopandas as gpd
 from OSMPythonTools.cachingStrategy import CachingStrategy, JSON
 from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
-from src import config
+from src.config import EnvVariable
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 def configure_osm_cache() -> None:
     """Change the directory for storing the OSM cache files."""
     # Get the data directory from the environment variable
-    data_dir = config.EnvVariable.DATA_DIR
+    data_dir = EnvVariable.DATA_DIR
     # Define the OSM cache directory
     osm_cache_dir = data_dir / "osm_cache"
     # Change the directory for storing the OSM cache files

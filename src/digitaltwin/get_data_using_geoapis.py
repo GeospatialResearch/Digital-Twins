@@ -10,7 +10,7 @@ from typing import Optional
 import geopandas as gpd
 from geoapis.vector import StatsNz, Linz, WfsQueryBase
 
-from src import config
+from src.config import EnvVariable
 
 
 class MFE(WfsQueryBase):
@@ -82,13 +82,13 @@ def fetch_vector_data_using_geoapis(
     """
     # Determine the appropriate vector fetcher based on the data provider
     if data_provider == "StatsNZ":
-        stats_nz_api_key = config.EnvVariable.STATSNZ_API_KEY
+        stats_nz_api_key = EnvVariable.STATSNZ_API_KEY
         vector_fetcher = StatsNz(key=stats_nz_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
     elif data_provider == "LINZ":
-        linz_api_key = config.EnvVariable.LINZ_API_KEY
+        linz_api_key = EnvVariable.LINZ_API_KEY
         vector_fetcher = Linz(key=linz_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
     elif data_provider == "MFE":
-        mfe_api_key = config.EnvVariable.MFE_API_KEY
+        mfe_api_key = EnvVariable.MFE_API_KEY
         vector_fetcher = MFE(key=mfe_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
     else:
         raise ValueError(f"Unsupported data_provider: {data_provider}")

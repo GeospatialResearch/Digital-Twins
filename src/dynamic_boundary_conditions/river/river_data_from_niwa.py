@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Fetch REC data in New Zealand from NIWA using the ArcGIS REST API."""
+"""Fetch REC data in New Zealand from NIWA."""
 
 import asyncio
 import logging

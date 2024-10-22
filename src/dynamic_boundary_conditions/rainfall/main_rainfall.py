@@ -8,7 +8,7 @@ from typing import Optional, Union
 
 import geopandas as gpd
 
-from src import config
+from src.config import EnvVariable
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 from src.dynamic_boundary_conditions.rainfall import (
@@ -76,7 +76,7 @@ def main(
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=4326)
 
     # BG-Flood Model Directory
-    bg_flood_dir = config.EnvVariable.FLOOD_MODEL_DIR
+    bg_flood_dir = EnvVariable.FLOOD_MODEL_DIR
     # Remove any existing rainfall model inputs in the BG-Flood directory
     rainfall_model_input.remove_existing_rain_inputs(bg_flood_dir)
 
