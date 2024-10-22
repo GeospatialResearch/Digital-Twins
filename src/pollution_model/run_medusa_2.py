@@ -554,20 +554,25 @@ def run_medusa_model_for_single_surface(row: gpd.GeoSeries, rainfall_event: Medu
     """
     surface_type = row["surface_type"]
     if surface_type == SurfaceType.ASPHALT_ROAD:
+        # Roughly approximate the surface area of a road by assuming it's width is 5m
         surface_area = row.geometry.length * 5
     else:
         surface_area = row.geometry.area
 
+    # Calculate total suspended solids contributed by surface
     curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
 
+    # Calculate total copper and total zinc contributed by surface
     curr_total_copper, curr_total_zinc = total_metal_load_surface(surface_area,
                                                                   rainfall_event,
                                                                   surface_type,
                                                                   curr_tss)
 
+    # Calculate dissolved copper and dissolved zinc contributed by surface
     curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
                                                                       total_zinc_load=curr_total_zinc,
                                                                       surface_type=surface_type)
+    # Update the current row with the values found for each MEDUSA column.
     updated_values = {"total_suspended_solids": curr_tss,
                       "total_copper": curr_total_copper,
                       "total_zinc": curr_total_zinc,
@@ -847,7 +852,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Run the pollution model
     scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
 
-    # # Ensure pollution model data is being served by geoserver
+    # Ensure pollution model data is being served by geoserver
     serve_pollution_model()
 
     # Create new table recording users' history
