@@ -7,48 +7,16 @@ from typing import Dict, Union
 
 import geopandas as gpd
 
-from src.config import EnvVariable
-from src.digitaltwin import retrieve_static_boundaries
+from src.digitaltwin import retrieve_static_boundaries, s3_connection
 from src.digitaltwin.utils import LogLevel
 from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
 from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.river.river_enum import BoundType
 from src.dynamic_boundary_conditions.tide import main_tide_slr
+from src.environmental.water_quality import main_water_quality
 from src.flood_model import bg_flood_model, process_hydro_dem
 from src.pollution_model import run_medusa_2
-from src.environmental.water_quality import main_water_quality
-
-
-def validate_aws_env_vars() -> None:
-    """
-    Validate that necessary AWS environment variables are set when S3 usage is enabled.
-
-    Raises
-    ------
-    ValueError
-        If any required AWS environment variable is missing when S3 usage is enabled.
-    """
-    # Check if S3 usage is enabled from the USE_AWS_S3_BUCKET environment variable
-    use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
-    # If S3 usage is enabled, check that required AWS variables are set
-    if use_aws_s3_bucket:
-        # Retrieve AWS_ACCESS_KEY_ID from environment variables
-        aws_access_key_id = EnvVariable.AWS_ACCESS_KEY_ID
-        # Retrieve AWS_SECRET_ACCESS_KEY from environment variables
-        aws_secret_access_key = EnvVariable.AWS_SECRET_ACCESS_KEY
-        # Retrieve AWS_BUCKET_NAME from environment variables
-        aws_bucket_name = EnvVariable.AWS_BUCKET_NAME
-
-        # Raise an error if AWS_ACCESS_KEY_ID is not set
-        if not aws_access_key_id:
-            raise ValueError("Environment variable `AWS_ACCESS_KEY_ID` must be set when S3 usage is enabled.")
-        # Raise an error if AWS_SECRET_ACCESS_KEY is not set
-        if not aws_secret_access_key:
-            raise ValueError("Environment variable `AWS_SECRET_ACCESS_KEY` must be set when S3 usage is enabled.")
-        # Raise an error if AWS_BUCKET_NAME is not set
-        if not aws_bucket_name:
-            raise ValueError("Environment variable `AWS_BUCKET_NAME` must be set when S3 usage is enabled.")
 
 
 def main(
@@ -74,7 +42,7 @@ def main(
         - LogLevel.NOTSET (0)
     """
     # Validate that necessary AWS environment variables are set when S3 usage is enabled
-    validate_aws_env_vars()
+    s3_connection.validate_aws_env_vars()
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
         # Call the main function of each module with the selected polygon and specified parameters
