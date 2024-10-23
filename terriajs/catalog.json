@@ -9,24 +9,185 @@
     {
       "name": "Christchurch City Council OpenData",
       "type": "group",
-      "isOpen": true,
+      "isOpen": false,
+      "sortMembersBy": "name",
+      "includeMembersRegex": "District Plan|Storm Water|Tree|Water Course",
       "members": [
         {
-          "type": "esri-featureServer",
-          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/WaterCourse/FeatureServer/29",
-          "name": "Water Course - Avon/Ōtākaro (OpenData)",
-          "id": "ccc-wc-water-course",
-          "where": "RiverSystem='Avon'",
-          "maxFeatures": 2000,
-          "featuresPerRequest": 2000,
-          "supportsPagination": true,
+          "type": "esri-mapServer-group",
+          "name": "Building Control",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/BuildingControl/MapServer",
+          "id": "ccc-building-control-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Communication",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Communication/MapServer",
+          "id": "ccc-communication-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Cycle",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Cycle/MapServer",
+          "id": "ccc-cycle-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Development Contribution",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/DevelopmentContribution/MapServer",
+          "id": "ccc-development-contribution-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "District Plan",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/DistrictPlan/MapServer",
+          "id": "ccc-district-plan-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Electricity",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Electricity/MapServer",
+          "id": "ccc-electricity-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Fuel",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Fuel/MapServer",
+          "id": "ccc-fuel-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Furniture",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Furniture/MapServer",
+          "id": "ccc-furniture-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Green Asset",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/GreenAsset/MapServer",
+          "id": "ccc-green-asset-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Hard Surface",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/HardSurface/MapServer",
+          "id": "ccc-hard-surface-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Land Characteristic",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/LandCharacteristic/MapServer",
+          "id": "ccc-land-characteristic-map-server",
+          "displayGroup": false
+        },
+
+        {
+          "type": "esri-mapServer-group",
+          "name": "Land Drainage",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/LandDrainage/MapServer",
+          "id": "ccc-land-drainage-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Maintenance Area",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/MaintenanceArea/MapServer",
+          "id": "ccc-maintenance-area-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Property",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Property/MapServer",
+          "id": "ccc-property-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Recreation",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Recreation/MapServer",
+          "id": "ccc-recreation-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Regulatory",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Regulatory/MapServer",
+          "id": "ccc-regulatory-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Road",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Road/MapServer",
+          "id": "ccc-road-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Site Utility",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/SiteUtility/MapServer",
+          "id": "ccc-site-utility-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Storm Water",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/StormWater/MapServer",
+          "id": "ccc-storm-water-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Structure",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Structure/MapServer",
+          "id": "ccc-structure-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Tree",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/Tree/MapServer",
+          "id": "ccc-tree-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Waste Water",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/WasteWater/MapServer",
+          "id": "ccc-waste-water-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Water Course",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/WaterCourse/MapServer",
+          "id": "ccc-water-course-map-server",
+          "displayGroup": false
+        },
+        {
+          "type": "esri-mapServer-group",
+          "name": "Water Supply",
+          "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/WaterSupply/MapServer",
+          "id": "ccc-water-supply-map-server",
+          "displayGroup": false
         }
       ]
     },
     {
       "name": "Ōtākaro Digital Twin Custom Analysis",
       "type": "group",
-      "isOpen": true,
+      "isOpen": false,
       "members": [
         {
           "name": "MEDUSA Pollution source model",
