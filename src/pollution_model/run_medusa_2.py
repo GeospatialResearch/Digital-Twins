@@ -606,13 +606,19 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
         The MEDUSA results for the given surfaces and rainfall_event.
     """
     # Add empty columns for each of the new medusa columns
-    for medusa_column in ("total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"):
+    MEDUSA_COLUMNS = ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]
+    for medusa_column in MEDUSA_COLUMNS:
         surfaces[medusa_column] = pd.Series(dtype='float')
     # Wrap DataFrame.apply with progress_apply to add tqdm progress bar.
     tqdm.pandas()
     # Use vectorised operations to add all medusa columns to each row/surface
     surfaces = surfaces.progress_apply(lambda surface: run_medusa_model_for_single_surface(surface, rainfall_event),
                                        axis=1)
+
+    # Due to issue https://github.com/GeospatialResearch/Digital-Twins/issues/276 MEDUSA outputs are negative.
+    # This swaps the data absolute value to make it look cleaner until the issue is fixed.
+    # If #276 is resoved, then it's safe to remove this, but it is safe to leave in until then.
+    surfaces[MEDUSA_COLUMNS] = surfaces[MEDUSA_COLUMNS].abs()
     return surfaces
 
 
