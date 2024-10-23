@@ -709,7 +709,7 @@ def serve_pollution_model() -> None:
         SELECT medusa.*, geometry
         FROM {medusa_table_name} as medusa
              INNER JOIN {geometry_table_name} as spatial
-                ON medusa.{spatial_id_column}=spatial.{spatial_id_column}
+                ON medusa."{spatial_id_column}"=spatial."{spatial_id_column}"
         """
         # Escape characters in SQL query so that it is valid Geoserver XML
         xml_escaped_sql = saxutils.escape(pollution_sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
