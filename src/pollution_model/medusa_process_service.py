@@ -32,7 +32,6 @@ class MedusaProcessService(Process):
             title="Medusa",
             inputs=inputs,
             outputs=outputs,
-            status_supported=True,
             store_supported=True
         )
 

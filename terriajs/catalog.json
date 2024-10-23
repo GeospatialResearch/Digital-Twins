@@ -19,7 +19,7 @@
           "where": "RiverSystem='Avon'",
           "maxFeatures": 2000,
           "featuresPerRequest": 2000,
-          "supportsPagination": true,
+          "supportsPagination": true
         }
       ]
     },
