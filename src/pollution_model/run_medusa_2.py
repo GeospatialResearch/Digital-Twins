@@ -814,7 +814,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
          antecedent_dry_days: float = 1,
          average_rain_intensity: float = 10000,
          event_duration: float = 5,
-         rainfall_ph: float = 7) -> int:
+         rainfall_ph: float = 6.5) -> int:
     """
     Generate pollution model output for the requested catchment area, and save result to database.
 
