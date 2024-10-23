@@ -706,7 +706,16 @@ def serve_pollution_model() -> None:
 
         # Construct query linking medusa_table_class to its geometry table
         pollution_sql_query = f"""
-        SELECT medusa.*, geometry
+        SELECT 
+            total_suspended_solids,
+            total_copper,
+            total_zinc,
+            dissolved_copper,
+            dissolved_zinc,
+            surface_type,
+            scenario_id,
+            spatial."{spatial_id_column}",
+            geometry
         FROM {medusa_table_name} as medusa
              INNER JOIN {geometry_table_name} as spatial
                 ON medusa."{spatial_id_column}"=spatial."{spatial_id_column}"
@@ -858,6 +867,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Search for a scenario that already exist, and return that one if it does.
     existing_scenario_id = find_existing_pollution_scenario(engine, area_of_interest, rainfall_event)
     if existing_scenario_id is not None:
+        serve_pollution_model()
         return existing_scenario_id
 
     # Run the pollution model
