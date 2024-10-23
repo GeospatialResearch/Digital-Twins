@@ -93,8 +93,12 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     DEBUG_TRACEBACK = _get_bool_env_variable("DEBUG_TRACEBACK", default=False)
     TEST_DATABASE_INTEGRATION = _get_bool_env_variable("TEST_DATABASE_INTEGRATION", default=True)
 
+    ROOF_SURFACE_DATASET_PATH = pathlib.Path(
+        _get_env_variable("ROOF_SURFACE_DATASET_PATH",
+                          default="U:/Research/FloodRiskResearch/DigitalTwin/stored_data/roof_surfaces_data"
+                                  "/CCC_Lynker_RoofMaterials_Update_2023.gdb"))
+
     DATA_DIR = pathlib.Path(_get_env_variable("DATA_DIR"))
-    DATA_DIR_REC = pathlib.Path(_get_env_variable("DATA_DIR_REC"))
     DATA_DIR_MODEL_OUTPUT = pathlib.Path(_get_env_variable("DATA_DIR_MODEL_OUTPUT"))
     DATA_DIR_GEOSERVER = pathlib.Path(_get_env_variable("DATA_DIR_GEOSERVER"))
     FLOOD_MODEL_DIR = pathlib.Path(_get_env_variable("FLOOD_MODEL_DIR"))
