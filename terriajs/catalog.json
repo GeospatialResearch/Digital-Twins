@@ -90,7 +90,6 @@
           "id": "ccc-land-characteristic-map-server",
           "displayGroup": false
         },
-
         {
           "type": "esri-mapServer-group",
           "name": "Land Drainage",
