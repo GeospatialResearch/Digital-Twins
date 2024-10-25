@@ -172,6 +172,7 @@ def compute_tss_roof_road(surface_area: float,
             raise ValueError(invalid_surface_error)
     antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
     first_term = a1 * (antecedent_dry_days ** a2) * surface_area * capacity_factor
+    # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
     second_term = 1 - math.exp(-k * average_rain_intensity * event_duration)
 
     return first_term * second_term
@@ -243,6 +244,7 @@ def total_metal_load_roof(surface_area: float,
     # Define constants in a list
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
+            # None was added to avoid the 0 position when slicing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
@@ -251,6 +253,7 @@ def total_metal_load_roof(surface_area: float,
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.GALVANISED:
+            # None was added to avoid the 0 position when slicing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
@@ -259,6 +262,7 @@ def total_metal_load_roof(surface_area: float,
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.METAL_OTHER:
+            # None was added to avoid the 0 position when slicing
             # Using coefficients of Galvanised rather than Copper
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
@@ -268,6 +272,7 @@ def total_metal_load_roof(surface_area: float,
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.METAL_TILE:
+            # None was added to avoid the 0 position when slicing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
@@ -276,6 +281,7 @@ def total_metal_load_roof(surface_area: float,
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.NON_METAL:
+            # None was added to avoid the 0 position when slicing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
             # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
@@ -284,6 +290,7 @@ def total_metal_load_roof(surface_area: float,
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.ZINCALUME:
+            # None was added to avoid the 0 position when slicing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
@@ -314,19 +321,22 @@ def total_metal_load_roof(surface_area: float,
     zn_est = ((c[7] * rainfall_ph) + c[8])
 
     # Common factors for each of initial Copper and Zinc Loads
+    # THE NEW FORMULA MISSES THE 1000
     cu_factor = cu_o * surface_area * (1 / (1000 * k))
     zn_factor = zn_o * surface_area * (1 / (1000 * k))
 
     # Calculate total metal loads, where the method depends on if Z is less than event_duration
     if event_duration < z:
         # Calculate factors that appear in both Copper and Zinc formulas
-        both_factor = 1 - math.exp(k * average_rain_intensity * event_duration)
+        # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
+        both_factor = 1 - math.exp(-k * average_rain_intensity * event_duration)
         # Calculate total loads for Copper and Zinc roofs
         total_copper_load = cu_factor * both_factor
         total_zinc_load = zn_factor * both_factor
 
     else:
         # Calculate factors that appear in both Copper and Zinc formulas
+        # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
         both_factor = 1 - math.exp(-k * average_rain_intensity * z)
         both_factor_est = surface_area * average_rain_intensity * (event_duration - z)
         # Calculate total loads for Copper and Zinc roofs
