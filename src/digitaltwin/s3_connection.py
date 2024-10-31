@@ -18,30 +18,6 @@ from src.config import EnvVariable
 log = logging.getLogger(__name__)
 
 
-def validate_aws_env_vars() -> None:
-    """
-    Validate that necessary AWS environment variables are set when S3 usage is enabled.
-
-    Raises
-    ------
-    ValueError
-        If any required AWS environment variable is missing when S3 usage is enabled.
-    """
-    # Check if S3 usage is enabled from the USE_AWS_S3_BUCKET environment variable
-    use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
-    # If S3 usage is enabled, check that required AWS variables are set
-    if use_aws_s3_bucket:
-        # Raise an error if AWS_ACCESS_KEY_ID is not set
-        if not EnvVariable.AWS_ACCESS_KEY_ID:
-            raise ValueError("Environment variable `AWS_ACCESS_KEY_ID` must be set when S3 usage is enabled.")
-        # Raise an error if AWS_SECRET_ACCESS_KEY is not set
-        if not EnvVariable.AWS_SECRET_ACCESS_KEY:
-            raise ValueError("Environment variable `AWS_SECRET_ACCESS_KEY` must be set when S3 usage is enabled.")
-        # Raise an error if AWS_BUCKET_NAME is not set
-        if not EnvVariable.AWS_BUCKET_NAME:
-            raise ValueError("Environment variable `AWS_BUCKET_NAME` must be set when S3 usage is enabled.")
-
-
 class S3Manager:
     """
     A class for managing interactions with an Amazon Simple Storage Service (Amazon S3) bucket.
@@ -55,12 +31,39 @@ class S3Manager:
         Sets up the S3Manager with the necessary AWS credentials obtained from environment variables and creates a boto3
         session, S3 client, and S3 resource for interacting with an Amazon Simple Storage Service (Amazon S3) bucket.
         """
+        # Validate that necessary AWS environment variables are set when S3 usage is enabled
+        self.validate_aws_env_vars()
+
         self.access_key_id = EnvVariable.AWS_ACCESS_KEY_ID
         self.secret_access_key = EnvVariable.AWS_SECRET_ACCESS_KEY
         self.bucket_name = EnvVariable.AWS_BUCKET_NAME
         self.session = self._create_session()
         self.s3_client = self.session.client("s3")
         self.s3_resource = self.session.resource("s3")
+
+    @staticmethod
+    def validate_aws_env_vars() -> None:
+        """
+        Validate that necessary AWS environment variables are set when S3 usage is enabled.
+
+        Raises
+        ------
+        ValueError
+            If any required AWS environment variable is missing when S3 usage is enabled.
+        """
+        # Check if S3 usage is enabled from the USE_AWS_S3_BUCKET environment variable
+        use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
+        # If S3 usage is enabled, check that required AWS variables are set
+        if use_aws_s3_bucket:
+            # Raise an error if AWS_ACCESS_KEY_ID is not set
+            if not EnvVariable.AWS_ACCESS_KEY_ID:
+                raise ValueError("Environment variable `AWS_ACCESS_KEY_ID` must be set when S3 usage is enabled.")
+            # Raise an error if AWS_SECRET_ACCESS_KEY is not set
+            if not EnvVariable.AWS_SECRET_ACCESS_KEY:
+                raise ValueError("Environment variable `AWS_SECRET_ACCESS_KEY` must be set when S3 usage is enabled.")
+            # Raise an error if AWS_BUCKET_NAME is not set
+            if not EnvVariable.AWS_BUCKET_NAME:
+                raise ValueError("Environment variable `AWS_BUCKET_NAME` must be set when S3 usage is enabled.")
 
     def _create_session(self) -> boto3.session.Session:
         """
