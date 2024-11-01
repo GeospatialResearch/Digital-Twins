@@ -144,38 +144,49 @@ def compute_tss_roof_road(surface_area: float,
     ValueError
         If the surface type is not a roof or road (concrete, copper, galvanised roof, asphalt road, or car park).
     """
-    # Define the constants (Cf is the capacity factor).
-    capacity_factor = 0.75 if surface_type in ROOF_SURFACE_TYPES else 0.25
-    # Values a1 to a3 are empirically derived coefficient values.
-
     # Define error message (if needed)
     invalid_surface_error = (f"Given surface is not valid for computing TSS."
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
 
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
+            # Galvanised Painted
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.GALVANISED:
+            # Galvanised
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.METAL_OTHER:
+            # Copper Old
             # Using coefficients of Galvanised rather than Copper
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.METAL_TILE:
+            # Decramastic
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.NON_METAL:
+            # Concrete, Concrete Painted, and Glass Roof
             a1, a2, k = 0.6, 0.25, 0.00933
         case SurfaceType.ZINCALUME:
+            # Zincalume
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
-            a1, a2, k = 190, 0.16, 0.00933
+            a1, a2, a7, k = 190, 0.16, 0.0125, 0.0008
         case _:
             raise ValueError(invalid_surface_error)
-    antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
-    first_term = a1 * (antecedent_dry_days ** a2) * surface_area * capacity_factor
-    # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
-    second_term = 1 - math.exp(-k * average_rain_intensity * event_duration)
 
-    return first_term * second_term
+    # Call out necessary variables
+    antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
+    # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
+    both_factor = 1 - math.exp(-k * average_rain_intensity * event_duration)
+
+    # NEED TO CHECK THE NAME OF ASPHALT ROAD AGAIN
+    if surface_type != 'AsphaltRoad':
+        # Roof
+        tss_factor = a1 * (antecedent_dry_days ** a2) * surface_area * 0.75
+    else:
+        # Road
+        tss_factor = a1 * (antecedent_dry_days ** a2) * surface_area * a7 * average_rain_intensity
+
+    return tss_factor * both_factor
 
 
 def total_metal_load_surface(surface_area: float,
@@ -241,6 +252,7 @@ def total_metal_load_roof(surface_area: float,
     # Define error message (if needed)
     invalid_surface_error = (f"Given surface is not valid for computing total metal load."
                              f" Needed a roof, but got {SurfaceType(surface_type).name}.")
+
     # Define constants in a list
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
@@ -311,6 +323,8 @@ def total_metal_load_roof(surface_area: float,
     cu_o *= (b[5] * (average_rain_intensity ** b[6]))
     # Second stage
     cu_est = b[7] * (rainfall_ph ** b[8])
+    # Calculate k
+    k_cu = (-math.log(cu_est / cu_o)) / (average_rain_intensity * z)
 
     # Define the initial and second stages of Roof Zinc Load.
     # Initial stage
@@ -319,29 +333,33 @@ def total_metal_load_roof(surface_area: float,
     zn_o *= (c[5] * (average_rain_intensity ** c[6]))
     # Second stage
     zn_est = ((c[7] * rainfall_ph) + c[8])
+    # Calculate k
+    k_zn = (-math.log(zn_est / zn_o)) / (average_rain_intensity * z)
 
     # Common factors for each of initial Copper and Zinc Loads
-    # THE NEW FORMULA MISSES THE 1000
-    cu_factor = cu_o * surface_area * (1 / (1000 * k))
-    zn_factor = zn_o * surface_area * (1 / (1000 * k))
+    # THE PAPER MISSES THE 1000
+    cu_factor = cu_o * surface_area * (1 / (1000 * k_cu))
+    zn_factor = zn_o * surface_area * (1 / (1000 * k_zn))
 
     # Calculate total metal loads, where the method depends on if Z is less than event_duration
     if event_duration < z:
-        # Calculate factors that appear in both Copper and Zinc formulas
+        # Calculate TOTAL loads
         # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
-        both_factor = 1 - math.exp(-k * average_rain_intensity * event_duration)
-        # Calculate total loads for Copper and Zinc roofs
-        total_copper_load = cu_factor * both_factor
-        total_zinc_load = zn_factor * both_factor
+        total_copper_load = cu_factor * (1 - math.exp(-k_cu * average_rain_intensity * event_duration))
+        total_zinc_load = zn_factor * (1 - math.exp(-k_zn * average_rain_intensity * event_duration))
 
     else:
         # Calculate factors that appear in both Copper and Zinc formulas
-        # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
-        both_factor = 1 - math.exp(-k * average_rain_intensity * z)
         both_factor_est = surface_area * average_rain_intensity * (event_duration - z)
+
+        # Calculate initial TOTAL loads
+        # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
+        initial_total_copper_load = cu_factor * (1 - math.exp(-k_cu * average_rain_intensity * z))
+        initial_total_zinc_load = zn_factor * (1 - math.exp(-k_zn * average_rain_intensity * z))
+
         # Calculate total loads for Copper and Zinc roofs
-        total_copper_load = (cu_factor * both_factor) + (cu_est * both_factor_est)
-        total_zinc_load = (zn_factor * both_factor) + (zn_est * both_factor_est)
+        total_copper_load = initial_total_copper_load + (cu_est * both_factor_est)
+        total_zinc_load = initial_total_zinc_load + (zn_est * both_factor_est)
 
     return MetalLoads(total_copper_load, total_zinc_load)
 
@@ -362,10 +380,10 @@ def total_metal_load_road_carpark(tss_surface: float) -> MetalLoads:
        [Total Copper, Total Zinc]
     """
     # Define constants
-    proportionality_constant_cu = 0.441
-    proportionality_constant_zn = 1.96
-    total_cu_load = tss_surface * proportionality_constant_cu
-    total_zn_load = tss_surface * proportionality_constant_zn
+    g = 0.441
+    h = 1.96
+    total_cu_load = tss_surface * g
+    total_zn_load = tss_surface * h
     # Return total copper load, total zinc load
     return MetalLoads(total_cu_load, total_zn_load)
 
@@ -401,29 +419,36 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     # Set constant values based on surface type
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
-            f = 0.5
-            g = 0.43
+            # Galvanised Painted
+            l = 0.5
+            m = 0.43
         case SurfaceType.GALVANISED:
-            f = 0.5
-            g = 0.43
+            # Galvanised
+            l = 0.5
+            m = 0.43
         case SurfaceType.METAL_OTHER:
-            f = 0.5
-            g = 0.43
+            # Copper Old
+            l = 0.77
+            m = 0.717
         case SurfaceType.METAL_TILE:
-            f = 0.5
-            g = 0.43
+            # Decramastic
+            l = 0.5
+            m = 0.43
         case SurfaceType.NON_METAL:
-            f = 0.77
-            g = 0.67
+            # Concrete
+            # Concrete Painted
+            # Glass Roof
+            l = 0.77
+            m = 0.67
         case SurfaceType.ZINCALUME:
-            f = 0.5
-            g = 0.43
+            l = 0.5
+            m = 0.43
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
-            f = 0.28
-            g = 0.43
+            l = 0.28
+            m = 0.43
         case _:
             raise ValueError(invalid_surface_error)
-    return MetalLoads(f * total_copper_load, g * total_zinc_load)
+    return MetalLoads(l * total_copper_load, m * total_zinc_load)
 
 
 def save_roof_surface_type_points_to_db(engine: Engine) -> None:
@@ -511,7 +536,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
         USING ("building_Id")
         WHERE ST_INTERSECTS(points.geometry, ST_GeomFromText(:aoi_wkt, :crs))
         ORDER BY polygons."building_Id"
-        LIMIT 3
     """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
 
     # Execute the SQL query
@@ -815,7 +839,6 @@ def find_existing_pollution_scenario(engine: Engine,
         AND rainfall_ph=:rainfall_ph
         AND ST_CONTAINS(geometry, ST_GeomFromText(:aoi_wkt, :crs))
     ORDER BY created_at
-    LIMIT 1
     """).bindparams(aoi_wkt=aoi_wkt, crs=crs, **rainfall_event.as_dict())
 
     result = engine.execute(query).fetchone()
