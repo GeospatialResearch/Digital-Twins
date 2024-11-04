@@ -21,6 +21,12 @@ services:
       - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
       - ${DATA_DIR_GEOSERVER}:/stored_data/geoserver
 
+  terria_map:
+    volumes:
+      # Allows development config to be updated on refresh, instead of rebuild
+      - ./terriajs/client_config.json:/app/wwwroot/config.json
+      - ./terriajs/catalog.json:/app/wwwroot/init/catalog.json
+
   geoserver:
     volumes:
       - ${DATA_DIR_GEOSERVER}:/opt/geoserver_data

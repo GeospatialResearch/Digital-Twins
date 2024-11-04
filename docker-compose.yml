@@ -116,13 +116,15 @@ services:
       retries: 10
 
   terria_map:
-    image: ghcr.io/terriajs/terriamap
-    volumes:
-      - ./terriajs/client_config.json:/app/wwwroot/config.json
-      - ./terriajs/catalog.json:/app/wwwroot/init/catalog.json
-#      - ./terriajs/server_config.json:/app/serverconfig.json
+    # Front-end using terria.js
+    build:
+      context: terriajs
     ports:
       - "3001:3001"
+    healthcheck:
+      test: curl --fail -s http://localhost:3001/ || exit 1
+      timeout: 5s
+      retries: 10
 
 
   message_broker:
