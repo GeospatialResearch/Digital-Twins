@@ -13,14 +13,15 @@ from typing import NamedTuple, Dict, Union, Optional
 from xml.sax import saxutils
 
 import geopandas as gpd
+import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
+from tqdm import tqdm
 
 from src import geoserver
 from src.config import EnvVariable
 from src.digitaltwin import setup_environment
-from src.digitaltwin.tables import create_table, check_table_exists
-from src.digitaltwin.tables import execute_query
+from src.digitaltwin.tables import create_table, check_table_exists, execute_query
 from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
 from src.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Medusa2ModelOutputRoads
 from src.pollution_model.pollution_tables import MedusaScenarios
@@ -35,26 +36,36 @@ class SurfaceType(StrEnum):
 
     Attributes
     ----------
-    CONCRETE_ROOF : str
-        Concrete Roof surface.
-    COPPER_ROOF : str
-        Copper Roof surface.
-    GALVANISED_ROOF : str
-        Galvanised Roof surface.
-    ASPHALT_ROAD : str
-        Asphalt Road surface.
+    COLOUR_STEEL : str
+        Colour Steel surface
+    GALVANISED : str
+        Galvanised surface.
+    METAL_OTHER : str
+        Metal Other surface.
+    METAL_TILE : str
+        Metal Tile surface.
+    NON_METAL : str
+        Non-Metal surface.
+    ZINCALUME : str
+        Zincalume surface.
+    ASPHALT_ROAD: str
+        Asphalt Road.
     CAR_PARK : str
-        Car Park surface.
+        Car park.
     """
 
-    CONCRETE_ROOF = "Cr"
-    COPPER_ROOF = "Cu"
-    GALVANISED_ROOF = "Gv"
-    ASPHALT_ROAD = "Rd"
-    CAR_PARK = "CrP"  # CarParks are classified the same as roads
+    COLOUR_STEEL = "ColourSteel"
+    GALVANISED = "Galvanised"
+    METAL_OTHER = "MetalOther"
+    METAL_TILE = "MetalTile"
+    NON_METAL = "NonMetal"
+    ZINCALUME = "Zincalume"
+    ASPHALT_ROAD = "AsphaltRoad"
+    CAR_PARK = "CarPark"  # CarParks are classified the same as roads
 
 
-ROOF_SURFACE_TYPES = {SurfaceType.CONCRETE_ROOF, SurfaceType.GALVANISED_ROOF, SurfaceType.COPPER_ROOF}
+ROOF_SURFACE_TYPES = {SurfaceType.COLOUR_STEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER, SurfaceType.METAL_TILE,
+                      SurfaceType.NON_METAL, SurfaceType.ZINCALUME}
 ROAD_SURFACE_TYPES = {SurfaceType.ASPHALT_ROAD, SurfaceType.CAR_PARK}
 
 
@@ -78,6 +89,18 @@ class MedusaRainfallEvent(NamedTuple):
     average_rain_intensity: float
     event_duration: float
     rainfall_ph: float
+
+    def as_dict(self) -> Dict[str, float]:
+        """
+        Convert the MedusaRainfallEvent parameters to a dictionary.
+
+        Returns
+        -------
+        Dict[str, float]
+            Returns the MedusaRainfallEvent parameters as a dictionary.
+        """
+        # NamedTuple has a documented _asdict method, that is hidden only to prevent conflicts.
+        return self._asdict()  # pylint: disable=no-member
 
 
 class MetalLoads(NamedTuple):
@@ -130,14 +153,21 @@ def compute_tss_roof_road(surface_area: float,
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
 
     match surface_type:
-        case SurfaceType.CONCRETE_ROOF:
-            a1, a2, a3 = 0.6, 0.25, 0.00933
-        case SurfaceType.COPPER_ROOF:
-            a1, a2, a3 = 2.5, 0.95, 0.00933
-        case SurfaceType.GALVANISED_ROOF:
-            a1, a2, a3 = 0.6, 0.5, 0.00933
+        case SurfaceType.COLOUR_STEEL:
+            a1, a2, a3 = 0.4, 0.5, 0.008
+        case SurfaceType.GALVANISED:
+            a1, a2, a3 = 0.4, 0.5, 0.008
+        case SurfaceType.METAL_OTHER:
+            # Using coefficients of Galvanised rather than Copper
+            a1, a2, a3 = 0.4, 0.5, 0.008
+        case SurfaceType.METAL_TILE:
+            a1, a2, a3 = 0.4, 0.5, 0.008
+        case SurfaceType.NON_METAL:
+            a1, a2, a3 = 0.6, 0.25, 0.008
+        case SurfaceType.ZINCALUME:
+            a1, a2, a3 = 0.4, 0.5, 0.008
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
-            a1, a2, a3 = 2.9, 0.16, 0.0008
+            a1, a2, a3 = 190, 0.16, 0.0125
         case _:
             raise ValueError(invalid_surface_error)
     antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
@@ -211,17 +241,56 @@ def total_metal_load_roof(surface_area: float,
     invalid_surface_error = (f"Given surface is not valid for computing total metal load."
                              f" Needed a roof, but got {SurfaceType(surface_type).name}.")
     # Define constants in a list
-
     match surface_type:
-        case SurfaceType.CONCRETE_ROOF:
-            b = [2, -2.8, 0.5, 0.217, 3.57, -0.09, 7, -3.73]
+        case SurfaceType.COLOUR_STEEL:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
+        case SurfaceType.GALVANISED:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
+        case SurfaceType.METAL_OTHER:
+            # Using coefficients of Galvanised rather than Copper
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
+        case SurfaceType.METAL_TILE:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
+        case SurfaceType.NON_METAL:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
-        case SurfaceType.COPPER_ROOF:
-            b = [100, -2.8, 1.372, 0.217, 3.57, -1, 275, -3.3]
-            c = [-0.1, 2, 0.1, 0.01, 0.8, -1.3, -0.007, 0.056]
-        case SurfaceType.GALVANISED_ROOF:
-            b = [2, -2.8, 0.5, 0.217, 3.57, -0.09, 7, -3.73]
-            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.990]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
+        case SurfaceType.ZINCALUME:
+            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
+            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
+            k = 0.00933
+            # Duration of the event measured by hours - Roof
+            # observed from the intra-event concentration sampling
+            z = 0.75
         case _:
             raise ValueError(invalid_surface_error)
 
@@ -234,12 +303,6 @@ def total_metal_load_roof(surface_area: float,
     initial_zinc_concentration = c[0] * rainfall_ph + c[1] * c[2] * antecedent_dry_days ** c[3] * (
         c[4] * average_rain_intensity ** c[5])
     second_stage_zinc = c[6] * rainfall_ph + c[7]
-
-    # Define Z as per experimental data
-    z = 0.75
-
-    # Define K, the wash off coefficient.
-    k = 1
 
     # Initialise total copper and zinc loads as a guaranteed common factor
     total_copper_load = initial_copper_concentration * surface_area * 1 / k
@@ -313,14 +376,23 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
     # Set constant values based on surface type
     match surface_type:
-        case SurfaceType.CONCRETE_ROOF:
-            f = 0.46
-            g = 0.67
-        case SurfaceType.COPPER_ROOF:
+        case SurfaceType.COLOUR_STEEL:
+            f = 0.5
+            g = 0.43
+        case SurfaceType.GALVANISED:
+            f = 0.5
+            g = 0.43
+        case SurfaceType.METAL_OTHER:
+            f = 0.5
+            g = 0.43
+        case SurfaceType.METAL_TILE:
+            f = 0.5
+            g = 0.43
+        case SurfaceType.NON_METAL:
             f = 0.77
-            g = 0.72
-        case SurfaceType.GALVANISED_ROOF:
-            f = 0.28
+            g = 0.67
+        case SurfaceType.ZINCALUME:
+            f = 0.5
             g = 0.43
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
             f = 0.28
@@ -330,12 +402,64 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     return MetalLoads(f * total_copper_load, g * total_zinc_load)
 
 
-def get_building_information(_engine: Engine, _area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def save_roof_surface_type_points_to_db(engine: Engine) -> None:
+    """
+    Read building data under points. Then store them into database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    """
+    # Check if the table already exist in the database
+    if check_table_exists(engine, "roof_surface_points"):
+        log.info("roof_surface_points data already exists in the database.")
+    else:
+        # Read roof surface points from outside
+        # This data has the deeplearn_matclass with roof types we need
+        log.info(f"Reading roof surface points from {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
+        roof_surface_points = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH,
+                                            layer="CCC_Lynker_RoofMaterial_Update_2023")
+        # Remove rows of building_Id and deeplearn_subclass that are NANs
+        roof_surface_points = roof_surface_points.dropna(subset=['building_Id', 'deeplearn_subclass'])
+        # Store the building_point_data to the database table
+        log.info("Adding roof_surface_points table to the database.")
+        roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
+
+
+def save_roof_surface_polygons_to_db(engine: Engine) -> None:
+    """
+    Read building data under points. Then store them into database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    """
+    # Check if the table already exist in the database
+    if check_table_exists(engine, "roof_surface_polygons"):
+        log.info("roof_surface_polygons data already exists in the database.")
+    else:
+        # Read roof surface polygons from outside
+        log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
+        roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH, layer="BuildingPolygons")
+        # Store the building_point_data to the database table
+        log.info("Adding roof_surface_polygons table to the database.")
+        roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
+
+
+def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Extract relevant information about buildings from central_buildings.geojson, since the input data is not finalised.
     Then formats them such that they are easy to use for pollution modeling purposes.
 
-    Github Issue to resolve the input_data: https://github.com/GeospatialResearch/Digital-Twins/issues/198
+    Parameters
+    ----------
+    engine: Engine
+        The sqlalchemy database connection engine.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
+
 
     Returns
     -------
@@ -343,16 +467,35 @@ def get_building_information(_engine: Engine, _area_of_interest: gpd.GeoDataFram
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    buildings = gpd.GeoDataFrame.from_file("central_buildings.geojson")
-    buildings = buildings.set_index("building_id")
-    # Filter out irrelevant columns.
-    buildings_medusa_info = buildings[["surface_type", "geometry"]]
-    # Append columns specific to MEDUSA, to be filled later in the processing.
-    buildings_medusa_info[
-        ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]] = None
+    # Add roof surface polygons to database
+    save_roof_surface_polygons_to_db(engine)
+    # Add roof surface type points to database.
+    save_roof_surface_type_points_to_db(engine)
 
-    # return the GeoDataFrame containing the relevant data about buildings
-    return gpd.GeoDataFrame(buildings_medusa_info)
+    # Convert current area of interest format into the format can be used by SQL
+    aoi_wkt = area_of_interest["geometry"][0].wkt
+    crs = area_of_interest.crs.to_epsg()
+
+    # Select all relevant information from the appropriate table
+    query = text("""
+        SELECT
+            polygons."building_Id",
+            points.deeplearn_subclass AS surface_type,
+            polygons.geometry
+        FROM roof_surface_polygons AS polygons
+            INNER JOIN roof_surface_points AS points
+        USING ("building_Id")
+        WHERE ST_INTERSECTS(points.geometry, ST_GeomFromText(:aoi_wkt, :crs))
+    """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
+
+    # Execute the SQL query
+    buildings = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_Id", geom_col="geometry")
+
+    # Some buildings have multiple points, we can only define a building as one surface type without duplicating area.
+    # So we drop duplicates by building_Id (index).
+    buildings = buildings[~buildings.index.duplicated(keep='first')]
+
+    return buildings
 
 
 def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -397,6 +540,53 @@ def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
     return gpd.GeoDataFrame(roads_medusa_info)
 
 
+def run_medusa_model_for_single_surface(row: gpd.GeoSeries, rainfall_event: MedusaRainfallEvent) -> gpd.GeoSeries:
+    """
+    Run the pollution model for one surface geometry.
+    Calculate the TSS, total metal load, and dissolved metal load and add to the surface. This runs for one rain event.
+
+    Parameters
+    ----------
+    row: gpd.GeoSeries
+        A Polygon containing the surface's geometry with surface type info to run MEDUSA model on.
+    rainfall_event: MedusaRainfallEvent
+        Rainfall event parameters for MEDUSA model.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        The MEDUSA results for the given surfaces and rainfall_event.
+    """
+    surface_type = row["surface_type"]
+    if surface_type == SurfaceType.ASPHALT_ROAD:
+        # Roughly approximate the surface area of a road by assuming it's width is 5m
+        surface_area = row.geometry.length * 5
+    else:
+        surface_area = row.geometry.area
+
+    # Calculate total suspended solids contributed by surface
+    curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
+
+    # Calculate total copper and total zinc contributed by surface
+    curr_total_copper, curr_total_zinc = total_metal_load_surface(surface_area,
+                                                                  rainfall_event,
+                                                                  surface_type,
+                                                                  curr_tss)
+
+    # Calculate dissolved copper and dissolved zinc contributed by surface
+    curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
+                                                                      total_zinc_load=curr_total_zinc,
+                                                                      surface_type=surface_type)
+    # Update the current row with the values found for each MEDUSA column.
+    updated_values = {"total_suspended_solids": curr_tss,
+                      "total_copper": curr_total_copper,
+                      "total_zinc": curr_total_zinc,
+                      "dissolved_copper": curr_dissolved_copper,
+                      "dissolved_zinc": curr_dissolved_zinc}
+    row.update(updated_values)
+    return row
+
+
 def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
                                             rainfall_event: MedusaRainfallEvent) -> gpd.GeoDataFrame:
     """
@@ -415,29 +605,14 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
     gpd.GeoDataFrame
         The MEDUSA results for the given surfaces and rainfall_event.
     """
-    for feature_id, row in surfaces.iterrows():
-        surface_type = row["surface_type"]
-        if surface_type == SurfaceType.ASPHALT_ROAD:
-            surface_area = row.geometry.length * 5
-        else:
-            surface_area = row.geometry.area
-
-        curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)
-
-        curr_total_copper, curr_total_zinc = total_metal_load_surface(surface_area,
-                                                                      rainfall_event,
-                                                                      surface_type,
-                                                                      curr_tss)
-
-        curr_dissolved_copper, curr_dissolved_zinc = dissolved_metal_load(total_copper_load=curr_total_copper,
-                                                                          total_zinc_load=curr_total_zinc,
-                                                                          surface_type=surface_type)
-        updated_values = {"total_suspended_solids": curr_tss,
-                          "total_copper": curr_total_copper,
-                          "total_zinc": curr_total_zinc,
-                          "dissolved_copper": curr_dissolved_copper,
-                          "dissolved_zinc": curr_dissolved_zinc}
-        surfaces.loc[feature_id, updated_values.keys()] = updated_values
+    # Add empty columns for each of the new medusa columns
+    for medusa_column in ("total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"):
+        surfaces[medusa_column] = pd.Series(dtype='float')
+    # Wrap DataFrame.apply with progress_apply to add tqdm progress bar.
+    tqdm.pandas()
+    # Use vectorised operations to add all medusa columns to each row/surface
+    surfaces = surfaces.progress_apply(lambda surface: run_medusa_model_for_single_surface(surface, rainfall_event),
+                                       axis=1)
     return surfaces
 
 
@@ -472,12 +647,12 @@ def run_pollution_model_rain_event(engine: Engine,
 
     # Run through each building and calculate TSS, total metal loads, and dissolved metal loads
     log.info(calculation_pending_log_message.format(features="buildings"))
-    run_medusa_model_for_surface_geometries(all_buildings, rainfall_event)
+    all_buildings = run_medusa_model_for_surface_geometries(all_buildings, rainfall_event)
     log.info(calculation_complete_log_message.format(features="buildings"))
 
     # Run through all the roads/car parks, and calculate TSS, total metal loads, and dissolved metal loads
     log.info(calculation_pending_log_message.format(features="roads and car parks"))
-    run_medusa_model_for_surface_geometries(all_roads, rainfall_event)
+    all_roads = run_medusa_model_for_surface_geometries(all_roads, rainfall_event)
     log.info(calculation_complete_log_message.format(features="roads and car parks"))
 
     # Drop the geometry columns now, since they can be joined to the spatial tables so we reduce data duplication
@@ -578,6 +753,56 @@ def get_next_scenario_id(engine: Engine) -> int:
         return max_scenario_id + 1
 
 
+def find_existing_pollution_scenario(engine: Engine,
+                                     area_of_interest: gpd.GeoDataFrame,
+                                     rainfall_event: MedusaRainfallEvent) -> Optional[int]:
+    """
+    Search the database for a pollution scenario with the same rainfall event parameters that covers the area.
+
+    Parameters
+    ----------
+    engine: Engine
+       The sqlalchemy database connection engine.
+    area_of_interest: gpd.GeoDataFrame
+        A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
+    rainfall_event: MedusaRainfallEvent
+        Rainfall event parameters for MEDUSA 2.0 model.
+
+    Returns
+    -------
+    Optional[int]
+        The scenario ID of the pollution model retrieved, or None if it does not exist
+    """
+    if not check_table_exists(engine, MedusaScenarios.__tablename__):
+        # If there are no MedusaScenarios, then we will not be able to find one, return None
+        return None
+
+    # Retrieve geometry info in form ready for SQL query
+    aoi_wkt = area_of_interest["geometry"][0].wkt
+    crs = str(area_of_interest.crs.to_epsg())
+
+    query = text("""
+    SELECT scenario_id FROM medusa_scenarios WHERE
+        antecedent_dry_days=:antecedent_dry_days
+        AND average_rain_intensity=:average_rain_intensity
+        AND event_duration=:event_duration
+        AND rainfall_ph=:rainfall_ph
+        AND ST_CONTAINS(geometry, ST_GeomFromText(:aoi_wkt, :crs))
+    ORDER BY created_at
+    LIMIT 1
+    """).bindparams(aoi_wkt=aoi_wkt, crs=crs, **rainfall_event.as_dict())
+
+    result = engine.execute(query).fetchone()
+    if result is None:
+        # No scenario found
+        return None
+
+    # Scenario found, pull from the result row
+    scenario_id = result[0]
+    log.info(f"Found existing MEDUSA scenario with matching parameters with id {scenario_id}.")
+    return scenario_id
+
+
 def main(selected_polygon_gdf: gpd.GeoDataFrame,
          log_level: LogLevel = LogLevel.DEBUG,
          antecedent_dry_days: float = 1,
@@ -623,6 +848,11 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
 
     # Wrap all parameters for MEDUSA rainfall event into a NamedTuple
     rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
+
+    # Search for a scenario that already exist, and return that one if it does.
+    existing_scenario_id = find_existing_pollution_scenario(engine, area_of_interest, rainfall_event)
+    if existing_scenario_id is not None:
+        return existing_scenario_id
 
     # Run the pollution model
     scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
@@ -684,8 +914,8 @@ if __name__ == "__main__":
     main(
         selected_polygon_gdf=sample_polygon,
         log_level=LogLevel.DEBUG,
-        antecedent_dry_days=1,
-        average_rain_intensity=1,
-        event_duration=1,
-        rainfall_ph=7
+        antecedent_dry_days=1.45833333333333,
+        average_rain_intensity=0.5,
+        event_duration=2,
+        rainfall_ph=6.5
     )
