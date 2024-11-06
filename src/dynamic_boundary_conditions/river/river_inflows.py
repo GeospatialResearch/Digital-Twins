@@ -63,7 +63,7 @@ def get_elevations_near_rec_entry_point(
     # Create Point objects for each row using 'x' and 'y' coordinates
     nearby_elevations['river_input_point'] = gpd.points_from_xy(nearby_elevations['x'], nearby_elevations['y'])
     # Remove unnecessary columns from the elevation data
-    nearby_elevations.drop(columns=['x', 'y', 'band', 'spatial_ref', 'data_source', 'lidar_source'], inplace=True)
+    nearby_elevations.drop(columns=['x', 'y', 'spatial_ref', 'data_source', 'lidar_source'], inplace=True)
     # Rename the 'z' column to 'dem_elevation' for clarity and consistency
     nearby_elevations.rename(columns={'z': 'dem_elevation'}, inplace=True)
     # Extract the Coordinate Reference System (CRS) information from the 'hydro_dem' dataset
