@@ -137,7 +137,7 @@ def compute_tss_roof_road(surface_area: float,
     Returns
     -------
     float
-       Returns the TSS value from the given parameters (grams)
+       Returns the TSS value from the given parameters (micrograms)
 
     Raises
     ----------
@@ -186,7 +186,7 @@ def compute_tss_roof_road(surface_area: float,
         # Road
         tss_factor = a1 * (antecedent_dry_days ** a2) * surface_area * a7 * average_rain_intensity
 
-    return tss_factor * both_factor
+    return tss_factor * both_factor * 1000
 
 
 def total_metal_load_surface(surface_area: float,
@@ -405,7 +405,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     Returns
     -------
     MetalLoads
-        Returns the dissolved copper and zinc load for this surface
+        Returns the dissolved copper and zinc load for this surface (micrograms)
         [Dissolved Copper Load, Dissolved Zinc Load]
 
     Raises
