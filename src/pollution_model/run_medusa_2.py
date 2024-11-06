@@ -176,18 +176,19 @@ def compute_tss_roof_road(surface_area: float,
 
     # Call out necessary variables
     antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
-    # Factor appears in both road and roof calculation
-    both_factor = 1 - math.exp(-k * average_rain_intensity * event_duration)
 
     # Calculate tss for road and roof
     if surface_type == 'AsphaltRoad':
         # Road
-        tss_factor = a1 * (antecedent_dry_days ** a2) * surface_area * a7 * average_rain_intensity
+        first_term = a1 * (antecedent_dry_days ** a2) * surface_area * a7 * average_rain_intensity
     else:
         # Roof
-        tss_factor = a1 * (antecedent_dry_days ** a2) * surface_area * 0.75
+        first_term = a1 * (antecedent_dry_days ** a2) * surface_area * 0.75
 
-    return tss_factor * both_factor * 1000
+    # Second term appears in both road and roof calculation
+    second_term = 1 - math.exp(-k * average_rain_intensity * event_duration)
+
+    return first_term * second_term * 1000
 
 
 def total_metal_load_surface(surface_area: float,
