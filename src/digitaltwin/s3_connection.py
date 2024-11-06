@@ -247,6 +247,11 @@ class S3Manager:
         if isinstance(s3_object_key, pathlib.Path):
             # Convert the pathlib.Path object to a string representation
             s3_object_key = s3_object_key.as_posix()
+        # Get the parent directory of the specified file path
+        file_directory = file_path.parent
+        # Create the directory if it doesn't exist
+        file_directory.mkdir(parents=True, exist_ok=True)
+        # Download the object/file from the S3 bucket to the specified local path
         self.s3_client.download_file(Bucket=self.bucket_name, Key=s3_object_key, Filename=file_path)
         # Log a message confirming successful download from the S3 bucket
         log.info(f"Successfully downloaded `{s3_object_key}` from the S3 bucket.")
