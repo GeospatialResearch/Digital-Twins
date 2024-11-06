@@ -157,7 +157,8 @@ def compute_tss_roof_road(surface_area: float,
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.METAL_OTHER:
             # Copper Old
-            # Using coefficients of Galvanised rather than Copper
+            # Using coefficients of Galvanised rather than Copper as suggested by Francis
+            # Email named 'Aligning CCC Surface Type data with Okeover
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.METAL_TILE:
             # Decramastic
@@ -175,16 +176,16 @@ def compute_tss_roof_road(surface_area: float,
 
     # Call out necessary variables
     antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
-    # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
+    # Factor appears in both road and roof calculation
     both_factor = 1 - math.exp(-k * average_rain_intensity * event_duration)
 
-    # NEED TO CHECK THE NAME OF ASPHALT ROAD AGAIN
-    if surface_type != 'AsphaltRoad':
-        # Roof
-        tss_factor = a1 * (antecedent_dry_days ** a2) * surface_area * 0.75
-    else:
+    # Calculate tss for road and roof
+    if surface_type == 'AsphaltRoad':
         # Road
         tss_factor = a1 * (antecedent_dry_days ** a2) * surface_area * a7 * average_rain_intensity
+    else:
+        # Roof
+        tss_factor = a1 * (antecedent_dry_days ** a2) * surface_area * 0.75
 
     return tss_factor * both_factor * 1000
 
@@ -256,57 +257,46 @@ def total_metal_load_roof(surface_area: float,
     # Define constants in a list
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
-            # None was added to avoid the 0 position when slicing
+            # None was added to avoid the 0 position when indexing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.GALVANISED:
-            # None was added to avoid the 0 position when slicing
+            # None was added to avoid the 0 position when indexing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.METAL_OTHER:
-            # None was added to avoid the 0 position when slicing
-            # Using coefficients of Galvanised rather than Copper
+            # None was added to avoid the 0 position when indexing
+            # Using coefficients of Galvanised rather than Copper as suggested by Frances
+            # Email named 'Aligning CCC Surface Type data with Okeover
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.METAL_TILE:
-            # None was added to avoid the 0 position when slicing
+            # None was added to avoid the 0 position when indexing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.NON_METAL:
-            # None was added to avoid the 0 position when slicing
+            # None was added to avoid the 0 position when indexing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.ZINCALUME:
-            # None was added to avoid the 0 position when slicing
+            # None was added to avoid the 0 position when indexing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
@@ -318,9 +308,9 @@ def total_metal_load_roof(surface_area: float,
 
     # Define the initial and second stages of Roof Copper Load.
     # Initial stage
-    cu_o = (b[1] * (rainfall_ph ** b[2]))
-    cu_o *= (b[3] * (antecedent_dry_days ** b[4]))
-    cu_o *= (b[5] * (average_rain_intensity ** b[6]))
+    cu_o = b[1] * (rainfall_ph ** b[2])
+    cu_o *= b[3] * (antecedent_dry_days ** b[4])
+    cu_o *= b[5] * (average_rain_intensity ** b[6])
     # Second stage
     cu_est = b[7] * (rainfall_ph ** b[8])
     # Calculate k
@@ -328,23 +318,21 @@ def total_metal_load_roof(surface_area: float,
 
     # Define the initial and second stages of Roof Zinc Load.
     # Initial stage
-    zn_o = ((c[1] * rainfall_ph) + c[2])
-    zn_o *= (c[3] * (antecedent_dry_days ** c[4]))
-    zn_o *= (c[5] * (average_rain_intensity ** c[6]))
+    zn_o = (c[1] * rainfall_ph) + c[2]
+    zn_o *= c[3] * (antecedent_dry_days ** c[4])
+    zn_o *= c[5] * (average_rain_intensity ** c[6])
     # Second stage
-    zn_est = ((c[7] * rainfall_ph) + c[8])
+    zn_est = (c[7] * rainfall_ph) + c[8]
     # Calculate k
     k_zn = (-math.log(zn_est / zn_o)) / (average_rain_intensity * z)
 
     # Common factors for each of initial Copper and Zinc Loads
-    # THE PAPER MISSES THE 1000
     cu_factor = cu_o * surface_area * (1 / (1000 * k_cu))
     zn_factor = zn_o * surface_area * (1 / (1000 * k_zn))
 
     # Calculate total metal loads, where the method depends on if Z is less than event_duration
     if event_duration < z:
-        # Calculate TOTAL loads
-        # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
+        # Calculate total loads
         total_copper_load = cu_factor * (1 - math.exp(-k_cu * average_rain_intensity * event_duration))
         total_zinc_load = zn_factor * (1 - math.exp(-k_zn * average_rain_intensity * event_duration))
 
@@ -352,8 +340,7 @@ def total_metal_load_roof(surface_area: float,
         # Calculate factors that appear in both Copper and Zinc formulas
         both_factor_est = surface_area * average_rain_intensity * (event_duration - z)
 
-        # Calculate initial TOTAL loads
-        # THE K WAS KEPT NEGATIVE IN THE MATH.EXP() FOR HAVING POSITIVE RESULTS
+        # Calculate initial total loads
         initial_total_copper_load = cu_factor * (1 - math.exp(-k_cu * average_rain_intensity * z))
         initial_total_zinc_load = zn_factor * (1 - math.exp(-k_zn * average_rain_intensity * z))
 
@@ -420,35 +407,33 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
             # Galvanised Painted
-            l = 0.5
-            m = 0.43
+            l1 = 0.5
+            m1 = 0.43
         case SurfaceType.GALVANISED:
             # Galvanised
-            l = 0.5
-            m = 0.43
+            l1 = 0.5
+            m1 = 0.43
         case SurfaceType.METAL_OTHER:
             # Copper Old
-            l = 0.77
-            m = 0.717
+            l1 = 0.77
+            m1 = 0.717
         case SurfaceType.METAL_TILE:
             # Decramastic
-            l = 0.5
-            m = 0.43
+            l1 = 0.5
+            m1 = 0.43
         case SurfaceType.NON_METAL:
-            # Concrete
-            # Concrete Painted
-            # Glass Roof
-            l = 0.77
-            m = 0.67
+            # Concrete, Concrete Painted, and Glass Roof
+            l1 = 0.77
+            m1 = 0.67
         case SurfaceType.ZINCALUME:
-            l = 0.5
-            m = 0.43
+            l1 = 0.5
+            m1 = 0.43
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
-            l = 0.28
-            m = 0.43
+            l1 = 0.28
+            m1 = 0.43
         case _:
             raise ValueError(invalid_surface_error)
-    return MetalLoads(l * total_copper_load, m * total_zinc_load)
+    return MetalLoads(l1 * total_copper_load, m1 * total_zinc_load)
 
 
 def save_roof_surface_type_points_to_db(engine: Engine) -> None:
@@ -898,16 +883,16 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Wrap all parameters for MEDUSA rainfall event into a NamedTuple
     rainfall_event = MedusaRainfallEvent(antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph)
 
-    # # Search for a scenario that already exist, and return that one if it does.
-    # existing_scenario_id = find_existing_pollution_scenario(engine, area_of_interest, rainfall_event)
-    # if existing_scenario_id is not None:
-    #     return existing_scenario_id
+    # Search for a scenario that already exist, and return that one if it does.
+    existing_scenario_id = find_existing_pollution_scenario(engine, area_of_interest, rainfall_event)
+    if existing_scenario_id is not None:
+        return existing_scenario_id
 
     # Run the pollution model
     scenario_id = run_pollution_model_rain_event(engine, area_of_interest, rainfall_event)
 
-    # # Ensure pollution model data is being served by geoserver
-    # serve_pollution_model()
+    # Ensure pollution model data is being served by geoserver
+    serve_pollution_model()
 
     # Create new table recording users' history
     create_table(engine, MedusaScenarios)
