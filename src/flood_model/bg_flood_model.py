@@ -377,6 +377,13 @@ def prepare_bg_flood_model_inputs(
         Set the value to 1 to enable short integer conversion, or set it to 0 to save all variables as floats.
         Default value is 0.
     """
+    # Retrieve the value of the environment variable "USE_AWS_S3_BUCKET"
+    use_aws_s3_bucket = EnvVariable.USE_AWS_S3_BUCKET
+    # If True, download the Hydro DEM file from S3 bucket
+    if use_aws_s3_bucket:
+        s3_manager = S3Manager()
+        s3_manager.retrieve_file(hydro_dem_path, hydro_dem_path)
+
     # Read the Hydro DEM file using xarray and get the name of the elevation variable
     with xr.open_dataset(hydro_dem_path) as dem_file:
         elev_var_name = list(dem_file.data_vars)[1]
