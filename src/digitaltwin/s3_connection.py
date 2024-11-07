@@ -252,7 +252,7 @@ class S3Manager:
             # Convert the pathlib.Path object to a string representation
             s3_object_key = s3_object_key.as_posix()
         # Get the parent directory of the specified file path
-        file_directory = file_path.parent
+        file_directory = pathlib.Path(file_path).parent
         # Create the directory if it doesn't exist
         file_directory.mkdir(parents=True, exist_ok=True)
         # Download the object/file from the S3 bucket to the specified local path
