@@ -180,7 +180,7 @@ def compute_tss_roof_road(surface_area: float,
     # Calculate tss for road and roof
     if surface_type == 'AsphaltRoad':
         # Road
-        first_term = a1 * (antecedent_dry_days ** a2) * surface_area * a7 * average_rain_intensity
+        first_term = a1 * (antecedent_dry_days ** a2) * surface_area * 0.25
     else:
         # Roof
         first_term = a1 * (antecedent_dry_days ** a2) * surface_area * 0.75
