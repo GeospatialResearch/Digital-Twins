@@ -89,16 +89,20 @@ class S3Manager:
         List[str]
             A list containing the keys of objects stored in the S3 bucket.
         """
-        # Retrieve a list of objects from the S3 bucket
-        resp = self.s3_client.list_objects_v2(Bucket=self.bucket_name)
+        # Create a reusable Paginator
+        paginator = self.s3_client.get_paginator('list_objects_v2')
+        # Create a PageIterator from the Paginator
+        page_iterator = paginator.paginate(Bucket=self.bucket_name)
         # Initialize an empty list to store the object keys
         object_keys = []
-        # Check if the response contains any objects
-        if "Contents" in resp:
-            # Iterate over each object in the response
-            for obj in resp["Contents"]:
-                # Extract the object key and append it to the list
-                object_keys.append(obj["Key"])
+        # Retrieve a list of objects from the S3 bucket
+        for page in page_iterator:
+            # Check if the response contains any objects
+            if "Contents" in page:
+                # Iterate over each object in the response
+                for obj in page["Contents"]:
+                    # Extract the object key and append it to the list
+                    object_keys.append(obj["Key"])
         return object_keys
 
     def store_object(
