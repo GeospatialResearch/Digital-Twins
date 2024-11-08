@@ -504,7 +504,7 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     """
     # Add roof surface polygons to database
     save_roof_surface_polygons_to_db(engine)
-    # Add roof surface type points to database.
+    # Add roof surface type points to database
     save_roof_surface_type_points_to_db(engine)
 
     # Convert current area of interest format into the format can be used by SQL

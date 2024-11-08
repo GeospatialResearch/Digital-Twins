@@ -3,7 +3,10 @@ import numpy as np
 
 from src.pollution_model.run_medusa_2 import (MedusaRainfallEvent, compute_tss_roof_road,
                                               total_metal_load_roof, dissolved_metal_load,
-                                              total_metal_load_road_carpark)
+                                              total_metal_load_road_carpark,
+                                              run_medusa_model_for_surface_geometries)
+
+import geopandas as gpd
 
 
 class RunMedusaTest(unittest.TestCase):
@@ -13,6 +16,8 @@ class RunMedusaTest(unittest.TestCase):
         """Set up arguments used for testing."""
         cls.surface_area = 173
         cls.rainfall_event = MedusaRainfallEvent(1.45833333333333, 0.5, 2, 6.5)
+        cls.test_buildings_gdf = gpd.read_file("tests/test_pollution_model/data/test_buildings.geojson")
+
 
     # Test Roof
     def test_tss_roof_matches_excel(self):
@@ -68,9 +73,15 @@ class RunMedusaTest(unittest.TestCase):
         self.assertEquals(dissolve_copper_road_result, excel_dissolve_copper_road_result)
         self.assertEquals(dissolve_zinc_road_result, excel_dissolve_zinc_road_result)
 
-    def test_fail(self):
-        # todo fill in more test case methods for each function
-        assert False
+    def test_run_medusa_model(self):
+        # Run through each building and calculations
+        all_buildings = run_medusa_model_for_surface_geometries(
+            self.test_buildings_gdf, self.rainfall_event
+        )
+        all_buildings = all_buildings.drop('geometry', axis=1)
+        all_buildings['scenario_id'] = 1
+
+
 
 if __name__ == '__main__':
     unittest.main()
