@@ -63,6 +63,20 @@ FROM runtime-base AS backend
 # Image build target for backend
 # Using separate build targets for each image because the Orbica platform does not allow for modifying entrypoints
 # and using multiple dockerfiles was creating increase complexity problems keeping things in sync
+
+# Create PyWPS required logging and output directories
+SHELL ["/bin/bash", "-c"]
+USER root
+RUN <<EOF
+for NEW_DIRECTORY in "outputs" "workdir" "logs"
+do
+    mkdir "$NEW_DIRECTORY"
+    setfacl -R -d -m u:nonroot:rwx "$NEW_DIRECTORY"
+    setfacl -R -m u:nonroot:rwx "$NEW_DIRECTORY"
+done
+EOF
+USER nonroot
+
 EXPOSE 5000
 
 SHELL ["/bin/bash", "-c"]
