@@ -6,7 +6,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - conda-pack>=0.7.1
+  - conda-pack==0.7.1
   - python==3.11  # 11 for StrEnum
   - pip
   - python-dotenv==1.0.0
