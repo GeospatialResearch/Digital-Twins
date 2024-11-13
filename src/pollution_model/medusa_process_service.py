@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Defines PyWPS WebProcessingService process for running MEDUSA model"""
+
 import json
+from typing import Union
 
 import geopandas as gpd
 from pywps import ComplexOutput, Format, LiteralInput, LiteralOutput, Process, WPSRequest
@@ -53,7 +55,7 @@ class MedusaProcessService(Process):
         """
 
         # Helper function to format `number` for visualization
-        def format_number(number):
+        def format_number(number: float) -> Union[int, float]:
             """Return `number` as an int if whole, otherwise as a float."""
             return int(number) if number % 1 == 0 else float(number)
 
