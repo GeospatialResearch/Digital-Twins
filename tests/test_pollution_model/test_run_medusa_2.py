@@ -4,9 +4,10 @@ import numpy as np
 from src.pollution_model.run_medusa_2 import (MedusaRainfallEvent, compute_tss_roof_road,
                                               total_metal_load_roof, dissolved_metal_load,
                                               total_metal_load_road_carpark,
-                                              run_medusa_model_for_surface_geometries)
+                                              run_medusa_model_for_surface_geometries, SurfaceType)
 
 import geopandas as gpd
+import pandas as pd
 
 
 class RunMedusaTest(unittest.TestCase):
@@ -22,13 +23,13 @@ class RunMedusaTest(unittest.TestCase):
     # Test Roof
     def test_tss_roof_matches_excel(self):
         tss_roof_result = np.round(compute_tss_roof_road(
-            self.surface_area, self.rainfall_event, 'ColourSteel'), 3)
+            self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL), 3)
         excel_tss_roof_result = 582.040
         self.assertEquals(tss_roof_result, excel_tss_roof_result)
 
     def test_copper_zinc_roof_matches_excel(self):
         copper_roof_result, zinc_roof_result = np.round(total_metal_load_roof(
-            self.surface_area, self.rainfall_event, 'ColourSteel'), 3)
+            self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL), 3)
         excel_copper_roof_result = 0.701
         excel_zinc_roof_result = 103.148
         self.assertEquals(copper_roof_result, excel_copper_roof_result)
@@ -36,9 +37,9 @@ class RunMedusaTest(unittest.TestCase):
 
     def test_dissolve_copper_zinc_roof_matches_excel(self):
         copper_roof_result, zinc_roof_result = total_metal_load_roof(
-            self.surface_area, self.rainfall_event, 'ColourSteel')
+            self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL)
         dissolve_copper_roof_result, dissolve_zinc_roof_result = np.round(dissolved_metal_load(
-            copper_roof_result, zinc_roof_result, 'ColourSteel'), 3)
+            copper_roof_result, zinc_roof_result, SurfaceType.COLOUR_STEEL), 3)
         excel_dissolve_copper_roof_result = 0.351
         excel_dissolve_zinc_roof_result = 44.354
         self.assertEquals(dissolve_copper_roof_result, excel_dissolve_copper_roof_result)
@@ -47,13 +48,13 @@ class RunMedusaTest(unittest.TestCase):
     # Test Road
     def test_tss_road_matches_excel(self):
         tss_road_result = np.round(compute_tss_roof_road(
-            self.surface_area, self.rainfall_event,'AsphaltRoad'), 3)
+            self.surface_area, self.rainfall_event,SurfaceType.ASPHALT_ROAD), 3)
         excel_road_tss_result = 6980.284
         self.assertEquals(tss_road_result, excel_road_tss_result)
 
     def test_copper_zinc_road_matches_excel(self):
         tss_road_result = compute_tss_roof_road(
-            self.surface_area, self.rainfall_event, 'AsphaltRoad')
+            self.surface_area, self.rainfall_event, SurfaceType.ASPHALT_ROAD)
         copper_road_result, zinc_road_result = np.round(total_metal_load_road_carpark(
             tss_road_result), 3)
         excel_copper_road_result = 3078.305
@@ -63,11 +64,11 @@ class RunMedusaTest(unittest.TestCase):
 
     def test_dissolve_copper_zinc_road_matches_excel(self):
         tss_road_result = compute_tss_roof_road(
-            self.surface_area, self.rainfall_event, 'AsphaltRoad')
+            self.surface_area, self.rainfall_event, SurfaceType.ASPHALT_ROAD)
         copper_road_result, zinc_road_result = total_metal_load_road_carpark(
             tss_road_result)
         dissolve_copper_road_result, dissolve_zinc_road_result = np.round(dissolved_metal_load(
-            copper_road_result, zinc_road_result, 'AsphaltRoad'), 3)
+            copper_road_result, zinc_road_result, SurfaceType.ASPHALT_ROAD), 3)
         excel_dissolve_copper_road_result = 861.925
         excel_dissolve_zinc_road_result = 5882.983
         self.assertEquals(dissolve_copper_road_result, excel_dissolve_copper_road_result)
@@ -79,9 +80,18 @@ class RunMedusaTest(unittest.TestCase):
             self.test_buildings_gdf, self.rainfall_event
         )
         all_buildings = all_buildings.drop('geometry', axis=1)
-        all_buildings['scenario_id'] = 1
-
-
+        # Get columns need testing
+        all_buildings_testing = np.round(all_buildings[all_buildings.columns[2:]], 4)
+        excel_all_buildings_testing = pd.DataFrame(
+            data = {
+                'total_suspended_solids': [582.3130, 380.7506, 57.9798, 321.3461, 553.3733],
+                'total_copper': [0.7014, 0.4586, 0.0698, 0.3870, 0.4883],
+                'total_zinc': [103.1962, 67.4758, 10.2750, 56.9482, 9.9739],
+                'dissolved_copper': [0.3507, 0.2293, 0.0349, 0.1935, 0.3760],
+                'dissolved_zinc': [44.3744, 29.0146, 4.4183, 24.4877, 6.6825]
+            }
+        )
+        pd.testing.assert_frame_equal(all_buildings_testing, excel_all_buildings_testing)
 
 if __name__ == '__main__':
     unittest.main()

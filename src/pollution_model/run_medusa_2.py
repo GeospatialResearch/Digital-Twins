@@ -170,7 +170,7 @@ def compute_tss_roof_road(surface_area: float,
             # Zincalume
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
-            a1, a2, a7, k = 190, 0.16, 0.0125, 0.0008
+            a1, a2, k = 190, 0.16, 0.0008
         case _:
             raise ValueError(invalid_surface_error)
 
