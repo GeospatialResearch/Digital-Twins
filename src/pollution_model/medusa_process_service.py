@@ -9,8 +9,9 @@ from pywps import Process, LiteralInput, LiteralOutput, UOM, ComplexInput, Compl
 from pywps.inout.literaltypes import AllowedValue, AnyValue
 from pywps.validator.allowed_value import ALLOWEDVALUETYPE, RANGECLOSURETYPE
 
+from src import tasks
+from src.config import EnvVariable
 from src.digitaltwin.utils import LogLevel
-from src.pollution_model import run_medusa_2
 
 
 class MedusaProcessService(Process):
@@ -41,13 +42,9 @@ class MedusaProcessService(Process):
         event_duration = request.inputs['eventDuration'][0].data
         area_of_interest = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
 
-        scenario_id = run_medusa_2.main(
-            area_of_interest,
-            LogLevel.DEBUG,
-            antecedent_dry_days,
-            average_rain_intensity,
-            event_duration
-        )
+        aoi_wkt = area_of_interest.to_crs(4326).geometry[0].wkt
+        medusa_task = tasks.run_medusa_model.delay(aoi_wkt, antecedent_dry_days, average_rain_intensity, event_duration)
+        scenario_id = medusa_task.get()
 
         response.outputs['roofs'].data = json.dumps({
             "type": "wfs",

@@ -111,7 +111,8 @@ def index() -> Response:
 
 
 @app.route('/wps', methods=['GET', 'POST'])
-def wps() -> Response:
+@check_celery_alive
+def wps() -> Service:
     return service
 
 

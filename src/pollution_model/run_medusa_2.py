@@ -885,7 +885,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
         average_rain_intensity=average_rain_intensity,
         event_duration=event_duration,
         rainfall_ph=rainfall_ph,
-        geometry=area_of_interest['geometry'].to_wkt().iloc[0]
+        geometry=area_of_interest["geometry"][0].wkt
     )
     # Execute the query
     execute_query(engine, record_scenario_input_query)
