@@ -29,6 +29,7 @@ dependencies:
   - redis-py==5.0.1
   - botocore>=1.33.10 # Minimum version that is compatible with python >= 3.10 is botocore>=1.13.0
   - scrapy==2.11.1
+  - gevent==23.9.1
   - pywps==4.6.0
   - pip:
     - flask_swagger_ui==4.11.1
