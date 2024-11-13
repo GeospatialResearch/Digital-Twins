@@ -89,7 +89,7 @@ processes = [
 
 process_descriptor = {process.identifier: process.abstract for process in processes}
 
-service = Service(processes, ['pywps.cfg'])
+service = Service(processes, ['src/pywps.cfg'])
 
 
 @app.route('/')
