@@ -55,7 +55,19 @@ class MedusaProcessService(Process):
         """
         # Helper function to format `number` for visualization
         def format_number(number: float) -> Union[int, float]:
-            """Return `number` as an int if whole, otherwise as a float."""
+            """
+            Return `number` as an int if whole, otherwise as a float.
+
+            Parameters
+            ----------
+            number : float
+                The number to be formatted.
+
+            Returns
+            -------
+            Union[int, float]
+                The formatted number, either as an int if whole or as a float.
+            """
             return int(number) if number % 1 == 0 else float(number)
 
         # Read input parameters from request
