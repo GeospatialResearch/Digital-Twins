@@ -54,7 +54,7 @@ class MedusaProcessService(Process):
             The WPS response, containing output data.
         """
         # Helper function to format `number` for visualization
-        def format_number(number: float) -> Union[int, float]:
+        def _format_number(number: float) -> Union[int, float]:
             """
             Return `number` as an int if whole, otherwise as a float.
 
@@ -86,9 +86,9 @@ class MedusaProcessService(Process):
 
         # Create scenario details as HTML-formatted text with input values and scenario ID
         scenario_details = (
-            f"Antecedent Dry Days: {format_number(antecedent_dry_days)}<br>"
-            f"Average Rain Intensity (mm/hour): {format_number(average_rain_intensity)}<br>"
-            f"Event Duration (hours): {format_number(event_duration)}<br>"
+            f"Antecedent Dry Days: {_format_number(antecedent_dry_days)}<br>"
+            f"Average Rain Intensity (mm/hour): {_format_number(average_rain_intensity)}<br>"
+            f"Event Duration (hours): {_format_number(event_duration)}<br>"
             f"Scenario ID: {scenario_id}"
         )
 
