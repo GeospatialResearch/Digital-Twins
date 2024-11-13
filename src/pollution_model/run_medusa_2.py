@@ -402,52 +402,6 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     return MetalLoads(f * total_copper_load, g * total_zinc_load)
 
 
-def save_roof_surface_type_points_to_db(engine: Engine) -> None:
-    """
-    Read building data under points. Then store them into database.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    # Check if the table already exist in the database
-    if check_table_exists(engine, "roof_surface_points"):
-        log.info("roof_surface_points data already exists in the database.")
-    else:
-        # Read roof surface points from outside
-        # This data has the deeplearn_matclass with roof types we need
-        log.info(f"Reading roof surface points from {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
-        roof_surface_points = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH,
-                                            layer="CCC_Lynker_RoofMaterial_Update_2023")
-        # Remove rows of building_Id and deeplearn_subclass that are NANs
-        roof_surface_points = roof_surface_points.dropna(subset=['building_Id', 'deeplearn_subclass'])
-        # Store the building_point_data to the database table
-        log.info("Adding roof_surface_points table to the database.")
-        roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
-
-
-def save_roof_surface_polygons_to_db(engine: Engine) -> None:
-    """
-    Read building data under points. Then store them into database.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    # Check if the table already exist in the database
-    if check_table_exists(engine, "roof_surface_polygons"):
-        log.info("roof_surface_polygons data already exists in the database.")
-    else:
-        # Read roof surface polygons from outside
-        log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
-        roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH, layer="BuildingPolygons")
-        # Store the building_point_data to the database table
-        log.info("Adding roof_surface_polygons table to the database.")
-        roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
-
-
 def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Extract relevant information about buildings from central_buildings.geojson, since the input data is not finalised.
@@ -467,11 +421,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    # Add roof surface polygons to database
-    save_roof_surface_polygons_to_db(engine)
-    # Add roof surface type points to database.
-    save_roof_surface_type_points_to_db(engine)
-
     # Convert current area of interest format into the format can be used by SQL
     aoi_wkt = area_of_interest["geometry"][0].wkt
     crs = area_of_interest.crs.to_epsg()
@@ -606,8 +555,8 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
         The MEDUSA results for the given surfaces and rainfall_event.
     """
     # Add empty columns for each of the new medusa columns
-    MEDUSA_COLUMNS = ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]
-    for medusa_column in MEDUSA_COLUMNS:
+    medusa_columns = ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]
+    for medusa_column in medusa_columns:
         surfaces[medusa_column] = pd.Series(dtype='float')
     # Wrap DataFrame.apply with progress_apply to add tqdm progress bar.
     tqdm.pandas()
@@ -618,7 +567,7 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
     # Due to issue https://github.com/GeospatialResearch/Digital-Twins/issues/276 MEDUSA outputs are negative.
     # This swaps the data absolute value to make it look cleaner until the issue is fixed.
     # If #276 is resoved, then it's safe to remove this, but it is safe to leave in until then.
-    surfaces[MEDUSA_COLUMNS] = surfaces[MEDUSA_COLUMNS].abs()
+    surfaces[medusa_columns] = surfaces[medusa_columns].abs()
     return surfaces
 
 
@@ -706,7 +655,7 @@ def serve_pollution_model() -> None:
 
         # Construct query linking medusa_table_class to its geometry table
         pollution_sql_query = f"""
-        SELECT 
+        SELECT
             total_suspended_solids,
             total_copper,
             total_zinc,
@@ -852,7 +801,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     Returns
     -------
     int
-       Returns the model id of the new flood_model produced
+       The scenario id of the new medusa scenario produced
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
@@ -885,7 +834,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
         average_rain_intensity=average_rain_intensity,
         event_duration=event_duration,
         rainfall_ph=rainfall_ph,
-        geometry=area_of_interest['geometry'].to_wkt().iloc[0]
+        geometry=area_of_interest["geometry"][0].wkt
     )
     # Execute the query
     execute_query(engine, record_scenario_input_query)

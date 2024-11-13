@@ -10,7 +10,8 @@ import billiard.einfo
 import geopandas as gpd
 import shapely
 import xarray
-from celery import Celery, states, result
+from celery import Celery, result, signals, states
+from celery.worker.consumer import Consumer
 from pyproj import Transformer
 
 from src.config import EnvVariable
@@ -20,7 +21,7 @@ from src.dynamic_boundary_conditions.rainfall import main_rainfall
 from src.dynamic_boundary_conditions.river import main_river
 from src.dynamic_boundary_conditions.tide import main_tide_slr
 from src.flood_model import bg_flood_model, process_hydro_dem
-from src.pollution_model.run_medusa_2 import retrieve_input_parameters
+from src.pollution_model import run_medusa_2
 from src.environmental.water_quality import surface_water_sites
 from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
 
@@ -30,6 +31,23 @@ app = Celery("tasks", backend=message_broker_url, broker=message_broker_url)
 
 setup_logging()
 log = logging.getLogger(__name__)
+
+
+@signals.worker_ready.connect
+def on_startup(sender: Consumer, **_kwargs: None) -> None:  # pylint: disable=missing-param-doc
+    """
+    Initialise database, runs when Celery instance is ready.
+
+    Parameters
+    ----------
+    sender : Consumer
+        The Celery worker node instance
+    """
+    with sender.app.connection() as conn:
+        # Gather area of interest from file.
+        aoi_wkt = gpd.read_file("selected_polygon.geojson").to_crs(4326).geometry[0].wkt
+        # Send a task to initialise this area of interest.
+        sender.app.send_task("src.tasks.add_base_data_to_db", args=[aoi_wkt], connection=conn)
 
 
 class OnFailureStateTask(app.Task):
@@ -73,6 +91,46 @@ class DepthTimePlot(NamedTuple):
 
     depths: List[float]
     times: List[float]
+
+
+@app.task(base=OnFailureStateTask)
+def run_medusa_model(selected_polygon_wkt: str,
+                     antecedent_dry_days: float,
+                     average_rain_intensity: float,
+                     event_duration: float,
+                     rainfall_ph: float = 6.5) -> int:
+    """
+    Create a model for the area using series of chained (sequential) sub-tasks.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : gpd.GeoDataFrame
+        A wkt encoding string representing the area of interest, in epsg:4326.
+    antecedent_dry_days: float
+        The number of dry days between rainfall events.
+    average_rain_intensity: float
+        The intensity of the rainfall event in mm/h.
+    event_duration: float
+        The number of hours of the rainfall event.
+    rainfall_ph: float
+        The pH level of the rainfall, a measure of acidity.
+
+    Returns
+    -------
+    int
+       The scenario id of the new medusa scenario produced
+    """
+    # Convert wkt string into a GeoDataFrame
+    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
+    # Read log level from default parameters
+    log_level = DEFAULT_MODULES_TO_PARAMETERS[run_medusa_2]["log_level"]
+    # Run Medusa model
+    return run_medusa_2.main(selected_polygon,
+                             log_level,
+                             antecedent_dry_days,
+                             average_rain_intensity,
+                             event_duration,
+                             rainfall_ph)
 
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
@@ -304,7 +362,7 @@ def retrieve_medusa_input_parameters(scenario_id: int) -> Optional[Dict[str, Uni
         A dictionary contain information from Rainfall MEDUSA 2.0 database or None if scenario does not exist.
     """
     # Get rainfall information
-    medusa_rainfall_event = retrieve_input_parameters(scenario_id)
+    medusa_rainfall_event = run_medusa_2.retrieve_input_parameters(scenario_id)
 
     # Return a dictionary format of these parameters or None if no ID found
     if medusa_rainfall_event is None:
