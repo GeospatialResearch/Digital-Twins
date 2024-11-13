@@ -12,6 +12,7 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
+from src.config import EnvVariable
 from src.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
 from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
 
@@ -99,11 +100,11 @@ def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, int, str, str]
 
 
 def get_vector_data_id_not_in_db(
-        engine: Engine,
-        vector_data: gpd.GeoDataFrame,
-        table_name: str,
-        unique_column_name: str,
-        area_of_interest: gpd.GeoDataFrame) -> Set[int]:
+    engine: Engine,
+    vector_data: gpd.GeoDataFrame,
+    table_name: str,
+    unique_column_name: str,
+    area_of_interest: gpd.GeoDataFrame) -> Set[int]:
     """
     Get the IDs from the fetched vector_data that are not present in the specified database table
     for the area of interest.
@@ -146,9 +147,9 @@ def get_vector_data_id_not_in_db(
 
 
 def nz_geospatial_layers_data_to_db(
-        engine: Engine,
-        crs: int = 2193,
-        verbose: bool = False) -> None:
+    engine: Engine,
+    crs: int = 2193,
+    verbose: bool = False) -> None:
     """
     Fetch New Zealand geospatial layers data using 'geoapis' and store it into the database.
 
@@ -182,9 +183,9 @@ def nz_geospatial_layers_data_to_db(
 
 
 def get_non_intersection_area_from_db(
-        engine: Engine,
-        catchment_area: gpd.GeoDataFrame,
-        table_name: str) -> gpd.GeoDataFrame:
+    engine: Engine,
+    catchment_area: gpd.GeoDataFrame,
+    table_name: str) -> gpd.GeoDataFrame:
     """
     Get the non-intersecting area from the catchment area and user log information table in the database
     for the specified table.
@@ -241,13 +242,13 @@ def get_non_intersection_area_from_db(
 
 
 def process_new_non_nz_geospatial_layers(
-        engine: Engine,
-        data_provider: str,
-        layer_id: int,
-        table_name: str,
-        area_of_interest: gpd.GeoDataFrame,
-        crs: int = 2193,
-        verbose: bool = False) -> None:
+    engine: Engine,
+    data_provider: str,
+    layer_id: int,
+    table_name: str,
+    area_of_interest: gpd.GeoDataFrame,
+    crs: int = 2193,
+    verbose: bool = False) -> None:
     """
     Fetch new non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
@@ -281,14 +282,14 @@ def process_new_non_nz_geospatial_layers(
 
 
 def process_existing_non_nz_geospatial_layers(
-        engine: Engine,
-        data_provider: str,
-        layer_id: int,
-        table_name: str,
-        unique_column_name: str,
-        area_of_interest: gpd.GeoDataFrame,
-        crs: int = 2193,
-        verbose: bool = False) -> None:
+    engine: Engine,
+    data_provider: str,
+    layer_id: int,
+    table_name: str,
+    unique_column_name: str,
+    area_of_interest: gpd.GeoDataFrame,
+    crs: int = 2193,
+    verbose: bool = False) -> None:
     """
     Fetch existing non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
@@ -334,10 +335,10 @@ def process_existing_non_nz_geospatial_layers(
 
 
 def non_nz_geospatial_layers_data_to_db(
-        engine: Engine,
-        catchment_area: gpd.GeoDataFrame,
-        crs: int = 2193,
-        verbose: bool = False) -> None:
+    engine: Engine,
+    catchment_area: gpd.GeoDataFrame,
+    crs: int = 2193,
+    verbose: bool = False) -> None:
     """
     Fetch non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
@@ -379,10 +380,10 @@ def non_nz_geospatial_layers_data_to_db(
 
 
 def store_geospatial_layers_data_to_db(
-        engine: Engine,
-        catchment_area: gpd.GeoDataFrame,
-        crs: int = 2193,
-        verbose: bool = False) -> None:
+    engine: Engine,
+    catchment_area: gpd.GeoDataFrame,
+    crs: int = 2193,
+    verbose: bool = False) -> None:
     """
     Fetch geospatial layers data using 'geoapis' and store it into the database.
 
@@ -425,3 +426,62 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
     query = UserLogInfo(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query
     execute_query(engine, query)
+
+
+def save_roof_surface_type_points_to_db(engine: Engine) -> None:
+    """
+    Read roof surface type data, then store them into database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    """
+    # Check if the table already exist in the database
+    if check_table_exists(engine, "roof_surface_points"):
+        log.info("roof_surface_points data already exists in the database.")
+    else:
+        # Read roof surface points from outside
+        # This data has the deeplearn_matclass with roof types we need
+        log.info(f"Reading roof surface points from {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
+        roof_surface_points = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH,
+                                            layer="CCC_Lynker_RoofMaterial_Update_2023")
+        # Remove rows of building_Id and deeplearn_subclass that are NANs
+        roof_surface_points = roof_surface_points.dropna(subset=['building_Id', 'deeplearn_subclass'])
+        # Store the building_point_data to the database table
+        log.info("Adding roof_surface_points table to the database.")
+        roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
+
+
+def save_roof_surface_polygons_to_db(engine: Engine) -> None:
+    """
+    Read roof surface geometry data then store them into database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    """
+    # Check if the table already exist in the database
+    if check_table_exists(engine, "roof_surface_polygons"):
+        log.info("roof_surface_polygons data already exists in the database.")
+    else:
+        # Read roof surface polygons from outside
+        log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
+        roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH, layer="BuildingPolygons")
+        # Store the building_point_data to the database table
+        log.info("Adding roof_surface_polygons table to the database.")
+        roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
+
+
+def save_roof_surface_type_data_to_db(engine: Engine) -> None:
+    """
+    Read roof surface type dataset file and save data into database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    """
+    save_roof_surface_polygons_to_db(engine)
+    save_roof_surface_type_points_to_db(engine)
