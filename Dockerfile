@@ -49,6 +49,10 @@ RUN mkdir /stored_data \
     && setfacl -R -m u:nonroot:rwx /stored_data \
     && mkdir /stored_data/geoserver
 
+COPY --chown=root:root --chmod=444 \
+    ./roof_surfaces_data/clipped_CCC_Lynker_RoofMaterials_Update_2023.gdb/ \
+    /stored_data/roof_surfaces_data/roof_surfaces.gdb/
+
 # Copy python virtual environment from build layer
 COPY --chown=root:root --chmod=555 --from=build /venv /venv
 USER nonroot
