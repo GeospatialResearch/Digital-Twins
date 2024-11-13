@@ -89,7 +89,7 @@ class MedusaProcessService(Process):
             f"Antecedent Dry Days: {_format_number(antecedent_dry_days)}<br>"
             f"Average Rain Intensity (mm/hour): {_format_number(average_rain_intensity)}<br>"
             f"Event Duration (hours): {_format_number(event_duration)}<br>"
-            f"Scenario ID: {scenario_id}"
+            f"Scenario ID: {_format_number(scenario_id)}"
         )
 
         # Create a short report containing scenario details
