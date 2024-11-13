@@ -81,7 +81,7 @@ EXPOSE 5000
 
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT source /venv/bin/activate && \
-           gunicorn --bind 0.0.0.0:5000 src.app:app
+           gunicorn --bind 0.0.0.0:5000 --timeout 600 src.app:app
 
 
 FROM runtime-base AS celery_worker
