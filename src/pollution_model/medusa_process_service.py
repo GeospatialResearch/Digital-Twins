@@ -14,16 +14,16 @@ from src.pollution_model import run_medusa_2
 
 
 class MedusaProcessService(Process):
+
     def __init__(self):
         inputs = [
             LiteralInput("antecedentDryDays", "Antecedent Dry Days", data_type='float', allowed_values=AnyValue()),
-            LiteralInput("averageRainIntensity", "Average Rain Intensity (mm/hour)", data_type='float',
-                         allowed_values=AnyValue()),
+            LiteralInput("averageRainIntensity", "Average Rain Intensity (mm/hour)", data_type='float', allowed_values=AnyValue()),
             LiteralInput("eventDuration", "Event Duration (hours)", data_type='float', allowed_values=AnyValue()),
         ]
         outputs = [
-            ComplexOutput("roofs", "Output",
-                          supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
+            LiteralOutput("scenarioDetails", "Scenario Details", data_type='string'),
+            ComplexOutput("roofs", "Output", supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
             ComplexOutput("roads", "Output", supported_formats=[Format("application/vnd.terriajs.catalog-member+json")])
         ]
         super(MedusaProcessService, self).__init__(
@@ -36,6 +36,11 @@ class MedusaProcessService(Process):
         )
 
     def _handler(self, request, response):
+
+        def format_number(number):
+            """Return `number` as an int if whole, otherwise as a float."""
+            return int(number) if number % 1 == 0 else float(number)
+
         antecedent_dry_days = request.inputs['antecedentDryDays'][0].data
         average_rain_intensity = request.inputs['averageRainIntensity'][0].data
         event_duration = request.inputs['eventDuration'][0].data
@@ -49,6 +54,23 @@ class MedusaProcessService(Process):
             event_duration
         )
 
+        scenario_details = (
+            f"Antecedent Dry Days: {format_number(antecedent_dry_days)}<br>"
+            f"Average Rain Intensity (mm/hour): {format_number(average_rain_intensity)}<br>"
+            f"Event Duration (hours): {format_number(event_duration)}<br>"
+            f"Scenario ID: {scenario_id}"
+        )
+
+        scenario_short_report = [
+            {
+                "name": "Scenario Details",
+                "content": scenario_details,
+                "show": False
+            }
+        ]
+
+        response.outputs['scenarioDetails'].data = scenario_details
+
         response.outputs['roofs'].data = json.dumps({
             "type": "wfs",
             "name": "MEDUSA Roof Surfaces",
@@ -57,7 +79,8 @@ class MedusaProcessService(Process):
             "parameters": {
                 "cql_filter": f"scenario_id={scenario_id}",
             },
-            "maxFeatures": 300000
+            "maxFeatures": 300000,
+            "shortReportSections": scenario_short_report
         })
 
         response.outputs['roads'].data = json.dumps({
@@ -68,14 +91,6 @@ class MedusaProcessService(Process):
             "parameters": {
                 "cql_filter": f"scenario_id={scenario_id}",
             },
-            "maxFeatures": 10000
+            "maxFeatures": 10000,
+            "shortReportSections": scenario_short_report
         })
-
-# run_medusa_2.main(
-#     selected_polygon_gdf=sample_polygon,
-#     log_level=LogLevel.DEBUG,
-#     antecedent_dry_days=1,
-#     average_rain_intensity=1,
-#     event_duration=1,
-#     rainfall_ph=7
-# )
