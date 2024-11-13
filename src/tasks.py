@@ -10,7 +10,8 @@ import billiard.einfo
 import geopandas as gpd
 import shapely
 import xarray
-from celery import Celery, states, result
+from celery import Celery, result, signals, states, worker
+from celery.worker.consumer import Consumer
 from pyproj import Transformer
 
 from src.config import EnvVariable
@@ -30,6 +31,23 @@ app = Celery("tasks", backend=message_broker_url, broker=message_broker_url)
 
 setup_logging()
 log = logging.getLogger(__name__)
+
+
+@signals.worker_ready.connect
+def on_startup(sender: Consumer, **_kwargs):
+    """
+    Initialises database, runs when Celery instance is ready.
+
+    Parameters
+    ----------
+    sender : Consumer
+        The Celery worker node instance
+    """
+    with sender.app.connection() as conn:
+        # Gather area of interest from file.
+        aoi_wkt = gpd.read_file("selected_polygon.geojson").to_crs(4326).geometry[0].wkt
+        # Send a task to initialise this area of interest.
+        sender.app.send_task("src.tasks.add_base_data_to_db", args=[aoi_wkt], connection=conn)
 
 
 class OnFailureStateTask(app.Task):
@@ -84,11 +102,11 @@ def run_medusa_model(selected_polygon_wkt: str,
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     log_level = DEFAULT_MODULES_TO_PARAMETERS[run_medusa_2]["log_level"]
     return run_medusa_2.main(selected_polygon,
-                      log_level,
-                      antecedent_dry_days,
-                      average_rain_intensity,
-                      event_duration,
-                      rainfall_ph)
+                             log_level,
+                             antecedent_dry_days,
+                             average_rain_intensity,
+                             event_duration,
+                             rainfall_ph)
 
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
