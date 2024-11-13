@@ -104,7 +104,8 @@ def get_vector_data_id_not_in_db(
     vector_data: gpd.GeoDataFrame,
     table_name: str,
     unique_column_name: str,
-    area_of_interest: gpd.GeoDataFrame) -> Set[int]:
+    area_of_interest: gpd.GeoDataFrame
+) -> Set[int]:
     """
     Get the IDs from the fetched vector_data that are not present in the specified database table
     for the area of interest.
@@ -149,7 +150,8 @@ def get_vector_data_id_not_in_db(
 def nz_geospatial_layers_data_to_db(
     engine: Engine,
     crs: int = 2193,
-    verbose: bool = False) -> None:
+    verbose: bool = False
+) -> None:
     """
     Fetch New Zealand geospatial layers data using 'geoapis' and store it into the database.
 
@@ -185,7 +187,8 @@ def nz_geospatial_layers_data_to_db(
 def get_non_intersection_area_from_db(
     engine: Engine,
     catchment_area: gpd.GeoDataFrame,
-    table_name: str) -> gpd.GeoDataFrame:
+    table_name: str
+) -> gpd.GeoDataFrame:
     """
     Get the non-intersecting area from the catchment area and user log information table in the database
     for the specified table.
@@ -248,7 +251,8 @@ def process_new_non_nz_geospatial_layers(
     table_name: str,
     area_of_interest: gpd.GeoDataFrame,
     crs: int = 2193,
-    verbose: bool = False) -> None:
+    verbose: bool = False
+) -> None:
     """
     Fetch new non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
@@ -289,7 +293,8 @@ def process_existing_non_nz_geospatial_layers(
     unique_column_name: str,
     area_of_interest: gpd.GeoDataFrame,
     crs: int = 2193,
-    verbose: bool = False) -> None:
+    verbose: bool = False
+) -> None:
     """
     Fetch existing non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
@@ -338,7 +343,8 @@ def non_nz_geospatial_layers_data_to_db(
     engine: Engine,
     catchment_area: gpd.GeoDataFrame,
     crs: int = 2193,
-    verbose: bool = False) -> None:
+    verbose: bool = False
+) -> None:
     """
     Fetch non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
@@ -383,7 +389,8 @@ def store_geospatial_layers_data_to_db(
     engine: Engine,
     catchment_area: gpd.GeoDataFrame,
     crs: int = 2193,
-    verbose: bool = False) -> None:
+    verbose: bool = False
+) -> None:
     """
     Fetch geospatial layers data using 'geoapis' and store it into the database.
 

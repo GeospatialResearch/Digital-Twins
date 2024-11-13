@@ -2,7 +2,6 @@
 """The main web application that serves the Digital Twin to the web through a Rest API."""
 
 import logging
-import os
 import pathlib
 from functools import wraps
 from http.client import OK, ACCEPTED, BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE
@@ -10,7 +9,6 @@ from typing import Callable, Dict, Tuple
 
 import requests
 from celery import result, states
-import flask
 from flask import Flask, Response, jsonify, make_response, send_file, request
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -113,27 +111,15 @@ def index() -> Response:
 @app.route('/wps', methods=['GET', 'POST'])
 @check_celery_alive
 def wps() -> Service:
+    """
+    End point for OGC WebProcessingService spec, allowing clients such as TerriaJS to request processing.
+
+    Returns
+    -------
+    Service
+        The PyWPS WebProcessing Service instance
+    """
     return service
-
-
-@app.route('/outputs/' + '<path:filename>')
-def outputfile(filename):
-    targetfile = os.path.join('outputs', filename)
-    if os.path.isfile(targetfile):
-        file_ext = os.path.splitext(targetfile)[1]
-        with open(targetfile, mode='rb') as f:
-            file_bytes = f.read()
-        mime_types = {
-            "json": "application/json",
-            "xml": "text/xml"
-        }
-        mime_type = None
-        for extension in mime_types.keys():
-            if extension in file_ext:
-                mime_type = mime_types[extension]
-        return flask.Response(file_bytes, content_type=mime_type)
-    else:
-        flask.abort(404)
 
 
 @app.route('/health-check')

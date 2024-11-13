@@ -421,11 +421,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    # Add roof surface polygons to database
-    save_roof_surface_polygons_to_db(engine)
-    # Add roof surface type points to database.
-    save_roof_surface_type_points_to_db(engine)
-
     # Convert current area of interest format into the format can be used by SQL
     aoi_wkt = area_of_interest["geometry"][0].wkt
     crs = area_of_interest.crs.to_epsg()
@@ -560,8 +555,8 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
         The MEDUSA results for the given surfaces and rainfall_event.
     """
     # Add empty columns for each of the new medusa columns
-    MEDUSA_COLUMNS = ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]
-    for medusa_column in MEDUSA_COLUMNS:
+    medusa_columns = ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]
+    for medusa_column in medusa_columns:
         surfaces[medusa_column] = pd.Series(dtype='float')
     # Wrap DataFrame.apply with progress_apply to add tqdm progress bar.
     tqdm.pandas()
@@ -572,7 +567,7 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
     # Due to issue https://github.com/GeospatialResearch/Digital-Twins/issues/276 MEDUSA outputs are negative.
     # This swaps the data absolute value to make it look cleaner until the issue is fixed.
     # If #276 is resoved, then it's safe to remove this, but it is safe to leave in until then.
-    surfaces[MEDUSA_COLUMNS] = surfaces[MEDUSA_COLUMNS].abs()
+    surfaces[medusa_columns] = surfaces[medusa_columns].abs()
     return surfaces
 
 
@@ -660,7 +655,7 @@ def serve_pollution_model() -> None:
 
         # Construct query linking medusa_table_class to its geometry table
         pollution_sql_query = f"""
-        SELECT 
+        SELECT
             total_suspended_solids,
             total_copper,
             total_zinc,
@@ -806,7 +801,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     Returns
     -------
     int
-       Returns the model id of the new flood_model produced
+       The scenario id of the new medusa scenario produced
     """
     # Set up logging with the specified log level
     setup_logging(log_level)

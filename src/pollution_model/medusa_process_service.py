@@ -1,21 +1,19 @@
-import io
+"""Defines PyWPS WebProcessingService process for running MEDUSA model"""
 import json
-import math
-import time
-from threading import Thread
 
 import geopandas as gpd
-from pywps import Process, LiteralInput, LiteralOutput, UOM, ComplexInput, ComplexOutput, FORMATS, Format
-from pywps.inout.literaltypes import AllowedValue, AnyValue
-from pywps.validator.allowed_value import ALLOWEDVALUETYPE, RANGECLOSURETYPE
+from pywps import ComplexOutput, Format, LiteralInput, Process, WPSRequest
+from pywps.inout.literaltypes import AnyValue
+from pywps.response.execute import ExecuteResponse
 
 from src import tasks
-from src.config import EnvVariable
-from src.digitaltwin.utils import LogLevel
 
 
 class MedusaProcessService(Process):
-    def __init__(self):
+    """Class representing a WebProcessingService process for MEDUSA pollution model."""
+
+    def __init__(self) -> None:
+        """Define inputs and outputs of the WPS process, and assign process handler."""
         inputs = [
             LiteralInput("antecedentDryDays", "Antecedent Dry Days", data_type='float', allowed_values=AnyValue()),
             LiteralInput("averageRainIntensity", "Average Rain Intensity (mm/hour)", data_type='float',
@@ -27,7 +25,7 @@ class MedusaProcessService(Process):
                           supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
             ComplexOutput("roads", "Output", supported_formats=[Format("application/vnd.terriajs.catalog-member+json")])
         ]
-        super(MedusaProcessService, self).__init__(
+        super().__init__(
             self._handler,
             identifier="medusa",
             title="Medusa",
@@ -36,16 +34,32 @@ class MedusaProcessService(Process):
             store_supported=True
         )
 
-    def _handler(self, request, response):
+    def _handler(self, request: WPSRequest, response: ExecuteResponse) -> None:
+        """
+        Process handler for MEDUSA, runs the MEDUSA model using a Celery task.
+
+        Parameters
+        ----------
+        request : WPSRequest
+            The WPS request, containing input parameters.
+        response : ExecuteResponse
+            The WPS response, containing output data.
+        """
+        # Read input parameters from request
         antecedent_dry_days = request.inputs['antecedentDryDays'][0].data
         average_rain_intensity = request.inputs['averageRainIntensity'][0].data
         event_duration = request.inputs['eventDuration'][0].data
+        # Read area of interest from file
         area_of_interest = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
 
+        # Serialise area_of_interest in WKT str format, for sending to Celery
         aoi_wkt = area_of_interest.to_crs(4326).geometry[0].wkt
+        # Send MEDUSA task to celery
         medusa_task = tasks.run_medusa_model.delay(aoi_wkt, antecedent_dry_days, average_rain_intensity, event_duration)
+        # Wait until celery task is completed
         scenario_id = medusa_task.get()
 
+        # Add Geoserver JSON Catalog entries to WPS response for use by Terria
         response.outputs['roofs'].data = json.dumps({
             "type": "wfs",
             "name": "MEDUSA Roof Surfaces",
@@ -56,7 +70,6 @@ class MedusaProcessService(Process):
             },
             "maxFeatures": 300000
         })
-
         response.outputs['roads'].data = json.dumps({
             "type": "wfs",
             "name": "MEDUSA Road Surfaces",
@@ -67,12 +80,3 @@ class MedusaProcessService(Process):
             },
             "maxFeatures": 10000
         })
-
-# run_medusa_2.main(
-#     selected_polygon_gdf=sample_polygon,
-#     log_level=LogLevel.DEBUG,
-#     antecedent_dry_days=1,
-#     average_rain_intensity=1,
-#     event_duration=1,
-#     rainfall_ph=7
-# )

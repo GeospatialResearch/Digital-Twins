@@ -10,7 +10,7 @@ import billiard.einfo
 import geopandas as gpd
 import shapely
 import xarray
-from celery import Celery, result, signals, states, worker
+from celery import Celery, result, signals, states
 from celery.worker.consumer import Consumer
 from pyproj import Transformer
 
@@ -34,9 +34,9 @@ log = logging.getLogger(__name__)
 
 
 @signals.worker_ready.connect
-def on_startup(sender: Consumer, **_kwargs):
+def on_startup(sender: Consumer, **_kwargs: None) -> None:  # pylint: disable=missing-param-doc
     """
-    Initialises database, runs when Celery instance is ready.
+    Initialise database, runs when Celery instance is ready.
 
     Parameters
     ----------
@@ -99,8 +99,32 @@ def run_medusa_model(selected_polygon_wkt: str,
                      average_rain_intensity: float,
                      event_duration: float,
                      rainfall_ph: float = 6.5) -> int:
+    """
+    Create a model for the area using series of chained (sequential) sub-tasks.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : gpd.GeoDataFrame
+        A wkt encoding string representing the area of interest, in epsg:4326.
+    antecedent_dry_days: float
+        The number of dry days between rainfall events.
+    average_rain_intensity: float
+        The intensity of the rainfall event in mm/h.
+    event_duration: float
+        The number of hours of the rainfall event.
+    rainfall_ph: float
+        The pH level of the rainfall, a measure of acidity.
+
+    Returns
+    -------
+    int
+       The scenario id of the new medusa scenario produced
+    """
+    # Convert wkt string into a GeoDataFrame
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
+    # Read log level from default parameters
     log_level = DEFAULT_MODULES_TO_PARAMETERS[run_medusa_2]["log_level"]
+    # Run Medusa model
     return run_medusa_2.main(selected_polygon,
                              log_level,
                              antecedent_dry_days,
