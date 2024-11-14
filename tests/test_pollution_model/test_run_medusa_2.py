@@ -25,15 +25,15 @@ class RunMedusaTest(unittest.TestCase):
         tss_roof_result = np.round(compute_tss_roof_road(
             self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL), 3)
         excel_tss_roof_result = 582.040
-        self.assertEquals(tss_roof_result, excel_tss_roof_result)
+        self.assertEqual(tss_roof_result, excel_tss_roof_result)
 
     def test_copper_zinc_roof_matches_excel(self):
         copper_roof_result, zinc_roof_result = np.round(total_metal_load_roof(
             self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL), 3)
         excel_copper_roof_result = 0.701
         excel_zinc_roof_result = 103.148
-        self.assertEquals(copper_roof_result, excel_copper_roof_result)
-        self.assertEquals(zinc_roof_result, excel_zinc_roof_result)
+        self.assertEqual(copper_roof_result, excel_copper_roof_result)
+        self.assertEqual(zinc_roof_result, excel_zinc_roof_result)
 
     def test_dissolve_copper_zinc_roof_matches_excel(self):
         copper_roof_result, zinc_roof_result = total_metal_load_roof(
@@ -42,15 +42,15 @@ class RunMedusaTest(unittest.TestCase):
             copper_roof_result, zinc_roof_result, SurfaceType.COLOUR_STEEL), 3)
         excel_dissolve_copper_roof_result = 0.351
         excel_dissolve_zinc_roof_result = 44.354
-        self.assertEquals(dissolve_copper_roof_result, excel_dissolve_copper_roof_result)
-        self.assertEquals(dissolve_zinc_roof_result, excel_dissolve_zinc_roof_result)
+        self.assertEqual(dissolve_copper_roof_result, excel_dissolve_copper_roof_result)
+        self.assertEqual(dissolve_zinc_roof_result, excel_dissolve_zinc_roof_result)
 
     # Test Road
     def test_tss_road_matches_excel(self):
         tss_road_result = np.round(compute_tss_roof_road(
             self.surface_area, self.rainfall_event,SurfaceType.ASPHALT_ROAD), 3)
         excel_road_tss_result = 6980.284
-        self.assertEquals(tss_road_result, excel_road_tss_result)
+        self.assertEqual(tss_road_result, excel_road_tss_result)
 
     def test_copper_zinc_road_matches_excel(self):
         tss_road_result = compute_tss_roof_road(
@@ -59,8 +59,8 @@ class RunMedusaTest(unittest.TestCase):
             tss_road_result), 3)
         excel_copper_road_result = 3078.305
         excel_zinc_road_result = 13681.356
-        self.assertEquals(copper_road_result, excel_copper_road_result)
-        self.assertEquals(zinc_road_result, excel_zinc_road_result)
+        self.assertEqual(copper_road_result, excel_copper_road_result)
+        self.assertEqual(zinc_road_result, excel_zinc_road_result)
 
     def test_dissolve_copper_zinc_road_matches_excel(self):
         tss_road_result = compute_tss_roof_road(
@@ -71,8 +71,8 @@ class RunMedusaTest(unittest.TestCase):
             copper_road_result, zinc_road_result, SurfaceType.ASPHALT_ROAD), 3)
         excel_dissolve_copper_road_result = 861.925
         excel_dissolve_zinc_road_result = 5882.983
-        self.assertEquals(dissolve_copper_road_result, excel_dissolve_copper_road_result)
-        self.assertEquals(dissolve_zinc_road_result, excel_dissolve_zinc_road_result)
+        self.assertEqual(dissolve_copper_road_result, excel_dissolve_copper_road_result)
+        self.assertEqual(dissolve_zinc_road_result, excel_dissolve_zinc_road_result)
 
     def test_run_medusa_model(self):
         # Run through each building and calculations
