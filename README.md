@@ -49,10 +49,9 @@ Blank fields to fill in include things like the `POSTGRES_PASSWORD` variable and
 
 
 ## Using the Digital Twin application
-1. With the docker compose  application running, the default web address is <http://localhost:5173> to view the web application.
-1. Choose input variables from the available input boxes at the top of the page.
-1. Select an area using Shift+click+drag to draw a bounding box of your area to start generating a model. It will take a long time, especially for the first run of an area.
-1. Monitor progress by checking the logs using `docker compose logs -f celery_worker`.
+1. With the docker compose  application running, the default web address is <http://localhost:3001> to view the web application.
+   * Choose data catalogue items with the "Explore map data" button.
+   * To perform custom modelling, "Ōtākaro Digital Twin Custom Analysis" has configurable models.
 1. The API is available by default on <http://localhost:5000>. Visit <https://geospatialresearch.github.io/Digital-Twins/api> for API documentation.
 
 
