@@ -46,8 +46,6 @@ def main(
     data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
     # Store user log information in the database
     data_to_db.user_log_info_to_db(engine, catchment_area)
-    # Read roof_surface file and store in the database
-    data_to_db.save_roof_surface_data_to_db(engine)
 
 
 if __name__ == "__main__":
