@@ -22,10 +22,10 @@ from sqlalchemy.sql import text
 
 from src import config
 from src.digitaltwin import setup_environment
-from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
+from src.digitaltwin.tables import create_table, check_table_exists
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from floodresilience.flood_model.flooded_buildings import find_flooded_buildings
-from floodresilience.flood_model.flooded_buildings import store_flooded_buildings_in_database
+from floodresilience.tables import BGFloodModelOutput
+from floodresilience.flood_model.flooded_buildings import find_flooded_buildings, store_flooded_buildings_in_database
 from floodresilience.flood_model.serve_model import add_model_output_to_geoserver
 
 log = logging.getLogger(__name__)
@@ -77,8 +77,8 @@ def get_new_model_output_path() -> pathlib.Path:
 
 
 def get_model_output_metadata(
-        model_output_path: pathlib.Path,
-        catchment_area: gpd.GeoDataFrame) -> Tuple[str, str, str]:
+    model_output_path: pathlib.Path,
+    catchment_area: gpd.GeoDataFrame) -> Tuple[str, str, str]:
     """
     Get metadata related to the BG Flood model output.
 
@@ -106,9 +106,9 @@ def get_model_output_metadata(
 
 
 def store_model_output_metadata_to_db(
-        engine: Engine,
-        model_output_path: pathlib.Path,
-        catchment_area: gpd.GeoDataFrame) -> int:
+    engine: Engine,
+    model_output_path: pathlib.Path,
+    catchment_area: gpd.GeoDataFrame) -> int:
     """
     Store metadata related to the BG Flood model output in the database.
 
@@ -326,15 +326,15 @@ def process_river_input_files(bg_flood_dir: pathlib.Path, param_file: TextIO) ->
 
 
 def prepare_bg_flood_model_inputs(
-        bg_flood_dir: pathlib.Path,
-        model_output_path: pathlib.Path,
-        hydro_dem_path: pathlib.Path,
-        resolution: Union[int, float],
-        output_timestep: Union[int, float],
-        end_time: Union[int, float],
-        mask: Union[int, float] = 9999,
-        gpu_device: int = 0,
-        small_nc: int = 0) -> None:
+    bg_flood_dir: pathlib.Path,
+    model_output_path: pathlib.Path,
+    hydro_dem_path: pathlib.Path,
+    resolution: Union[int, float],
+    output_timestep: Union[int, float],
+    end_time: Union[int, float],
+    mask: Union[int, float] = 9999,
+    gpu_device: int = 0,
+    small_nc: int = 0) -> None:
     """
     Prepare inputs for the BG-Flood Model.
 
@@ -392,15 +392,15 @@ def prepare_bg_flood_model_inputs(
 
 
 def run_bg_flood_model(
-        engine: Engine,
-        catchment_area: gpd.GeoDataFrame,
-        model_output_path: pathlib.Path,
-        output_timestep: Union[int, float],
-        end_time: Union[int, float],
-        resolution: Optional[Union[int, float]] = None,
-        mask: Union[int, float] = 9999,
-        gpu_device: int = 0,
-        small_nc: int = 0) -> None:
+    engine: Engine,
+    catchment_area: gpd.GeoDataFrame,
+    model_output_path: pathlib.Path,
+    output_timestep: Union[int, float],
+    end_time: Union[int, float],
+    resolution: Optional[Union[int, float]] = None,
+    mask: Union[int, float] = 9999,
+    gpu_device: int = 0,
+    small_nc: int = 0) -> None:
     """
     Run the BG-Flood Model for the specified catchment area.
 
@@ -474,14 +474,14 @@ def run_bg_flood_model(
 
 
 def main(
-        selected_polygon_gdf: gpd.GeoDataFrame,
-        output_timestep: Union[int, float],
-        end_time: Union[int, float],
-        resolution: Optional[Union[int, float]] = None,
-        mask: Union[int, float] = 9999,
-        gpu_device: int = 0,
-        small_nc: int = 0,
-        log_level: LogLevel = LogLevel.DEBUG) -> int:
+    selected_polygon_gdf: gpd.GeoDataFrame,
+    output_timestep: Union[int, float],
+    end_time: Union[int, float],
+    resolution: Optional[Union[int, float]] = None,
+    mask: Union[int, float] = 9999,
+    gpu_device: int = 0,
+    small_nc: int = 0,
+    log_level: LogLevel = LogLevel.DEBUG) -> int:
     """
     Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer
     for visualization.

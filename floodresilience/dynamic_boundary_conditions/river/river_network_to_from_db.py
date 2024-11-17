@@ -25,10 +25,9 @@ from src.config import EnvVariable
 from src.digitaltwin.tables import (
     check_table_exists,
     create_table,
-    execute_query,
-    RiverNetworkExclusions,
-    RiverNetwork
+    execute_query
 )
+from floodresilience.tables import RiverNetworkExclusions, RiverNetwork
 
 log = logging.getLogger(__name__)
 
