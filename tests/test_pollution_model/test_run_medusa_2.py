@@ -28,19 +28,20 @@ class RunMedusaTest(unittest.TestCase):
 
     def test_copper_zinc_roof_matches_excel(self):
         copper_roof_result, zinc_roof_result = np.round(total_metal_load_roof(
-            self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL), 3)
+            self.surface_area, self.rainfall_event, SurfaceType.METAL_TILE), 3)
         excel_copper_roof_result = 0.701
         excel_zinc_roof_result = 103.148
         self.assertEqual(copper_roof_result, excel_copper_roof_result)
         self.assertEqual(zinc_roof_result, excel_zinc_roof_result)
 
     def test_dissolve_copper_zinc_roof_matches_excel(self):
+        surface_type = SurfaceType.NON_METAL
         copper_roof_result, zinc_roof_result = total_metal_load_roof(
-            self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL)
+            self.surface_area, self.rainfall_event, surface_type)
         dissolve_copper_roof_result, dissolve_zinc_roof_result = np.round(dissolved_metal_load(
-            copper_roof_result, zinc_roof_result, SurfaceType.COLOUR_STEEL), 3)
-        excel_dissolve_copper_roof_result = 0.351
-        excel_dissolve_zinc_roof_result = 44.354
+            copper_roof_result, zinc_roof_result, surface_type), 3)
+        excel_dissolve_copper_roof_result = 0.54
+        excel_dissolve_zinc_roof_result = 9.594
         self.assertEqual(dissolve_copper_roof_result, excel_dissolve_copper_roof_result)
         self.assertEqual(dissolve_zinc_roof_result, excel_dissolve_zinc_roof_result)
 
