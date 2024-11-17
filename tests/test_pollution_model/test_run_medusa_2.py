@@ -19,7 +19,6 @@ class RunMedusaTest(unittest.TestCase):
         cls.rainfall_event = MedusaRainfallEvent(1.45833333333333, 0.5, 2, 6.5)
         cls.test_buildings_gdf = gpd.read_file("tests/test_pollution_model/data/test_buildings.geojson")
 
-
     # Test Roof
     def test_tss_roof_matches_excel(self):
         tss_roof_result = np.round(compute_tss_roof_road(
@@ -48,7 +47,7 @@ class RunMedusaTest(unittest.TestCase):
     # Test Road
     def test_tss_road_matches_excel(self):
         tss_road_result = np.round(compute_tss_roof_road(
-            self.surface_area, self.rainfall_event,SurfaceType.ASPHALT_ROAD), 3)
+            self.surface_area, self.rainfall_event, SurfaceType.ASPHALT_ROAD), 3)
         excel_road_tss_result = 6980.284
         self.assertEqual(tss_road_result, excel_road_tss_result)
 
@@ -83,7 +82,7 @@ class RunMedusaTest(unittest.TestCase):
         # Get columns need testing
         all_buildings_testing = np.round(all_buildings[all_buildings.columns[2:]], 4)
         excel_all_buildings_testing = pd.DataFrame(
-            data = {
+            data={
                 'total_suspended_solids': [582.3130, 380.7506, 57.9798, 321.3461, 553.3733],
                 'total_copper': [0.7014, 0.4586, 0.0698, 0.3870, 0.4883],
                 'total_zinc': [103.1962, 67.4758, 10.2750, 56.9482, 9.9739],
@@ -92,6 +91,7 @@ class RunMedusaTest(unittest.TestCase):
             }
         )
         pd.testing.assert_frame_equal(all_buildings_testing, excel_all_buildings_testing)
+
 
 if __name__ == '__main__':
     unittest.main()
