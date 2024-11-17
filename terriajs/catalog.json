@@ -189,12 +189,12 @@
       "isOpen": true,
       "members": [
         {
-          "name": "MEDUSA Pollution source model",
-          "url": "http://localhost:5000/wps",
           "type": "wps",
+          "name": "MEDUSA Pollution source model",
+          "description": "Model a rainfall event to identify sources of stormwater pollution.",
+          "url": "http://localhost:5000/wps",
           "identifier": "medusa",
-          "storeSupported": true,
-          "description": "Model a rainfall event to identify sources of stormwater pollution."
+          "storeSupported": true
         }
       ]
     }
