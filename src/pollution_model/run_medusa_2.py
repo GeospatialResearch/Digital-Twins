@@ -137,44 +137,58 @@ def compute_tss_roof_road(surface_area: float,
     Returns
     -------
     float
-       Returns the TSS value from the given parameters
+       Returns the TSS value from the given parameters (micrograms)
 
     Raises
     ----------
     ValueError
         If the surface type is not a roof or road (concrete, copper, galvanised roof, asphalt road, or car park).
     """
-    # Define the constants (Cf is the capacity factor).
-    capacity_factor = 0.75 if surface_type in ROOF_SURFACE_TYPES else 0.25
-    # Values a1 to a3 are empirically derived coefficient values.
-
     # Define error message (if needed)
     invalid_surface_error = (f"Given surface is not valid for computing TSS."
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
 
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
-            a1, a2, a3 = 0.4, 0.5, 0.008
+            # Galvanised Painted
+            a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.GALVANISED:
-            a1, a2, a3 = 0.4, 0.5, 0.008
+            # Galvanised
+            a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.METAL_OTHER:
-            # Using coefficients of Galvanised rather than Copper
-            a1, a2, a3 = 0.4, 0.5, 0.008
+            # Copper Old
+            # Using coefficients of Galvanised rather than Copper as suggested by Francis
+            # Email named 'Aligning CCC Surface Type data with Okeover
+            a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.METAL_TILE:
-            a1, a2, a3 = 0.4, 0.5, 0.008
+            # Decramastic
+            a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.NON_METAL:
-            a1, a2, a3 = 0.6, 0.25, 0.008
+            # Concrete, Concrete Painted, and Glass Roof
+            a1, a2, k = 0.6, 0.25, 0.00933
         case SurfaceType.ZINCALUME:
-            a1, a2, a3 = 0.4, 0.5, 0.008
+            # Zincalume
+            a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
-            a1, a2, a3 = 190, 0.16, 0.0125
+            a1, a2, k = 190, 0.16, 0.0008
         case _:
             raise ValueError(invalid_surface_error)
-    antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
-    first_term = surface_area * a1 * antecedent_dry_days ** a2 * capacity_factor
-    second_term = 1 - math.exp(a3 * average_rain_intensity * event_duration)
 
-    return first_term * second_term
+    # Call out necessary variables
+    antecedent_dry_days, average_rain_intensity, event_duration, _ph = rainfall_event
+
+    # Calculate tss for road and roof
+    if surface_type == 'AsphaltRoad':
+        # Road
+        first_term = a1 * (antecedent_dry_days ** a2) * surface_area * 0.25
+    else:
+        # Roof
+        first_term = a1 * (antecedent_dry_days ** a2) * surface_area * 0.75
+
+    # Second term appears in both road and roof calculation
+    second_term = 1 - math.exp(-k * average_rain_intensity * event_duration)
+
+    return first_term * second_term * 1000
 
 
 def total_metal_load_surface(surface_area: float,
@@ -240,84 +254,100 @@ def total_metal_load_roof(surface_area: float,
     # Define error message (if needed)
     invalid_surface_error = (f"Given surface is not valid for computing total metal load."
                              f" Needed a roof, but got {SurfaceType(surface_type).name}.")
+
     # Define constants in a list
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
-            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
-            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
+            # None was added to avoid the 0 position when indexing
+            b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.GALVANISED:
-            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
-            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
+            # None was added to avoid the 0 position when indexing
+            b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.METAL_OTHER:
-            # Using coefficients of Galvanised rather than Copper
-            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
-            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
+            # None was added to avoid the 0 position when indexing
+            # Using coefficients of Galvanised rather than Copper as suggested by Frances
+            # Email named 'Aligning CCC Surface Type data with Okeover
+            b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.METAL_TILE:
-            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
-            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
+            # None was added to avoid the 0 position when indexing
+            b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.NON_METAL:
-            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
-            c = [50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
+            # None was added to avoid the 0 position when indexing
+            b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [None, 50, 2600, 0.1, 0.01, 1, -3.1, -0.007, 0.056]
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case SurfaceType.ZINCALUME:
-            b = [2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
-            c = [910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
-            # Roof wash off coefficient (based on rate of decay to second concentrations from initial ones)
-            k = 0.00933
+            # None was added to avoid the 0 position when indexing
+            b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
+            c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
             # Duration of the event measured by hours - Roof
             # observed from the intra-event concentration sampling
             z = 0.75
         case _:
             raise ValueError(invalid_surface_error)
 
+    # Get necessary parameters
     antecedent_dry_days, average_rain_intensity, event_duration, rainfall_ph = rainfall_event
-    # Define the initial and second stage metal concentrations (X_0 and X_est)
-    initial_copper_concentration = b[0] * rainfall_ph ** b[1] * b[2] * antecedent_dry_days ** b[3] * (
-        b[4] * average_rain_intensity ** b[5])
-    second_stage_copper = b[6] * rainfall_ph ** b[7]
 
-    initial_zinc_concentration = c[0] * rainfall_ph + c[1] * c[2] * antecedent_dry_days ** c[3] * (
-        c[4] * average_rain_intensity ** c[5])
-    second_stage_zinc = c[6] * rainfall_ph + c[7]
+    # Define the initial and second stages of Roof Copper Load.
+    # Initial stage
+    cu_o = b[1] * (rainfall_ph ** b[2])
+    cu_o *= b[3] * (antecedent_dry_days ** b[4])
+    cu_o *= b[5] * (average_rain_intensity ** b[6])
+    # Second stage
+    cu_est = b[7] * (rainfall_ph ** b[8])
+    # Calculate k
+    k_cu = (-math.log(cu_est / cu_o)) / (average_rain_intensity * z)
 
-    # Initialise total copper and zinc loads as a guaranteed common factor
-    total_copper_load = initial_copper_concentration * surface_area * 1 / k
-    total_zinc_load = initial_zinc_concentration * surface_area * 1 / k
+    # Define the initial and second stages of Roof Zinc Load.
+    # Initial stage
+    zn_o = (c[1] * rainfall_ph) + c[2]
+    zn_o *= c[3] * (antecedent_dry_days ** c[4])
+    zn_o *= c[5] * (average_rain_intensity ** c[6])
+    # Second stage
+    zn_est = (c[7] * rainfall_ph) + c[8]
+    # Calculate k
+    k_zn = (-math.log(zn_est / zn_o)) / (average_rain_intensity * z)
+
+    # Common factors for each of initial Copper and Zinc Loads
+    cu_factor = cu_o * surface_area * (1 / (1000 * k_cu))
+    zn_factor = zn_o * surface_area * (1 / (1000 * k_zn))
 
     # Calculate total metal loads, where the method depends on if Z is less than event_duration
-    if event_duration <= z:
-        factor = 1 - math.exp(k * average_rain_intensity * event_duration)
-        total_zinc_load *= factor
-        total_copper_load *= factor
+    if event_duration < z:
+        # Calculate total loads
+        total_copper_load = cu_factor * (1 - math.exp(-k_cu * average_rain_intensity * event_duration))
+        total_zinc_load = zn_factor * (1 - math.exp(-k_zn * average_rain_intensity * event_duration))
+
     else:
-        factor = 1 - math.exp(k * average_rain_intensity * z)
-        bias_factor = average_rain_intensity * (event_duration - z)
-        total_zinc_load = total_zinc_load * factor + second_stage_zinc * surface_area * bias_factor
-        total_copper_load *= total_copper_load * factor + second_stage_copper * surface_area * bias_factor
+        # Calculate factors that appear in both Copper and Zinc formulas
+        both_factor_est = surface_area * average_rain_intensity * (event_duration - z)
+
+        # Calculate initial total loads
+        initial_total_copper_load = cu_factor * (1 - math.exp(-k_cu * average_rain_intensity * z))
+        initial_total_zinc_load = zn_factor * (1 - math.exp(-k_zn * average_rain_intensity * z))
+
+        # Calculate total loads for Copper and Zinc roofs
+        total_copper_load = initial_total_copper_load + (cu_est * both_factor_est)
+        total_zinc_load = initial_total_zinc_load + (zn_est * both_factor_est)
 
     return MetalLoads(total_copper_load, total_zinc_load)
 
@@ -338,10 +368,10 @@ def total_metal_load_road_carpark(tss_surface: float) -> MetalLoads:
        [Total Copper, Total Zinc]
     """
     # Define constants
-    proportionality_constant_cu = 0.441
-    proportionality_constant_zn = 1.96
-    total_cu_load = tss_surface * proportionality_constant_cu
-    total_zn_load = tss_surface * proportionality_constant_zn
+    g = 0.441
+    h = 1.96
+    total_cu_load = tss_surface * g
+    total_zn_load = tss_surface * h
     # Return total copper load, total zinc load
     return MetalLoads(total_cu_load, total_zn_load)
 
@@ -363,7 +393,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     Returns
     -------
     MetalLoads
-        Returns the dissolved copper and zinc load for this surface
+        Returns the dissolved copper and zinc load for this surface (micrograms)
         [Dissolved Copper Load, Dissolved Zinc Load]
 
     Raises
@@ -377,29 +407,34 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     # Set constant values based on surface type
     match surface_type:
         case SurfaceType.COLOUR_STEEL:
-            f = 0.5
-            g = 0.43
+            # Galvanised Painted
+            l1 = 0.5
+            m1 = 0.43
         case SurfaceType.GALVANISED:
-            f = 0.5
-            g = 0.43
+            # Galvanised
+            l1 = 0.5
+            m1 = 0.43
         case SurfaceType.METAL_OTHER:
-            f = 0.5
-            g = 0.43
+            # Copper Old
+            l1 = 0.77
+            m1 = 0.717
         case SurfaceType.METAL_TILE:
-            f = 0.5
-            g = 0.43
+            # Decramastic
+            l1 = 0.5
+            m1 = 0.43
         case SurfaceType.NON_METAL:
-            f = 0.77
-            g = 0.67
+            # Concrete, Concrete Painted, and Glass Roof
+            l1 = 0.77
+            m1 = 0.67
         case SurfaceType.ZINCALUME:
-            f = 0.5
-            g = 0.43
+            l1 = 0.5
+            m1 = 0.43
         case SurfaceType.ASPHALT_ROAD | SurfaceType.CAR_PARK:
-            f = 0.28
-            g = 0.43
+            l1 = 0.28
+            m1 = 0.43
         case _:
             raise ValueError(invalid_surface_error)
-    return MetalLoads(f * total_copper_load, g * total_zinc_load)
+    return MetalLoads(l1 * total_copper_load, m1 * total_zinc_load)
 
 
 def save_roof_surface_type_points_to_db(engine: Engine) -> None:
@@ -469,7 +504,7 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     """
     # Add roof surface polygons to database
     save_roof_surface_polygons_to_db(engine)
-    # Add roof surface type points to database.
+    # Add roof surface type points to database
     save_roof_surface_type_points_to_db(engine)
 
     # Convert current area of interest format into the format can be used by SQL
@@ -486,6 +521,7 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
             INNER JOIN roof_surface_points AS points
         USING ("building_Id")
         WHERE ST_INTERSECTS(points.geometry, ST_GeomFromText(:aoi_wkt, :crs))
+        ORDER BY polygons."building_Id"
     """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
 
     # Execute the SQL query
@@ -789,7 +825,6 @@ def find_existing_pollution_scenario(engine: Engine,
         AND rainfall_ph=:rainfall_ph
         AND ST_CONTAINS(geometry, ST_GeomFromText(:aoi_wkt, :crs))
     ORDER BY created_at
-    LIMIT 1
     """).bindparams(aoi_wkt=aoi_wkt, crs=crs, **rainfall_event.as_dict())
 
     result = engine.execute(query).fetchone()
