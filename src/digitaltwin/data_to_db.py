@@ -12,7 +12,6 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
-from src.config import EnvVariable
 from src.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
 from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
 
@@ -430,63 +429,3 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
     query = UserLogInfo(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query
     execute_query(engine, query)
-
-
-def save_roof_surface_type_points_to_db(engine: Engine) -> None:
-    """
-    Read roof surface type points data then store them into database.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    # Check if the table already exist in the database
-    if check_table_exists(engine, "roof_surface_points"):
-        log.info("'roof_surface_points' data already exists in the database.")
-    else:
-        # Read roof surface points from outside
-        # This data has the deeplearn_matclass with roof types we need
-        log.info(f"Reading roof surface points from {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
-        roof_surface_points = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH,
-                                            layer="CCC_Lynker_RoofMaterial_Update_2023")
-        # Remove rows of building_Id and deeplearn_subclass that are NANs
-        roof_surface_points = roof_surface_points.dropna(subset=['building_Id', 'deeplearn_subclass'])
-        # Store the building_point_data to the database table
-        log.info("Adding 'roof_surface_points' to the database.")
-        roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
-        log.info("Successfully added 'roof_surface_points' to the database.")
-
-
-def save_roof_surface_polygons_to_db(engine: Engine) -> None:
-    """
-    Read roof surface polygons data then store them into database.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    # Check if the table already exist in the database
-    if check_table_exists(engine, "roof_surface_polygons"):
-        log.info("'roof_surface_polygons' data already exists in the database.")
-    else:
-        # Read roof surface polygons from outside
-        log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
-        roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH, layer="BuildingPolygons")
-        # Store the building_point_data to the database table
-        log.info("Adding 'roof_surface_polygons' to the database.")
-        roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
-        log.info("Successfully added 'roof_surface_polygons' to the database.")
-
-
-def save_roof_surface_data_to_db(engine: Engine) -> None:
-    """
-    Read roof surface type points and polygons from the data file and store them in the database.
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    save_roof_surface_polygons_to_db(engine)
-    save_roof_surface_type_points_to_db(engine)
