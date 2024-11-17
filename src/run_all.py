@@ -8,8 +8,8 @@ from typing import Dict, Union
 import geopandas as gpd
 import shapely
 
-from src.digitaltwin import retrieve_static_boundaries
 from src.digitaltwin.utils import LogLevel
+from floodresilience import retrieve_static_boundaries
 from floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
 from floodresilience.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
 from floodresilience.dynamic_boundary_conditions.river import main_river

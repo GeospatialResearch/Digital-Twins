@@ -15,9 +15,10 @@ from celery.worker.consumer import Consumer
 from pyproj import Transformer
 
 from src.config import EnvVariable
-from src.digitaltwin import retrieve_static_boundaries, setup_environment
+from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import setup_logging
 from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
+from floodresilience import retrieve_static_boundaries
 from floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
 from floodresilience.dynamic_boundary_conditions.river import main_river
 from floodresilience.dynamic_boundary_conditions.tide import main_tide_slr
