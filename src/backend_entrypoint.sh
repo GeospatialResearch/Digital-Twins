@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Entrypoint for the backend Flask API
 # Used by docker to import environment variables into a docker container without baking them into the image.
 # Used when runtime environment variables are not enough, for example, when a config file needs to be written.
 
