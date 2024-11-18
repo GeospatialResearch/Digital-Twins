@@ -16,7 +16,6 @@ docker save -o fredt.tar \
   postgis/postgis:16-3.4 \
   lparkinson/backend-flood-resilience-dt:1.2 \
   lparkinson/celery-flood-resilience-dt:1.2 \
-  lparkinson/www-flood-resilience-dt:1.2 \
   lparkinson/geoserver-flood-resilience-dt:1.2 \
   redis:7 \
 
@@ -25,6 +24,5 @@ echo "Saving docker build dependency images to build_dep.tar"
 docker save -o build_dep.tar \
   lparkinson/bg_flood:v0.9 \
   continuumio/miniconda3:23.10.0-1 \
-  node:lts \
   docker.osgeo.org/geoserver:2.21.2 \
   nginx:stable
