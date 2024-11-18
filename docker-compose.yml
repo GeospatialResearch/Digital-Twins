@@ -121,6 +121,8 @@ services:
       context: terriajs
     ports:
       - "3001:3001"
+    environment:
+      - CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
     healthcheck:
       test: curl --fail -s http://localhost:3001/ || exit 1
       timeout: 5s
