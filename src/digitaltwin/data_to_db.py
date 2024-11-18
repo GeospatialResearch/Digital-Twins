@@ -437,7 +437,7 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
 
 def save_roof_surface_type_points_to_db(engine: Engine) -> None:
     """
-    Read roof surface type data, then store them into database.
+    Read roof surface type points data then store them into database.
 
     Parameters
     ----------
@@ -446,7 +446,7 @@ def save_roof_surface_type_points_to_db(engine: Engine) -> None:
     """
     # Check if the table already exist in the database
     if check_table_exists(engine, "roof_surface_points"):
-        log.info("roof_surface_points data already exists in the database.")
+        log.info("'roof_surface_points' data already exists in the database.")
     else:
         # Read roof surface points from outside
         # This data has the deeplearn_matclass with roof types we need
@@ -456,13 +456,14 @@ def save_roof_surface_type_points_to_db(engine: Engine) -> None:
         # Remove rows of building_Id and deeplearn_subclass that are NANs
         roof_surface_points = roof_surface_points.dropna(subset=['building_Id', 'deeplearn_subclass'])
         # Store the building_point_data to the database table
-        log.info("Adding roof_surface_points table to the database.")
+        log.info("Adding 'roof_surface_points' to the database.")
         roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
+        log.info("Successfully added 'roof_surface_points' to the database.")
 
 
 def save_roof_surface_polygons_to_db(engine: Engine) -> None:
     """
-    Read roof surface geometry data then store them into database.
+    Read roof surface polygons data then store them into database.
 
     Parameters
     ----------
@@ -471,20 +472,20 @@ def save_roof_surface_polygons_to_db(engine: Engine) -> None:
     """
     # Check if the table already exist in the database
     if check_table_exists(engine, "roof_surface_polygons"):
-        log.info("roof_surface_polygons data already exists in the database.")
+        log.info("'roof_surface_polygons' data already exists in the database.")
     else:
         # Read roof surface polygons from outside
         log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
         roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH, layer="BuildingPolygons")
         # Store the building_point_data to the database table
-        log.info("Adding roof_surface_polygons table to the database.")
+        log.info("Adding 'roof_surface_polygons' to the database.")
         roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
+        log.info("Successfully added 'roof_surface_polygons' to the database.")
 
 
-def save_roof_surface_type_data_to_db(engine: Engine) -> None:
+def save_roof_surface_data_to_db(engine: Engine) -> None:
     """
-    Read roof surface type dataset file and save data into database.
-
+    Read roof surface type points and polygons from the data file and store them in the database.
     Parameters
     ----------
     engine : Engine

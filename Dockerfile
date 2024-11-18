@@ -87,7 +87,7 @@ EXPOSE 5000
 SHELL ["/bin/bash", "-c"]
 # Run production HTTP server with threads (gevent) with an extended timeout
 ENTRYPOINT source /venv/bin/activate && \
-           gunicorn --bind 0.0.0.0:5000 --timeout 600 -k gevent  src.app:app
+           gunicorn --bind 0.0.0.0:5000 --timeout 600 -k gevent src.app:app
 
 
 FROM runtime-base AS celery_worker
