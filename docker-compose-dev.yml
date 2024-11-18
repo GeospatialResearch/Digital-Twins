@@ -20,6 +20,13 @@ services:
       - ${DATA_DIR}:/stored_data
       - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
       - ${DATA_DIR_GEOSERVER}:/stored_data/geoserver
+      - ${ROOF_SURFACE_DATASET_PATH}:/stored_data/roof_surfaces_data/roof_surfaces.gdb
+
+  terria_map:
+    volumes:
+      # Allows development config to be updated on refresh, instead of rebuild
+      - ./terriajs/client_config.json:/app/wwwroot/config.json
+      - ./terriajs/catalog.json:/app/wwwroot/init/catalog.json
 
   geoserver:
     volumes:

@@ -437,52 +437,6 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     return MetalLoads(l1 * total_copper_load, m1 * total_zinc_load)
 
 
-def save_roof_surface_type_points_to_db(engine: Engine) -> None:
-    """
-    Read building data under points. Then store them into database.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    # Check if the table already exist in the database
-    if check_table_exists(engine, "roof_surface_points"):
-        log.info("roof_surface_points data already exists in the database.")
-    else:
-        # Read roof surface points from outside
-        # This data has the deeplearn_matclass with roof types we need
-        log.info(f"Reading roof surface points from {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
-        roof_surface_points = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH,
-                                            layer="CCC_Lynker_RoofMaterial_Update_2023")
-        # Remove rows of building_Id and deeplearn_subclass that are NANs
-        roof_surface_points = roof_surface_points.dropna(subset=['building_Id', 'deeplearn_subclass'])
-        # Store the building_point_data to the database table
-        log.info("Adding roof_surface_points table to the database.")
-        roof_surface_points.to_postgis("roof_surface_points", engine, index=False, if_exists="replace")
-
-
-def save_roof_surface_polygons_to_db(engine: Engine) -> None:
-    """
-    Read building data under points. Then store them into database.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    # Check if the table already exist in the database
-    if check_table_exists(engine, "roof_surface_polygons"):
-        log.info("roof_surface_polygons data already exists in the database.")
-    else:
-        # Read roof surface polygons from outside
-        log.info(f"Reading roof surface polygons file {EnvVariable.ROOF_SURFACE_DATASET_PATH}.")
-        roof_surface_polygons = gpd.read_file(EnvVariable.ROOF_SURFACE_DATASET_PATH, layer="BuildingPolygons")
-        # Store the building_point_data to the database table
-        log.info("Adding roof_surface_polygons table to the database.")
-        roof_surface_polygons.to_postgis("roof_surface_polygons", engine, index=False, if_exists="replace")
-
-
 def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Extract relevant information about buildings from central_buildings.geojson, since the input data is not finalised.
@@ -502,11 +456,6 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
         A GeoDataFrame containing rows corresponding to buildings, and columns corresponding to
         attributes (Index, SurfaceArea, SurfaceType)
     """
-    # Add roof surface polygons to database
-    save_roof_surface_polygons_to_db(engine)
-    # Add roof surface type points to database
-    save_roof_surface_type_points_to_db(engine)
-
     # Convert current area of interest format into the format can be used by SQL
     aoi_wkt = area_of_interest["geometry"][0].wkt
     crs = area_of_interest.crs.to_epsg()
@@ -642,7 +591,8 @@ def run_medusa_model_for_surface_geometries(surfaces: gpd.GeoDataFrame,
         The MEDUSA results for the given surfaces and rainfall_event.
     """
     # Add empty columns for each of the new medusa columns
-    for medusa_column in ("total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"):
+    medusa_columns = ["total_suspended_solids", "total_copper", "total_zinc", "dissolved_copper", "dissolved_zinc"]
+    for medusa_column in medusa_columns:
         surfaces[medusa_column] = pd.Series(dtype='float')
     # Wrap DataFrame.apply with progress_apply to add tqdm progress bar.
     tqdm.pandas()
@@ -736,10 +686,19 @@ def serve_pollution_model() -> None:
 
         # Construct query linking medusa_table_class to its geometry table
         pollution_sql_query = f"""
-        SELECT medusa.*, geometry
+        SELECT
+            total_suspended_solids AS "Total Suspended Solids (μg)",
+            total_copper AS "Total Copper (μg)",
+            total_zinc AS "Total Zinc (μg)",
+            dissolved_copper AS "Dissolved Copper (μg)",
+            dissolved_zinc AS "Dissolved Zinc (μg)",
+            surface_type,
+            scenario_id,
+            spatial."{spatial_id_column}",
+            geometry
         FROM {medusa_table_name} as medusa
              INNER JOIN {geometry_table_name} as spatial
-                ON medusa.{spatial_id_column}=spatial.{spatial_id_column}
+                ON medusa."{spatial_id_column}"=spatial."{spatial_id_column}"
         """
         # Escape characters in SQL query so that it is valid Geoserver XML
         xml_escaped_sql = saxutils.escape(pollution_sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
@@ -843,7 +802,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
          antecedent_dry_days: float = 1,
          average_rain_intensity: float = 10000,
          event_duration: float = 5,
-         rainfall_ph: float = 7) -> int:
+         rainfall_ph: float = 6.5) -> int:
     """
     Generate pollution model output for the requested catchment area, and save result to database.
 
@@ -872,7 +831,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     Returns
     -------
     int
-       Returns the model id of the new flood_model produced
+       The scenario id of the new medusa scenario produced
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
@@ -887,6 +846,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
     # Search for a scenario that already exist, and return that one if it does.
     existing_scenario_id = find_existing_pollution_scenario(engine, area_of_interest, rainfall_event)
     if existing_scenario_id is not None:
+        serve_pollution_model()
         return existing_scenario_id
 
     # Run the pollution model
@@ -904,7 +864,7 @@ def main(selected_polygon_gdf: gpd.GeoDataFrame,
         average_rain_intensity=average_rain_intensity,
         event_duration=event_duration,
         rainfall_ph=rainfall_ph,
-        geometry=area_of_interest['geometry'].to_wkt().iloc[0]
+        geometry=area_of_interest["geometry"][0].wkt
     )
     # Execute the query
     execute_query(engine, record_scenario_input_query)

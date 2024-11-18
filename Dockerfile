@@ -33,7 +33,7 @@ USER root
 
 # Install dependencies
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl acl \
+ && apt-get install -y --no-install-recommends ca-certificates curl acl gettext-base \
 # Cleanup image and remove junk
  && rm -fr /var/lib/apt/lists/* \
 # Remove unused packages. Keep curl for health checking in docker-compose
@@ -49,6 +49,11 @@ RUN mkdir /stored_data \
     && setfacl -R -m u:nonroot:rwx /stored_data \
     && mkdir /stored_data/geoserver
 
+# Add clipped roof surfaces data into image
+COPY --chown=root:root --chmod=444 \
+    ./roof_surfaces_data/clipped_CCC_Lynker_RoofMaterials_Update_2023.gdb/ \
+    /stored_data/roof_surfaces_data/roof_surfaces.gdb/
+
 # Copy python virtual environment from build layer
 COPY --chown=root:root --chmod=555 --from=build /venv /venv
 USER nonroot
@@ -63,12 +68,29 @@ FROM runtime-base AS backend
 # Image build target for backend
 # Using separate build targets for each image because the Orbica platform does not allow for modifying entrypoints
 # and using multiple dockerfiles was creating increase complexity problems keeping things in sync
+
+# Create PyWPS required logging and output directories
+SHELL ["/bin/bash", "-c"]
+USER root
+RUN <<EOF
+for NEW_DIRECTORY in "outputs" "workdir" "logs"
+do
+    mkdir "$NEW_DIRECTORY"
+    setfacl -R -d -m u:nonroot:rwx "$NEW_DIRECTORY"
+    setfacl -R -m u:nonroot:rwx "$NEW_DIRECTORY"
+done
+# pywps.cfg needs write permissions to substitute environment variables.
+setfacl -R -d -m u:nonroot:rw src/pywps.cfg
+setfacl -R -m u:nonroot:rw src/pywps.cfg
+EOF
+USER nonroot
+
+COPY src/backend-entrypoint.sh entrypoint.sh
+
 EXPOSE 5000
 
 SHELL ["/bin/bash", "-c"]
-ENTRYPOINT source /venv/bin/activate && \
-           gunicorn --bind 0.0.0.0:5000 src.app:app
-
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 FROM runtime-base AS celery_worker
 # Image build target for celery_worker

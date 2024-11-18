@@ -40,7 +40,9 @@ Create API keys for each of these services. You may need to create an account an
    
 1. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields unless a comment says you can leave it blank.
 Blank fields to fill in include things like the `POSTGRES_PASSWORD` variable and `CESIUM_ACCESS_TOKEN`. You may configure other variables as needed.
-    
+
+1. From the University of Canterbury network drives, copy `U:/Research/FloodRiskResearch/DigitalTwin/stored_data/roof_surfaces_data` to a new directory `Digital-Twins/roof_surfaces_data`.
+   * This is a temporary solution until we have full approval for this dataset. [Issue #283](https://github.com/GeospatialResearch/Digital-Twins/issues/283). If you are an external developer in need of access please contact us.
 1. From project root, run the command `docker compose up -d` to run the database, backend web servers, and helper services.
    
 1. You may inspect the logs of the backend using `docker compose logs -f backend celery_worker`

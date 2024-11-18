@@ -1,3 +1,4 @@
+"""Tests for run_medusa_2.py."""
 import unittest
 import numpy as np
 
@@ -15,18 +16,23 @@ class RunMedusaTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Set up arguments used for testing."""
+        # Realistic surface area of a single building
         cls.surface_area = 173
+        # Realistic rainfall event for Christchurch, New Zealand
         cls.rainfall_event = MedusaRainfallEvent(1.45833333333333, 0.5, 2, 6.5)
+        # A small sample of buildings in Christchurch, New Zealand
         cls.test_buildings_gdf = gpd.read_file("tests/test_pollution_model/data/test_buildings.geojson")
 
     # Test Roof
     def test_tss_roof_matches_excel(self):
+        """Tests that the TSS implementation matches sample data from MEDUSA authors."""
         tss_roof_result = np.round(compute_tss_roof_road(
             self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL), 3)
         excel_tss_roof_result = 582.040
         self.assertEqual(tss_roof_result, excel_tss_roof_result)
 
     def test_copper_zinc_roof_matches_excel(self):
+        """Tests that roof TCu and TZn implementation matches sample data from MEDUSA authors."""
         copper_roof_result, zinc_roof_result = np.round(total_metal_load_roof(
             self.surface_area, self.rainfall_event, SurfaceType.METAL_TILE), 3)
         excel_copper_roof_result = 0.701
@@ -35,6 +41,7 @@ class RunMedusaTest(unittest.TestCase):
         self.assertEqual(zinc_roof_result, excel_zinc_roof_result)
 
     def test_dissolve_copper_zinc_roof_matches_excel(self):
+        """Tests that roof DCu and DZn implementation matches sample data from MEDUSA authors."""
         surface_type = SurfaceType.NON_METAL
         copper_roof_result, zinc_roof_result = total_metal_load_roof(
             self.surface_area, self.rainfall_event, surface_type)
@@ -45,14 +52,15 @@ class RunMedusaTest(unittest.TestCase):
         self.assertEqual(dissolve_copper_roof_result, excel_dissolve_copper_roof_result)
         self.assertEqual(dissolve_zinc_roof_result, excel_dissolve_zinc_roof_result)
 
-    # Test Road
     def test_tss_road_matches_excel(self):
+        """Tests that road TSS implementation matches sample data from MEDUSA authors."""
         tss_road_result = np.round(compute_tss_roof_road(
             self.surface_area, self.rainfall_event, SurfaceType.ASPHALT_ROAD), 3)
         excel_road_tss_result = 6980.284
         self.assertEqual(tss_road_result, excel_road_tss_result)
 
     def test_copper_zinc_road_matches_excel(self):
+        """Tests that road TCu and TZn implementation matches sample data from MEDUSA authors."""
         tss_road_result = compute_tss_roof_road(
             self.surface_area, self.rainfall_event, SurfaceType.ASPHALT_ROAD)
         copper_road_result, zinc_road_result = np.round(total_metal_load_road_carpark(
@@ -63,6 +71,7 @@ class RunMedusaTest(unittest.TestCase):
         self.assertEqual(zinc_road_result, excel_zinc_road_result)
 
     def test_dissolve_copper_zinc_road_matches_excel(self):
+        """Tests that road DCu and DZn implementation matches sample data from MEDUSA authors."""
         tss_road_result = compute_tss_roof_road(
             self.surface_area, self.rainfall_event, SurfaceType.ASPHALT_ROAD)
         copper_road_result, zinc_road_result = total_metal_load_road_carpark(
@@ -75,6 +84,7 @@ class RunMedusaTest(unittest.TestCase):
         self.assertEqual(dissolve_zinc_road_result, excel_dissolve_zinc_road_result)
 
     def test_run_medusa_model(self):
+        """Tests a variety of building surfaces using the full MEDUSA implementation functions."""
         # Run through each building and calculations
         all_buildings = run_medusa_model_for_surface_geometries(
             self.test_buildings_gdf, self.rainfall_event
