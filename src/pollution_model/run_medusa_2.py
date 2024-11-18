@@ -687,11 +687,11 @@ def serve_pollution_model() -> None:
         # Construct query linking medusa_table_class to its geometry table
         pollution_sql_query = f"""
         SELECT
-            total_suspended_solids,
-            total_copper,
-            total_zinc,
-            dissolved_copper,
-            dissolved_zinc,
+            total_suspended_solids AS "Total Suspended Solids (μg)",
+            total_copper AS "Total Copper (μg)",
+            total_zinc AS "Total Zinc (μg)",
+            dissolved_copper AS "Dissolved Copper (μg)",
+            dissolved_zinc AS "Dissolved Zinc (μg)",
             surface_type,
             scenario_id,
             spatial."{spatial_id_column}",
