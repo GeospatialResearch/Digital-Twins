@@ -33,7 +33,7 @@ USER root
 
 # Install dependencies
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl acl \
+ && apt-get install -y --no-install-recommends ca-certificates curl acl gettext-base \
 # Cleanup image and remove junk
  && rm -fr /var/lib/apt/lists/* \
 # Remove unused packages. Keep curl for health checking in docker-compose
@@ -79,16 +79,18 @@ do
     setfacl -R -d -m u:nonroot:rwx "$NEW_DIRECTORY"
     setfacl -R -m u:nonroot:rwx "$NEW_DIRECTORY"
 done
+# pywps.cfg needs write permissions to substitute environment variables.
+setfacl -R -d -m u:nonroot:rw src/pywps.cfg
+setfacl -R -m u:nonroot:rw src/pywps.cfg
 EOF
 USER nonroot
+
+COPY src/backend-entrypoint.sh entrypoint.sh
 
 EXPOSE 5000
 
 SHELL ["/bin/bash", "-c"]
-# Run production HTTP server with threads (gevent) with an extended timeout
-ENTRYPOINT source /venv/bin/activate && \
-           gunicorn --bind 0.0.0.0:5000 --timeout 600 -k gevent src.app:app
-
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 FROM runtime-base AS celery_worker
 # Image build target for celery_worker
