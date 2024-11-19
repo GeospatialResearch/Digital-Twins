@@ -425,7 +425,7 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
     non_nz_geo_layers = get_non_nz_geospatial_layers(engine)
     table_list = non_nz_geo_layers["table_name"].tolist()
     # Get the catchment geometry
-    catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
+    catchment_geom = catchment_area.geometry[0].wkt
     # Create the query object
     query = UserLogInfo(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query
