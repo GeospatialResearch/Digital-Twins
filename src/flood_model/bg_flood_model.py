@@ -100,7 +100,7 @@ def get_model_output_metadata(
     # Get the absolute path of the BG Flood model output file as a string
     output_path = model_output_path.as_posix()
     # Get the WKT representation of the catchment area's geometry
-    catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
+    catchment_geom = catchment_area.geometry[0].wkt
     # Return the metadata as a tuple
     return output_name, output_path, catchment_geom
 

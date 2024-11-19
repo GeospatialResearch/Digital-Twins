@@ -215,7 +215,7 @@ def get_non_intersection_area_from_db(
     # Create the 'user_log_information' table if it doesn't exist
     create_table(engine, UserLogInfo)
     # Extract the geometry of the catchment area
-    catchment_wkt = catchment_area["geometry"][0].wkt
+    catchment_wkt = catchment_area.geometry[0].wkt
     # Build the SQL query to find intersections between the user log information and the catchment area
     command_text = f"""
     SELECT *

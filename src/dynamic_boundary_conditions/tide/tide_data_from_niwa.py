@@ -478,7 +478,7 @@ def fetch_tide_data_around_highest_tide(
         The tide data around the highest tide, fetched from NIWA, for the specified tide length and interval.
     """
     # Group the tide data by position and geometry
-    grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
+    grouped = tide_data.groupby(['position', tide_data.geometry.map(lambda point: point.wkt)])
     # Create an empty GeoDataFrame to store the tide data around the highest tide
     tide_data_around_highest_tide = gpd.GeoDataFrame()
     # Iterate over each group in the grouped data
@@ -612,7 +612,7 @@ def add_time_information(
         raise ValueError(message)
 
     # Group the tide data by position and geometry
-    grouped = tide_data.groupby(['position', tide_data['geometry'].to_wkt()])
+    grouped = tide_data.groupby(['position', tide_data.geometry.map(lambda point: point.wkt)])
     # Create a new GeoDataFrame to store tide data with time information
     tide_data_w_time = gpd.GeoDataFrame()
     # Iterate over each group in the grouped data

@@ -41,7 +41,7 @@ def generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: gpd.
     log.info("Generating the river model inputs for BG-Flood.")
     # Group the hydrograph data based on specific attributes
     grouped = hydrograph_data.groupby(
-        by=["river_input_point_no", hydrograph_data["river_input_point"].to_wkt(), "dem_resolution", "areakm2"],
+        by=["river_input_point_no", hydrograph_data.geometry.map(lambda point: point.wkt), "dem_resolution", "areakm2"],
         sort=False)
     # Iterate through each group of hydrograph data
     for group_name, group_data in grouped:
