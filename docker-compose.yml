@@ -103,7 +103,7 @@ services:
     build:
       context: terriajs
     ports:
-      - "3001:3001"
+      - "${WWW_PORT}:3001"
     environment:
       - CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
     healthcheck:
