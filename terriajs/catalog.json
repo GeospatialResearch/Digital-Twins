@@ -192,7 +192,7 @@
           "type": "wps",
           "name": "MEDUSA Pollution source model",
           "description": "Model a rainfall event to identify sources of stormwater pollution.",
-          "url": "http://localhost:5000/wps",
+          "url": "$BACKEND_HOST:$BACKEND_PORT/wps",
           "identifier": "medusa",
           "storeSupported": true
         }
