@@ -110,9 +110,9 @@ class MetalLoads(NamedTuple):
     Attributes
     ----------
     cu_load: float
-        Amount of copper load contributed by a step in the pollutant model (micrograms).
+        Amount of copper load contributed by a step in the pollutant model (milligrams).
     zn_load: float
-        Amount of zinc load contributed by a step in the pollutant model (micrograms).
+        Amount of zinc load contributed by a step in the pollutant model (milligrams).
     """
 
     cu_load: float
@@ -137,7 +137,7 @@ def compute_tss_roof_road(surface_area: float,
     Returns
     -------
     float
-       Returns the TSS value from the given parameters (micrograms)
+       Returns the TSS value from the given parameters (milligrams)
 
     Raises
     ----------
@@ -212,7 +212,7 @@ def total_metal_load_surface(surface_area: float,
     Returns
     -------
     MetalLoads
-       Returns the total copper and zinc loads from the given parameters (micrograms).
+       Returns the total copper and zinc loads from the given parameters (milligrams).
 
     Raises
     ----------
@@ -244,7 +244,7 @@ def total_metal_load_roof(surface_area: float,
     Returns
     -------
     MetalLoads
-       Returns the total copper and zinc loads from the given parameters (micrograms).
+       Returns the total copper and zinc loads from the given parameters (milligrams).
 
     Raises
     ----------
@@ -364,7 +364,7 @@ def total_metal_load_road_carpark(tss_surface: float) -> MetalLoads:
     Returns
     -------
     MetalLoads
-       Returns the total copper and zinc loads for this surface (micrograms)
+       Returns the total copper and zinc loads for this surface (milligrams)
        [Total Copper, Total Zinc]
     """
     # Define constants
@@ -393,7 +393,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
     Returns
     -------
     MetalLoads
-        Returns the dissolved copper and zinc load for this surface (micrograms)
+        Returns the dissolved copper and zinc load for this surface (milligrams)
         [Dissolved Copper Load, Dissolved Zinc Load]
 
     Raises
@@ -687,11 +687,11 @@ def serve_pollution_model() -> None:
         # Construct query linking medusa_table_class to its geometry table
         pollution_sql_query = f"""
         SELECT
-            total_suspended_solids AS "Total Suspended Solids (μg)",
-            total_copper AS "Total Copper (μg)",
-            total_zinc AS "Total Zinc (μg)",
-            dissolved_copper AS "Dissolved Copper (μg)",
-            dissolved_zinc AS "Dissolved Zinc (μg)",
+            total_suspended_solids AS "Total Suspended Solids (mg)",
+            total_copper AS "Total Copper (mg)",
+            total_zinc AS "Total Zinc (mg)",
+            dissolved_copper AS "Dissolved Copper (mg)",
+            dissolved_zinc AS "Dissolved Zinc (mg)",
             surface_type,
             scenario_id,
             spatial."{spatial_id_column}",
