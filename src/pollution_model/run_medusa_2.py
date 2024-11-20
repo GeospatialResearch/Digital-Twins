@@ -698,7 +698,7 @@ def serve_pollution_model() -> None:
                 AS "Dissolved Zinc (mg)",
             sig_fig(total_zinc, {significant_figures})
                 AS "Total Zinc (mg)",
-            sig_fig(dissolved_copper, {significant_figures}) 
+            sig_fig(dissolved_copper, {significant_figures})
                 AS "Dissolved Copper (mg)",
             sig_fig(total_copper, {significant_figures})
                 AS "Total Copper (mg)",
