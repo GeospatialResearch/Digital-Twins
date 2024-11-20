@@ -36,8 +36,8 @@ class SurfaceType(StrEnum):
 
     Attributes
     ----------
-    COLOUR_STEEL : str
-        Colour Steel surface
+    COLORSTEEL : str
+        Colorsteel surface
     GALVANISED : str
         Galvanised surface.
     METAL_OTHER : str
@@ -54,7 +54,7 @@ class SurfaceType(StrEnum):
         Car park.
     """
 
-    COLOUR_STEEL = "ColourSteel"
+    COLORSTEEL = "Colorsteel"
     GALVANISED = "Galvanised"
     METAL_OTHER = "MetalOther"
     METAL_TILE = "MetalTile"
@@ -64,7 +64,7 @@ class SurfaceType(StrEnum):
     CAR_PARK = "CarPark"  # CarParks are classified the same as roads
 
 
-ROOF_SURFACE_TYPES = {SurfaceType.COLOUR_STEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER, SurfaceType.METAL_TILE,
+ROOF_SURFACE_TYPES = {SurfaceType.COLORSTEEL, SurfaceType.GALVANISED, SurfaceType.METAL_OTHER, SurfaceType.METAL_TILE,
                       SurfaceType.NON_METAL, SurfaceType.ZINCALUME}
 ROAD_SURFACE_TYPES = {SurfaceType.ASPHALT_ROAD, SurfaceType.CAR_PARK}
 
@@ -149,7 +149,7 @@ def compute_tss_roof_road(surface_area: float,
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
 
     match surface_type:
-        case SurfaceType.COLOUR_STEEL:
+        case SurfaceType.COLORSTEEL:
             # Galvanised Painted
             a1, a2, k = 0.4, 0.5, 0.00933
         case SurfaceType.GALVANISED:
@@ -257,7 +257,7 @@ def total_metal_load_roof(surface_area: float,
 
     # Define constants in a list
     match surface_type:
-        case SurfaceType.COLOUR_STEEL:
+        case SurfaceType.COLORSTEEL:
             # None was added to avoid the 0 position when indexing
             b = [None, 2, -2.802, 0.5, 0.217, 3.57, -0.09, 7, -3.732]
             c = [None, 910, 4, 0.2, 0.09, 1.5, -2, -0.23, 1.99]
@@ -406,7 +406,7 @@ def dissolved_metal_load(total_copper_load: float, total_zinc_load: float,
                              f" Needed a roof or road, but got {SurfaceType(surface_type).name}.")
     # Set constant values based on surface type
     match surface_type:
-        case SurfaceType.COLOUR_STEEL:
+        case SurfaceType.COLORSTEEL:
             # Galvanised Painted
             l1 = 0.5
             m1 = 0.43
@@ -479,6 +479,10 @@ def get_building_information(engine: Engine, area_of_interest: gpd.GeoDataFrame)
     # Some buildings have multiple points, we can only define a building as one surface type without duplicating area.
     # So we drop duplicates by building_Id (index).
     buildings = buildings[~buildings.index.duplicated(keep='first')]
+
+    # The CCC dataset has ColourSteel as a surface type, but the correct spelling of the brand is Colorsteel
+    # Replace all "ColourSteel" with "Colorsteel"
+    buildings["surface_type"][buildings["surface_type"] == "ColourSteel"] = SurfaceType.COLORSTEEL
 
     return buildings
 

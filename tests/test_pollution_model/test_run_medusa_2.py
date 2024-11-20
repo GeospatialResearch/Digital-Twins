@@ -27,7 +27,7 @@ class RunMedusaTest(unittest.TestCase):
     def test_tss_roof_matches_excel(self):
         """Tests that the TSS implementation matches sample data from MEDUSA authors."""
         tss_roof_result = np.round(compute_tss_roof_road(
-            self.surface_area, self.rainfall_event, SurfaceType.COLOUR_STEEL), 3)
+            self.surface_area, self.rainfall_event, SurfaceType.COLORSTEEL), 3)
         excel_tss_roof_result = 582.040
         self.assertEqual(tss_roof_result, excel_tss_roof_result)
 
