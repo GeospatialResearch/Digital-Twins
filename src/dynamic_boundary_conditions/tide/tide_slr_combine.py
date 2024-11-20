@@ -126,7 +126,7 @@ def get_interpolated_slr_scenario_data(
         - If the specified 'interp_method' is not supported.
     """
     # Group the sea level rise scenario data by site, geometry, and position
-    grouped = slr_scenario_data.groupby(['siteid', slr_scenario_data['geometry'].to_wkt(), 'position'])
+    grouped = slr_scenario_data.groupby(['siteid', slr_scenario_data.geometry.map(lambda point: point.wkt), 'position'])
     # Create an empty GeoDataFrame to store the interpolated scenario data
     slr_interp_scenario = gpd.GeoDataFrame()
     # Iterate over each group and perform interpolation
@@ -216,7 +216,7 @@ def add_slr_to_tide(
     # Select only the necessary columns for further processing
     tide_df = tide_df[['year', 'seconds', 'tide_metres', 'position', 'geometry']]
     # Group the tide data by year, position, and geometry
-    grouped = tide_df.groupby(['year', 'position', tide_df['geometry'].to_wkt()])
+    grouped = tide_df.groupby(['year', 'position', tide_df.geometry.map(lambda point: point.wkt)])
     # Create an empty DataFrame to store the tide data with added sea level rise data
     tide_slr_data = gpd.GeoDataFrame()
     # Iterate over each group and add sea level rise to the tide data

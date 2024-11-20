@@ -215,20 +215,17 @@ def get_non_intersection_area_from_db(
     # Create the 'user_log_information' table if it doesn't exist
     create_table(engine, UserLogInfo)
     # Extract the geometry of the catchment area
-    catchment_polygon = catchment_area["geometry"][0]
+    catchment_wkt = catchment_area.geometry[0].wkt
     # Build the SQL query to find intersections between the user log information and the catchment area
     command_text = f"""
     SELECT *
-    FROM (
-        SELECT *
-        FROM {UserLogInfo.__tablename__}
-        WHERE :table_name = ANY(source_table_list)
-    ) AS sub
-    WHERE ST_Intersects(sub.geometry, ST_GeomFromText(:catchment_polygon, 2193));
+    FROM {UserLogInfo.__tablename__}
+    WHERE :table_name = ANY(source_table_list)
+    AND ST_Intersects(geometry, ST_GeomFromText(:catchment_polygon, 2193));
     """
     query = text(command_text).bindparams(
-        table_name=str(table_name),
-        catchment_polygon=str(catchment_polygon)
+        table_name=table_name,
+        catchment_polygon=catchment_wkt
     )
     # Execute the SQL query and retrieve the intersections as a GeoDataFrame
     user_log_intersections = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
@@ -428,7 +425,7 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
     non_nz_geo_layers = get_non_nz_geospatial_layers(engine)
     table_list = non_nz_geo_layers["table_name"].tolist()
     # Get the catchment geometry
-    catchment_geom = catchment_area["geometry"].to_wkt().iloc[0]
+    catchment_geom = catchment_area.geometry[0].wkt
     # Create the query object
     query = UserLogInfo(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query

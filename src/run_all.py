@@ -6,6 +6,7 @@ from types import ModuleType
 from typing import Dict, Union
 
 import geopandas as gpd
+import shapely
 
 from src.digitaltwin import retrieve_static_boundaries
 from src.digitaltwin.utils import LogLevel
@@ -108,5 +109,16 @@ DEFAULT_MODULES_TO_PARAMETERS = {
 
 
 if __name__ == '__main__':
-    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    # Read the area of interst file in
+    aoi = gpd.read_file("selected_polygon.geojson")
+    # Convert to WGS84 to deliberately introduce rounding errors. Ensures our development acts like production.
+    # These rounding errors occur in production when serialising WGS84 polygons
+    aoi = aoi.to_crs(4326)
+
+    # Convert the polygon back to 2193 crs, and recalculate the bounds to ensure it is a rectangle.
+    bbox_2193 = aoi.to_crs(2193).bounds.rename(columns={"minx": "xmin", "maxx": "xmax", "miny": "ymin", "maxy": "ymax"})
+    # Create sample polygon from bounding box
+    sample_polygon = gpd.GeoDataFrame(index=[0], crs="epsg:2193", geometry=[shapely.box(**bbox_2193.iloc[0])])
+
+    # Run all modules with sample polygon that intentionally contains slight rounding errors.
     main(sample_polygon, DEFAULT_MODULES_TO_PARAMETERS)
