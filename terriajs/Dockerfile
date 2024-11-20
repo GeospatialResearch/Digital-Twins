@@ -2,10 +2,12 @@ FROM ghcr.io/terriajs/terriamap:0.2.1
 
 # Install envsubst dependencies
 USER root
-RUN apt-get update \
- && apt-get install -y --no-install-recommends gettext-base \
-# Cleanup image and remove junk
- && rm -fr /var/lib/apt/lists/* \
+RUN <<EOF
+    apt-get update
+    apt-get install -y --no-install-recommends gettext-base
+    # Cleanup image and remove junk
+    rm -fr /var/lib/apt/lists/*
+EOF
 USER node
 
 # Copy Terria.js config
