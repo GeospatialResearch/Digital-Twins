@@ -12,9 +12,9 @@ EOF
 USER node
 
 # Copy Terria.js config
-COPY --chown=nonroot:nonroot --chmod=644 client_config.json wwwroot/config.json
-COPY --chown=nonroot:nonroot --chmod=644 catalog.json wwwroot/init/catalog.json
+COPY --chown=node:node --chmod=644 client_config.json wwwroot/config.json
+COPY --chown=node:node --chmod=644 catalog.json wwwroot/init/catalog.json
 
-COPY --chmod=755 entrypoint.sh .
+COPY --chown=root:root --chmod=755 entrypoint.sh .
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ["/app/entrypoint.sh"]
