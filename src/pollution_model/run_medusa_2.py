@@ -692,10 +692,10 @@ def serve_pollution_model() -> None:
         pollution_sql_query = f"""
         SELECT
             total_suspended_solids AS "Total Suspended Solids (mg)",
-            total_copper AS "Total Copper (mg)",
+            dissolved_zinc AS "Dissolved Zinc (mg)",
             total_zinc AS "Total Zinc (mg)",
             dissolved_copper AS "Dissolved Copper (mg)",
-            dissolved_zinc AS "Dissolved Zinc (mg)",
+            total_copper AS "Total Copper (mg)",
             surface_type,
             scenario_id,
             spatial."{spatial_id_column}",
