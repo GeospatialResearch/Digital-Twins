@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 FROM ghcr.io/terriajs/terriamap:0.2.1
 
 # Install envsubst dependencies
@@ -11,9 +12,9 @@ EOF
 USER node
 
 # Copy Terria.js config
-COPY client_config.json wwwroot/config.json
-COPY catalog.json wwwroot/init/catalog.json
+COPY --chown=nonroot:nonroot --chmod=644 client_config.json wwwroot/config.json
+COPY --chown=nonroot:nonroot --chmod=644 catalog.json wwwroot/init/catalog.json
 
-COPY entrypoint.sh .
+COPY --chmod=755 entrypoint.sh .
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ["/app/entrypoint.sh"]

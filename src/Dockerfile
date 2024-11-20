@@ -81,11 +81,6 @@ COPY --chown=root:root --chmod=555 --from=build /venv /venv
 COPY --chown=root:root --chmod=444 selected_polygon.geojson .
 COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
 COPY --chown=root:root --chmod=555 src/ src/
-
-RUN <<EOF
-    # pywps.cfg needs write nonroot write permissions to substitute environment variables.
-    setfacl -R -d -m u:nonroot:rw src/pywps.cfg
-    setfacl -R -m u:nonroot:rw src/pywps.cfg
-EOF
+COPY --chown=nonroot:nonroot --chmod=644 src/pywps.cfg src/
 
 USER nonroot
