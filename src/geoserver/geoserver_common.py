@@ -22,7 +22,7 @@ def get_geoserver_url() -> str:
     str
         The full GeoServer URL
     """
-    return f"{EnvVariable.GEOSERVER_HOST}:{EnvVariable.GEOSERVER_PORT}/geoserver/rest"
+    return f"{EnvVariable.GEOSERVER_INTERNAL_HOST}:{EnvVariable.GEOSERVER_INTERNAL_PORT}/geoserver/rest"
 
 
 def create_workspace_if_not_exists(workspace_name: str) -> None:

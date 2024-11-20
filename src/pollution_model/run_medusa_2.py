@@ -695,6 +695,7 @@ def serve_pollution_model() -> None:
             surface_type,
             scenario_id,
             spatial."{spatial_id_column}",
+            ST_AREA(geometry) as "Area (m²)",
             geometry
         FROM {medusa_table_name} as medusa
              INNER JOIN {geometry_table_name} as spatial
