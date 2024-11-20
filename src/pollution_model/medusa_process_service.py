@@ -9,6 +9,7 @@ from pywps import ComplexOutput, Format, LiteralInput, LiteralOutput, Process, W
 from pywps.inout.literaltypes import AnyValue
 from pywps.response.execute import ExecuteResponse
 
+from src.config import EnvVariable as EnvVar
 from src import tasks
 
 
@@ -53,6 +54,7 @@ class MedusaProcessService(Process):
         response : ExecuteResponse
             The WPS response, containing output data.
         """
+
         # Helper function to format `number` for visualization
         def _format_number(number: float) -> Union[int, float]:
             """
@@ -104,11 +106,13 @@ class MedusaProcessService(Process):
         # Present the user with the scenario details for visualization
         response.outputs['scenarioDetails'].data = scenario_details
 
+        geoserver_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/db-pollution/ows"
+
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
         response.outputs['roofs'].data = json.dumps({
             "type": "wfs",
             "name": "MEDUSA Roof Surfaces",
-            "url": "http://localhost:8088/geoserver/db-pollution/ows",
+            "url": geoserver_url,
             "typeNames": "db-pollution:medusa2_model_output_buildings",
             "parameters": {
                 "cql_filter": f"scenario_id={scenario_id}",
@@ -119,7 +123,7 @@ class MedusaProcessService(Process):
         response.outputs['roads'].data = json.dumps({
             "type": "wfs",
             "name": "MEDUSA Road Surfaces",
-            "url": "http://localhost:8088/geoserver/db-pollution/ows",
+            "url": geoserver_url,
             "typeNames": "db-pollution:medusa2_model_output_roads",
             "parameters": {
                 "cql_filter": f"scenario_id={scenario_id}",
