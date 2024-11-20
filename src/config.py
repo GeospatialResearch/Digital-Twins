@@ -112,6 +112,8 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
 
     GEOSERVER_HOST = _get_env_variable("GEOSERVER_HOST", default="http://localhost")
     GEOSERVER_PORT = _get_env_variable("GEOSERVER_PORT", default="8088")
+    GEOSERVER_INTERNAL_HOST = _get_env_variable("GEOSERVER_INTERNAL_HOST", default=GEOSERVER_HOST)
+    GEOSERVER_INTERNAL_PORT = _get_env_variable("GEOSERVER_INTERNAL_PORT", default=GEOSERVER_PORT)
     GEOSERVER_ADMIN_NAME = _get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
     GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
 
