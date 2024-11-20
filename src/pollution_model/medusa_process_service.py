@@ -54,8 +54,6 @@ class MedusaProcessService(Process):
         response : ExecuteResponse
             The WPS response, containing output data.
         """
-
-        # Helper function to format `number` for visualization
         def _format_number(number: float) -> Union[int, float]:
             """
             Return `number` as an int if whole, otherwise as a float.
