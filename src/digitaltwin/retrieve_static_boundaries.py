@@ -6,7 +6,7 @@ It populates the 'geospatial_layers' table in the database and stores user log i
 
 import geopandas as gpd
 
-from src.digitaltwin import setup_environment, instructions_records_to_db, data_to_db
+from src.digitaltwin import setup_environment, instructions_records_to_db, data_to_db, tables
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 
@@ -36,7 +36,9 @@ def main(
     setup_logging(log_level)
     # Connect to the database
     engine = setup_environment.get_database()
-    # Get catchment area
+    # Define custom database functions to aid querying.
+    tables.define_custom_db_functions(engine)
+    # Get catchment area.
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
     # Store 'static_boundary_instructions' records in the 'geospatial_layers' table in the database.
     instructions_records_to_db.store_instructions_records_to_db(engine)

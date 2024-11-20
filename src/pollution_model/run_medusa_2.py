@@ -689,13 +689,19 @@ def serve_pollution_model() -> None:
         spatial_id_column = medusa_table_class.spatial_feature_id.name
 
         # Construct query linking medusa_table_class to its geometry table
+        significant_figures = 5
         pollution_sql_query = f"""
         SELECT
-            total_suspended_solids AS "Total Suspended Solids (mg)",
-            dissolved_zinc AS "Dissolved Zinc (mg)",
-            total_zinc AS "Total Zinc (mg)",
-            dissolved_copper AS "Dissolved Copper (mg)",
-            total_copper AS "Total Copper (mg)",
+            sig_fig(total_suspended_solids, {significant_figures})
+                AS "Total Suspended Solids (mg)",
+            sig_fig(dissolved_zinc, {significant_figures})
+                AS "Dissolved Zinc (mg)",
+            sig_fig(total_zinc, {significant_figures})
+                AS "Total Zinc (mg)",
+            sig_fig(dissolved_copper, {significant_figures}) 
+                AS "Dissolved Copper (mg)",
+            sig_fig(total_copper, {significant_figures})
+                AS "Total Copper (mg)",
             surface_type,
             scenario_id,
             spatial."{spatial_id_column}",
