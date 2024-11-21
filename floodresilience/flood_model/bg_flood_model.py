@@ -78,7 +78,8 @@ def get_new_model_output_path() -> pathlib.Path:
 
 def get_model_output_metadata(
     model_output_path: pathlib.Path,
-    catchment_area: gpd.GeoDataFrame) -> Tuple[str, str, str]:
+    catchment_area: gpd.GeoDataFrame
+) -> Tuple[str, str, str]:
     """
     Get metadata related to the BG Flood model output.
 
@@ -108,7 +109,8 @@ def get_model_output_metadata(
 def store_model_output_metadata_to_db(
     engine: Engine,
     model_output_path: pathlib.Path,
-    catchment_area: gpd.GeoDataFrame) -> int:
+    catchment_area: gpd.GeoDataFrame
+) -> int:
     """
     Store metadata related to the BG Flood model output in the database.
 
@@ -334,7 +336,8 @@ def prepare_bg_flood_model_inputs(
     end_time: Union[int, float],
     mask: Union[int, float] = 9999,
     gpu_device: int = 0,
-    small_nc: int = 0) -> None:
+    small_nc: int = 0
+) -> None:
     """
     Prepare inputs for the BG-Flood Model.
 
@@ -400,7 +403,8 @@ def run_bg_flood_model(
     resolution: Optional[Union[int, float]] = None,
     mask: Union[int, float] = 9999,
     gpu_device: int = 0,
-    small_nc: int = 0) -> None:
+    small_nc: int = 0
+) -> None:
     """
     Run the BG-Flood Model for the specified catchment area.
 
@@ -481,7 +485,8 @@ def main(
     mask: Union[int, float] = 9999,
     gpu_device: int = 0,
     small_nc: int = 0,
-    log_level: LogLevel = LogLevel.DEBUG) -> int:
+    log_level: LogLevel = LogLevel.DEBUG
+) -> int:
     """
     Generate BG-Flood model output for the requested catchment area, and incorporate the model output to GeoServer
     for visualization.
