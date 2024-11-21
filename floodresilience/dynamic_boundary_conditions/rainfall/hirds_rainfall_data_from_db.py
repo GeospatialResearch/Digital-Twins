@@ -113,7 +113,7 @@ def get_one_site_rainfall_data(
         )
         rain_data = pd.read_sql_query(query, engine)
         # Filter for historical data
-        rain_data.query("category == 'hist'", inplace=True)
+        rain_data = rain_data.query("category == 'hist'")
     # Filter for duration
     rain_data = filter_for_duration(rain_data, duration)
     return rain_data
