@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from src import config
-from src.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
+from floodresilience.dynamic_boundary_conditions.tide.tide_enum import DatumType, ApproachType
 
 log = logging.getLogger(__name__)
 

@@ -12,14 +12,14 @@ import geopandas as gpd
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.dynamic_boundary_conditions.tide import (
+from floodresilience.dynamic_boundary_conditions.tide import (
     tide_query_location,
     tide_data_from_niwa,
     sea_level_rise_data,
     tide_slr_combine,
     tide_slr_model_input
 )
-from src.dynamic_boundary_conditions.tide.tide_enum import ApproachType
+from floodresilience.dynamic_boundary_conditions.tide.tide_enum import ApproachType
 
 log = logging.getLogger(__name__)
 

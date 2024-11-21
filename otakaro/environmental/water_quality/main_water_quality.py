@@ -10,7 +10,7 @@ import geopandas as gpd
 
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.environmental.water_quality import surface_water_sites, surface_water_quality
+from otakaro.environmental.water_quality import surface_water_sites, surface_water_quality
 
 log = logging.getLogger(__name__)
 

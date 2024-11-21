@@ -18,7 +18,7 @@ from shapely import box
 
 from src import tasks
 from src.config import EnvVariable
-from src.pollution_model.medusa_process_service import MedusaProcessService
+from otakaro.pollution_model.medusa_process_service import MedusaProcessService
 
 # Initialise flask server object
 app = Flask(__name__)

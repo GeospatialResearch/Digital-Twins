@@ -9,7 +9,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 import plotly.express as px
 
-from src.dynamic_boundary_conditions.rainfall.rainfall_enum import HyetoMethod
+from floodresilience.dynamic_boundary_conditions.rainfall.rainfall_enum import HyetoMethod
 
 
 def get_transposed_data(rain_depth_in_catchment: pd.DataFrame) -> pd.DataFrame:
