@@ -24,9 +24,9 @@ from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import BGFloodModelOutput, create_table, check_table_exists
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from src.flood_model.flooded_buildings import find_flooded_buildings
-from src.flood_model.flooded_buildings import store_flooded_buildings_in_database
-from src.flood_model.serve_model import add_model_output_to_geoserver
+from floodresilience.flood_model.flooded_buildings import find_flooded_buildings
+from floodresilience.flood_model.flooded_buildings import store_flooded_buildings_in_database
+from floodresilience.flood_model.serve_model import add_model_output_to_geoserver
 
 log = logging.getLogger(__name__)
 

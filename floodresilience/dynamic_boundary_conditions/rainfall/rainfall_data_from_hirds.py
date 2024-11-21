@@ -8,7 +8,7 @@ from typing import List, NamedTuple, Optional
 import pandas as pd
 import requests
 
-from src.dynamic_boundary_conditions.rainfall.rainfall_sites import get_hirds_headers
+from floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites import get_hirds_headers
 
 
 def get_site_url_key(site_id: str, idf: bool) -> str:

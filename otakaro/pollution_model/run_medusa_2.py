@@ -23,8 +23,8 @@ from src.config import EnvVariable
 from src.digitaltwin import setup_environment
 from src.digitaltwin.tables import create_table, check_table_exists, execute_query
 from src.digitaltwin.utils import get_catchment_area, LogLevel, setup_logging
-from src.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Medusa2ModelOutputRoads
-from src.pollution_model.pollution_tables import MedusaScenarios
+from otakaro.pollution_model.pollution_tables import Medusa2ModelOutputBuildings, Medusa2ModelOutputRoads
+from otakaro.pollution_model.pollution_tables import MedusaScenarios
 
 log = logging.getLogger(__name__)
 

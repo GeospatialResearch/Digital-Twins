@@ -17,13 +17,13 @@ from pyproj import Transformer
 from src.config import EnvVariable
 from src.digitaltwin import retrieve_static_boundaries, setup_environment
 from src.digitaltwin.utils import setup_logging
-from src.dynamic_boundary_conditions.rainfall import main_rainfall
-from src.dynamic_boundary_conditions.river import main_river
-from src.dynamic_boundary_conditions.tide import main_tide_slr
-from src.flood_model import bg_flood_model, process_hydro_dem
-from src.pollution_model import run_medusa_2
-from src.environmental.water_quality import surface_water_sites
 from src.run_all import DEFAULT_MODULES_TO_PARAMETERS
+from floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
+from floodresilience.dynamic_boundary_conditions.river import main_river
+from floodresilience.dynamic_boundary_conditions.tide import main_tide_slr
+from floodresilience.flood_model import bg_flood_model, process_hydro_dem
+from otakaro.pollution_model import run_medusa_2
+from otakaro.environmental.water_quality import surface_water_sites
 
 # Setup celery backend task management
 message_broker_url = f"redis://{EnvVariable.MESSAGE_BROKER_HOST}:6379/0"

@@ -12,8 +12,8 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
 from src.digitaltwin.tables import check_table_exists
-from src.dynamic_boundary_conditions.river import river_data_from_niwa
-from src.dynamic_boundary_conditions.river.river_network_to_from_db import add_network_exclusions_to_db
+from floodresilience.dynamic_boundary_conditions.river import river_data_from_niwa
+from floodresilience.dynamic_boundary_conditions.river.river_network_to_from_db import add_network_exclusions_to_db
 
 log = logging.getLogger(__name__)
 

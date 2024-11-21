@@ -2,10 +2,10 @@
 import unittest
 import numpy as np
 
-from src.pollution_model.run_medusa_2 import (MedusaRainfallEvent, compute_tss_roof_road,
-                                              total_metal_load_roof, dissolved_metal_load,
-                                              total_metal_load_road_carpark,
-                                              run_medusa_model_for_surface_geometries, SurfaceType)
+from otakaro.pollution_model.run_medusa_2 import (MedusaRainfallEvent, compute_tss_roof_road,
+                                                  total_metal_load_roof, dissolved_metal_load,
+                                                  total_metal_load_road_carpark,
+                                                  run_medusa_model_for_surface_geometries, SurfaceType)
 
 import geopandas as gpd
 import pandas as pd

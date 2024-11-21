@@ -9,7 +9,7 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
-from src.dynamic_boundary_conditions.rainfall import hirds_rainfall_data_to_db
+from floodresilience.dynamic_boundary_conditions.rainfall import hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
 

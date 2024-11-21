@@ -10,14 +10,14 @@ import shapely
 
 from src.digitaltwin import retrieve_static_boundaries
 from src.digitaltwin.utils import LogLevel
-from src.dynamic_boundary_conditions.rainfall import main_rainfall
-from src.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
-from src.dynamic_boundary_conditions.river import main_river
-from src.dynamic_boundary_conditions.river.river_enum import BoundType
-from src.dynamic_boundary_conditions.tide import main_tide_slr
-from src.flood_model import bg_flood_model, process_hydro_dem
-from src.pollution_model import run_medusa_2
-from src.environmental.water_quality import main_water_quality
+from floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
+from floodresilience.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
+from floodresilience.dynamic_boundary_conditions.river import main_river
+from floodresilience.dynamic_boundary_conditions.river.river_enum import BoundType
+from floodresilience.dynamic_boundary_conditions.tide import main_tide_slr
+from floodresilience.flood_model import bg_flood_model, process_hydro_dem
+from otakaro.pollution_model import run_medusa_2
+from otakaro.environmental.water_quality import main_water_quality
 
 
 def main(

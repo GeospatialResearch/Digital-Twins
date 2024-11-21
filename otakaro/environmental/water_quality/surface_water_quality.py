@@ -20,7 +20,7 @@ from sqlalchemy.sql import text
 from src import geoserver
 from src.config import EnvVariable
 from src.digitaltwin.tables import check_table_exists
-from src.environmental.water_quality.surface_water_sites import get_surface_water_sites_from_db
+from otakaro.environmental.water_quality.surface_water_sites import get_surface_water_sites_from_db
 
 log = logging.getLogger(__name__)
 
