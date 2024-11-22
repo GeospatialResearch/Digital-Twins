@@ -81,31 +81,6 @@ class UserLogInfo(Base):
     geometry = Column(Geometry("POLYGON", srid=2193))
 
 
-def define_custom_db_functions(engine: Engine) -> None:
-    """
-    Create custom SQL functions for the database, to aid in queries.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    """
-    # Create function for calculating result as significant figures
-    create_significant_figures_statement = """
-        CREATE OR REPLACE FUNCTION sig_fig(n double precision, digits integer)
-            RETURNS numeric
-        AS
-        $$
-        SELECT CASE
-                   WHEN n = 0 THEN 0
-                   ELSE round(n::numeric, digits - 1 - floor(log(abs(n)))::int)
-                   END
-        $$ LANGUAGE sql IMMUTABLE
-                        STRICT;
-    """
-    engine.execute(create_significant_figures_statement)
-
-
 def create_table(engine: Engine, table: Base) -> None:
     """
     Create a table in the database if it doesn't already exist, using the provided engine.

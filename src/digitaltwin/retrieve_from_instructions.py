@@ -7,7 +7,7 @@ import pathlib
 
 import geopandas as gpd
 
-from src.digitaltwin import setup_environment, instructions_records_to_db, data_to_db, tables
+from src.digitaltwin import setup_environment, instructions_records_to_db, data_to_db
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 
@@ -40,8 +40,6 @@ def main(
     setup_logging(log_level)
     # Connect to the database
     engine = setup_environment.get_database()
-    # Define custom database functions to aid querying.
-    tables.define_custom_db_functions(engine)
     # Get catchment area.
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
     # Store records from instruction json in the 'geospatial_layers' table in the database.
