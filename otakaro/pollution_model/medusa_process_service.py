@@ -10,7 +10,7 @@ from pywps.inout.literaltypes import AnyValue
 from pywps.response.execute import ExecuteResponse
 
 from src.config import EnvVariable as EnvVar
-from src import tasks
+from otakaro import tasks
 
 
 class MedusaProcessService(Process):

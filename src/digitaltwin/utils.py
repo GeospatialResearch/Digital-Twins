@@ -4,6 +4,8 @@
 import inspect
 import logging
 import pathlib
+import time
+from typing import Any, Callable, Tuple, Type
 import warnings
 from enum import IntEnum
 
@@ -150,3 +152,61 @@ def get_nz_boundary(engine: Engine, to_crs: int = 2193) -> gpd.GeoDataFrame:
     # Convert to the desired coordinate reference system (CRS)
     nz_boundary = nz_boundary.to_crs(to_crs)
     return nz_boundary
+
+
+def retry_function(
+    func: Callable,
+    max_retries: int,
+    base_retry_delay: float,
+    expected_exceptions: Type[Exception] | Tuple[Type[Exception]],
+    *args: Any,
+    **kwargs: Any,
+) -> Any:
+    """
+    Retry a function a number of times if an exception is raised.
+
+    Parameters
+    ----------
+    func : Callable
+        The function to call and retry if it fails
+    max_retries : int
+        The maximum number of times to retry the function before allowing the exception to propagate
+    base_retry_delay : float
+        The delay in seconds between retries. Each subsequent retry becomes extended by this amount.
+    expected_exceptions : Type[Exception] | Tuple[Type[Exception]]
+        The exceptions that are expected to be thrown, and so will be caught. Any others will be propagated.
+    *args : Any
+        The standard arguments for func.
+    **kwargs : Any
+        The keyword arguments for func.
+
+    Returns
+    -------
+    Any
+        The result of func(*args, **kwargs).
+    """
+    # Set error retry control variables.
+    current_try = 0
+    func_name = f"{func.__module__}.{func.__name__}"
+    # Retry until return or exception.
+    while True:
+        try:
+            # Increment try counter
+            current_try += 1
+            # Attempt to run the function
+            result = func(*args, **kwargs)
+            # Success
+            return result
+        except expected_exceptions as err:
+            log.info(f"Retrying {func_name}. {current_try}/{max_retries} due to {err.__class__.__name__}")
+            # This can happen when multiple processes are initialising the db at the same time
+            if current_try > max_retries:
+                # max_tries exceeded, we must raise an error to prevent infinite looping
+                raise err
+            # Sleep on an extending timeout
+            timeout = base_retry_delay * current_try
+            log.info(f"Waiting {timeout} seconds before retrying {func_name}")
+            time.sleep(timeout)
+            log.info(f"Retrying {func_name}")
+            # Retry
+            continue
