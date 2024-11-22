@@ -3,8 +3,16 @@
 # Used by docker to import environment variables into a docker container without baking them into the image.
 # Used when runtime environment variables are not enough, for example, when a config file needs to be written.
 
+# In a cloud environment there isn't a port value, this is derived from the use of https (port 443) so there's no need to include the port.
+BACKEND_URL=$BACKEND_HOST
+if [[ ! -z "$BACKEND_PORT" ]]; then
+  BACKEND_URL=$BACKEND_URL:$BACKEND_PORT
+fi
+
+export BACKEND_URL
+
 # List of variables to substitute
-ENV_VARS_TO_FILL='$CESIUM_ACCESS_TOKEN,$BACKEND_HOST,$BACKEND_PORT'
+ENV_VARS_TO_FILL='$CESIUM_ACCESS_TOKEN,$BACKEND_URL'
 
 # Substitute variables and save whole file to variable, sponge is not available to buffer.
 for FILE_TO_SUB in "wwwroot/config.json" "wwwroot/init/catalog.json"
