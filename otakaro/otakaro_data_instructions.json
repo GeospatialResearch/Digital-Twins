@@ -1,19 +1,5 @@
 {
   "instruction_1": {
-    "data_provider": "StatsNZ",
-    "layer_id": 111182,
-    "table_name": "region_geometry",
-    "coverage_area": "New Zealand",
-    "url": "https://datafinder.stats.govt.nz/layer/111182-regional-council-2023-generalised/"
-  },
-  "instruction_2": {
-    "data_provider": "StatsNZ",
-    "layer_id": 111181,
-    "table_name": "region_geometry_clipped",
-    "coverage_area": "New Zealand",
-    "url": "https://datafinder.stats.govt.nz/layer/111181-regional-council-2023-clipped-generalised/"
-  },
-  "instruction_3": {
     "data_provider": "LINZ",
     "layer_id": 53382,
     "table_name": "nz_roads",
