@@ -5,7 +5,7 @@ import inspect
 import logging
 import pathlib
 import time
-from typing import Any, Callable, Tuple, Type
+from typing import Callable, Tuple, Type, TypeVar
 import warnings
 from enum import IntEnum
 
@@ -154,35 +154,41 @@ def get_nz_boundary(engine: Engine, to_crs: int = 2193) -> gpd.GeoDataFrame:
     return nz_boundary
 
 
+# Generic type definitions to allow any function to be passed to retry_function
+FuncArgsT = TypeVar('FuncArgsT')
+FuncKwargsT = TypeVar('FuncKwargsT')
+FuncReturnT = TypeVar('FuncReturnT')
+
+
 def retry_function(
-    func: Callable,
+    func: Callable[[FuncArgsT, FuncKwargsT], FuncReturnT],
     max_retries: int,
     base_retry_delay: float,
     expected_exceptions: Type[Exception] | Tuple[Type[Exception]],
-    *args: Any,
-    **kwargs: Any,
-) -> Any:
+    *args: FuncArgsT,
+    **kwargs: FuncKwargsT,
+) -> FuncReturnT:
     """
     Retry a function a number of times if an exception is raised.
 
     Parameters
     ----------
-    func : Callable
-        The function to call and retry if it fails
+    func : Callable[[FuncArgsT, FuncKwargsT], FuncReturnT]
+        The function to call and retry if it fails. Takes *args and **kwargs as arguments.
     max_retries : int
         The maximum number of times to retry the function before allowing the exception to propagate
     base_retry_delay : float
         The delay in seconds between retries. Each subsequent retry becomes extended by this amount.
     expected_exceptions : Type[Exception] | Tuple[Type[Exception]]
         The exceptions that are expected to be thrown, and so will be caught. Any others will be propagated.
-    *args : Any
+    *args : FuncArgsT
         The standard arguments for func.
-    **kwargs : Any
+    **kwargs : FuncKwargsT
         The keyword arguments for func.
 
     Returns
     -------
-    Any
+    FuncReturnT
         The result of func(*args, **kwargs).
     """
     # Set error retry control variables.
