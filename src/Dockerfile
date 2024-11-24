@@ -71,7 +71,7 @@ EOF
 
 # Add clipped roof surfaces data into image
 COPY --chown=root:root --chmod=444 \
-    ./roof_surfaces_data/clipped_CCC_Lynker_RoofMaterials_Update_2023.gdb/ \
+    otakaro/roof_surfaces_data/clipped_CCC_Lynker_RoofMaterials_Update_2023.gdb/ \
     /stored_data/roof_surfaces_data/roof_surfaces.gdb/
 
 # Copy python virtual environment from build layer
@@ -80,7 +80,9 @@ COPY --chown=root:root --chmod=555 --from=build /venv /venv
 # Copy source files and essential runtime files
 COPY --chown=root:root --chmod=444 selected_polygon.geojson .
 COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
-COPY --chown=root:root --chmod=555 src/ src/
+COPY --chown=root:root --chmod=555 src src/
+COPY --chown=root:root --chmod=555 floodresilience floodresilience/
+COPY --chown=root:root --chmod=555 otakaro otakaro/
 COPY --chown=nonroot:nonroot --chmod=644 src/pywps.cfg src/
 
 USER nonroot

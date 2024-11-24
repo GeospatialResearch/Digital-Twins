@@ -15,7 +15,6 @@ import validators
 from sqlalchemy.engine import Engine
 
 from src.digitaltwin.tables import GeospatialLayers, create_table
-
 log = logging.getLogger(__name__)
 
 
@@ -80,19 +79,21 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
             f"Neither 'coverage_area' nor 'unique_column_name' provided for {section}. One must be provided.")
 
 
-def read_and_check_instructions_file() -> pd.DataFrame:
+def read_and_check_instructions_file(instruction_json_path: pathlib.Path) -> pd.DataFrame:
     """
-    Read and check the static_boundary_instructions file, validating URLs and instruction fields.
+    Read and check an instructions json file, validating URLs and instruction fields.
 
+    Parameters
+    -------
+    instruction_json_path: pathlib.Path
+        Path to the instruction json file.
     Returns
     -------
     pd.DataFrame
         The processed instructions DataFrame.
     """
-    # Path to the 'static_boundary_instructions.json' file
-    instruction_file = pathlib.Path("src/digitaltwin/static_boundary_instructions.json")
-    # Read the 'static_boundary_instructions.json' file
-    with open(instruction_file, "r", encoding="utf-8") as file:
+    # Read the instructions json file
+    with open(instruction_json_path, "r", encoding="utf-8") as file:
         # Load content from the file
         instructions = json.load(file)
         # Iterate through each section
@@ -160,21 +161,23 @@ def get_non_existing_records(instructions_df: pd.DataFrame, existing_layers_df: 
     return non_existing_records
 
 
-def store_instructions_records_to_db(engine: Engine) -> None:
+def store_instructions_records_to_db(engine: Engine, instruction_json_path: pathlib.Path) -> None:
     """
-    Store 'static_boundary_instructions' records in the 'geospatial_layers' table in the database.
+    Store insruction json file records in the 'geospatial_layers' table in the database.
 
     Parameters
     ----------
     engine : Engine
         The engine used to connect to the database.
+    instruction_json_path : pathlib.Path
+        The path to the instruction json file to store records for.
     """
     # Create the 'geospatial_layers' table if it doesn't exist
     create_table(engine, GeospatialLayers)
     # Retrieve existing layers from the 'geospatial_layers' table
     existing_layers_df = get_existing_geospatial_layers(engine)
     # Read and check the instructions file
-    instructions_df = read_and_check_instructions_file()
+    instructions_df = read_and_check_instructions_file(instruction_json_path)
     # Get 'static_boundary_instructions' records that are not available in the database.
     non_existing_records = get_non_existing_records(instructions_df, existing_layers_df)
 
