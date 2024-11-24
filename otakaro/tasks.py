@@ -75,12 +75,13 @@ def run_medusa_model(selected_polygon_wkt: str,
     int
        The scenario id of the new medusa scenario produced
     """
-    # Convert wkt string into a GeoDataFrame
-    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-
     # Initialise base data
     base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
-    add_base_data_to_db.delay(selected_polygon, base_data_parameters).get()
+    add_base_data_to_db(selected_polygon_wkt, base_data_parameters)
+    add_files_data_to_db()
+
+    # Convert wkt string into a GeoDataFrame
+    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
 
     # Read log level from default parameters
     log_level = DEFAULT_MODULES_TO_PARAMETERS[run_medusa_2]["log_level"]
