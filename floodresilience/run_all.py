@@ -15,7 +15,7 @@ from floodresilience.flood_model import bg_flood_model, process_hydro_dem
 DEFAULT_MODULES_TO_PARAMETERS = {
     retrieve_from_instructions: {
         "log_level": LogLevel.INFO,
-        "instruction_json_path": pathlib.Path("floodresilience/static_boundary_instructions.json")
+        "instruction_json_path": pathlib.Path("floodresilience/static_boundary_instructions.json").as_posix()
     },
     process_hydro_dem: {
         "log_level": LogLevel.INFO

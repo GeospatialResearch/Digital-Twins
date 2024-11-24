@@ -11,8 +11,8 @@ from celery.worker.consumer import Consumer
 import geopandas as gpd
 
 from src.digitaltwin import retrieve_from_instructions
-from src.digitaltwin.utils import retry_function, setup_logging
-from src.tasks import app, OnFailureStateTask, wkt_to_gdf
+from src.digitaltwin.utils import setup_logging
+from src.tasks import add_base_data_to_db, app, OnFailureStateTask, wkt_to_gdf
 from otakaro import initialise_db_with_files
 from otakaro.environmental.water_quality import surface_water_sites
 from otakaro.pollution_model import run_medusa_2
@@ -36,32 +36,9 @@ def on_startup(sender: Consumer, **_kwargs: None) -> None:  # pylint: disable=mi
         # Gather area of interest from file.
         aoi_wkt = gpd.read_file("selected_polygon.geojson").to_crs(4326).geometry[0].wkt
         # Send a task to initialise this area of interest.
-        sender.app.send_task("otakaro.tasks.add_base_data_to_db", args=[aoi_wkt], connection=conn)
+        base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
+        sender.app.send_task("src.tasks.add_base_data_to_db", args=[aoi_wkt, base_data_parameters], connection=conn)
         sender.app.send_task("otakaro.tasks.add_files_data_to_db", connection=conn)
-
-
-@app.task(base=OnFailureStateTask)
-def add_base_data_to_db(selected_polygon_wkt: str) -> None:
-    """
-    Task to ensure static base data for the given area is added to the database.
-
-    Parameters
-    ----------
-    selected_polygon_wkt : str
-        The polygon defining the selected area to add base data for. Defined in WKT form.
-    """
-    parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
-    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    # Set up retry/timeout controls
-    retries = 3
-    delay_seconds = 30
-    # Try to initialise db, with a retry set up in case of database exceptions that happen when concurrent access occurs
-    retry_function(retrieve_from_instructions.main,
-                   retries,
-                   delay_seconds,
-                   sqlalchemy.exc.IntegrityError,
-                   selected_polygon,
-                   **parameters)
 
 
 @app.task(base=OnFailureStateTask)
@@ -100,6 +77,11 @@ def run_medusa_model(selected_polygon_wkt: str,
     """
     # Convert wkt string into a GeoDataFrame
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
+
+    # Initialise base data
+    base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
+    add_base_data_to_db.delay(selected_polygon, base_data_parameters).get()
+
     # Read log level from default parameters
     log_level = DEFAULT_MODULES_TO_PARAMETERS[run_medusa_2]["log_level"]
     # Run Medusa model
