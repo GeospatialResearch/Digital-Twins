@@ -14,8 +14,8 @@ import sqlalchemy.exc
 import xarray
 
 from src.digitaltwin import setup_environment, retrieve_from_instructions
-from src.digitaltwin.utils import retry_function, setup_logging
-from src.tasks import app, OnFailureStateTask, wkt_to_gdf  # pylint: disable=cyclic-import
+from src.digitaltwin.utils import setup_logging
+from src.tasks import add_base_data_to_db, app, OnFailureStateTask, wkt_to_gdf  # pylint: disable=cyclic-import
 from floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
 from floodresilience.dynamic_boundary_conditions.river import main_river
 from floodresilience.dynamic_boundary_conditions.tide import main_tide_slr
@@ -58,7 +58,8 @@ def on_startup(sender: Consumer, **_kwargs: None) -> None:  # pylint: disable=mi
         # Gather area of interest from file.
         aoi_wkt = gpd.read_file("selected_polygon.geojson").to_crs(4326).geometry[0].wkt
         # Send a task to initialise this area of interest.
-        sender.app.send_task("floodresilience.tasks.add_base_data_to_db", args=[aoi_wkt], connection=conn)
+        base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
+        sender.app.send_task("src.tasks.add_base_data_to_db", args=[aoi_wkt, base_data_parameters], connection=conn)
 
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
@@ -85,30 +86,6 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
         generate_river_inputs.si(selected_polygon_wkt) |
         run_flood_model.si(selected_polygon_wkt)
     )()
-
-
-@app.task(base=OnFailureStateTask)
-def add_base_data_to_db(selected_polygon_wkt: str) -> None:
-    """
-    Task to ensure static base data for the given area is added to the database.
-
-    Parameters
-    ----------
-    selected_polygon_wkt : str
-        The polygon defining the selected area to add base data for. Defined in WKT form.
-    """
-    parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
-    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    # Set up retry/timeout controls
-    retries = 3
-    delay_seconds = 30
-    # Try to initialise db, with a retry set up in case of database exceptions that happen when concurrent access occurs
-    retry_function(retrieve_from_instructions.main,
-                   retries,
-                   delay_seconds,
-                   sqlalchemy.exc.IntegrityError,
-                   selected_polygon,
-                   **parameters)
 
 
 @app.task(base=OnFailureStateTask)

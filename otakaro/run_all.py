@@ -12,7 +12,7 @@ from otakaro.environmental.water_quality import main_water_quality
 DEFAULT_MODULES_TO_PARAMETERS = {
     retrieve_from_instructions: {
         "log_level": LogLevel.INFO,
-        "instruction_json_path": pathlib.Path("otakaro/otakaro_data_instructions.json")
+        "instruction_json_path": pathlib.Path("otakaro/otakaro_data_instructions.json").as_posix()
     },
     initialise_db_with_files: {
         "log_level": LogLevel.INFO,

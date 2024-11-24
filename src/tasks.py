@@ -9,10 +9,12 @@ from typing import Dict, Tuple
 import billiard.einfo
 import geopandas as gpd
 import shapely
+import sqlalchemy.exc
 from celery import Celery, states
 
 from src.config import EnvVariable
-from src.digitaltwin.utils import setup_logging
+from src.digitaltwin import retrieve_from_instructions
+from src.digitaltwin.utils import retry_function, setup_logging
 
 # Setup celery backend task management
 message_broker_url = f"redis://{EnvVariable.MESSAGE_BROKER_HOST}:6379/0"
@@ -45,6 +47,31 @@ class OnFailureStateTask(app.Task):
             "exc_message": traceback.format_exc().split('\n'),
             "extra": None
         })
+
+
+@app.task(base=OnFailureStateTask)
+def add_base_data_to_db(selected_polygon_wkt: str, base_data_parameters: Dict[str, str]) -> None:
+    """
+    Task to ensure static base data for the given area is added to the database.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The polygon defining the selected area to add base data for. Defined in WKT form.
+    base_data_parameters : Dict[str, str]
+        The parameters from DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions] for the particular module.
+    """
+    selected_polygon = wkt_to_gdf(selected_polygon_wkt)
+    # Set up retry/timeout controls
+    retries = 3
+    delay_seconds = 30
+    # Try to initialise db, with a retry set up in case of database exceptions that happen when concurrent access occurs
+    retry_function(retrieve_from_instructions.main,
+                   retries,
+                   delay_seconds,
+                   sqlalchemy.exc.IntegrityError,
+                   selected_polygon,
+                   **base_data_parameters)
 
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
