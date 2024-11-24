@@ -3,14 +3,12 @@ Runs backend tasks using Celery. Allowing for multiple long-running tasks to com
 Allows the frontend to send tasks and retrieve status later.
 """
 import logging
-import time
 from typing import List, NamedTuple
 
 from celery import result, signals
 from celery.worker.consumer import Consumer
 import geopandas as gpd
 from pyproj import Transformer
-import sqlalchemy.exc
 import xarray
 
 from src.digitaltwin import setup_environment, retrieve_from_instructions
