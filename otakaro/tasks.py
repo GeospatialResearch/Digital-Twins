@@ -7,11 +7,9 @@ from typing import Dict, Union, Optional
 
 from celery import signals
 from celery.worker.consumer import Consumer
-import geopandas as gpd
 
-from src.digitaltwin import retrieve_from_instructions
 from src.digitaltwin.utils import setup_logging
-from src.tasks import add_base_data_to_db, app, OnFailureStateTask, wkt_to_gdf  # pylint: disable=cyclic-import
+from src.tasks import app, OnFailureStateTask, wkt_to_gdf  # pylint: disable=cyclic-import
 from otakaro import initialise_db_with_files
 from otakaro.environmental.water_quality import surface_water_sites
 from otakaro.pollution_model import run_medusa_2

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """This script runs each module in the Digital Twin using a Sample Polygon."""
-import pathlib
 
-from src.digitaltwin import retrieve_from_instructions
 from src.digitaltwin.utils import LogLevel
 from src.run_all import create_sample_polygon, main
 from otakaro import initialise_db_with_files
