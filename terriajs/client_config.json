@@ -7,6 +7,6 @@
     "tabbedCatalog": true,
     "supportEmail": "luke.parkinson@canterbury.ac.nz",
     "cesiumIonAccessToken": "$CESIUM_ACCESS_TOKEN",
-    "brandBarElements": []
+    "brandBarElements": ["<a href=\"#\"><img src=\"images/kowhaiwhai.svg\" title=\"Version: {{version}}\" /></a>"]
   }
 }
