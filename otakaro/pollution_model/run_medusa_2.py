@@ -510,8 +510,8 @@ def get_road_information(engine: Engine, area_of_interest: gpd.GeoDataFrame) -> 
 
     # Select all relevant information from the appropriate table
     query = text("""
-    SELECT road_id, geometry FROM nz_roads
-    WHERE ST_INTERSECTS(nz_roads.geometry, ST_GeomFromText(:aoi_wkt, :crs));
+    SELECT "road_id", geometry FROM chch_roads
+    WHERE ST_INTERSECTS(chch_roads.geometry, ST_GeomFromText(:aoi_wkt, :crs));
     """).bindparams(aoi_wkt=str(aoi_wkt), crs=str(crs))
 
     # Execute the SQL query
@@ -547,11 +547,7 @@ def run_medusa_model_for_single_surface(row: gpd.GeoSeries, rainfall_event: Medu
         The MEDUSA results for the given surfaces and rainfall_event.
     """
     surface_type = row["surface_type"]
-    if surface_type == SurfaceType.ASPHALT_ROAD:
-        # Roughly approximate the surface area of a road by assuming it's width is 5m
-        surface_area = row.geometry.length * 5
-    else:
-        surface_area = row.geometry.area
+    surface_area = row.geometry.area
 
     # Calculate total suspended solids contributed by surface
     curr_tss = compute_tss_roof_road(surface_area, rainfall_event, surface_type)

@@ -74,6 +74,10 @@ COPY --chown=root:root --chmod=444 \
     otakaro/roof_surfaces_data/clipped_CCC_Lynker_RoofMaterials_Update_2023.gdb/ \
     /stored_data/roof_surfaces_data/roof_surfaces.gdb/
 
+COPY --chown=root:root --chmod=444 \
+    ./ccc_chch_roads_polygons.gpkg/ \
+    /stored_data/roads.gpkg
+
 # Copy python virtual environment from build layer
 COPY --chown=root:root --chmod=555 --from=build /venv /venv
 

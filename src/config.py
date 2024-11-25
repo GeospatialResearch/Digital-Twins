@@ -97,6 +97,11 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
         _get_env_variable("ROOF_SURFACE_DATASET_PATH",
                           default="./roof_surfaces_data/clipped_CCC_Lynker_RoofMaterials_Update_2023.gdb"))
 
+    ROAD_DATASET_PATH = pathlib.Path(
+        _get_env_variable("ROAD_DATASET_PATH",
+                          default="./ccc_chch_roads_polygons.gpkg")
+    )
+
     DATA_DIR = pathlib.Path(_get_env_variable("DATA_DIR"))
     DATA_DIR_MODEL_OUTPUT = pathlib.Path(_get_env_variable("DATA_DIR_MODEL_OUTPUT"))
     DATA_DIR_GEOSERVER = pathlib.Path(_get_env_variable("DATA_DIR_GEOSERVER"))

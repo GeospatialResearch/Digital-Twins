@@ -160,7 +160,7 @@ class Medusa2ModelOutputRoads(_BaseMedusa2ModelOutput):
     """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "medusa2_model_output_roads"
-    geometry_table = "nz_roads"
+    geometry_table = "chch_roads"
     spatial_feature_id = Column(Integer, primary_key=True, name="road_id")
 
 
