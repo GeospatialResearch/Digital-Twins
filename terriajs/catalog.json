@@ -195,6 +195,13 @@
           "url": "$BACKEND_URL/wps",
           "identifier": "medusa",
           "storeSupported": true
+        },
+        {
+          "type": "wps",
+          "name": "Area",
+          "description": "Calculate the area of the polygon.",
+          "url": "$BACKEND_URL/wps",
+          "identifier": "area"
         }
       ]
     }
