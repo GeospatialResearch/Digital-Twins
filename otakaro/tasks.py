@@ -32,11 +32,7 @@ def on_startup(sender: Consumer, **_kwargs: None) -> None:  # pylint: disable=mi
         The Celery worker node instance
     """
     with sender.app.connection() as conn:
-        # Gather area of interest from file.
-        aoi_wkt = gpd.read_file("selected_polygon.geojson").to_crs(4326).geometry[0].wkt
         # Send a task to initialise this area of interest.
-        base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
-        sender.app.send_task("src.tasks.add_base_data_to_db", args=[aoi_wkt, base_data_parameters], connection=conn)
         sender.app.send_task("otakaro.tasks.add_files_data_to_db", connection=conn)
 
 
@@ -75,8 +71,6 @@ def run_medusa_model(selected_polygon_wkt: str,
        The scenario id of the new medusa scenario produced
     """
     # Initialise base data
-    base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
-    add_base_data_to_db(selected_polygon_wkt, base_data_parameters)
     add_files_data_to_db()
 
     # Convert wkt string into a GeoDataFrame
