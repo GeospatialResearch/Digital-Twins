@@ -144,7 +144,8 @@
           "name": "Storm Water",
           "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/StormWater/MapServer",
           "id": "ccc-storm-water-map-server",
-          "displayGroup": false
+          "displayGroup": false,
+          "excludeMembers": ["25"]
         },
         {
           "type": "esri-mapServer-group",
