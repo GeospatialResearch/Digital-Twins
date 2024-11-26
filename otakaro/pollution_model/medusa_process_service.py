@@ -19,7 +19,7 @@ class MedusaProcessService(Process):
     def __init__(self) -> None:
         """Define inputs and outputs of the WPS process, and assign process handler."""
         inputs = [
-            LiteralInput("antecedentDryDays", "Antecedent Dry Days",
+            LiteralInput("antecedentDryDays", "Antecedent Dry Days (number of dry days between rain events)",
                          data_type='float', allowed_values=AnyValue()),
             LiteralInput("averageRainIntensity", "Average Rain Intensity (mm/hour)",
                          data_type='float', allowed_values=AnyValue()),
