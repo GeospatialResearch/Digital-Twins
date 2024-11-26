@@ -7,11 +7,9 @@ from typing import Dict, Union, Optional
 
 from celery import signals
 from celery.worker.consumer import Consumer
-import geopandas as gpd
 
-from src.digitaltwin import retrieve_from_instructions
 from src.digitaltwin.utils import setup_logging
-from src.tasks import add_base_data_to_db, app, OnFailureStateTask, wkt_to_gdf  # pylint: disable=cyclic-import
+from src.tasks import app, OnFailureStateTask, wkt_to_gdf  # pylint: disable=cyclic-import
 from otakaro import initialise_db_with_files
 from otakaro.environmental.water_quality import surface_water_sites
 from otakaro.pollution_model import run_medusa_2
@@ -32,11 +30,7 @@ def on_startup(sender: Consumer, **_kwargs: None) -> None:  # pylint: disable=mi
         The Celery worker node instance
     """
     with sender.app.connection() as conn:
-        # Gather area of interest from file.
-        aoi_wkt = gpd.read_file("selected_polygon.geojson").to_crs(4326).geometry[0].wkt
         # Send a task to initialise this area of interest.
-        base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
-        sender.app.send_task("src.tasks.add_base_data_to_db", args=[aoi_wkt, base_data_parameters], connection=conn)
         sender.app.send_task("otakaro.tasks.add_files_data_to_db", connection=conn)
 
 
@@ -75,8 +69,6 @@ def run_medusa_model(selected_polygon_wkt: str,
        The scenario id of the new medusa scenario produced
     """
     # Initialise base data
-    base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
-    add_base_data_to_db(selected_polygon_wkt, base_data_parameters)
     add_files_data_to_db()
 
     # Convert wkt string into a GeoDataFrame

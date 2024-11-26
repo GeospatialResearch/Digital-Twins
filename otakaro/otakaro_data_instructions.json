@@ -1,9 +1,0 @@
-{
-  "instruction_1": {
-    "data_provider": "LINZ",
-    "layer_id": 53382,
-    "table_name": "nz_roads",
-    "unique_column_name": "road_id",
-    "url": "https://data.linz.govt.nz/layer/53382-nz-roads-addressing/"
-  }
-}

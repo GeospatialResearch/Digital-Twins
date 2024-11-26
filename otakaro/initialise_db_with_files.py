@@ -64,6 +64,28 @@ def save_roof_surface_polygons_to_db(engine: Engine) -> None:
         log.info("Successfully added 'roof_surface_polygons' to the database.")
 
 
+def save_roads_to_db(engine: Engine) -> None:
+    """
+    Read roads data then store them into database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    """
+    # Check if the table already exist in the database
+    if check_table_exists(engine, "chch_roads"):
+        log.info("'chch_roads' data already exists in the database.")
+    else:
+        # Read roads from outside
+        log.info(f"Reading roads file {EnvVariable.ROAD_DATASET_PATH}.")
+        roads = gpd.read_file(EnvVariable.ROAD_DATASET_PATH, layer="ccc_chchc_roads")
+        # Store the building_point_data to the database table
+        log.info("Adding 'chch_roads' to the database.")
+        roads.to_postgis("chch_roads", engine, index=False, if_exists="replace")
+        log.info("Successfully added 'chch_roads' to the database.")
+
+
 # noinspection PyIncorrectDocstring
 def main(
     _selected_polygon_gdf: gpd.GeoDataFrame = None,
@@ -94,3 +116,5 @@ def main(
     save_roof_surface_type_points_to_db(engine)
     # Read roof surface polygons data then store them into database.
     save_roof_surface_polygons_to_db(engine)
+    # Read road surface polygon data then store them into database.
+    save_roads_to_db(engine)
