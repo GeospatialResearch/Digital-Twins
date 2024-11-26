@@ -104,14 +104,15 @@ class MedusaProcessService(Process):
         # Present the user with the scenario details for visualization
         response.outputs['scenarioDetails'].data = scenario_details
 
-        geoserver_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/db-pollution/ows"
+        geoserver_workspace = f"{EnvVar.POSTGRES_DB}-pollution"
+        geoserver_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{geoserver_workspace}/ows"
 
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
         response.outputs['roofs'].data = json.dumps({
             "type": "wfs",
             "name": "MEDUSA Roof Surfaces",
             "url": geoserver_url,
-            "typeNames": "db-pollution:medusa2_model_output_buildings",
+            "typeNames": f"{geoserver_workspace}:medusa2_model_output_buildings",
             "parameters": {
                 "cql_filter": f"scenario_id={scenario_id}",
             },
@@ -129,7 +130,7 @@ class MedusaProcessService(Process):
             "type": "wfs",
             "name": "MEDUSA Road Surfaces",
             "url": geoserver_url,
-            "typeNames": "db-pollution:medusa2_model_output_roads",
+            "typeNames": f"{geoserver_workspace}:medusa2_model_output_roads",
             "parameters": {
                 "cql_filter": f"scenario_id={scenario_id}",
             },
