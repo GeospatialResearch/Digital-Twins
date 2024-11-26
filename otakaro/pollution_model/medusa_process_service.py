@@ -116,6 +116,13 @@ class MedusaProcessService(Process):
                 "cql_filter": f"scenario_id={scenario_id}",
             },
             "maxFeatures": 300000,
+            "defaultStyle": {
+                "outline": {
+                    "null": {
+                        "width": 0
+                    }
+                }
+            },
             "shortReportSections": scenario_short_report
         })
         response.outputs['roads'].data = json.dumps({
@@ -127,5 +134,12 @@ class MedusaProcessService(Process):
                 "cql_filter": f"scenario_id={scenario_id}",
             },
             "maxFeatures": 10000,
+            "defaultStyle": {
+                "outline": {
+                    "null": {
+                        "width": 0
+                    }
+                }
+            },
             "shortReportSections": scenario_short_report
         })
