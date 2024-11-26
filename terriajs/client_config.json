@@ -7,6 +7,8 @@
     "tabbedCatalog": true,
     "supportEmail": "luke.parkinson@canterbury.ac.nz",
     "cesiumIonAccessToken": "$CESIUM_ACCESS_TOKEN",
-    "brandBarElements": ["<a href=\"#\"><img src=\"images/kowhaiwhai.svg\" title=\"Version: {{version}}\" /></a>"]
+    "brandBarElements": [
+      "<div style=\"display: block; width: 100%;\"><a href=\"#\" target=\"_blank\" style=\"background-image: url(&quot;/images/kowhaiwhai.svg&quot;);  width: 100%; height: 50%;background-size: 50% 100%;\"></a><h3 style=\"color: white;\">Ōtākaro Digital Twin</h3></div>"
+    ]
   }
 }
