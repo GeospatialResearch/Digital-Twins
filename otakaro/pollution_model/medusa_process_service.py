@@ -43,7 +43,8 @@ class MedusaProcessService(Process):
             store_supported=True
         )
 
-    def _handler(self, request: WPSRequest, response: ExecuteResponse) -> None:
+    @staticmethod
+    def _handler(request: WPSRequest, response: ExecuteResponse) -> None:
         """
         Process handler for MEDUSA, runs the MEDUSA model using a Celery task.
 

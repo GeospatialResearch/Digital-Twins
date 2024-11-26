@@ -30,7 +30,6 @@ dependencies:
   - botocore>=1.33.10 # Minimum version that is compatible with python >= 3.10 is botocore>=1.13.0
   - scrapy==2.11.1
   - gevent==23.9.1
-  - pywps==4.6.0
   - pip:
     - flask_swagger_ui==4.11.1
     - geovoronoi==0.4.0
@@ -38,5 +37,7 @@ dependencies:
     - celery==5.2.7
     - gunicorn==20.1.0
     - git+https://github.com/LukeParky/NewZeaLiDAR.git@v0.3
+    - pywps==4.6.0 # pywps is available in conda but our fork of OWSLib is required for bounding boxes
+    - git+https://github.com/GeospatialResearch/OWSLib.git
 
 prefix: 

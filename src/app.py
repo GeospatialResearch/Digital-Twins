@@ -7,11 +7,9 @@ from http.client import OK
 from flask import Flask, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
-from pywps import Service
 
 from floodresilience.blueprint import flood_resilience_blueprint
 from src.check_celery_alive import check_celery_alive
-from otakaro.pollution_model.medusa_process_service import MedusaProcessService
 from otakaro.blueprint import otakaro_blueprint
 
 # Initialise flask server object
@@ -30,14 +28,6 @@ app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 app.register_blueprint(flood_resilience_blueprint)
 app.register_blueprint(otakaro_blueprint)
-
-processes = [
-    MedusaProcessService()
-]
-
-process_descriptor = {process.identifier: process.abstract for process in processes}
-
-service = Service(processes, ['src/pywps.cfg'])
 
 
 @app.route('/')
