@@ -4,6 +4,7 @@
   ],
   "parameters": {
     "appName": "Ōtākaro Digital Twin",
+    "tabbedCatalog": true,
     "supportEmail": "luke.parkinson@canterbury.ac.nz",
     "cesiumIonAccessToken": "$CESIUM_ACCESS_TOKEN",
     "brandBarElements": []

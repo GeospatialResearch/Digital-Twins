@@ -9,11 +9,13 @@ from pywps import Service
 from src.check_celery_alive import check_celery_alive
 from otakaro import tasks
 from otakaro.pollution_model.medusa_process_service import MedusaProcessService
+from otakaro.processes.area import BoundingBoxAreaProcess
 
 otakaro_blueprint = Blueprint('otakaro', __name__)
 
 processes = [
-    MedusaProcessService()
+    MedusaProcessService(),
+    BoundingBoxAreaProcess(),
 ]
 
 process_descriptor = {process.identifier: process.abstract for process in processes}
