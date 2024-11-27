@@ -10,12 +10,14 @@ from src.check_celery_alive import check_celery_alive
 from otakaro import tasks
 from otakaro.pollution_model.medusa_process_service import MedusaProcessService
 from otakaro.processes.area import BoundingBoxAreaProcess
+from otakaro.processes.geometry import GeometryProcessService
 
 otakaro_blueprint = Blueprint('otakaro', __name__)
 
 processes = [
     MedusaProcessService(),
     BoundingBoxAreaProcess(),
+    GeometryProcessService()
 ]
 
 process_descriptor = {process.identifier: process.abstract for process in processes}
