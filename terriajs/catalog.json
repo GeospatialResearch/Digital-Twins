@@ -31,7 +31,10 @@
               "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/StormWater/MapServer",
               "id": "ccc-storm-water-map-server",
               "displayGroup": false,
-              "sortMembersBy": "name"
+              "sortMembersBy": "name",
+              "excludeMembers": [
+                "SwFacilityDischargePoint"
+              ]
             },
             {
               "type": "esri-mapServer-group",
@@ -47,8 +50,7 @@
               "url": "https://gis.ccc.govt.nz/server/rest/services/OpenData/WaterCourse/MapServer",
               "id": "ccc-water-course-map-server",
               "displayGroup": false,
-              "sortMembersBy": "name",
-              "excludeMembers": ["25"]
+              "sortMembersBy": "name"
             }
           ]
         }
