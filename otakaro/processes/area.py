@@ -1,5 +1,5 @@
 # # -*- coding: utf-8 -*-
-"""Defines PyWPS WebProcessingService processes for calculating area of geometries."""
+"""Defines PyWPS WebProcessingService process for calculating area of geometries."""
 
 from geopandas import GeoDataFrame
 from pywps import BoundingBoxInput, Process, LiteralOutput, WPSRequest
@@ -11,7 +11,7 @@ class BoundingBoxAreaProcess(Process):
     """Class representing a WebProcessingService process for calculating area of a bounding box"""
 
     def __init__(self) -> None:
-        """Define inputs and outputs of the WPS process, and assogm process handler."""
+        """Define inputs and outputs of the WPS process, and assign process handler."""
         # Create bounding box WPS inputs
         inputs = [
             BoundingBoxInput('bboxin', 'box in', crss=['epsg:4326'])
