@@ -14,7 +14,7 @@ The modules in this repository can best be summed up as such:
  - `certs.py`: Automates the creation of HTTPS certificates with Amazon as the CA.
  - `postgres.py`: Creates [Amazon RDS](https://aws.amazon.com/rds/postgresql/) instances, specifically PostgreSQL.
  - `cloudfront.py`: Sets up [Amazon CloudFront](https://aws.amazon.com/cloudfront/) Distributions. This can also set up Basic Authentication as a [Lambda@Edge](https://aws.amazon.com/lambda/edge/) function.
- - `fargate.py`: Set up everything required to run an instance of a container in [ECS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html). This sets up a container repository, a lambda function to update the image tag and a 
+ - `fargate.py`: Set up everything required to run an instance of a container in [ECS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html). This sets up a container repository, a lambda function to update the image tag, necessary Security Groups and a ECS Fargate service running the specified container.
  - `backend.py`: Specifically sets up all of the extra resources that the Otakaro Digital Twin backend requires. Stands up 2 ECS Services (Celery Worker + Flask API Server) and a Redis instance to handle Message Queueing and Brokering.
 
 ## Getting Started
