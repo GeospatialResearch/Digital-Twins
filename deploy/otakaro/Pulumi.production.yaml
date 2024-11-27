@@ -1,0 +1,18 @@
+encryptionsalt: v1:G/8viMV85Yc=:v1:rEw2XFx2KgFBGtlN:Tc4a+NjH3n6fnrhTQ2JjOVwQzJ2iqw==
+config:
+  aws:region: ap-southeast-2
+  otakaro:databasePassword:
+    secure: v1:ZpZoBNvXgjqFGohD:1jGwz0h+zgT2Zs1qZ/67zGyn3MwzGJpnbGz8kk6lIBz1yrJ5/VMxP2VqskUVe8rlXxb4g16QkxoitX1PxR2NCq1A37am8tfatUrQxq+GTrnPA6fC
+  otakaro:dnsZone: digitaltwins.nz
+  otakaro:secretParameterNames:
+    - CESIUM_ACCESS_TOKEN
+    - NIWA_API_KEY
+    - LINZ_API_KEY
+    - STATSNZ_API_KEY
+    - MFE_API_KEY
+    - POSTGRES_PASSWORD
+    - GEOSERVER_ADMIN_PASSWORD
+  otakaro:basicAuthUser:
+    secure: v1:WQDJif6w4EWxvqW9:WiUfwiMrTTnAkTuWAd0OahcVlIoNDvY=
+  otakaro:basicAuthPassword:
+    secure: v1:wKvJWAcP3+vo2I3o:uFeW1hf3eExTKDy3EMA2EyEpEvlhRsxKt/uP44Pwv6IaWGuwpc+h5ww=
