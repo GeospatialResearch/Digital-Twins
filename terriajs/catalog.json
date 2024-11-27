@@ -81,13 +81,6 @@
           "members": [
             {
               "type": "wps",
-              "name": "Area",
-              "description": "Calculate the area of the polygon.",
-              "url": "$BACKEND_URL/wps",
-              "identifier": "area"
-            },
-            {
-              "type": "wps",
               "name": "Mark Points and Calculate Polygon Areas",
               "description": "Marking points and calculating polygon areas.",
               "url": "$BACKEND_URL/wps",
