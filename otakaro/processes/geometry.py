@@ -95,5 +95,5 @@ class GeometryProcessService(Process):
 
         # Handle the case when the geometry type is unknown or unsupported
         else:
-            details = '<span style="color: lightgreen;">Please select an existing polygon.</span>'
+            details = '<p class="dt-warning">Please select an existing polygon.</p>'
             response.outputs["details"].data = details
