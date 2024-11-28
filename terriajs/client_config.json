@@ -12,6 +12,7 @@
     ],
     "brandBarSmallElements": [
       "<div style=\"display: flex; align-items: center;\">\n  <h3 style=\"color: white;\">Ōtākaro Digital Twin</h3>\n</div>"
-    ]
+    ],
+    "relatedMaps": []
   }
 }
