@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM lparkinson/otakaro_terria_map:1.4
+FROM lparkinson/otakaro_terria_map:1.5
 
 # Install envsubst dependencies
 USER root
