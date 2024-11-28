@@ -39,5 +39,6 @@ dependencies:
     - git+https://github.com/LukeParky/NewZeaLiDAR.git@v0.3
     - pywps==4.6.0 # pywps is available in conda but our fork of OWSLib is required for bounding boxes
     - git+https://github.com/GeospatialResearch/OWSLib.git
+    - git+https://github.com/GeospatialResearch/OtakaroDigitalTwinModule.git
 
 prefix: 
