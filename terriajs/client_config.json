@@ -8,7 +8,10 @@
     "supportEmail": "luke.parkinson@canterbury.ac.nz",
     "cesiumIonAccessToken": "$CESIUM_ACCESS_TOKEN",
     "brandBarElements": [
-      "<h3 style=\"color: white;\">Ōtākaro Digital Twin<h3>"
+      "<div style=\"display: flex; align-items: center;\">\n  <h1 style=\"color: white;\">Ōtākaro Digital Twin</h1>\n</div>"
+    ],
+    "brandBarSmallElements": [
+      "<div style=\"display: flex; align-items: center;\">\n  <h3 style=\"color: white;\">Ōtākaro Digital Twin</h3>\n</div>"
     ]
   }
 }
