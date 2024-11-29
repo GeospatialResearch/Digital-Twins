@@ -9,6 +9,7 @@
     {
       "type": "group",
       "name": "Data Catalogue",
+      "dataCustodian": "Christchurch City Council https://opendata-christchurchcity.hub.arcgis.com/",
       "members": [
         {
           "name": "Christchurch City Council Open Data",
@@ -68,7 +69,7 @@
             {
               "type": "wps",
               "name": "MEDUSA Pollution source model",
-              "description": "Model a rainfall event to identify sources of stormwater pollution.",
+              "description": "Model a rainfall event to identify sources of stormwater pollution. <br><br> Adapted from https://doi.org/10.3390/w12040969 with the assistance of MEDUSA2.0 author Frances Charters.",
               "url": "$BACKEND_URL/wps",
               "identifier": "medusa"
             }
