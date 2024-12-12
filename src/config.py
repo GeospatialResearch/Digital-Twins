@@ -112,6 +112,8 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     POSTGRES_DB = _get_env_variable("POSTGRES_DB", default="db")
     POSTGRES_USER = _get_env_variable("POSTGRES_USER", default="postgres")
     POSTGRES_PASSWORD = _get_env_variable("POSTGRES_PASSWORD")
+    POSTGRES_INTERNAL_HOST = _get_env_variable("POSTGRES_INTERNAL_HOST", default=POSTGRES_HOST)
+    POSTGRES_INTERNAL_PORT = _get_env_variable("POSTGRES_INTERNAL_PORT", default=POSTGRES_PORT)
 
     MESSAGE_BROKER_HOST = _get_env_variable("MESSAGE_BROKER_HOST", default="localhost")
 

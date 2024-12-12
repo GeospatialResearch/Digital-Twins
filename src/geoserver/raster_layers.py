@@ -165,7 +165,7 @@ def create_viridis_style_if_not_exists() -> None:
         )
         create_style_response.raise_for_status()
     # PUT the style definition .sld file into the style base
-    with open('src/flood_model/geoserver_templates/viridis_raster.sld', 'rb') as payload:
+    with open('floodresilience/flood_model/geoserver_templates/viridis_raster.sld', 'rb') as payload:
         sld_response = requests.put(
             f'{get_geoserver_url()}/styles/{style_name}',
             data=payload,

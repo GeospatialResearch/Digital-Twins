@@ -35,7 +35,7 @@ def store_rec_data_to_db(engine: Engine) -> None:
     else:
         try:
             # Retrieve REC data from NIWA using the ArcGIS REST API
-            rec_data = river_data_from_niwa.fetch_rec_data_from_niwa(engine)
+            rec_data = river_data_from_niwa.fetch_rec_data_from_niwa()
         except RuntimeError as error:
             # Log a warning message to indicate that a runtime error occurred while fetching REC data
             log.warning(error)
