@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 def fetch_rec_data_from_niwa(
         area_of_interest: gpd.GeoDataFrame = None,
-        output_sr: int = None):
+        output_sr: int = None) -> gpd.GeoDataFrame:
     """
     Retrieve REC data in New Zealand from NIWA using the ArcGIS REST API.
 
