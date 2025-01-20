@@ -1,4 +1,4 @@
-# Copyright © 2023-2024 Geospatial Research Institute Toi Hangarau
+# Copyright © 2023-2025 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 
 import unittest
