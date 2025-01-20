@@ -43,7 +43,7 @@ services:
     build:
       context: .
       target: backend
-    image: lparkinson/backend-flood-resilience-dt:1.2
+    image: lparkinson/backend-flood-resilience-dt:1.3
     container_name: backend_digital_twin
     env_file:
       - .env
@@ -68,7 +68,7 @@ services:
     build:
       context: .
       target: celery_worker
-    image: lparkinson/celery-flood-resilience-dt:1.2
+    image: lparkinson/celery-flood-resilience-dt:1.3
     container_name: celery_worker_digital_twin
     restart: always
     env_file:
@@ -116,7 +116,7 @@ services:
 
   www:
     # Webserver for the website interface
-    image: lparkinson/www-flood-resilience-dt:1.2
+    image: lparkinson/www-flood-resilience-dt:1.3
     build:
       context: .
       dockerfile: visualisation/Dockerfile
