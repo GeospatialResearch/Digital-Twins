@@ -15,7 +15,6 @@ from src.check_celery_alive import check_celery_alive
 from src.config import EnvVariable
 
 flood_resilience_blueprint = Blueprint('floodresilience', __name__)
-print(dir(FloodScenarioProcessService))
 processes = [
     FloodScenarioProcessService()
 ]
@@ -80,7 +79,6 @@ def generate_model() -> Response:
     """
     Generate a flood model for a given area.
     Supported methods: POST
-    POST values: {"bbox": {"lat1": number, "lat2": number, "lng1": number, "lng2": number}}
 
     Returns
     -------
@@ -104,6 +102,9 @@ def generate_model() -> Response:
         return make_response("lat & lng must fall in the range -90 < lat <= 90, -180 < lng <= 180", BAD_REQUEST)
     if (lat1, lng1) == (lat2, lng2):
         return make_response("lat1, lng1 must not equal lat2, lng2", BAD_REQUEST)
+    is_valid_scenario, invalid_reason = tasks.validate_slr_parameters(scenario_options)
+    if not is_valid_scenario:
+        return make_response(invalid_reason, BAD_REQUEST)
 
     bbox_wkt = create_wkt_from_coords(lat1, lng1, lat2, lng2)
     task = tasks.create_model_for_area(bbox_wkt, scenario_options)
@@ -112,6 +113,22 @@ def generate_model() -> Response:
         jsonify({"taskId": task.id}),
         ACCEPTED
     )
+
+
+@flood_resilience_blueprint.route('/models/flood/parameters/', methods=["GET"])
+@check_celery_alive
+def get_valid_flood_model_parameters() -> Response:
+    """
+    Get information on valid flood model parameters based on the valid values in the database.
+
+    Returns
+    -------
+    Response
+        JSON response describing the valid flood model parameters.
+
+    """
+    valid_parameters = tasks.get_valid_parameters_based_on_confidence_level.delay().get()
+    return make_response(jsonify(valid_parameters), OK)
 
 
 @flood_resilience_blueprint.route('/tasks/<task_id>/model/depth', methods=["GET"])

@@ -1,3 +1,19 @@
+# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import json
 import time
 
@@ -36,10 +52,11 @@ def generate_flood_model() -> str:
             "lat2": -43.400136655560765
         },
         "scenarioOptions": {
-            "Projected Year": 2050,
-            "SSP Scenario": "SSP2-4.5",
-            "Confidence Level": "medium",
-            "Add Vertical Land Movement": True
+            "projectedYear": 2050,
+            "sspScenario": "SSP2-4.5",
+            "confidenceLevel": "medium",
+            "addVerticalLandMovement": True,
+            "percentile": 50
         }
     }
     print(f"Requesting backend to generate flood model for {request_data}")

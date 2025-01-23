@@ -34,6 +34,7 @@ Functions
    src.app.get_status
    src.app.remove_task
    src.app.generate_model
+   src.app.get_valid_flood_model_parameters
    src.app.create_wkt_from_coords
    src.app.get_depth_at_point
    src.app.retrieve_building_flood_status
@@ -118,9 +119,16 @@ Module Contents
 
    Generates a flood model for a given area.
    Supported methods: POST
-   POST values: {"bbox": {"lat1": number, "lat2": number, "lng1": number, "lng2": number}}
 
    :returns: ACCEPTED is the expected response. Response body contains Celery taskId
+   :rtype: Response
+
+
+.. py:function:: get_valid_flood_model_parameters() -> flask.Response
+
+   Get information on valid flood model parameters based on the valid values in the database.
+
+   :returns: JSON response describing the valid flood model parameters.
    :rtype: Response
 
 
@@ -168,7 +176,16 @@ Module Contents
    :rtype: Response
 
 
-.. py:function:: serve_model_output(model_id: int)
+.. py:function:: serve_model_output(model_id: int) -> flask.Response
+
+   Serve the specified model output as a raw file.
+
+   :param model_id: The ID of the model output to be served.
+   :type model_id: int
+
+   :returns: HTTP Response containing the model output file.
+   :rtype: Response
+
 
 .. py:function:: refresh_lidar_data_sources()
 

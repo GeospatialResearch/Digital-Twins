@@ -1,3 +1,4 @@
+Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
 # Flood Resilience Digital Twin (FReDT)
 ![image](https://github.com/GeospatialResearch/Digital-Twins/assets/41398636/b7b9da6c-3895-46f5-99dc-4094003b2946)
 
@@ -39,10 +40,10 @@ Create API keys for each of these services. You may need to create an account an
 1. Create a file called `api_keys.env`, copy the contents of `api_keys.env.template` and fill in the blank values with API credentials from the above links.
    
 1. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields unless a comment says you can leave it blank.
-Blank fields to fill in include things like the `POSTGRES_PASSWORD` variable and `CESIUM_ACCESS_TOKEN`. You may configure other variables as needed.
+Blank fields to fill in include fields such as `CESIUM_ACCESS_TOKEN` and `POSTGRES_PASSWORD`. `POSTGRES_PASSWORD` can be a password of your choosing. You may modify other configuration variables if needed to suit particular deployment environemnts.
 
-1. From the University of Canterbury network drives, copy `U:/Research/FloodRiskResearch/DigitalTwin/stored_data/roof_surfaces_data` to a new directory `Digital-Twins/roof_surfaces_data`.
-   * This is a temporary solution until we have full approval for this dataset. [Issue #283](https://github.com/GeospatialResearch/Digital-Twins/issues/283). If you are an external developer in need of access please contact us.
+   _Note: If you modify the geoserver admin password (important for public deployments) you must also update the password manually in the Geoserver interface. See https://docs.geoserver.org/main/en/user/security/webadmin/ugr.html#edit-user-group-service._
+    
 1. From project root, run the command `docker compose up -d` to run the database, backend web servers, and helper services.
    
 1. You may inspect the logs of the backend using `docker compose logs -f backend celery_worker`
@@ -50,9 +51,14 @@ Blank fields to fill in include things like the `POSTGRES_PASSWORD` variable and
 
 ## Using the Digital Twin application
 1. With the docker compose  application running, the default web address is <http://localhost:3001> to view the web application.
-   * Choose data catalogue items with the "Explore map data" button.
-   * To perform custom modelling, "Ōtākaro Digital Twin Custom Analysis" has configurable models.
-1. The API is available by default on <http://localhost:5000>. Visit <https://geospatialresearch.github.io/Digital-Twins/api> for API documentation.
+   * To perform custom modelling, "Explore map data" has configurable models.
+1. The API is available by default on <http://localhost:5000>. Visit <https://geospatialresearch.github.io/Digital-Twins/swagger> for API documentation.
+
+## Contributing
+If you are interested in contributing to this project, please see [our contributing page here](CONTRIBUTING.md). 
+
+## Support
+If you run into an issue, bug, or need help with the software, please consider opening an issue or discussion, this will be the best way to reach us.
 
 
 ## Setup for FReDT project software developers

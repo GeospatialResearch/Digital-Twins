@@ -144,22 +144,25 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#src.app.generate_model" title="src.app.generate_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_model</span></code></a>(→ flask.Response)</p></td>
 <td><p>Generates a flood model for a given area.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.create_wkt_from_coords" title="src.app.create_wkt_from_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_wkt_from_coords</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.get_valid_flood_model_parameters" title="src.app.get_valid_flood_model_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_flood_model_parameters</span></code></a>(→ flask.Response)</p></td>
+<td><p>Get information on valid flood model parameters based on the valid values in the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.app.create_wkt_from_coords" title="src.app.create_wkt_from_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_wkt_from_coords</span></code></a>(→ str)</p></td>
 <td><p>Takes two points and creates a wkt bbox string from them</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.app.get_depth_at_point" title="src.app.get_depth_at_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_depth_at_point</span></code></a>(→ flask.Response)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.get_depth_at_point" title="src.app.get_depth_at_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_depth_at_point</span></code></a>(→ flask.Response)</p></td>
 <td><p>Finds the depths and times at a particular point for a given completed model output task.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.retrieve_building_flood_status" title="src.app.retrieve_building_flood_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retrieve_building_flood_status</span></code></a>(→ flask.Response)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.app.retrieve_building_flood_status" title="src.app.retrieve_building_flood_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retrieve_building_flood_status</span></code></a>(→ flask.Response)</p></td>
 <td><p>Retrieves information on building flood status, for a given flood model output id.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.app.serve_model_output" title="src.app.serve_model_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serve_model_output</span></code></a>(model_id)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.serve_model_output" title="src.app.serve_model_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serve_model_output</span></code></a>(→ flask.Response)</p></td>
+<td><p>Serve the specified model output as a raw file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.refresh_lidar_data_sources" title="src.app.refresh_lidar_data_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refresh_lidar_data_sources</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.app.refresh_lidar_data_sources" title="src.app.refresh_lidar_data_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refresh_lidar_data_sources</span></code></a>()</p></td>
 <td><p>Updates LiDAR data sources to the most recent.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.app.valid_coordinates" title="src.app.valid_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">valid_coordinates</span></code></a>(→ bool)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.app.valid_coordinates" title="src.app.valid_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">valid_coordinates</span></code></a>(→ bool)</p></td>
 <td><p>Validates coordinates are in the valid range of WGS84</p></td>
 </tr>
 </tbody>
@@ -284,11 +287,24 @@ Supported methods: DELETE</p>
 <dt class="sig sig-object py" id="src.app.generate_model">
 <span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">generate_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.app.generate_model" title="Link to this definition"></a></dt>
 <dd><p>Generates a flood model for a given area.
-Supported methods: POST
-POST values: {“bbox”: {“lat1”: number, “lat2”: number, “lng1”: number, “lng2”: number}}</p>
+Supported methods: POST</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ACCEPTED is the expected response. Response body contains Celery taskId</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.app.get_valid_flood_model_parameters">
+<span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">get_valid_flood_model_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.app.get_valid_flood_model_parameters" title="Link to this definition"></a></dt>
+<dd><p>Get information on valid flood model parameters based on the valid values in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>JSON response describing the valid flood model parameters.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Response</p>
@@ -359,8 +375,20 @@ Has a property “is_flooded” to designate if a building is flooded in that sc
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.serve_model_output">
-<span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">serve_model_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.app.serve_model_output" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">src.app.</span></span><span class="sig-name descname"><span class="pre">serve_model_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.app.serve_model_output" title="Link to this definition"></a></dt>
+<dd><p>Serve the specified model output as a raw file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_id</strong> (<em>int</em>) – The ID of the model output to be served.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTTP Response containing the model output file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.app.refresh_lidar_data_sources">
@@ -419,7 +447,7 @@ Supported methods: POST</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Geospatial Research Institute Toi Hangarau.</p>
+    <p>&#169; Copyright 2021-2025, Geospatial Research Institute Toi Hangarau.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

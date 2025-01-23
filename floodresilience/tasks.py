@@ -3,7 +3,7 @@ Runs backend tasks using Celery. Allowing for multiple long-running tasks to com
 Allows the frontend to send tasks and retrieve status later.
 """
 import logging
-from typing import List, NamedTuple
+from typing import Dict, List, NamedTuple, Union
 
 from celery import result, signals
 from celery.worker.consumer import Consumer
@@ -253,3 +253,43 @@ def get_model_extents_bbox(model_id: int) -> str:
     bbox_corners = extents.bounds
     # Convert the tuple into a string in x1,y1,x2,y2 form
     return ",".join(map(str, bbox_corners))
+
+
+@app.task(base=OnFailureStateTask)
+def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Union[str, int]]]:
+    """
+    Task to get information on valid tide and sea-level-rise parameters based on the valid values in the database.
+    These parameters are mostly dependent on the "confidence_level" parameter, so that is the key in the returned dict.
+
+    Returns
+    -------
+    Dict[str, Dict[str, Union[str, int]]]
+        Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.
+    """
+    return main_tide_slr.get_valid_parameters_based_on_confidence_level()
+
+
+@app.task(base=OnFailureStateTask)
+def validate_slr_parameters(
+    scenario_options: Dict[str, Union[str, float, int, bool]]
+) -> main_tide_slr.ValidationResult:
+    """
+    Task to validate each of the sea-level-rise parameters.
+
+    Parameters
+    ----------
+    scenario_options : Dict[str, Union[str, float, int, bool]]
+        Options for scenario modelling inputs, coming from JSON body.
+
+    Returns
+    -------
+    main_tide_slr.ValidationResult
+        Result of the validation, with validation failure reason if applicable
+    """
+    return main_tide_slr.validate_slr_parameters(
+        scenario_options["projectedYear"],
+        scenario_options["confidenceLevel"],
+        scenario_options["sspScenario"],
+        scenario_options["addVerticalLandMovement"],
+        scenario_options["percentile"],
+    )

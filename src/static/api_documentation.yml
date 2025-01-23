@@ -1,3 +1,19 @@
+# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ---
 openapi: 3.0.0
 info:
@@ -32,6 +48,19 @@ paths:
         '503 - Service Unavailable':
           $ref: '#/components/responses/NoCeleryWorkers'
 
+  "/models/flood/parameters":
+    get:
+      summary: "Get information on possible valid flood model parameters."
+      description: |-
+        Get information on valid flood model parameters based on the valid values in the database.
+      responses:
+        '200 - OK':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidSlrParameters'
+        '503 - Service Unavailable':
+          $ref: '#/components/responses/NoCeleryWorkers'
   "/models/generate":
     post:
       summary: Starts generating a scenario model output.
@@ -276,12 +305,12 @@ components:
               scenarioOptions:
                 type: object
                 properties:
-                  "Projected Year":
+                  "projectedYear":
                     type: number
-                    minimum: 2023
+                    minimum: 2025
                     maximum: 2300
                     example: 2025
-                  "SSP Scenario":
+                  "sspScenario":
                     type: string
                     example: SSP1-1.9
                     enum:
@@ -290,15 +319,22 @@ components:
                       - 'SSP2-4.5'
                       - 'SSP3-7.0'
                       - 'SSP5-8.5'
-                  "Confidence Level":
+                  "confidenceLevel":
                     type: string
                     example: medium
                     enum:
                       - low
                       - medium
-                  "Add Vertical Land Movement":
+                  "addVerticalLandMovement":
                     type: boolean
                     example: true
+                  "percentile":
+                    type: number
+                    example: 50
+                    enum:
+                      - 17
+                      - 50
+                      - 83
 
 
 
@@ -330,6 +366,48 @@ components:
           description: Will contain a traceback if the environment variable `DEBUG_TRACEBACK` is `True`
           example: |-
             sqlalchemy.exc.OperationalError (psycopg2.OperationalError) connection to server at localhost (1), port 1234 failed Connection refused
+
+    ValidSlrParameters:
+      type: object
+      properties:
+        low:
+          type: object
+          properties:
+            min_year:
+              type: number
+              example: 2025
+            max_year:
+              type: number
+              example: 2300
+            ssp_scenarios:
+              type: array
+              items:
+                type: string
+              example: ["SSP1-2.6", "SSP5-8.5"]
+            percentile:
+              type: array
+              items:
+                type: number
+              example: [17, 50, 83]
+        medium:
+          type: object
+          properties:
+            min_year:
+              type: number
+              example: 2025
+            max_year:
+              type: number
+              example: 2150
+            ssp_scenarios:
+              type: array
+              items:
+                type: string
+              example: ["SSP1-1.9", "SSP1-2.6", "SSP2-4.5", "SSP3-7", "SSP5-8.5"]
+            percentile:
+              type: array
+              items:
+                type: number
+              example: [17, 50, 83]
 
     PointDepths:
       type: object
