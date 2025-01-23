@@ -25,7 +25,7 @@ services:
     build:
       context: .
       dockerfile: src/Dockerfile
-    image: lparkinson/otakaro-dt:1.2
+    image: lparkinson/flood-resilience-dt:2.0
     container_name: backend_digital_twin
     entrypoint: ["src/backend_entrypoint.sh"]
     env_file:
@@ -51,7 +51,7 @@ services:
     build:
       context: .
       dockerfile: src/Dockerfile
-    image: lparkinson/otakaro-dt:1.2
+    image: lparkinson/flood-resilience-dt:2.0
     container_name: celery_worker_digital_twin
     entrypoint: ["src/celery_worker_entrypoint.sh"]
     restart: always

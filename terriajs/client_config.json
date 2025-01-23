@@ -3,15 +3,14 @@
     "catalog"
   ],
   "parameters": {
-    "appName": "Ōtākaro Digital Twin",
-    "tabbedCatalog": true,
-    "supportEmail": "gri-enquiries+otakaro@canterbury.ac.nz",
+    "appName": "Flood Resilience Digital Twin (FReDT)",
+    "supportEmail": "gri-enquiries+fredt@canterbury.ac.nz",
     "cesiumIonAccessToken": "$CESIUM_ACCESS_TOKEN",
     "brandBarElements": [
-      "<div style=\"display: flex; align-items: center;\">\n  <h1 style=\"color: white;\">Ōtākaro Digital Twin</h1>\n</div>"
+      "<div style=\"display: flex; align-items: center;\">\n  <h1 style=\"color: white;\">Flood Resilience Digital Twin (FReDT)</h1>\n</div>"
     ],
     "brandBarSmallElements": [
-      "<div style=\"display: flex; align-items: center;\">\n  <h3 style=\"color: white;\">Ōtākaro Digital Twin</h3>\n</div>"
+      "<div style=\"display: flex; align-items: center;\">\n  <h3 style=\"color: white;\">Flood Resilience Digital Twin (FReDT)</h3>\n</div>"
     ],
     "relatedMaps": []
   }

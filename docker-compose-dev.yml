@@ -20,8 +20,6 @@ services:
       - ${DATA_DIR}:/stored_data
       - ${DATA_DIR_MODEL_OUTPUT}:/stored_data/model_output
       - ${DATA_DIR_GEOSERVER}:/stored_data/geoserver
-      - ${ROOF_SURFACE_DATASET_PATH}:/stored_data/roof_surfaces_data/roof_surfaces.gdb
-      - ${ROAD_DATASET_PATH}:/stored_data/roads.gpkg
 
   terria_map:
     volumes:
