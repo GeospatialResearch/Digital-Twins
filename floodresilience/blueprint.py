@@ -5,14 +5,38 @@ import pathlib
 
 from celery import result, states
 from flask import Blueprint, Response, jsonify, make_response, send_file, request
+from pywps import Service
 import requests
 from shapely import box
 
 from floodresilience import tasks
+from floodresilience.flood_model.flood_scenario_process_service import FloodScenarioProcessService
 from src.check_celery_alive import check_celery_alive
 from src.config import EnvVariable
 
 flood_resilience_blueprint = Blueprint('floodresilience', __name__)
+print(dir(FloodScenarioProcessService))
+processes = [
+    FloodScenarioProcessService()
+]
+
+process_descriptor = {process.identifier: process.abstract for process in processes}
+
+service = Service(processes, ['src/pywps.cfg'])
+
+
+@flood_resilience_blueprint.route('/wps', methods=['GET', 'POST'])
+@check_celery_alive
+def wps() -> Service:
+    """
+    End point for OGC WebProcessingService spec, allowing clients such as TerriaJS to request processing.
+
+    Returns
+    -------
+    Service
+        The PyWPS WebProcessing Service instance
+    """
+    return service
 
 
 @flood_resilience_blueprint.route('/tasks/<task_id>', methods=["GET"])
