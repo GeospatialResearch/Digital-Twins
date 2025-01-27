@@ -18,7 +18,8 @@
 """Defines PyWPS WebProcessingService process for creating a flooding scenario."""
 
 from geopandas import GeoDataFrame
-from pywps import BoundingBoxInput, Process, LiteralOutput, WPSRequest
+from pywps import BoundingBoxInput, Process, LiteralInput, LiteralOutput, WPSRequest
+from pywps.inout.literaltypes import AnyValue
 from pywps.response.execute import ExecuteResponse
 from shapely import box
 
@@ -30,17 +31,27 @@ class FloodScenarioProcessService(Process):
         """Define inputs and outputs of the WPS process, and assign process handler."""
         # Create bounding box WPS inputs
         inputs = [
-            BoundingBoxInput('bboxin', 'box in', crss=['epsg:4326'])
+            BoundingBoxInput("bboxIn", "Area of Interest", crss=["epsg:4326"]),
+            LiteralInput("projYear", "Projected Year", data_type="integer", allowed_values=[x for x in range(2026, 2151)]),
+            LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
+            LiteralInput("sspScenario", "SSP Scenario", data_type="string", allowed_values=[
+                "SSP1-1.9",
+                "SSP1-2.6",
+                "SSP2-4.5",
+                "SSP3-7",
+                "SSP5-8.5"
+            ], default="SSP2-4.5"),
+
         ]
         # Create area WPS outputs
         outputs = [
-            LiteralOutput('area', 'Area', data_type='string')
+            LiteralOutput("area", "Area", data_type="string")
         ]
 
         # Initialise the process
         super().__init__(
             self._handler,
-            identifier='fredt',
+            identifier="fredt",
             title="Model a flood scenario.",
             inputs=inputs,
             outputs=outputs,
@@ -59,7 +70,7 @@ class FloodScenarioProcessService(Process):
             The WPS response, containing output data.
         """
         # Get coordinates from bounding box input
-        bounding_box_input = request.inputs['bboxin'][0]
+        bounding_box_input = request.inputs['bboxIn'][0]
         ymin, xmin = bounding_box_input.ll  # lower left
         ymax, xmax = bounding_box_input.ur  # upper right
 
