@@ -168,7 +168,14 @@ formidable task for individuals or small teams, particularly  when the informati
 quickly compiled for rapid decision-making, resulting in high costs for developing suitable risk assessments
 scenarios.
 
-FReDT addresses these challenges by automating processes and integrating real-time data for analysis,
+Other software aimed at automating flood risk assessment is often paid and proprietary, but there exists other
+open-source or free software such as FastFlood and FloodAdapt that can also automate flood risk 
+assessment[@fastflood; @flood-adapt]. These applications rely on the user's computer for all processing. FReDT runs the
+processing on Celery workers, which can be configured to run locally, through on-premise servers, or in cloud
+environments, depending on the needs of the users. Running FReDT online improves access to the software, instead of
+limiting it to those with powerful desktop environments.
+
+FReDT addresses the challenges of flood risk assessment by automating processes and integrating real-time data for analysis,
 prediction, and visualization. This makes assessments more efficient and cost-effective, enabling the
 exploration of hundreds or even thousands of scenarios. It also provides decision-makers with significantly more
 detailed and comprehensive information, facilitating informed decisions.
