@@ -23,6 +23,7 @@ or other clients.
 import logging
 import os
 import pathlib
+from xml.sax import saxutils
 
 import xarray as xr
 
@@ -82,21 +83,23 @@ def create_building_layers(workspace_name: str, data_store_name: str) -> None:
 
     # More complex layer that has to do dynamic sql queries against model output ID to fetch
     flood_status_layer_name = "building_flood_status"
+    flooded_buildings_sql_query = """
+        SELECT *, 
+               building_flood_status.is_flooded::int AS is_flooded_int
+        FROM nz_building_outlines
+                 LEFT OUTER JOIN building_flood_status USING (building_outline_id)
+        WHERE building_outline_lifecycle ILIKE 'current'
+        AND flood_model_id=%scenario%
+    """
+    xml_escaped_sql = saxutils.escape(flooded_buildings_sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
+
     flood_status_xml_query = rf"""
       <metadata>
         <entry key="JDBC_VIRTUAL_TABLE">
           <virtualTable>
             <name>{flood_status_layer_name}</name>
             <sql>
-                SELECT * &#xd;
-                FROM nz_building_outlines&#xd;
-                LEFT OUTER JOIN (&#xd;
-                    SELECT *&#xd;
-                    FROM building_flood_status&#xd;
-                    WHERE flood_model_id=%scenario%&#xd;
-                ) AS flood_statuses&#xd;
-                USING (building_outline_id)&#xd;
-                WHERE building_outline_lifecycle ILIKE &apos;current&apos;
+                {xml_escaped_sql}
             </sql>
             <escapeSql>false</escapeSql>
             <geometry>

@@ -17,14 +17,16 @@
 
 """Defines PyWPS WebProcessingService process for creating a flooding scenario."""
 
+import json
+
 from geopandas import GeoDataFrame
-from pywps import BoundingBoxInput, Process, LiteralInput, LiteralOutput, WPSRequest
+from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, LiteralOutput, Process, WPSRequest
 from pywps.inout.literaltypes import AnyValue
 from pywps.response.execute import ExecuteResponse
 from shapely import box
 
 from floodresilience import tasks
-from src.config import cast_str_to_bool
+from src.config import cast_str_to_bool, EnvVariable as EnvVar
 
 
 class FloodScenarioProcessService(Process):
@@ -49,7 +51,8 @@ class FloodScenarioProcessService(Process):
         ]
         # Create area WPS outputs
         outputs = [
-            LiteralOutput("area", "Area", data_type="string")
+            ComplexOutput("floodedBuildings", "Flooded Buildings",
+                          supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
         ]
 
         # Initialise the process
@@ -89,8 +92,26 @@ class FloodScenarioProcessService(Process):
         }
 
         modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
-        modelling_task.get()
+        scenario_id = modelling_task.get()
 
-        # Calculate area in square metres
-        area = "unknown"
-        response.outputs['area'].data = area
+        gs_building_workspace = f"{EnvVar.POSTGRES_DB}-buildings"
+        gs_building_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_building_workspace}/ows"
+
+        # Add Geoserver JSON Catalog entries to WPS response for use by Terria
+        response.outputs['floodedBuildings'].data = json.dumps({
+            "type": "wfs",
+            "name": "Building Flood Status",
+            "url": gs_building_url,
+            "typeNames": f"{gs_building_workspace}:building_flood_status",
+            "parameters": {
+                "viewparams": f"scenario:{scenario_id}",
+            },
+            "maxFeatures": 300000,
+            "defaultStyle": {
+                "outline": {
+                    "null": {
+                        "width": 0
+                    }
+                }
+            }
+        })
