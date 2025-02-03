@@ -87,14 +87,40 @@ def _get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> boo
         If allow_empty is False and the environment variable is empty string or None
     """
     env_variable = _get_env_variable(var_name, str(default))
+    try:
+        return cast_str_to_bool(env_variable)
+    except ValueError:
+        raise ValueError(f"Environment variable {var_name}={env_variable} cannot be cast to bool due to ValueError.")
+
+
+def cast_str_to_bool(string: str) -> bool:
+    """
+    Attempts to cast a str to bool.
+    For bool casting we have the problem where bool("False") == True
+    but this function fixes that so cast_str_to_bool("False") == False
+
+    Parameters
+    ----------
+    string : str
+        The string to be cast to bool.
+
+    Returns
+    -------
+    bool
+        The interpreted value of the string.
+
+    Raises
+    ------
+    ValueError
+        If the string cannot be cast to bool.
+    """
     truth_values = {"true", "t", "1"}
     false_values = {"false", "f", "0"}
-    if env_variable.lower() in truth_values:
+    if string.lower() in truth_values:
         return True
-    elif env_variable.lower() in false_values:
+    elif string.lower() in false_values:
         return False
-    raise ValueError(f"Environment variable {var_name}={env_variable} being casted to bool "
-                     f"but is not in {truth_values} or {false_values}")
+    raise ValueError(f"String {string} being casted to bool but is not in {truth_values} or {false_values}")
 
 
 class EnvVariable:  # pylint: disable=too-few-public-methods

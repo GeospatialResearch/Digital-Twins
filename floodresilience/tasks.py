@@ -76,8 +76,9 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
     result.GroupResult
         The task result for the long-running group of tasks. The task ID represents the final task in the group.
     """
+    base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
     return (
-        add_base_data_to_db.si(selected_polygon_wkt) |
+        add_base_data_to_db.si(selected_polygon_wkt, base_data_parameters) |
         process_dem.si(selected_polygon_wkt) |
         generate_rainfall_inputs.si(selected_polygon_wkt) |
         generate_tide_inputs.si(selected_polygon_wkt, scenario_options) |
@@ -128,10 +129,7 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict) -> N
     scenario_options: dict
         Options for scenario modelling inputs.
     """
-    parameters = DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr]
-    parameters["proj_year"] = scenario_options["Projected Year"]
-    parameters["add_vlm"] = scenario_options["Add Vertical Land Movement"]
-    parameters["confidence_level"] = scenario_options["Confidence Level"]
+    parameters = scenario_options | DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_tide_slr.main(selected_polygon, **parameters)
 

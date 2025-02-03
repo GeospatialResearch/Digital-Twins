@@ -23,6 +23,9 @@ from pywps.inout.literaltypes import AnyValue
 from pywps.response.execute import ExecuteResponse
 from shapely import box
 
+from floodresilience import tasks
+from src.config import cast_str_to_bool
+
 
 class FloodScenarioProcessService(Process):
     """Class representing a WebProcessingService process for creating a flooding scenario"""
@@ -32,7 +35,8 @@ class FloodScenarioProcessService(Process):
         # Create bounding box WPS inputs
         inputs = [
             BoundingBoxInput("bboxIn", "Area of Interest", crss=["epsg:4326"]),
-            LiteralInput("projYear", "Projected Year", data_type="integer", allowed_values=[x for x in range(2026, 2151)]),
+            LiteralInput("projYear", "Projected Year", data_type="integer",
+                         allowed_values=[x for x in range(2026, 2151)]),
             LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
             LiteralInput("sspScenario", "SSP Scenario", data_type="string", allowed_values=[
                 "SSP1-1.9",
@@ -41,7 +45,7 @@ class FloodScenarioProcessService(Process):
                 "SSP3-7",
                 "SSP5-8.5"
             ], default="SSP2-4.5"),
-
+            LiteralInput("addVlm", "Add Vertical Land Movement", data_type="string", allowed_values=["True", "False"])
         ]
         # Create area WPS outputs
         outputs = [
@@ -76,11 +80,17 @@ class FloodScenarioProcessService(Process):
 
         # Form bounding box into standard shapely.box
         bounding_box = box(xmin, ymin, xmax, ymax)
-        # Create GeoDataFrame with unit of measurement in metres.
-        gdf = GeoDataFrame(index=[0], crs="epsg:4326", geometry=[bounding_box]).to_crs(epsg=2193)
+
+        scenario_options = {
+            "proj_year": request.inputs["projYear"][0].data,
+            "percentile": request.inputs["percentile"][0].data,
+            "ssp_scenario": request.inputs["sspScenario"][0].data,
+            "add_vlm": cast_str_to_bool(request.inputs["addVlm"][0].data)
+        }
+
+        modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
+        modelling_task.get()
 
         # Calculate area in square metres
-        area = gdf.geometry[0].area
-        # Format area
-        display_area = f"{area:.0f} m²"
-        response.outputs['area'].data = display_area
+        area = "unknown"
+        response.outputs['area'].data = area

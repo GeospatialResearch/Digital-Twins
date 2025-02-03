@@ -328,21 +328,4 @@ def create_wkt_from_coords(lat1: float, lng1: float, lat2: float, lng2: float) -
     return box(xmin, ymin, xmax, ymax).wkt
 
 
-def valid_coordinates(latitude: float, longitude: float) -> bool:
-    """
-    Validate that coordinates are within the valid range of WGS84,
-    (-90 < latitude <= 90) and (-180 < longitude <= 180).
 
-    Parameters
-    ----------
-    latitude : float
-        The latitude part of the coordinate
-    longitude : float
-        The longitude part of the coordinate
-
-    Returns
-    -------
-    bool
-        True if both latitude and longitude are within their valid ranges.
-    """
-    return (-90 < latitude <= 90) and (-180 < longitude <= 180)

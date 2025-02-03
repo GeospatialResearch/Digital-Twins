@@ -70,7 +70,7 @@ class GetEnvVariableTest(unittest.TestCase):
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
         with self.assertRaises(ValueError,
-                               msg="get_env_variable should raise a key error if variable is being casted to bool but it is not explicitly True or False"):
+                               msg="get_env_variable should raise a ValueError if variable is being casted to bool but it is not explicitly True or False"):
             config._get_bool_env_variable(self.TEST_VAR_KEY)
 
     def test_default_env_var(self):
