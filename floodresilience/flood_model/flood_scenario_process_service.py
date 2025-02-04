@@ -97,6 +97,8 @@ class FloodScenarioProcessService(Process):
         gs_building_workspace = f"{EnvVar.POSTGRES_DB}-buildings"
         gs_building_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_building_workspace}/ows"
 
+        flooded_color = "darkred"
+        non_flooded_color = "darkgreen"
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
         response.outputs['floodedBuildings'].data = json.dumps({
             "type": "wfs",
@@ -107,18 +109,33 @@ class FloodScenarioProcessService(Process):
                 "viewparams": f"scenario:{scenario_id}",
             },
             "maxFeatures": 300000,
-            "defaultStyle": {
+            "styles": [{
+                "id": "is_flooded",
+                "title": "Building Flood Status",
                 "color": {
                     "mapType": "enum",
                     "colorColumn": "is_flooded_int",
+                    "legend": {
+                        "title": "Building Flood Status",
+                        "items": [
+                            {
+                                "title": "Non-Flooded",
+                                "color": non_flooded_color
+                            },
+                            {
+                                "title": "Flooded",
+                                "color": flooded_color
+                            }
+                        ]
+                    },
                     "enumColors": [
                         {
                             "value": "0",
-                            "color": "darkgreen"
+                            "color": non_flooded_color
                         },
                         {
                             "value": "1",
-                            "color": "darkred"
+                            "color": flooded_color
                         }
                     ]
                 },
@@ -127,5 +144,6 @@ class FloodScenarioProcessService(Process):
                         "width": 0
                     }
                 }
-            }
+            }],
+            "activeStyle": "is_flooded"
         })
