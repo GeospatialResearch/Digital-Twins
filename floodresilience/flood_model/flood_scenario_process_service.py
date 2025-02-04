@@ -94,56 +94,73 @@ class FloodScenarioProcessService(Process):
         modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
         scenario_id = modelling_task.get()
 
-        gs_building_workspace = f"{EnvVar.POSTGRES_DB}-buildings"
-        gs_building_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_building_workspace}/ows"
-
-        flooded_color = "darkred"
-        non_flooded_color = "darkgreen"
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
-        response.outputs['floodedBuildings'].data = json.dumps({
-            "type": "wfs",
-            "name": "Building Flood Status",
-            "url": gs_building_url,
-            "typeNames": f"{gs_building_workspace}:building_flood_status",
-            "parameters": {
-                "viewparams": f"scenario:{scenario_id}",
-            },
-            "maxFeatures": 300000,
-            "styles": [{
-                "id": "is_flooded",
-                "title": "Building Flood Status",
-                "color": {
-                    "mapType": "enum",
-                    "colorColumn": "is_flooded_int",
-                    "legend": {
-                        "title": "Building Flood Status",
-                        "items": [
-                            {
-                                "title": "Non-Flooded",
-                                "color": non_flooded_color
-                            },
-                            {
-                                "title": "Flooded",
-                                "color": flooded_color
-                            }
-                        ]
-                    },
-                    "enumColors": [
+        response.outputs['floodedBuildings'].data = json.dumps(building_flood_status_catalog(scenario_id))
+
+
+def building_flood_status_catalog(scenario_id: int) -> dict:
+    """
+    Creates a dictionary in the format of a terria js catalog json for the building flood status layer.
+
+    Parameters
+    ----------
+    scenario_id : int
+        The ID of the scenario to create the catalog item for.
+
+    Returns
+    ----------
+    dict
+        The TerriaJS catalog item JSON for the building flood status layer.
+    """
+    gs_building_workspace = f"{EnvVar.POSTGRES_DB}-buildings"
+    gs_building_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_building_workspace}/ows"
+
+    flooded_color = "darkred"
+    non_flooded_color = "darkgreen"
+    return {
+        "type": "wfs",
+        "name": "Building Flood Status",
+        "url": gs_building_url,
+        "typeNames": f"{gs_building_workspace}:building_flood_status",
+        "parameters": {
+            "viewparams": f"scenario:25",
+        },
+        "maxFeatures": 300000,
+        "styles": [{
+            "id": "is_flooded",
+            "title": "Building Flood Status",
+            "color": {
+                "mapType": "enum",
+                "colorColumn": "is_flooded_int",
+                "legend": {
+                    "title": "Building Flood Status",
+                    "items": [
                         {
-                            "value": "0",
+                            "title": "Non-Flooded",
                             "color": non_flooded_color
                         },
                         {
-                            "value": "1",
+                            "title": "Flooded",
                             "color": flooded_color
                         }
                     ]
                 },
-                "outline": {
-                    "null": {
-                        "width": 0
+                "enumColors": [
+                    {
+                        "value": "0",
+                        "color": non_flooded_color
+                    },
+                    {
+                        "value": "1",
+                        "color": flooded_color
                     }
+                ]
+            },
+            "outline": {
+                "null": {
+                    "width": 0
                 }
-            }],
-            "activeStyle": "is_flooded"
-        })
+            }
+        }],
+        "activeStyle": "is_flooded"
+    }
