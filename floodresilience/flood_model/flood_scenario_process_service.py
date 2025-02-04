@@ -51,8 +51,10 @@ class FloodScenarioProcessService(Process):
         ]
         # Create area WPS outputs
         outputs = [
-            ComplexOutput("floodedBuildings", "Flooded Buildings",
+            ComplexOutput("floodDepth", "Maximum Flood Depth",
                           supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
+            ComplexOutput("floodedBuildings", "Flooded Buildings",
+                          supported_formats=[Format("application/vnd.terriajs.catalog-member+json")])
         ]
 
         # Initialise the process
@@ -91,10 +93,13 @@ class FloodScenarioProcessService(Process):
             "add_vlm": cast_str_to_bool(request.inputs["addVlm"][0].data)
         }
 
-        modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
-        scenario_id = modelling_task.get()
+        # modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
+        # scenario_id = modelling_task.get()
+
+        scenario_id = 26
 
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
+        response.outputs['floodDepth'].data = json.dumps(flood_depth_catalog(scenario_id))
         response.outputs['floodedBuildings'].data = json.dumps(building_flood_status_catalog(scenario_id))
 
 
@@ -163,4 +168,30 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
             }
         }],
         "activeStyle": "is_flooded"
+    }
+
+
+def flood_depth_catalog(scenario_id: int) -> dict:
+    """
+    Creates a dictionary in the format of a terria js catalog json for the flood depth layer.
+
+    Parameters
+    ----------
+    scenario_id : int
+        The ID of the scenario to create the catalog item for.
+
+    Returns
+    ----------
+    dict
+        The TerriaJS catalog item JSON for the flood depth layer.
+    """
+    gs_flood_model_workspace = f"{EnvVar.POSTGRES_DB}-dt-model-outputs"
+    gs_flood_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_flood_model_workspace}/ows"
+
+    return {
+        "type": "wms",
+        "name": "Flood Depth",
+        "url": gs_flood_url,
+        "layers": f"{gs_flood_model_workspace}:output_{scenario_id}",
+        "styles": "viridis_raster"
     }
