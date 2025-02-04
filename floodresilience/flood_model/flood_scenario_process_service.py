@@ -108,6 +108,20 @@ class FloodScenarioProcessService(Process):
             },
             "maxFeatures": 300000,
             "defaultStyle": {
+                "color": {
+                    "mapType": "enum",
+                    "colorColumn": "is_flooded_int",
+                    "enumColors": [
+                        {
+                            "value": "0",
+                            "color": "darkgreen"
+                        },
+                        {
+                            "value": "1",
+                            "color": "darkred"
+                        }
+                    ]
+                },
                 "outline": {
                     "null": {
                         "width": 0
