@@ -93,10 +93,8 @@ class FloodScenarioProcessService(Process):
             "add_vlm": cast_str_to_bool(request.inputs["addVlm"][0].data)
         }
 
-        # modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
-        # scenario_id = modelling_task.get()
-
-        scenario_id = 26
+        modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
+        scenario_id = modelling_task.get()
 
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
         response.outputs['floodDepth'].data = json.dumps(flood_depth_catalog(scenario_id))

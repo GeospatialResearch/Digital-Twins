@@ -129,7 +129,7 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict) -> N
     scenario_options: dict
         Options for scenario modelling inputs.
     """
-    parameters = scenario_options | DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr]
+    parameters = DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr] | scenario_options
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_tide_slr.main(selected_polygon, **parameters)
 
