@@ -126,7 +126,7 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
         "url": gs_building_url,
         "typeNames": f"{gs_building_workspace}:building_flood_status",
         "parameters": {
-            "viewparams": f"scenario:25",
+            "viewparams": f"scenario:{scenario_id}",
         },
         "maxFeatures": 300000,
         "styles": [{
