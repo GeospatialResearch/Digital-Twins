@@ -84,7 +84,7 @@ def create_building_layers(workspace_name: str, data_store_name: str) -> None:
     # More complex layer that has to do dynamic sql queries against model output ID to fetch
     flood_status_layer_name = "building_flood_status"
     flooded_buildings_sql_query = """
-        SELECT *, 
+        SELECT *,
                building_flood_status.is_flooded::int AS is_flooded_int
         FROM nz_building_outlines
                  LEFT OUTER JOIN building_flood_status USING (building_outline_id)

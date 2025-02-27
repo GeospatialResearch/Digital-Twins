@@ -19,9 +19,7 @@
 
 import json
 
-from geopandas import GeoDataFrame
-from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, LiteralOutput, Process, WPSRequest
-from pywps.inout.literaltypes import AnyValue
+from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest
 from pywps.response.execute import ExecuteResponse
 from shapely import box
 
@@ -32,13 +30,15 @@ from src.config import cast_str_to_bool, EnvVariable as EnvVar
 class FloodScenarioProcessService(Process):
     """Class representing a WebProcessingService process for creating a flooding scenario"""
 
+    # pylint: disable=too-few-public-methods
+
     def __init__(self) -> None:
         """Define inputs and outputs of the WPS process, and assign process handler."""
         # Create bounding box WPS inputs
         inputs = [
             BoundingBoxInput("bboxIn", "Area of Interest", crss=["epsg:4326"]),
             LiteralInput("projYear", "Projected Year", data_type="integer",
-                         allowed_values=[x for x in range(2026, 2151)]),
+                         allowed_values=list(range(2026, 2151))),
             LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
             LiteralInput("sspScenario", "SSP Scenario", data_type="string", allowed_values=[
                 "SSP1-1.9",
@@ -103,7 +103,7 @@ class FloodScenarioProcessService(Process):
 
 def building_flood_status_catalog(scenario_id: int) -> dict:
     """
-    Creates a dictionary in the format of a terria js catalog json for the building flood status layer.
+    Create a dictionary in the format of a terria js catalog json for the building flood status layer.
 
     Parameters
     ----------
@@ -115,6 +115,7 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
     dict
         The TerriaJS catalog item JSON for the building flood status layer.
     """
+    dataset_name = "Building Flood Status"
     gs_building_workspace = f"{EnvVar.POSTGRES_DB}-buildings"
     gs_building_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_building_workspace}/ows"
 
@@ -122,7 +123,7 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
     non_flooded_color = "darkgreen"
     return {
         "type": "wfs",
-        "name": "Building Flood Status",
+        "name": dataset_name,
         "url": gs_building_url,
         "typeNames": f"{gs_building_workspace}:building_flood_status",
         "parameters": {
@@ -131,12 +132,12 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
         "maxFeatures": 300000,
         "styles": [{
             "id": "is_flooded",
-            "title": "Building Flood Status",
+            "title": dataset_name,
             "color": {
                 "mapType": "enum",
                 "colorColumn": "is_flooded_int",
                 "legend": {
-                    "title": "Building Flood Status",
+                    "title": dataset_name,
                     "items": [
                         {
                             "title": "Non-Flooded",
@@ -171,7 +172,7 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
 
 def flood_depth_catalog(scenario_id: int) -> dict:
     """
-    Creates a dictionary in the format of a terria js catalog json for the flood depth layer.
+    Create a dictionary in the format of a terria js catalog json for the flood depth layer.
 
     Parameters
     ----------

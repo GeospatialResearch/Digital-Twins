@@ -89,13 +89,14 @@ def _get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> boo
     env_variable = _get_env_variable(var_name, str(default))
     try:
         return cast_str_to_bool(env_variable)
-    except ValueError:
-        raise ValueError(f"Environment variable {var_name}={env_variable} cannot be cast to bool due to ValueError.")
+    except ValueError as e:
+        raise ValueError(f"Environment variable {var_name}={env_variable}"
+                         f" cannot be cast to bool due to ValueError.") from e
 
 
 def cast_str_to_bool(string: str) -> bool:
     """
-    Attempts to cast a str to bool.
+    Attempt to cast a str to bool.
     For bool casting we have the problem where bool("False") == True
     but this function fixes that so cast_str_to_bool("False") == False
 
