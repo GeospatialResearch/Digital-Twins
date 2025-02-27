@@ -16,15 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ,
-LRIS, and MFE, using the 'geoapis' library. To access data from each provider, you'll need to set an
+This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ, and MFE,
+using the 'geoapis' library. To access data from each provider, you'll need to set an
 API key in the environment variables.
 """
 
 from typing import Optional
 
 import geopandas as gpd
-from geoapis.vector import StatsNz, Linz, Lris, WfsQueryBase
+from geoapis.vector import StatsNz, Linz, WfsQueryBase
 
 from src import config
 
@@ -38,6 +38,7 @@ class MFE(WfsQueryBase):
     Note that the 'GEOMETRY_NAMES' used when making WFS 'cql_filter' queries varies between layers.
     The MFE generally follows the LINZ LDS but uses 'Shape' in place of 'shape'. It still uses 'GEOMETRY'.
     """
+
     NETLOC_API = "data.mfe.govt.nz"
     GEOMETRY_NAMES = ["GEOMETRY", "Shape"]
 
@@ -75,7 +76,7 @@ def fetch_vector_data_using_geoapis(
     Parameters
     -----------
     data_provider : str
-        The data provider to use. Supported values: "StatsNZ", "LINZ", "LRIS", "MFE".
+        The data provider to use. Supported values: "StatsNZ", "LINZ", "MFE".
     layer_id : int
         The ID of the layer to fetch.
     crs : int = 2193
@@ -97,16 +98,13 @@ def fetch_vector_data_using_geoapis(
     """
     # Determine the appropriate vector fetcher based on the data provider
     if data_provider == "StatsNZ":
-        stats_nz_api_key = config.get_env_variable("STATSNZ_API_KEY")
+        stats_nz_api_key = config.EnvVariable.STATSNZ_API_KEY
         vector_fetcher = StatsNz(key=stats_nz_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
     elif data_provider == "LINZ":
-        linz_api_key = config.get_env_variable("LINZ_API_KEY")
+        linz_api_key = config.EnvVariable.LINZ_API_KEY
         vector_fetcher = Linz(key=linz_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
-    elif data_provider == "LRIS":
-        lris_api_key = config.get_env_variable("LRIS_API_KEY")
-        vector_fetcher = Lris(key=lris_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
     elif data_provider == "MFE":
-        mfe_api_key = config.get_env_variable("MFE_API_KEY")
+        mfe_api_key = config.EnvVariable.MFE_API_KEY
         vector_fetcher = MFE(key=mfe_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
     else:
         raise ValueError(f"Unsupported data_provider: {data_provider}")

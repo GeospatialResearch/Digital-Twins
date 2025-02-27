@@ -42,9 +42,10 @@ services:
     # Performs analysis, computation, handles web requests, facilitates database interactions
     build:
       context: .
-      target: backend
-    image: lparkinson/backend-flood-resilience-dt:1.3
+      dockerfile: src/Dockerfile
+    image: lparkinson/flood-resilience-dt:2.0
     container_name: backend_digital_twin
+    entrypoint: ["src/backend_entrypoint.sh"]
     env_file:
       - .env
       - api_keys.env
@@ -67,9 +68,10 @@ services:
     # Performs tasks such as complex computation asynchronously on behalf of backend
     build:
       context: .
-      target: celery_worker
-    image: lparkinson/celery-flood-resilience-dt:1.3
+      dockerfile: src/Dockerfile
+    image: lparkinson/flood-resilience-dt:2.0
     container_name: celery_worker_digital_twin
+    entrypoint: ["src/celery_worker_entrypoint.sh"]
     restart: always
     env_file:
       - .env
@@ -95,8 +97,8 @@ services:
     # Serves geospatial web data through interactions with files and database
     build:
       context: .
-      target: geoserver
-    image: lparkinson/geoserver-flood-resilience-dt:1.2
+      dockerfile: geoserver.Dockerfile
+    image: lparkinson/geoserver-dt:1.2
     container_name: geoserver_digital_twin
     volumes:
       - geoserver_data:/opt/geoserver_data
@@ -114,25 +116,20 @@ services:
       timeout: 5s
       retries: 10
 
-  www:
-    # Webserver for the website interface
-    image: lparkinson/www-flood-resilience-dt:1.3.1
+  terria_map:
+    # Front-end using terria.js
     build:
-      context: .
-      dockerfile: visualisation/Dockerfile
-    container_name: www_digital_twin
-    environment:
-      - VUE_APP_CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
-      - VUE_APP_GEOSERVER_HOST=$GEOSERVER_HOST
-      - VUE_APP_GEOSERVER_PORT=$GEOSERVER_PORT
-      - VUE_APP_POSTGRES_DB=$POSTGRES_DB
+      context: terriajs
     ports:
-      - "${WWW_PORT}:80"
+      - "${WWW_PORT}:3001"
+    environment:
+      - CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
+      - BACKEND_HOST=$BACKEND_HOST
+      - BACKEND_PORT=$BACKEND_PORT
     healthcheck:
-      test: curl --fail -s http://localhost:80/ || exit 1
+      test: curl --fail -s http://localhost:3001/ || exit 1
       timeout: 5s
       retries: 10
-
 
   message_broker:
     # Communicates between backend and workers to assign tasks and store state

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
@@ -13,3 +14,5 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Package to handle data and operations specific to geospatial layers."""

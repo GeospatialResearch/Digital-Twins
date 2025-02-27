@@ -15,13 +15,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-This script provides utility functions for logging configuration and geospatial data manipulation.
-"""
+"""This script provides utility functions for logging configuration and geospatial data manipulation."""
 
 import inspect
 import logging
 import pathlib
+import time
+from typing import Callable, Tuple, Type, TypeVar
 import warnings
 from enum import IntEnum
 
@@ -51,6 +51,7 @@ class LogLevel(IntEnum):
     NOTSET : int
         The not-set logging level. Corresponds to logging.NOTSET (0).
     """
+
     CRITICAL = logging.CRITICAL
     ERROR = logging.ERROR
     WARNING = logging.WARNING
@@ -60,14 +61,7 @@ class LogLevel(IntEnum):
 
 
 def log_execution_info() -> None:
-    """
-    Logs a debug message indicating the execution of the function in the script.
-
-    Returns
-    -------
-    None
-        This function does not return any value.
-    """
+    """Log a debug message indicating the execution of the function in the script."""
     # Obtain the stack frame of the calling function (two frames up in the call stack)
     stack_frame = inspect.currentframe().f_back.f_back
     # Extract the name of the script file (without the path) where the function is being executed
@@ -80,8 +74,8 @@ def log_execution_info() -> None:
 
 def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
     """
-    Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
-    loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
+    Configure the root logger with the specified log level and formats, capture warnings, and exclude specific
+    loggers from propagating their messages to the root logger. Additionally, log a debug message indicating the
     execution of the function in the script.
 
     Parameters
@@ -95,11 +89,6 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         - LogLevel.INFO (20)
         - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
-
-    Returns
-    -------
-    None
-        This function does not return any value.
     """
     # Define the logging format and date format
     logging_format = "%(asctime)s | %(levelname)-8s | %(name)-30s %(lineno)4d | %(funcName)-50s | %(message)s"
@@ -120,8 +109,8 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         "rasterio",
         "scrapy",
         "distributed",
-        "selenium",
-        "s3transfer"
+        "s3transfer",
+        "charset_normalizer"
     ]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:
@@ -179,3 +168,67 @@ def get_nz_boundary(engine: Engine, to_crs: int = 2193) -> gpd.GeoDataFrame:
     # Convert to the desired coordinate reference system (CRS)
     nz_boundary = nz_boundary.to_crs(to_crs)
     return nz_boundary
+
+
+# Generic type definitions to allow any function to be passed to retry_function
+FuncArgsT = TypeVar('FuncArgsT')
+FuncKwargsT = TypeVar('FuncKwargsT')
+FuncReturnT = TypeVar('FuncReturnT')
+
+
+def retry_function(
+    func: Callable[[FuncArgsT, FuncKwargsT], FuncReturnT],
+    max_retries: int,
+    base_retry_delay: float,
+    expected_exceptions: Type[Exception] | Tuple[Type[Exception]],
+    *args: FuncArgsT,
+    **kwargs: FuncKwargsT,
+) -> FuncReturnT:
+    """
+    Retry a function a number of times if an exception is raised.
+
+    Parameters
+    ----------
+    func : Callable[[FuncArgsT, FuncKwargsT], FuncReturnT]
+        The function to call and retry if it fails. Takes *args and **kwargs as arguments.
+    max_retries : int
+        The maximum number of times to retry the function before allowing the exception to propagate
+    base_retry_delay : float
+        The delay in seconds between retries. Each subsequent retry becomes extended by this amount.
+    expected_exceptions : Type[Exception] | Tuple[Type[Exception]]
+        The exceptions that are expected to be thrown, and so will be caught. Any others will be propagated.
+    *args : FuncArgsT
+        The standard arguments for func.
+    **kwargs : FuncKwargsT
+        The keyword arguments for func.
+
+    Returns
+    -------
+    FuncReturnT
+        The result of func(*args, **kwargs).
+    """
+    # Set error retry control variables.
+    current_try = 0
+    func_name = f"{func.__module__}.{func.__name__}"
+    # Retry until return or exception.
+    while True:
+        try:
+            # Increment try counter
+            current_try += 1
+            # Attempt to run the function
+            result = func(*args, **kwargs)
+            # Success
+            return result
+        except expected_exceptions as err:
+            log.info(f"Retrying {func_name}. {current_try}/{max_retries} due to {err.__class__.__name__}")
+            # This can happen when multiple processes are initialising the db at the same time
+            if current_try > max_retries:
+                # max_tries exceeded, we must raise an error to prevent infinite looping
+                raise err
+            # Sleep on an extending timeout
+            timeout = base_retry_delay * current_try
+            log.info(f"Waiting {timeout} seconds before retrying {func_name}")
+            time.sleep(timeout)
+            log.info(f"Retrying {func_name}")
+            # Retry
+            continue
