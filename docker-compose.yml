@@ -42,9 +42,10 @@ services:
     # Performs analysis, computation, handles web requests, facilitates database interactions
     build:
       context: .
-      target: backend
-    image: lparkinson/backend-flood-resilience-dt:1.3.2
+      dockerfile: src/Dockerfile
+    image: lparkinson/flood-resilience-dt:1.4
     container_name: backend_digital_twin
+    entrypoint: ["src/backend_entrypoint.sh"]
     env_file:
       - .env
       - api_keys.env
@@ -67,9 +68,10 @@ services:
     # Performs tasks such as complex computation asynchronously on behalf of backend
     build:
       context: .
-      target: celery_worker
-    image: lparkinson/celery-flood-resilience-dt:1.3.2
+      dockerfile: src/Dockerfile
+    image: lparkinson/flood-resilience-dt:1.4
     container_name: celery_worker_digital_twin
+    entrypoint: ["src/celery_worker_entrypoint.sh"]
     restart: always
     env_file:
       - .env
@@ -95,8 +97,8 @@ services:
     # Serves geospatial web data through interactions with files and database
     build:
       context: .
-      target: geoserver
-    image: lparkinson/geoserver-flood-resilience-dt:1.3.2
+      dockerfile: geoserver.Dockerfile
+    image: lparkinson/geoserver-flood-resilience-dt:1.4
     container_name: geoserver_digital_twin
     volumes:
       - geoserver_data:/opt/geoserver_data
@@ -116,7 +118,7 @@ services:
 
   www:
     # Webserver for the website interface
-    image: lparkinson/www-flood-resilience-dt:1.3.2
+    image: lparkinson/www-flood-resilience-dt:1.4
     build:
       context: .
       dockerfile: visualisation/Dockerfile

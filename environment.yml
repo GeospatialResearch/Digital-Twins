@@ -22,7 +22,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - conda-pack==0.7.1
+  - conda-pack==0.7.1 # Versions past this have bugs with scrapy dependencies not being packaged
   - python==3.11  # 11 for StrEnum
   - pip
   - python-dotenv==1.0.0
