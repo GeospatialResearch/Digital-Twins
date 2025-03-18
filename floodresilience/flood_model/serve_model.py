@@ -85,7 +85,12 @@ def create_building_layers(workspace_name: str, data_store_name: str) -> None:
     flood_status_layer_name = "building_flood_status"
     flooded_buildings_sql_query = """
         SELECT *,
-               building_flood_status.is_flooded::int AS is_flooded_int
+               is_flooded::int AS is_flooded_int,
+               4.5             AS extruded_height,
+               CASE
+                   WHEN is_flooded THEN 'darkred'
+                   ELSE 'darkgreen'
+               END             AS fill
         FROM nz_building_outlines
                  LEFT OUTER JOIN building_flood_status USING (building_outline_id)
         WHERE building_outline_lifecycle ILIKE 'current'
