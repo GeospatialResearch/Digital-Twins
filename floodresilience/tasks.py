@@ -58,6 +58,8 @@ def on_startup(sender: Consumer, **_kwargs: None) -> None:  # pylint: disable=mi
         # Send a task to initialise this area of interest.
         base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
         sender.app.send_task("src.tasks.add_base_data_to_db", args=[aoi_wkt, base_data_parameters], connection=conn)
+        # Send a task to ensure lidar datasets are evaluated.
+        sender.app.send_task("floodresilience.tasks.ensure_lidar_datasets_initialised")
 
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:
@@ -177,6 +179,16 @@ def refresh_lidar_datasets() -> None:
     Takes a long time to run but needs to be run periodically so that the datasets are up to date.
     """
     process_hydro_dem.refresh_lidar_datasets()
+
+
+@app.task(base=OnFailureStateTask)
+def ensure_lidar_datasets_initialised() -> None:
+    """
+    Check if LiDAR datasets table is initialised.
+    This table holds URLs to data sources for LiDAR.
+    If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.
+    """
+    process_hydro_dem.ensure_lidar_datasets_initialised()
 
 
 @app.task(base=OnFailureStateTask)
