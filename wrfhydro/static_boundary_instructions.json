@@ -1,0 +1,16 @@
+{
+  "instruction_coastlines": {
+    "data_provider": "LINZ",
+    "layer_id": 50258,
+    "table_name": "nz_coastlines",
+    "coverage_area": "New Zealand",
+    "url": "https://data.linz.govt.nz/layer/50258-nz-coastlines-topo-150k/"
+  },
+  "instruction_buildings": {
+    "data_provider": "LINZ",
+    "layer_id": 101292,
+    "table_name": "nz_building_outlines",
+    "unique_column_name": "building_outline_id",
+    "url": "https://data.linz.govt.nz/layer/101292-nz-building-outlines-all-sources/"
+  }
+}

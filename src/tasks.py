@@ -117,3 +117,4 @@ def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
 
 # These must be imported after app to remove a circular dependency
 import floodresilience.tasks  # pylint: disable=wrong-import-position,unused-import # noqa: E402, F401
+import wrfhydro.tasks  # pylint: disable=wrong-import-position,unused-import # noqa: E402, F401
