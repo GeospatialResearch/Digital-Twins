@@ -167,11 +167,18 @@ def flood_depth_catalog(scenario_id: int) -> dict:
     """
     gs_flood_model_workspace = f"{EnvVar.POSTGRES_DB}-dt-model-outputs"
     gs_flood_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_flood_model_workspace}/ows"
+    # Open and read HTML/mustache template file for infobox
+    with open("./floodresilience/flood_model/templates/flood_depth_infobox.mustache", encoding="utf-8") as file:
+        flood_depth_infobox_template = file.read()
 
     return {
         "type": "wms",
         "name": "Flood Depth",
         "url": gs_flood_url,
         "layers": f"{gs_flood_model_workspace}:output_{scenario_id}",
-        "styles": "viridis_raster"
+        "styles": "viridis_raster",
+        "featureInfoTemplate": {
+            "name": f"Flood depth - {scenario_id}",
+            "template": flood_depth_infobox_template.format(flood_scenario_id=scenario_id)
+        }
     }
