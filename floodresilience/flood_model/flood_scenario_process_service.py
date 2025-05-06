@@ -18,6 +18,7 @@
 """Defines PyWPS WebProcessingService process for creating a flooding scenario."""
 
 import json
+from urllib.parse import urlencode
 
 from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest
 from pywps.response.execute import ExecuteResponse
@@ -167,18 +168,43 @@ def flood_depth_catalog(scenario_id: int) -> dict:
     """
     gs_flood_model_workspace = f"{EnvVar.POSTGRES_DB}-dt-model-outputs"
     gs_flood_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_flood_model_workspace}/ows"
+    layer_name = f"{gs_flood_model_workspace}:output_{scenario_id}"
+    style_name = "viridis_raster"
     # Open and read HTML/mustache template file for infobox
     with open("./floodresilience/flood_model/templates/flood_depth_infobox.mustache", encoding="utf-8") as file:
         flood_depth_infobox_template = file.read()
+    # Parameters for the Geoserver GetLegendGraphic request
+    legend_url_params = {
+        "service": "WMS",
+        "version": "1.3.0",
+        "request": "GetLegendGraphic",
+        "format": "image/png",
+        "sld_version": "1.1.0",
+        "layer": layer_name,
+        "style": style_name,
+        "transparent": "true",
+        "LEGEND_OPTIONS": "hideEmptyRules:true;"
+                          "forceLabels:on;"
+                          "labelMargin:5;"
+                          "fontColor:0xffffff;"
+                          "fontStyle:bold;"
+                          "fontAntiAliasing:true;"
+    }
+    legend_url = f"{gs_flood_url}?{urlencode(legend_url_params)}"
 
     return {
         "type": "wms",
         "name": "Flood Depth",
         "url": gs_flood_url,
-        "layers": f"{gs_flood_model_workspace}:output_{scenario_id}",
-        "styles": "viridis_raster",
+        "layers": layer_name,
+        "styles": style_name,
         "featureInfoTemplate": {
             "name": f"Flood depth - {scenario_id}",
             "template": flood_depth_infobox_template.format(flood_scenario_id=scenario_id)
-        }
+        },
+        "legends": [{
+            "title": "Flood Depth",
+            "url": legend_url,
+            "urlMimeType": "image/png"
+        }],
     }
