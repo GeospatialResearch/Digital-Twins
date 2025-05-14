@@ -19,9 +19,11 @@
 
 import json
 from urllib.parse import urlencode
+import xml.etree.ElementTree as et
 
 from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest
 from pywps.response.execute import ExecuteResponse
+import requests
 from shapely import box
 
 from floodresilience import tasks
@@ -52,9 +54,9 @@ class FloodScenarioProcessService(Process):
         ]
         # Create area WPS outputs
         outputs = [
-            ComplexOutput("floodDepth", "Maximum Flood Depth",
-                          supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
             ComplexOutput("floodedBuildings", "Flooded Buildings",
+                          supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
+            ComplexOutput("floodDepth", "Maximum Flood Depth",
                           supported_formats=[Format("application/vnd.terriajs.catalog-member+json")])
         ]
 
@@ -98,8 +100,8 @@ class FloodScenarioProcessService(Process):
         scenario_id = modelling_task.get()
 
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
-        response.outputs['floodDepth'].data = json.dumps(flood_depth_catalog(scenario_id))
         response.outputs['floodedBuildings'].data = json.dumps(building_flood_status_catalog(scenario_id))
+        response.outputs['floodDepth'].data = json.dumps(flood_depth_catalog(scenario_id))
 
 
 def building_flood_status_catalog(scenario_id: int) -> dict:
@@ -167,12 +169,10 @@ def flood_depth_catalog(scenario_id: int) -> dict:
         The TerriaJS catalog item JSON for the flood depth layer.
     """
     gs_flood_model_workspace = f"{EnvVar.POSTGRES_DB}-dt-model-outputs"
-    gs_flood_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_flood_model_workspace}/ows"
+    gs_flood_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_flood_model_workspace}/wms"
     layer_name = f"{gs_flood_model_workspace}:output_{scenario_id}"
     style_name = "viridis_raster"
-    # Open and read HTML/mustache template file for infobox
-    with open("./floodresilience/flood_model/templates/flood_depth_infobox.mustache", encoding="utf-8") as file:
-        flood_depth_infobox_template = file.read()
+
     # Parameters for the Geoserver GetLegendGraphic request
     legend_url_params = {
         "service": "WMS",
@@ -192,15 +192,23 @@ def flood_depth_catalog(scenario_id: int) -> dict:
     }
     legend_url = f"{gs_flood_url}?{urlencode(legend_url_params)}"
 
+    # Retrieve times available time slices for layer
+    time_dimension = query_time_dimension(gs_flood_url, layer_name)
+
     return {
         "type": "wms",
         "name": "Flood Depth",
         "url": gs_flood_url,
         "layers": layer_name,
         "styles": style_name,
+        "supportsGetTimeseries": True,
+        "multiplierDefaultDeltaStep": 6,  # Slow down timeline to give more time for rasters to load.
+        "getFeatureInfoParameters": {
+            "request": "GetTimeSeries",  # Terria tries to send "GetTimeseries", but Geoserver ncWMS is case-sensitive.
+            "time": time_dimension  # Must manually fill time dimension because getFeatureInfoParameters overrides it.
+        },
         "featureInfoTemplate": {
             "name": f"Flood depth - {scenario_id}",
-            "template": flood_depth_infobox_template.format(flood_scenario_id=scenario_id)
         },
         "legends": [{
             "title": "Flood Depth",
@@ -208,3 +216,32 @@ def flood_depth_catalog(scenario_id: int) -> dict:
             "urlMimeType": "image/png"
         }],
     }
+
+
+def query_time_dimension(gs_workspace_wms_url: str, layer_name: str) -> str:
+    """
+    Query Geoserver to find the time slices available for a given layer.
+
+    Parameters
+    ----------
+    gs_workspace_wms_url : str
+        The URL of the Geoserver workspace WMS endpoint.
+    layer_name : str
+        The name of the Geoserver layer to query.
+
+    Returns
+    ----------
+    str
+        Comma-separated list of time slices available in ISO8601 format
+        e.g. "2000-01-01T00:00:00.000Z,2000-01-01T00:00:01.000Z,2000-01-01T00:00:02.000Z"
+    """
+    query_parameters = {
+        "request": "GetCapabilities",
+        "dataset": layer_name,
+    }
+    capabilities_response = requests.post(gs_workspace_wms_url, params=query_parameters)
+    xml_root = et.fromstring(capabilities_response.content)
+    namespaces = {"wms": "http://www.opengis.net/wms"}
+    time_dim_elem = xml_root.find('.//wms:Dimension[@name="time"]', namespaces)
+
+    return time_dim_elem.text

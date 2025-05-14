@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM ghcr.io/terriajs/terriamap:0.2.3
+FROM ghcr.io/terriajs/terriamap:0.4.1
 
 # Install envsubst dependencies
 USER root
