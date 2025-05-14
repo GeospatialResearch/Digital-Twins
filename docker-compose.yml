@@ -108,6 +108,8 @@ services:
       - SKIP_DEMO_DATA=true
       - CORS_ENABLED=true
       - ROOT_WEBAPP_REDIRECT=true
+      - GEOSERVER_ADMIN_USER=$GEOSERVER_ADMIN_NAME
+      - GEOSERVER_ADMIN_PASSWORD=$GEOSERVER_ADMIN_PASSWORD
     ports:
       - "${GEOSERVER_PORT}:8080"
     restart: always
