@@ -52,7 +52,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "time_to_peak_mins": 1440,
         "interval_mins": 10,
         "proj_year": 2030,
-        "confidence_level": "low",
+        "confidence_level": "medium",
         "ssp_scenario": "SSP1-2.6",
         "add_vlm": False,
         "percentile": 50,

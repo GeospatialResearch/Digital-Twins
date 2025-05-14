@@ -93,7 +93,8 @@ class FloodScenarioProcessService(Process):
             "proj_year": request.inputs["projYear"][0].data,
             "percentile": request.inputs["percentile"][0].data,
             "ssp_scenario": request.inputs["sspScenario"][0].data,
-            "add_vlm": cast_str_to_bool(request.inputs["addVlm"][0].data)
+            "add_vlm": cast_str_to_bool(request.inputs["addVlm"][0].data),
+            "confidence_level": "medium"
         }
 
         modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
