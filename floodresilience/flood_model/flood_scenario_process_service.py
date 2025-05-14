@@ -194,7 +194,7 @@ def flood_depth_catalog(scenario_id: int) -> dict:
     legend_url = f"{gs_flood_url}?{urlencode(legend_url_params)}"
 
     # Retrieve times available time slices for layer
-    time_dimension = query_time_dimension(gs_flood_url, layer_name)
+    time_dimension = query_time_dimension(gs_flood_model_workspace, layer_name)
 
     return {
         "type": "wms",
@@ -219,14 +219,14 @@ def flood_depth_catalog(scenario_id: int) -> dict:
     }
 
 
-def query_time_dimension(gs_workspace_wms_url: str, layer_name: str) -> str:
+def query_time_dimension(gs_flood_model_workspace: str, layer_name: str) -> str:
     """
     Query Geoserver to find the time slices available for a given layer.
 
     Parameters
     ----------
-    gs_workspace_wms_url : str
-        The URL of the Geoserver workspace WMS endpoint.
+    gs_flood_model_workspace : str
+        The name of the Geoserver workspace.
     layer_name : str
         The name of the Geoserver layer to query.
 
@@ -236,11 +236,14 @@ def query_time_dimension(gs_workspace_wms_url: str, layer_name: str) -> str:
         Comma-separated list of time slices available in ISO8601 format
         e.g. "2000-01-01T00:00:00.000Z,2000-01-01T00:00:01.000Z,2000-01-01T00:00:02.000Z"
     """
+    # Get the URL for sending a request from within the docker container
+    internal_workspace_wms_url = (f"{EnvVar.GEOSERVER_INTERNAL_HOST}:{EnvVar.GEOSERVER_INTERNAL_PORT}"
+                                  f"/geoserver/{gs_flood_model_workspace}/wms")
     query_parameters = {
         "request": "GetCapabilities",
         "dataset": layer_name,
     }
-    capabilities_response = requests.post(gs_workspace_wms_url, params=query_parameters)
+    capabilities_response = requests.post(internal_workspace_wms_url, params=query_parameters)
     xml_root = et.fromstring(capabilities_response.content)
     namespaces = {"wms": "http://www.opengis.net/wms"}
     time_dim_elem = xml_root.find('.//wms:Dimension[@name="time"]', namespaces)
