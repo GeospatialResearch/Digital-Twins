@@ -1,8 +1,8 @@
 {
   "homeCamera": {
-    "north": -43.48,
+    "north": -43.35,
     "east": 172.76,
-    "south": -43.58,
+    "south": -43.42,
     "west": 172.55
   },
   "catalog": [
@@ -14,5 +14,9 @@
       "identifier": "fredt"
     }
   ],
-  "viewerMode": "3dSmooth"
+  "viewerMode": "3dSmooth",
+  "baseMaps": {
+    "defaultBaseMapId": "basemap-openstreetmap",
+    "previewBaseMapId": "basemap-openstreetmap"
+  }
 }
