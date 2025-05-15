@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 from geopandas import GeoDataFrame
 
-from src.flood_model.flooded_buildings import categorise_buildings_as_flooded
+from floodresilience.flood_model.flooded_buildings import categorise_buildings_as_flooded
 
 
 class CategoriseBuildingsAsFloodedTest(unittest.TestCase):

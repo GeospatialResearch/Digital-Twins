@@ -15,6 +15,6 @@ echo "$SUBBED" > src/pywps.cfg
 # Activate python virtual environment
 source /venv/bin/activate
 # Run production HTTP server with threads (gevent) with an extended timeout
-gunicorn --bind 0.0.0.0:5000 src.app:app
+gunicorn --bind 0.0.0.0:5000 --timeout 600 -k gevent src.app:app
 
 

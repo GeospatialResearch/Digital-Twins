@@ -30,17 +30,15 @@ docker compose build
 echo "Saving images to fredt.tar"
 docker save -o fredt.tar \
   postgis/postgis:16-3.4 \
-  lparkinson/backend-flood-resilience-dt:1.2 \
-  lparkinson/celery-flood-resilience-dt:1.2 \
-  lparkinson/www-flood-resilience-dt:1.2 \
-  lparkinson/geoserver-flood-resilience-dt:1.2 \
-  redis:7 \
+  lparkinson/flood-resilience-dt:2.0 \
+  lparkinson/terria-dt:2.0 \
+  lparkinson/geoserver-dt:2.0 \
+  redis:7
 
 
 echo "Saving docker build dependency images to build_dep.tar"
 docker save -o build_dep.tar \
   lparkinson/bg_flood:v0.9 \
   continuumio/miniconda3:23.10.0-1 \
-  node:lts \
-  docker.osgeo.org/geoserver:2.21.2 \
-  nginx:stable
+  docker.osgeo.org/geoserver:2.28.x \
+  ghcr.io/terriajs/terriamap:0.4.1

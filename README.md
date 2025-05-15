@@ -1,6 +1,6 @@
 Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
 # Flood Resilience Digital Twin (FReDT)
-![image](https://github.com/GeospatialResearch/Digital-Twins/assets/41398636/b7b9da6c-3895-46f5-99dc-4094003b2946)
+![image](paper/Capture2024.PNG)
 
 
 ## Introduction
@@ -41,8 +41,6 @@ Create API keys for each of these services. You may need to create an account an
    
 1. Create a file called `.env` in the project root, copy the contents of `.env.template` and fill in all blank fields unless a comment says you can leave it blank.
 Blank fields to fill in include fields such as `CESIUM_ACCESS_TOKEN` and `POSTGRES_PASSWORD`. `POSTGRES_PASSWORD` can be a password of your choosing. You may modify other configuration variables if needed to suit particular deployment environemnts.
-
-   _Note: If you modify the geoserver admin password (important for public deployments) you must also update the password manually in the Geoserver interface. See https://docs.geoserver.org/main/en/user/security/webadmin/ugr.html#edit-user-group-service._
     
 1. From project root, run the command `docker compose up -d` to run the database, backend web servers, and helper services.
    
@@ -50,11 +48,9 @@ Blank fields to fill in include fields such as `CESIUM_ACCESS_TOKEN` and `POSTGR
 
 
 ## Using the Digital Twin application
-1. With the docker compose  application running, the default web address is <http://localhost:8080> to view the web application.
-1. Choose input variables from the available input boxes at the top of the page.
-1. Select an area using Shift+click+drag to draw a bounding box of your area to start generating a model. It will take a long time, especially for the first run of an area.
-1. Monitor progress by checking the logs using `docker compose logs -f celery_worker`.
-1. The API is available by default on <http://localhost:5000>. Visit <https://geospatialresearch.github.io/Digital-Twins/api> for API documentation.
+1. With the docker compose  application running, the default web address is <http://localhost:3001> to view the web application.
+   * To perform custom modelling, "Explore map data" has configurable models.
+1. The API is available by default on <http://localhost:5000>. Visit <https://geospatialresearch.github.io/Digital-Twins/swagger> for API documentation.
 
 ## Contributing
 If you are interested in contributing to this project, please see [our contributing page here](CONTRIBUTING.md). 

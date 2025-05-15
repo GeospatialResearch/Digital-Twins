@@ -1,0 +1,13 @@
+[flake8]
+require-plugins = flake8-docstrings, flake8-annotations
+show-source = True
+count = True
+statistics = True
+max-line-length = 120
+ignore = ANN101, D205
+extend-ignore = W504, D400
+
+# ANN101: Missing type annotation for self in method
+# D205: 1 blank line required between summary line and description
+# W504: line break after binary operator
+# D400: First line should end with a period

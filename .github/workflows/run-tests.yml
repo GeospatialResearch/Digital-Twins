@@ -15,28 +15,38 @@ jobs:
         uses: actions/checkout@v2
       - name: Install flake8
         run: |
-          python -m pip install flake8
+          python -m pip install flake8==7.1.0 flake8-docstrings==1.7.0 flake8-annotations==3.1.1
       - name: Run lint with flake8
         run: |
-          flake8 src --show-source --count --statistics --max-line-length=120
+          flake8 src floodresilience
 
-
-  linting-js:
-    name: Lint Front-end application
+  linting-pylint:
+    name: Lint Python with pylint
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./visualisation
+        shell: bash -l {0}
     steps:
-      - uses: actions/setup-node@v3
+      - name: Checkout github repo
+        uses: actions/checkout@v2
+      - name: Install package dependencies
+        uses: mamba-org/setup-micromamba@v1
         with:
-          node-version: 16.x
-      - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: npm ci
-      - name: Run linting
-        run: npm run lint
-
+          environment-file: environment.yml
+          # only cache environment
+          cache-environment: true
+          cache-downloads: false
+      - run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
+      - name: Install pylint
+        run: |
+          python -m pip install pylint==3.2.6
+      - name: Run lint with pylint
+        run: |
+          pylint src floodresilience
 
   unit-tests:
     name: Run unit tests with pytest

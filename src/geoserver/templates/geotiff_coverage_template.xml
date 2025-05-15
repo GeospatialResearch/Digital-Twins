@@ -1,0 +1,49 @@
+<coverage>
+<!-- Template for a Geoserver Coverage file for a GeoTIFF layer-->
+    <name>{layer_name}</name>
+    <title>{layer_name}</title>
+    <nativeCRS class="projected">
+        PROJCS[&quot;NZGD2000 / New Zealand Transverse Mercator 2000&quot;,
+        GEOGCS[&quot;NZGD2000&quot;,
+        DATUM[&quot;New Zealand Geodetic Datum 2000&quot;,
+        SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]],
+        TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        AUTHORITY[&quot;EPSG&quot;,&quot;6167&quot;]],
+        PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],
+        UNIT[&quot;degree&quot;, 0.017453292519943295],
+        AXIS[&quot;Geodetic longitude&quot;, EAST],
+        AXIS[&quot;Geodetic latitude&quot;, NORTH],
+        AUTHORITY[&quot;EPSG&quot;,&quot;4167&quot;]],
+        PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]],
+        PARAMETER[&quot;central_meridian&quot;, 173.0],
+        PARAMETER[&quot;latitude_of_origin&quot;, 0.0],
+        PARAMETER[&quot;scale_factor&quot;, 0.9996],
+        PARAMETER[&quot;false_easting&quot;, 1600000.0],
+        PARAMETER[&quot;false_northing&quot;, 10000000.0],
+        UNIT[&quot;m&quot;, 1.0],
+        AXIS[&quot;Easting&quot;, EAST],
+        AXIS[&quot;Northing&quot;, NORTH],
+        AUTHORITY[&quot;EPSG&quot;,&quot;2193&quot;]]
+    </nativeCRS>
+    <supportedFormats>
+        <string>GEOTIFF</string>
+        <string>TIFF</string>
+        <string>PNG</string>
+    </supportedFormats>
+    <dimensions>
+        <coverageDimension>
+            <name>Water Depth</name>
+            <unit>m</unit>
+            <dimensionType>
+                <name>REAL_32BITS</name>
+            </dimensionType>
+        </coverageDimension>
+    </dimensions>
+    <requestSRS>
+        <string>EPSG:2193</string>
+    </requestSRS>
+    <responseSRS>
+        <string>EPSG:2193</string>
+    </responseSRS>
+    <srs>EPSG:2193</srs>
+</coverage>
