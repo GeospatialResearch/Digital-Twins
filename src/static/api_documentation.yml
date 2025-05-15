@@ -48,129 +48,6 @@ paths:
         '503 - Service Unavailable':
           $ref: '#/components/responses/NoCeleryWorkers'
 
-  "/models/flood/parameters":
-    get:
-      summary: "Get information on possible valid flood model parameters."
-      description: |-
-        Get information on valid flood model parameters based on the valid values in the database.
-      responses:
-        '200 - OK':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidSlrParameters'
-        '503 - Service Unavailable':
-          $ref: '#/components/responses/NoCeleryWorkers'
-  "/models/generate":
-    post:
-      summary: Starts generating a scenario model output.
-      description: |-
-        Starts generating a scenario model output according to the given scenario paramaters.
-        The task will run in the background. Use GET /tasks/{task_id} to get status about the task.
-      parameters:
-        - $ref: '#/components/parameters/GenerateScenarioParameters'
-      responses:
-        '202 - Accepted':
-          $ref: '#/components/responses/TaskStarted'
-        '400 - Bad Request':
-          $ref: '#/components/responses/BadRequest'
-        '503 - Service Unavailable':
-          $ref: '#/components/responses/NoCeleryWorkers'
-
-
-  "/models/{scenarioId}":
-    get:
-      summary: Serves the output of a previously run flood model scenario.
-      parameters:
-        - $ref: '#/components/parameters/ScenarioId'
-      responses:
-        '200 - OK':
-          $ref: '#/components/responses/ModelOutput'
-        '404 - Not Found':
-          $ref: '#/components/responses/ScenarioNotFound'
-        '503 - Service Unavailable':
-          $ref: '#/components/responses/NoCeleryWorkers'
-
-
-
-  "/models/{scenarioId}/buildings":
-    get:
-      summary: Retrieves information on building flood status, for a given flood model output id.
-      description: |-
-        It is recommended to use the geoserver API if it is possible, since this is a proxy around that to expose the functionality to all users.
-      parameters:
-        - $ref: '#/components/parameters/ScenarioId'
-      responses:
-        '200 - OK':
-          $ref: '#/components/responses/BuildingFloodStatus'
-        '404 - Not Found':
-          $ref: '#/components/responses/ScenarioNotFound'
-        '503 - Service Unavailable':
-          $ref: '#/components/responses/NoCeleryWorkers'
-
-
-
-  "/tasks/{taskId}":
-    get:
-      summary: Retrieves information on the status of a given task.
-      parameters:
-        - $ref: '#/components/parameters/TaskId'
-      responses:
-        '200 - OK':
-          description: The status of the task
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '500 - Internal Server Error':
-          description: Something has gone wrong in the execution of the task. If the `DEBUG_TRACEBACK` environmnet variable is set to `true` you can get a traceback in `taskValue`.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FailedTask'
-        '503 - Service Unavailable':
-          $ref: '#/components/responses/NoCeleryWorkers'
-    delete:
-      summary: Requests the Celery task controller to stop the task.
-      parameters:
-        - $ref: '#/components/parameters/TaskId'
-      responses:
-        '202 - Task Removed':
-          description: The task will stop
-
-  "/tasks/{taskId}/model/depth":
-    get:
-      summary: Finds the depth values and corresponding time values for a particular point for a given model output task.
-      parameters:
-        - $ref: '#/components/parameters/TaskId'
-        - $ref: '#/components/parameters/Point'
-      responses:
-        '200 - OK':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PointDepths'
-        '400 - Bad Request':
-          $ref: '#/components/responses/BadRequest'
-        '503 - Service Unavailable':
-          $ref: '#/components/responses/NoCeleryWorkers'
-
-  "/scenarios/medusa/{scenario_id}":
-    get:
-      summary: Finds the depth values and corresponding time values for a particular point for a given model output task.
-      parameters:
-        - $ref: '#/components/parameters/MedusaScenarioInput'
-      responses:
-        '200 - OK':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MedusaScenarioID'
-        '404 - Not Found':
-          $ref: '#/components/responses/MedusaScenarioIDNotFound'
-        '503 - Service Unavailable':
-          $ref: '#/components/responses/NoCeleryWorkers'
-
   "/datasets/update":
     post:
       summary: Manually triggers the update of LiDAR data sources to the most recent.
@@ -216,14 +93,6 @@ components:
             type: string
             example: Could not find flood model output 17
 
-    MedusaScenarioIDNotFound:
-      description: The scenario with that MedusaScenarioID could not be found
-      content:
-        text/plain:
-          schema:
-            type: string
-            example: Could not find rainfall scenario 31
-
     ModelOutput:
       description: The BG-Flood model output NetCDF file for the given scenario.
       content:
@@ -266,14 +135,6 @@ components:
       description: ID of the flood scenario to retrieve.
       example: 17
 
-    MedusaScenarioID:
-      in: path
-      name: MedusaScenarioInput
-      schema:
-        type: integer
-      required: true
-      description: ID of the scenario to retrieve.
-      example: 31
 
     TaskId:
       in: path
@@ -422,25 +283,6 @@ components:
           items:
             type: number
           example: [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
-
-    MedusaScenarioInput:
-      type: object
-      properties:
-        antecedent_dry_days:
-          type: number
-          example: 1
-        average_rain_intensity:
-          type: number
-          example: 1
-        event_duration:
-          type: number
-          example: 1
-        rainfall_ph:
-          type: number
-          example: 8
-        geometry:
-          type: string
-          example: "01030000209108000001000000050000000000000020F037410000000026D5534100000000801238410000000026D55341000000008012384100000000CDCE53410000000020F0374100000000CDCE53410000000020F037410000000026D55341"
 
     TaskId:
       type: string

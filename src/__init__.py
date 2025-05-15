@@ -19,4 +19,4 @@
 Scripts directly in this package deal with managing server and process configuration.
 Subpackages each perform processing, data handling, or modelling.
 """
-__version__ = "0.2.0"
+__version__ = "2.0.0"

@@ -15,3 +15,5 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """Top-level package for the Flood Resilience Digital Twin (FReDT) extension for the Digital Twin."""
+
+__version__ = "2.0.0"
