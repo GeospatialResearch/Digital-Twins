@@ -13,6 +13,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../src'))
+sys.path.insert(0, os.path.abspath('../../floodresilience'))
 
 from __init__ import __version__
 
@@ -37,7 +38,7 @@ extensions = [
     'autoapi.extension',
 ]
 # -- Extension configuration -------------------------------------------------
-autoapi_dirs = ["../../src/"]
+autoapi_dirs = ["../../src/", "../../floodresilience/"]
 
 
 # Add any paths that contain templates here, relative to this directory.
