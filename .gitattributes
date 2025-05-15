@@ -1,3 +1,4 @@
+*.sh text eol=lf
 *.dbf filter=lfs diff=lfs merge=lfs -text
 *.shp filter=lfs diff=lfs merge=lfs -text
 *.shx filter=lfs diff=lfs merge=lfs -text
@@ -5,4 +6,3 @@
 # Prevent line-ending changes for files which require Unix-style line endings
 *.sh text eol=lf
 *Dockerfile* text eol=lf
-
