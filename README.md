@@ -1,6 +1,6 @@
 Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
 # Flood Resilience Digital Twin (FReDT)
-![image](https://github.com/GeospatialResearch/Digital-Twins/assets/41398636/b7b9da6c-3895-46f5-99dc-4094003b2946)
+![image](paper/Capture2024.PNG)
 
 
 ## Introduction
