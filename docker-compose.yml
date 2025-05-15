@@ -98,7 +98,7 @@ services:
     build:
       context: .
       dockerfile: geoserver.Dockerfile
-    image: lparkinson/geoserver-dt:1.2
+    image: lparkinson/geoserver-dt:2.0
     container_name: geoserver_digital_twin
     volumes:
       - geoserver_data:/opt/geoserver_data
@@ -122,6 +122,7 @@ services:
     # Front-end using terria.js
     build:
       context: terriajs
+    image: lparkinson/terria-dt:2.0
     ports:
       - "${WWW_PORT}:3001"
     environment:
