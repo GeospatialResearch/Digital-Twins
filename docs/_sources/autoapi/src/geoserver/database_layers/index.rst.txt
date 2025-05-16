@@ -1,0 +1,69 @@
+src.geoserver.database_layers
+=============================
+
+.. py:module:: src.geoserver.database_layers
+
+.. autoapi-nested-parse::
+
+   Functions to handle serving database layers and views via geoserver.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.geoserver.database_layers.log
+   src.geoserver.database_layers._xml_header
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.geoserver.database_layers.create_datastore_layer
+   src.geoserver.database_layers.create_db_store_if_not_exists
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:data:: _xml_header
+
+.. py:function:: create_datastore_layer(workspace_name: str, data_store_name: str, layer_name: str, metadata_elem: str = '') -> None
+
+   Create a GeoServer layer for a given data store if it does not currently exist.
+   Can be used to create layers for a database table, or to create a database view for a custom dynamic query.
+
+   :param workspace_name: The name of the workspace the data store is associated to
+   :type workspace_name: str
+   :param data_store_name: The name of the data store the layer is being created from.
+   :type data_store_name: str
+   :param layer_name: The name of the new layer.
+                      This is the same as the name of the database table if creating a layer from a table.
+   :type layer_name: str
+   :param metadata_elem: An optional XML str that contains the metadata element used to configure custom SQL queries.
+   :type metadata_elem: str = ""
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_store_name: str) -> None
+
+   Create PostGIS database store in a GeoServer workspace for a given database.
+   If it already exists, do not do anything.
+
+   :param db_name: The name of the connected database, to connect datastore to
+   :type db_name: str
+   :param workspace_name: The name of the workspace to create views for
+   :type workspace_name: str
+   :param new_data_store_name: The name of the new datastore to create
+   :type new_data_store_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+

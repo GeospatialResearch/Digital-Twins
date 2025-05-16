@@ -1,0 +1,51 @@
+floodresilience.dynamic_boundary_conditions.river.river_model_input
+===================================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.river.river_model_input
+
+.. autoapi-nested-parse::
+
+   This script handles the task of generating the requested river model inputs for BG-Flood.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.river.river_model_input.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.river.river_model_input.remove_existing_river_inputs
+   floodresilience.dynamic_boundary_conditions.river.river_model_input.generate_river_model_input
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: remove_existing_river_inputs(bg_flood_dir: pathlib.Path) -> None
+
+   Remove existing river input files from the specified directory.
+
+   :param bg_flood_dir: The BG-Flood model directory containing the river input files.
+   :type bg_flood_dir: pathlib.Path
+
+
+.. py:function:: generate_river_model_input(bg_flood_dir: pathlib.Path, hydrograph_data: geopandas.GeoDataFrame) -> None
+
+   Generate the requested river model inputs for BG-Flood.
+
+   :param bg_flood_dir: The BG-Flood model directory.
+   :type bg_flood_dir: pathlib.Path
+   :param hydrograph_data: A GeoDataFrame containing hydrograph data for the requested REC river inflow scenario.
+   :type hydrograph_data: gpd.GeoDataFrame
+
+

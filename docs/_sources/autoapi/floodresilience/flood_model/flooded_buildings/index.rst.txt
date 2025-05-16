@@ -1,0 +1,98 @@
+floodresilience.flood_model.flooded_buildings
+=============================================
+
+.. py:module:: floodresilience.flood_model.flooded_buildings
+
+.. autoapi-nested-parse::
+
+   This script detects if buildings are flooded for a given scenario.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.flood_model.flooded_buildings.store_flooded_buildings_in_database
+   floodresilience.flood_model.flooded_buildings.find_flooded_buildings
+   floodresilience.flood_model.flooded_buildings.categorise_buildings_as_flooded
+   floodresilience.flood_model.flooded_buildings.retrieve_building_outlines
+   floodresilience.flood_model.flooded_buildings.polygonize_flooded_area
+
+
+Module Contents
+---------------
+
+.. py:function:: store_flooded_buildings_in_database(engine: sqlalchemy.engine.Engine, buildings: pandas.DataFrame, flood_model_id: int) -> None
+
+   Append the details of which buildings are flooded for a given flood_model_id to the database.
+
+   :param engine: The sqlalchemy database connection engine
+   :type engine: Engine
+   :param buildings: DataFrame containing a mapping of building_ids to their flood status for the current model run
+   :type buildings: pd.DataFrame
+   :param flood_model_id: The id of the current flood model run, to associate with the building flood data.
+   :type flood_model_id: int
+
+
+.. py:function:: find_flooded_buildings(engine: sqlalchemy.engine.Engine, area_of_interest: geopandas.GeoDataFrame, flood_model_output_path: pathlib.Path, flood_depth_threshold: float) -> pandas.DataFrame
+
+   Create a building DataFrame with attribute "is_flooded",
+   depending on if the area for each building is flooded to a depth greater than or equal to flood_depth_threshold.
+   the index, building_outline_id, matches building_outline_id from nz_building_outline table.
+
+   :param engine: The sqlalchemy database connection engine
+   :type engine: Engine
+   :param area_of_interest: A GeoDataFrame with a polygon specifying the area to get buildings for.
+   :type area_of_interest: gpd.GeoDataFrame
+   :param flood_model_output_path: Path to the flood model output file to be read.
+   :type flood_model_output_path: pathlib.Path
+   :param flood_depth_threshold: The minimum depth required to designate a pixel in the raster as flooded.
+   :type flood_depth_threshold: float
+
+   :returns: A pd.DataFrame specifying if each building is flooded or not.
+   :rtype: pd.DataFrame
+
+
+.. py:function:: categorise_buildings_as_flooded(building_polygons: geopandas.GeoDataFrame, flood_polygons: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Identify all buildings in building_polygons that intersect with areas in flooded_polygons.
+
+   :param building_polygons: A GeoDataFrame with each polygon representing a building outline
+   :type building_polygons: gpd.GeoDataFrame
+   :param flood_polygons: A GeoDataFrame with each polygon representing a flooded area
+   :type flood_polygons: gpd.GeoDataFrame
+
+   :returns: A copy of building_polygons with an additional boolean attribute "is_flooded"
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: retrieve_building_outlines(engine: sqlalchemy.engine.Engine, area_of_interest: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Retrieve building outlines for an area of interest from the database.
+
+   :param engine: The sqlalchemy database connection engine
+   :type engine: Engine
+   :param area_of_interest: A GeoDataFrame polygon specifying the area of interest to retrieve buildings in.
+   :type area_of_interest: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing all of the building outlines in the area
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshold: float) -> geopandas.GeoDataFrame
+
+   Take a flood depth raster and apply depth thresholding on it so that only areas
+   flooded deeper than or equal to flood_depth_threshold are represented.
+   Return the data in a collection of polygons.
+
+   :param flood_raster: Raster with each pixel representing flood depth at the point
+   :type flood_raster: xarray.DataArray
+   :param flood_depth_threshold: The minimum depth specified to consider a pixel in the raster flooded
+   :type flood_depth_threshold: float
+
+   :returns: A GeoDataFrame containing polygons of the flooded areas
+   :rtype: gpd.GeoDataFrame
+
+

@@ -1,0 +1,61 @@
+floodresilience.blueprint
+=========================
+
+.. py:module:: floodresilience.blueprint
+
+.. autoapi-nested-parse::
+
+   Endpoints and flask configuration for the Flood Resilience Digital Twin
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.blueprint.flood_resilience_blueprint
+   floodresilience.blueprint.processes
+   floodresilience.blueprint.process_descriptor
+   floodresilience.blueprint.service
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.blueprint.wps
+   floodresilience.blueprint.refresh_lidar_data_sources
+
+
+Module Contents
+---------------
+
+.. py:data:: flood_resilience_blueprint
+
+.. py:data:: processes
+
+.. py:data:: process_descriptor
+
+.. py:data:: service
+
+.. py:function:: wps() -> pywps.Service
+
+   End point for OGC WebProcessingService spec, allowing clients such as TerriaJS to request processing.
+
+   :returns: The PyWPS WebProcessing Service instance
+   :rtype: Service
+
+
+.. py:function:: refresh_lidar_data_sources() -> flask.Response
+
+   Update LiDAR data sources to the most recent.
+   Web-scrape OpenTopography metadata to update the datasets table containing links to LiDAR data sources.
+   Takes a long time to run but needs to be run periodically so that the datasets are up to date.
+   Supported methods: POST
+
+   :returns: ACCEPTED is the expected response. Response body contains Celery taskId
+   :rtype: Response
+
+

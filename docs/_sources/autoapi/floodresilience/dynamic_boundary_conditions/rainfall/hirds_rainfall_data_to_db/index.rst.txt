@@ -1,0 +1,110 @@
+floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db
+==============================================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db
+
+.. autoapi-nested-parse::
+
+   Store the rainfall data for all the sites within the catchment area in the database.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.db_rain_table_name
+   floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_site_ids_in_catchment
+   floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.get_site_ids_not_in_db
+   floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_rainfall_data_to_db
+   floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.add_each_site_rainfall_data
+   floodresilience.dynamic_boundary_conditions.rainfall.hirds_rainfall_data_to_db.rainfall_data_to_db
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: db_rain_table_name(idf: bool) -> str
+
+   Return the relevant rainfall data table name used in the database.
+
+   :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
+   :type idf: bool
+
+   :returns: The relevant rainfall data table name.
+   :rtype: str
+
+
+.. py:function:: get_site_ids_in_catchment(sites_in_catchment: geopandas.GeoDataFrame) -> List[str]
+
+   Get the rainfall site IDs within the catchment area.
+
+   :param sites_in_catchment: Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+   :type sites_in_catchment: gpd.GeoDataFrame
+
+   :returns: The rainfall site IDs within the catchment area.
+   :rtype: List[str]
+
+
+.. py:function:: get_site_ids_not_in_db(engine: sqlalchemy.engine.Engine, site_ids_in_catchment: List[str], idf: bool) -> List[str]
+
+   Get the list of rainfall site IDs that are within the catchment area but not in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param site_ids_in_catchment: Rainfall site IDs within the catchment area.
+   :type site_ids_in_catchment: List[str]
+   :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
+   :type idf: bool
+
+   :returns: The rainfall site IDs within the catchment area but not present in the database.
+   :rtype: List[str]
+
+
+.. py:function:: add_rainfall_data_to_db(engine: sqlalchemy.engine.Engine, site_id: str, idf: bool) -> None
+
+   Store the rainfall data for a specific site in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param site_id: HIRDS rainfall site ID.
+   :type site_id: str
+   :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
+   :type idf: bool
+
+
+.. py:function:: add_each_site_rainfall_data(engine: sqlalchemy.engine.Engine, site_ids_list: List[str], idf: bool) -> None
+
+   Add rainfall data for each site in the site_ids_list to the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param site_ids_list: List of rainfall sites' IDs.
+   :type site_ids_list: List[str]
+   :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
+   :type idf: bool
+
+
+.. py:function:: rainfall_data_to_db(engine: sqlalchemy.engine.Engine, sites_in_catchment: geopandas.GeoDataFrame, idf: bool = False) -> None
+
+   Store rainfall data of all the sites within the catchment area in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param sites_in_catchment: Rainfall sites coverage areas (Thiessen polygons) that intersect or are within the catchment area.
+   :type sites_in_catchment: gpd.GeoDataFrame
+   :param idf: Set to False for rainfall depth data, and True for rainfall intensity data.
+   :type idf: bool = False
+
+

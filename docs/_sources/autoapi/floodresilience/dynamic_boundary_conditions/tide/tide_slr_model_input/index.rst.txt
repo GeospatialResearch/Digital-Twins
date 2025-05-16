@@ -1,0 +1,51 @@
+floodresilience.dynamic_boundary_conditions.tide.tide_slr_model_input
+=====================================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.tide.tide_slr_model_input
+
+.. autoapi-nested-parse::
+
+   Generates the requested water level uniform boundary model input for BG-Flood.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.tide.tide_slr_model_input.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.tide.tide_slr_model_input.remove_existing_boundary_inputs
+   floodresilience.dynamic_boundary_conditions.tide.tide_slr_model_input.generate_uniform_boundary_input
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: remove_existing_boundary_inputs(bg_flood_dir: pathlib.Path) -> None
+
+   Remove existing uniform boundary input files from the specified directory.
+
+   :param bg_flood_dir: BG-Flood model directory containing the uniform boundary input files.
+   :type bg_flood_dir: pathlib.Path
+
+
+.. py:function:: generate_uniform_boundary_input(bg_flood_dir: pathlib.Path, tide_slr_data: pandas.DataFrame) -> None
+
+   Generate the requested water level uniform boundary model input for BG-Flood.
+
+   :param bg_flood_dir: The BG-Flood model directory.
+   :type bg_flood_dir: pathlib.Path
+   :param tide_slr_data: A DataFrame containing the combined tide and sea level rise data.
+   :type tide_slr_data: pd.DataFrame
+
+

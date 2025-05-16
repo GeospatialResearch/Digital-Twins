@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.digitaltwin.arcgis_rest_api &mdash; Flood Resilience Digital Twin (FReDT) 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=51b770b3"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="src.digitaltwin.data_to_db" href="../data_to_db/index.html" />
+    <link rel="prev" title="src.digitaltwin" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">src</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../app/index.html">src.app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../check_celery_alive/index.html">src.check_celery_alive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../config/index.html">src.config</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">src.digitaltwin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../geoserver/index.html">src.geoserver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../run_all/index.html">src.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../tasks/index.html">src.tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../floodresilience/index.html">floodresilience</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.digitaltwin</a></li>
+      <li class="breadcrumb-item active">src.digitaltwin.arcgis_rest_api</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/src/digitaltwin/arcgis_rest_api/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.digitaltwin.arcgis_rest_api">
+<span id="src-digitaltwin-arcgis-rest-api"></span><h1>src.digitaltwin.arcgis_rest_api<a class="headerlink" href="#module-src.digitaltwin.arcgis_rest_api" title="Link to this heading"></a></h1>
+<p>This script provides functions to interact with ArcGIS REST API feature layers, generate query parameters, and
+retrieve geographic data for a specified area of interest.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api.log" title="src.digitaltwin.arcgis_rest_api.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api.RecordCounts" title="src.digitaltwin.arcgis_rest_api.RecordCounts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RecordCounts</span></code></a></p></td>
+<td><p>Represents the record counts of the feature layer.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api.get_feature_layer_record_counts" title="src.digitaltwin.arcgis_rest_api.get_feature_layer_record_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_layer_record_counts</span></code></a>(→ RecordCounts)</p></td>
+<td><p>Retrieve the maximum and total record counts from the feature layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api.gen_query_param_list" title="src.digitaltwin.arcgis_rest_api.gen_query_param_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_query_param_list</span></code></a>(→ List[Dict[str, Union[str, int]]])</p></td>
+<td><p>Generate a list of API query parameters used to retrieve ArcGIS REST API data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api._fetch_geo_data" title="src.digitaltwin.arcgis_rest_api._fetch_geo_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_fetch_geo_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Fetch geographic data using the provided query parameters within a single API call.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api.fetch_geo_data_for_aoi" title="src.digitaltwin.arcgis_rest_api.fetch_geo_data_for_aoi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_geo_data_for_aoi</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Retrieve geographic data for the area of interest using the ArcGIS REST API.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api.fetch_arcgis_rest_api_data" title="src.digitaltwin.arcgis_rest_api.fetch_arcgis_rest_api_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_arcgis_rest_api_data</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Retrieve geographic data for the area of interest using the ArcGIS REST API.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api.log">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.arcgis_rest_api.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api.RecordCounts">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.arcgis_rest_api.</span></span><span class="sig-name descname"><span class="pre">RecordCounts</span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api.RecordCounts" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>Represents the record counts of the feature layer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api.RecordCounts.max_record_count">
+<span class="sig-name descname"><span class="pre">max_record_count</span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api.RecordCounts.max_record_count" title="Link to this definition"></a></dt>
+<dd><p>The maximum number of records that will be returned per query.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api.RecordCounts.total_record_count">
+<span class="sig-name descname"><span class="pre">total_record_count</span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api.RecordCounts.total_record_count" title="Link to this definition"></a></dt>
+<dd><p>The total number of records available in the feature layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">max_record_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">total_record_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api.get_feature_layer_record_counts">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.arcgis_rest_api.</span></span><span class="sig-name descname"><span class="pre">get_feature_layer_record_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api.RecordCounts" title="src.digitaltwin.arcgis_rest_api.RecordCounts"><span class="pre">RecordCounts</span></a></span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api.get_feature_layer_record_counts" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the maximum and total record counts from the feature layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>str</em>) – The URL of the feature layer.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A named tuple containing the maximum and total record counts of the feature layer.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.digitaltwin.arcgis_rest_api.RecordCounts" title="src.digitaltwin.arcgis_rest_api.RecordCounts">RecordCounts</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If there is an issue with retrieving the record counts from the feature layer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api.gen_query_param_list">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.arcgis_rest_api.</span></span><span class="sig-name descname"><span class="pre">gen_query_param_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_sr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api.gen_query_param_list" title="Link to this definition"></a></dt>
+<dd><p>Generate a list of API query parameters used to retrieve ArcGIS REST API data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>str</em>) – The URL of the feature layer.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame = None</em>) – A GeoDataFrame representing the area of interest for data retrieval. If not provided, all data will be fetched.</p></li>
+<li><p><strong>output_sr</strong> (<em>int = None</em>) – The EPSG code of the spatial reference system in which the requested data should be returned if no area of
+interest is provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of API query parameters used to retrieve ArcGIS REST API data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict[str, Union[str, int]]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>output_sr</cite> is provided when <cite>area_of_interest</cite> is given.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api._fetch_geo_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.arcgis_rest_api.</span></span><span class="sig-name descname"><span class="pre">_fetch_geo_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aiohttp.ClientSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api._fetch_geo_data" title="Link to this definition"></a></dt>
+<dd><p>Fetch geographic data using the provided query parameters within a single API call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>aiohttp.ClientSession</em>) – An instance of <cite>aiohttp.ClientSession</cite> used for making HTTP requests.</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – The URL of the feature layer.</p></li>
+<li><p><strong>query_param</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em><em>]</em>) – The query parameters used to retrieve geographic data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched geographic data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api.fetch_geo_data_for_aoi">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.digitaltwin.arcgis_rest_api.</span></span><span class="sig-name descname"><span class="pre">fetch_geo_data_for_aoi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_sr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api.fetch_geo_data_for_aoi" title="Link to this definition"></a></dt>
+<dd><p>Retrieve geographic data for the area of interest using the ArcGIS REST API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>str</em>) – The URL of the feature layer.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame = None</em>) – A GeoDataFrame representing the area of interest for data retrieval. If not provided, all data will be fetched.</p></li>
+<li><p><strong>output_sr</strong> (<em>int = None</em>) – The EPSG code of the spatial reference system in which the requested data should be returned if no area of
+interest is provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched geographic data for the area of interest.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.digitaltwin.arcgis_rest_api.fetch_arcgis_rest_api_data">
+<span class="sig-prename descclassname"><span class="pre">src.digitaltwin.arcgis_rest_api.</span></span><span class="sig-name descname"><span class="pre">fetch_arcgis_rest_api_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_of_interest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_sr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.digitaltwin.arcgis_rest_api.fetch_arcgis_rest_api_data" title="Link to this definition"></a></dt>
+<dd><p>Retrieve geographic data for the area of interest using the ArcGIS REST API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>str</em>) – The URL of the feature layer.</p></li>
+<li><p><strong>area_of_interest</strong> (<em>gpd.GeoDataFrame = None</em>) – A GeoDataFrame representing the area of interest for data retrieval. If not provided, all data will be fetched.</p></li>
+<li><p><strong>output_sr</strong> (<em>int = None</em>) – The EPSG code of the spatial reference system in which the requested data should be returned if no area of
+interest is provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the fetched geographic data for the area of interest.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If failed to fetch geographic data for the area of interest.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="src.digitaltwin" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../data_to_db/index.html" class="btn btn-neutral float-right" title="src.digitaltwin.data_to_db" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2025, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

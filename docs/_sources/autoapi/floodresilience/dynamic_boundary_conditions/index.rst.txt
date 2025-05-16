@@ -1,0 +1,23 @@
+floodresilience.dynamic_boundary_conditions
+===========================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions
+
+.. autoapi-nested-parse::
+
+   Package to handle data and operations specific to dynamic boundary conditions,
+   such as rainfall, tide and sea level rise, and river.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/river/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/tide/index
+
+

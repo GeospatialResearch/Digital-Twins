@@ -1,0 +1,267 @@
+floodresilience.tables
+======================
+
+.. py:module:: floodresilience.tables
+
+.. autoapi-nested-parse::
+
+   This script contains SQLAlchemy models for FReDT database tables and utility functions for database operations.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   floodresilience.tables.RiverNetworkExclusions
+   floodresilience.tables.RiverNetwork
+   floodresilience.tables.BGFloodModelOutput
+   floodresilience.tables.BuildingFloodStatus
+
+
+Module Contents
+---------------
+
+.. py:class:: RiverNetworkExclusions
+
+   Bases: :py:obj:`src.digitaltwin.tables.Base`
+
+
+   Class representing the 'rec_network_exclusions' table.
+
+   .. attribute:: __tablename__
+
+      Name of the database table.
+
+      :type: str
+
+   .. attribute:: rec_network_id
+
+      An identifier for the river network associated with each new run.
+
+      :type: int
+
+   .. attribute:: objectid
+
+      An identifier for the REC river object matching from the 'rec_data' table.
+
+      :type: int
+
+   .. attribute:: exclusion_cause
+
+      Cause of exclusion, i.e., the reason why the REC river geometry was excluded.
+
+      :type: str
+
+   .. attribute:: geometry
+
+      Geometric representation of the excluded REC river features.
+
+      :type: LineString
+
+
+   .. py:attribute:: __tablename__
+      :value: 'rec_network_exclusions'
+
+
+
+   .. py:attribute:: rec_network_id
+
+
+   .. py:attribute:: objectid
+
+
+   .. py:attribute:: exclusion_cause
+
+
+   .. py:attribute:: geometry
+
+
+   .. py:attribute:: __table_args__
+
+
+.. py:class:: RiverNetwork
+
+   Bases: :py:obj:`src.digitaltwin.tables.Base`
+
+
+   Class representing the 'rec_network' table.
+
+   .. attribute:: __tablename__
+
+      Name of the database table.
+
+      :type: str
+
+   .. attribute:: rec_network_id
+
+      An identifier for the river network associated with each new run (primary key).
+
+      :type: int
+
+   .. attribute:: network_path
+
+      Path to the REC river network file.
+
+      :type: str
+
+   .. attribute:: network_data_path
+
+      Path to the REC river network data file for the AOI.
+
+      :type: str
+
+   .. attribute:: created_at
+
+      Timestamp indicating when the output was created.
+
+      :type: datetime
+
+   .. attribute:: geometry
+
+      Geometric representation of the catchment area coverage.
+
+      :type: Polygon
+
+
+   .. py:attribute:: __tablename__
+      :value: 'rec_network'
+
+
+
+   .. py:attribute:: rec_network_id
+
+
+   .. py:attribute:: network_path
+
+
+   .. py:attribute:: network_data_path
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: geometry
+
+
+.. py:class:: BGFloodModelOutput
+
+   Bases: :py:obj:`src.digitaltwin.tables.Base`
+
+
+   Class representing the 'bg_flood_model_output' table.
+
+   .. attribute:: __tablename__
+
+      Name of the database table.
+
+      :type: str
+
+   .. attribute:: unique_id
+
+      Unique identifier for each entry (primary key).
+
+      :type: int
+
+   .. attribute:: file_name
+
+      Name of the flood model output file.
+
+      :type: str
+
+   .. attribute:: file_path
+
+      Path to the flood model output file.
+
+      :type: str
+
+   .. attribute:: created_at
+
+      Timestamp indicating when the output was created.
+
+      :type: datetime
+
+   .. attribute:: geometry
+
+      Geometric representation of the catchment area coverage.
+
+      :type: Polygon
+
+
+   .. py:attribute:: __tablename__
+      :value: 'bg_flood_model_output'
+
+
+
+   .. py:attribute:: unique_id
+
+
+   .. py:attribute:: file_name
+
+
+   .. py:attribute:: file_path
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: geometry
+
+
+.. py:class:: BuildingFloodStatus
+
+   Bases: :py:obj:`src.digitaltwin.tables.Base`
+
+
+   Class representing the 'building_flood_status' table.
+   Represents if a building is flooded for a given flood model output
+
+   .. attribute:: __tablename__
+
+      Name of the database table.
+
+      :type: str
+
+   .. attribute:: unique_id
+
+      Unique identifier for each entry (primary key).
+
+      :type: int
+
+   .. attribute:: building_outline_id
+
+      Foreign key building outline id matching from nz_building_outlines table
+
+      :type: int
+
+   .. attribute:: is_flooded
+
+      If the building is flooded or not
+
+      :type: bool
+
+   .. attribute:: flood_model_id
+
+      Foreign key mathing the unique_id from bg_flood_model_output table
+
+      :type: int.
+
+
+   .. py:attribute:: __tablename__
+      :value: 'building_flood_status'
+
+
+
+   .. py:attribute:: unique_id
+
+
+   .. py:attribute:: building_outline_id
+
+
+   .. py:attribute:: is_flooded
+
+
+   .. py:attribute:: flood_model_id
+
+

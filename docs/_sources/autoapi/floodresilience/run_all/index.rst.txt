@@ -1,0 +1,27 @@
+floodresilience.run_all
+=======================
+
+.. py:module:: floodresilience.run_all
+
+.. autoapi-nested-parse::
+
+   This script runs each module in the Digital Twin using a Sample Polygon.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.run_all.DEFAULT_MODULES_TO_PARAMETERS
+   floodresilience.run_all.sample_polygon
+
+
+Module Contents
+---------------
+
+.. py:data:: DEFAULT_MODULES_TO_PARAMETERS
+
+.. py:data:: sample_polygon
+

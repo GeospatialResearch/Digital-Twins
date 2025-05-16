@@ -81,7 +81,7 @@ Module Contents
 
 .. py:function:: get_geospatial_layer_info(layer_row: pandas.Series) -> Tuple[str, int, str, str]
 
-   Extracts geospatial layer information from a single layer entry.
+   Extract geospatial layer information from a single layer entry.
 
    :param layer_row: A geospatial layer row that represents a single geospatial layer along with its associated information.
    :type layer_row: pd.Series
@@ -112,7 +112,7 @@ Module Contents
 
 .. py:function:: nz_geospatial_layers_data_to_db(engine: sqlalchemy.engine.Engine, crs: int = 2193, verbose: bool = False) -> None
 
-   Fetches New Zealand geospatial layers data using 'geoapis' and stores it into the database.
+   Fetch New Zealand geospatial layers data using 'geoapis' and store it into the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
@@ -120,9 +120,6 @@ Module Contents
    :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
    :type verbose: bool = False
-
-   :returns: This function does not return any value.
-   :rtype: None
 
 
 .. py:function:: get_non_intersection_area_from_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, table_name: str) -> geopandas.GeoDataFrame
@@ -145,7 +142,7 @@ Module Contents
 
 .. py:function:: process_new_non_nz_geospatial_layers(engine: sqlalchemy.engine.Engine, data_provider: str, layer_id: int, table_name: str, area_of_interest: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
 
-   Fetches new non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+   Fetch new non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
@@ -162,13 +159,10 @@ Module Contents
    :param verbose: Whether to print messages. Default is False.
    :type verbose: bool = False
 
-   :returns: This function does not return any value.
-   :rtype: None
-
 
 .. py:function:: process_existing_non_nz_geospatial_layers(engine: sqlalchemy.engine.Engine, data_provider: str, layer_id: int, table_name: str, unique_column_name: str, area_of_interest: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
 
-   Fetches existing non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+   Fetch existing non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
@@ -187,13 +181,10 @@ Module Contents
    :param verbose: Whether to print messages. Default is False.
    :type verbose: bool = False
 
-   :returns: This function does not return any value.
-   :rtype: None
-
 
 .. py:function:: non_nz_geospatial_layers_data_to_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
 
-   Fetches non-NZ geospatial layers data using 'geoapis' and stores it into the database.
+   Fetch non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
@@ -203,14 +194,11 @@ Module Contents
    :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
    :type verbose: bool = False
-
-   :returns: This function does not return any value.
-   :rtype: None
 
 
 .. py:function:: store_geospatial_layers_data_to_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
 
-   Fetches geospatial layers data using 'geoapis' and stores it into the database.
+   Fetch geospatial layers data using 'geoapis' and store it into the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
@@ -220,9 +208,6 @@ Module Contents
    :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
    :type verbose: bool = False
-
-   :returns: This function does not return any value.
-   :rtype: None
 
 
 .. py:function:: user_log_info_to_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> None
@@ -233,8 +218,5 @@ Module Contents
    :type engine: Engine
    :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
-
-   :returns: This function does not return any value.
-   :rtype: None
 
 

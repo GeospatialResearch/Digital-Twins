@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.geoserver.geoserver_common &mdash; Flood Resilience Digital Twin (FReDT) 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=51b770b3"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="src.geoserver.netcdf_layers" href="../netcdf_layers/index.html" />
+    <link rel="prev" title="src.geoserver.database_layers" href="../database_layers/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">src</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../app/index.html">src.app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../check_celery_alive/index.html">src.check_celery_alive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../config/index.html">src.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../digitaltwin/index.html">src.digitaltwin</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">src.geoserver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../run_all/index.html">src.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../tasks/index.html">src.tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../floodresilience/index.html">floodresilience</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.geoserver</a></li>
+      <li class="breadcrumb-item active">src.geoserver.geoserver_common</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/src/geoserver/geoserver_common/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.geoserver.geoserver_common">
+<span id="src-geoserver-geoserver-common"></span><h1>src.geoserver.geoserver_common<a class="headerlink" href="#module-src.geoserver.geoserver_common" title="Link to this heading"></a></h1>
+<p>Core functions for serving data and working with workspaces in geoserver.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.log" title="src.geoserver.geoserver_common.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common._xml_header" title="src.geoserver.geoserver_common._xml_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_xml_header</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.get_geoserver_url" title="src.geoserver.geoserver_common.get_geoserver_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geoserver_url</span></code></a>(→ str)</p></td>
+<td><p>Retrieve full GeoServer URL from environment variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.create_workspace_if_not_exists" title="src.geoserver.geoserver_common.create_workspace_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_workspace_if_not_exists</span></code></a>(→ None)</p></td>
+<td><p>Create a GeoServer workspace if it does not currently exist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.upload_file_to_store" title="src.geoserver.geoserver_common.upload_file_to_store"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_file_to_store</span></code></a>(→ None)</p></td>
+<td><p>Upload a file to a new GeoServer store, to enable serving.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.send_create_layer_request" title="src.geoserver.geoserver_common.send_create_layer_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_create_layer_request</span></code></a>(→ None)</p></td>
+<td><p>Create a GeoServer Layer from a GeoServer store, making it ready to serve.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.style_exists" title="src.geoserver.geoserver_common.style_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">style_exists</span></code></a>(→ bool)</p></td>
+<td><p>Check if a GeoServer style definition already exists for a given style_name.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.geoserver.geoserver_common.log">
+<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.geoserver.geoserver_common.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.geoserver.geoserver_common._xml_header">
+<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">_xml_header</span></span><a class="headerlink" href="#src.geoserver.geoserver_common._xml_header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.geoserver.geoserver_common.get_geoserver_url">
+<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">get_geoserver_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#src.geoserver.geoserver_common.get_geoserver_url" title="Link to this definition"></a></dt>
+<dd><p>Retrieve full GeoServer URL from environment variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The full GeoServer URL</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.geoserver.geoserver_common.create_workspace_if_not_exists">
+<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">create_workspace_if_not_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.geoserver.geoserver_common.create_workspace_if_not_exists" title="Link to this definition"></a></dt>
+<dd><p>Create a GeoServer workspace if it does not currently exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>workspace_name</strong> (<em>str</em>) – The name of the workspace to create if it does not exists.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPError</strong> – If geoserver responds with an error, raises it as an exception since it is unexpected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.geoserver.geoserver_common.upload_file_to_store">
+<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">upload_file_to_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geoserver_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_to_add</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.geoserver.geoserver_common.upload_file_to_store" title="Link to this definition"></a></dt>
+<dd><p>Upload a file to a new GeoServer store, to enable serving.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geoserver_url</strong> (<em>str</em>) – The URL to the geoserver instance.</p></li>
+<li><p><strong>file_to_add</strong> (<em>pathlib.Path</em>) – The filepath to the GeoTiff file to be served, currently support NetCDF and GeoTiff.</p></li>
+<li><p><strong>store_name</strong> (<em>str</em>) – The name of the new Geoserver store to be created.</p></li>
+<li><p><strong>workspace_name</strong> (<em>str</em>) – The name of the existing GeoServer workspace that the store is to be added to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>HTTPError</strong> – If geoserver responds with an error, raises it as an exception since it is unexpected.</p></li>
+<li><p><strong>ValueError</strong> – If file_to_add does not have a file extension matching one of the supported file types..</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.geoserver.geoserver_common.send_create_layer_request">
+<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">send_create_layer_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geoserver_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverage_payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.geoserver.geoserver_common.send_create_layer_request" title="Link to this definition"></a></dt>
+<dd><p>Create a GeoServer Layer from a GeoServer store, making it ready to serve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geoserver_url</strong> (<em>str</em>) – The URL to the geoserver instance.</p></li>
+<li><p><strong>layer_name</strong> (<em>str</em>) – Defines the name of the layer in GeoServer.</p></li>
+<li><p><strong>workspace_name</strong> (<em>str</em>) – The name of the existing GeoServer workspace that the store is to be added to.</p></li>
+<li><p><strong>coverage_payload</strong> (<em>str</em>) – The coverage XML data to send in the Geoserver request payload.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPError</strong> – If geoserver responds with an error, raises it as an exception since it is unexpected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.geoserver.geoserver_common.style_exists">
+<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">style_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.geoserver.geoserver_common.style_exists" title="Link to this definition"></a></dt>
+<dd><p>Check if a GeoServer style definition already exists for a given style_name.
+The style definition may be empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>style_name</strong> (<em>str</em>) – The name of the style to check for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the style exists, although it may be empty.
+False if it does not exist.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPError</strong> – If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../database_layers/index.html" class="btn btn-neutral float-left" title="src.geoserver.database_layers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../netcdf_layers/index.html" class="btn btn-neutral float-right" title="src.geoserver.netcdf_layers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2025, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

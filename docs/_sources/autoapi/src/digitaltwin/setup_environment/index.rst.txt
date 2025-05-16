@@ -48,12 +48,10 @@ Module Contents
 
 .. py:function:: get_connection_from_profile() -> sqlalchemy.engine.Engine
 
-   Sets up database connection from configuration.
+   Set up database connection from configuration.
 
    :returns: The engine used to connect to the database.
    :rtype: Engine
-
-   :raises ValueError: If one or more connection credentials are missing in the .env file.
 
 
 .. py:function:: get_engine(host: str, port: str, db: str, username: str, password: str) -> sqlalchemy.engine.Engine

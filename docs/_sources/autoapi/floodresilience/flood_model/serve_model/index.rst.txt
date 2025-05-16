@@ -1,0 +1,95 @@
+floodresilience.flood_model.serve_model
+=======================================
+
+.. py:module:: floodresilience.flood_model.serve_model
+
+.. autoapi-nested-parse::
+
+   Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
+   or other clients.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.flood_model.serve_model.log
+   floodresilience.flood_model.serve_model._xml_header
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible
+   floodresilience.flood_model.serve_model.convert_nc_to_gtiff
+   floodresilience.flood_model.serve_model.create_building_layers
+   floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists
+   floodresilience.flood_model.serve_model.add_model_output_to_geoserver
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:data:: _xml_header
+
+.. py:function:: convert_nc_to_geoserver_compatible(orig_nc_file_path: pathlib.Path) -> pathlib.Path
+
+   Create a geoserver compliant netCDF file from a netCDF model output.
+   Following compliance from COARDS convention.
+       https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html#notes-on-supported-netcdfs
+
+   :param orig_nc_file_path: The file path to the netCDF file.
+   :type orig_nc_file_path: pathlib.Path
+
+   :returns: The filepath of the new compliant netCDF file.
+   :rtype: pathlib.Path
+
+
+.. py:function:: convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path
+
+   Create a GeoTiff file from a netCDF model output. The TIFF represents the max flood height in the model output.
+
+   :param nc_file_path: The file path to the netCDF file.
+   :type nc_file_path: pathlib.Path
+
+   :returns: The filepath of the new GeoTiff file.
+   :rtype: pathlib.Path
+
+
+.. py:function:: create_building_layers(workspace_name: str, data_store_name: str) -> None
+
+   Create dynamic GeoServer layers "nz_building_outlines" and "building_flood_status" for the given workspace.
+   If they already exist then do nothing.
+   "building_flood_status" requires viewparam=scenario:{model_id} to dynamically fetch correct flood statuses.
+
+   :param workspace_name: The name of the workspace to create views for.
+   :type workspace_name: str
+   :param data_store_name: The name of the datastore that the building layer is being created from.
+   :type data_store_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: create_building_database_views_if_not_exists() -> None
+
+   Create a GeoServer workspace and building layers using database views if they do not currently exist.
+   These only need to be created once per database.
+
+
+.. py:function:: add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int) -> None
+
+   Add the model output max depths to GeoServer, ready for serving.
+   The GeoServer layer name will be f"Output_{model_id}" and the workspace name will be "{db_name}-dt-model-outputs"
+
+   :param model_output_path: The file path to the model output to serve.
+   :type model_output_path: pathlib.Path
+   :param model_id: The database id of the model output.
+   :type model_id: int
+
+

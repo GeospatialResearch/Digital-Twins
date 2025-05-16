@@ -1,0 +1,114 @@
+src.geoserver
+=============
+
+.. py:module:: src.geoserver
+
+.. autoapi-nested-parse::
+
+   Functions and utilities for loading and serving data with geoserver.
+   Imports here are accessible directly by `from src import geoserver`.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/src/geoserver/database_layers/index
+   /autoapi/src/geoserver/geoserver_common/index
+   /autoapi/src/geoserver/netcdf_layers/index
+   /autoapi/src/geoserver/raster_layers/index
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.geoserver.create_datastore_layer
+   src.geoserver.create_db_store_if_not_exists
+   src.geoserver.create_workspace_if_not_exists
+   src.geoserver.add_nc_to_geoserver
+   src.geoserver.add_gtiff_to_geoserver
+   src.geoserver.create_viridis_style_if_not_exists
+
+
+Package Contents
+----------------
+
+.. py:function:: create_datastore_layer(workspace_name: str, data_store_name: str, layer_name: str, metadata_elem: str = '') -> None
+
+   Create a GeoServer layer for a given data store if it does not currently exist.
+   Can be used to create layers for a database table, or to create a database view for a custom dynamic query.
+
+   :param workspace_name: The name of the workspace the data store is associated to
+   :type workspace_name: str
+   :param data_store_name: The name of the data store the layer is being created from.
+   :type data_store_name: str
+   :param layer_name: The name of the new layer.
+                      This is the same as the name of the database table if creating a layer from a table.
+   :type layer_name: str
+   :param metadata_elem: An optional XML str that contains the metadata element used to configure custom SQL queries.
+   :type metadata_elem: str = ""
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_store_name: str) -> None
+
+   Create PostGIS database store in a GeoServer workspace for a given database.
+   If it already exists, do not do anything.
+
+   :param db_name: The name of the connected database, to connect datastore to
+   :type db_name: str
+   :param workspace_name: The name of the workspace to create views for
+   :type workspace_name: str
+   :param new_data_store_name: The name of the new datastore to create
+   :type new_data_store_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: create_workspace_if_not_exists(workspace_name: str) -> None
+
+   Create a GeoServer workspace if it does not currently exist.
+
+   :param workspace_name: The name of the workspace to create if it does not exists.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: add_nc_to_geoserver(nc_filepath: pathlib.Path, band_name: str, workspace_name: str, model_id: int) -> None
+
+   Upload a NetCDF file to GeoServer, ready for serving to clients.
+
+   :param nc_filepath: The filepath to the NetCDF file to be served.
+   :type nc_filepath: pathlib.Path
+   :param band_name: The name of the NetCDF band/layer getting served
+   :type band_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param model_id: The id of the model being added, to facilitate layer naming.
+   :type model_id: int
+
+
+.. py:function:: add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, model_id: int) -> None
+
+   Upload a GeoTiff file to GeoServer, ready for serving to clients.
+
+   :param gtiff_filepath: The filepath to the GeoTiff file to be served.
+   :type gtiff_filepath: pathlib.Path
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param model_id: The id of the model being added, to facilitate layer naming.
+   :type model_id: int
+
+
+.. py:function:: create_viridis_style_if_not_exists() -> None
+
+   Create a GeoServer style for rasters using the viridis color scale.
+
+

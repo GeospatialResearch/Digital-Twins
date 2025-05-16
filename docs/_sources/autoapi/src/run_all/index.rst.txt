@@ -9,21 +9,13 @@ src.run_all
 
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   src.run_all.DEFAULT_MODULES_TO_PARAMETERS
-   src.run_all.sample_polygon
-
-
 Functions
 ---------
 
 .. autoapisummary::
 
    src.run_all.main
+   src.run_all.create_sample_polygon
 
 
 Module Contents
@@ -31,7 +23,7 @@ Module Contents
 
 .. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, modules_to_parameters: Dict[types.ModuleType, Dict[str, Union[str, int, float, bool, None, enum.Enum]]]) -> None
 
-   Runs each module in the Digital Twin using the selected polygon and the defined parameters for each module's
+   Run each module in modules_to_parameters using the selected polygon and the defined parameters for each module's
    main function.
 
    :param selected_polygon_gdf: A GeoDataFrame representing the selected polygon, i.e., the catchment area.
@@ -47,11 +39,14 @@ Module Contents
                                  - LogLevel.NOTSET (0)
    :type modules_to_parameters: Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]
 
-   :returns: This function does not return any value.
-   :rtype: None
 
+.. py:function:: create_sample_polygon() -> geopandas.GeoDataFrame
 
-.. py:data:: DEFAULT_MODULES_TO_PARAMETERS
+   Create a sample area of interest polygon for development purposes.
+   This sample polygon is rectangular, but has non-whole number edges caused by serialisation rounding errors.
+   These deliberate errors are to simulate the production system more accurarately.
 
-.. py:data:: sample_polygon
+   :returns: A GeoDataFrame containing a single rectangular polygon for the area of interest.
+   :rtype: gpd.GeoDataFrame
+
 

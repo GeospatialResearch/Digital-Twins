@@ -1,0 +1,91 @@
+floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data
+====================================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data
+
+.. autoapi-nested-parse::
+
+   This script handles the downloading and reading of sea level rise data from the NZ Sea level rise datasets,
+   storing the data in the database, and retrieving the closest sea level rise data from the database for all locations
+   in the provided tide data.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data.modify_slr_data_from_takiwa
+   floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data.get_slr_data_from_takiwa
+   floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data.store_slr_data_to_db
+   floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data.get_closest_slr_data
+   floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data.get_slr_data_from_db
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: modify_slr_data_from_takiwa(slr_nz_dict: Dict[str, pandas.DataFrame]) -> geopandas.GeoDataFrame
+
+   Modify sea level rise data stored under dictionary to a GeoDataFrame and return.
+
+   :param slr_nz_dict: A dictionary containing the sea level rise data from the NZ Sea level rise datasets.
+   :type slr_nz_dict: Dict[str, pd.DataFrame]
+
+   :returns: A GeoDataFrame containing the sea level rise data from the NZ Sea level rise datasets.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_slr_data_from_takiwa() -> geopandas.GeoDataFrame
+
+   Fetch sea level rise data from the NZ SeaRise Takiwa website.
+
+   :returns: A GeoDataFrame containing the sea level rise data from the NZ Sea level rise datasets.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: store_slr_data_to_db(engine: sqlalchemy.engine.Engine) -> None
+
+   Store sea level rise data to the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+
+
+.. py:function:: get_closest_slr_data(engine: sqlalchemy.engine.Engine, single_query_loc: pandas.Series) -> geopandas.GeoDataFrame
+
+   Retrieve the closest sea level rise data for a single query location from the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param single_query_loc: Pandas Series containing the location coordinate and additional information used for retrieval.
+   :type single_query_loc: pd.Series
+
+   :returns: A GeoDataFrame containing the closest sea level rise data for the query location from the database.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_slr_data_from_db(engine: sqlalchemy.engine.Engine, tide_data: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Retrieve the closest sea level rise data from the database for all locations in the provided tide data.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param tide_data: A GeoDataFrame containing tide data with added time information (seconds, minutes, hours) and location details.
+   :type tide_data: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the closest sea level rise data for all locations in the tide data.
+   :rtype: gpd.GeoDataFrame
+
+

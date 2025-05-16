@@ -1,0 +1,67 @@
+floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites
+===================================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites
+
+.. autoapi-nested-parse::
+
+   Fetch rainfall sites data from the HIRDS website and store it in the database.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites.get_hirds_headers
+   floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites.get_rainfall_sites_data
+   floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites.get_rainfall_sites_in_df
+   floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites.rainfall_sites_to_db
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: get_hirds_headers() -> requests.structures.CaseInsensitiveDict
+
+   Generate a set of HTTP headers for making requests to HIRDS.
+
+   :returns: A dictionary containing HTTP headers required for requests to HIRDS.
+   :rtype: CaseInsensitiveDict
+
+
+.. py:function:: get_rainfall_sites_data() -> str
+
+   Get rainfall sites data from the HIRDS website.
+
+   :returns: The rainfall sites data as a string.
+   :rtype: str
+
+
+.. py:function:: get_rainfall_sites_in_df() -> geopandas.GeoDataFrame
+
+   Get rainfall sites data from the HIRDS website and transform it into a GeoDataFrame.
+
+   :returns: A GeoDataFrame containing the rainfall sites data.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: rainfall_sites_to_db(engine: sqlalchemy.engine.Engine) -> None
+
+   Store rainfall sites data from the HIRDS website in the database.
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+
+

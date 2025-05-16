@@ -1,0 +1,157 @@
+src.digitaltwin.arcgis_rest_api
+===============================
+
+.. py:module:: src.digitaltwin.arcgis_rest_api
+
+.. autoapi-nested-parse::
+
+   This script provides functions to interact with ArcGIS REST API feature layers, generate query parameters, and
+   retrieve geographic data for a specified area of interest.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.digitaltwin.arcgis_rest_api.log
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.digitaltwin.arcgis_rest_api.RecordCounts
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.digitaltwin.arcgis_rest_api.get_feature_layer_record_counts
+   src.digitaltwin.arcgis_rest_api.gen_query_param_list
+   src.digitaltwin.arcgis_rest_api._fetch_geo_data
+   src.digitaltwin.arcgis_rest_api.fetch_geo_data_for_aoi
+   src.digitaltwin.arcgis_rest_api.fetch_arcgis_rest_api_data
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:class:: RecordCounts
+
+   Bases: :py:obj:`NamedTuple`
+
+
+   Represents the record counts of the feature layer.
+
+   .. attribute:: max_record_count
+
+      The maximum number of records that will be returned per query.
+
+      :type: int
+
+   .. attribute:: total_record_count
+
+      The total number of records available in the feature layer.
+
+      :type: int
+
+
+   .. py:attribute:: max_record_count
+      :type:  int
+
+
+   .. py:attribute:: total_record_count
+      :type:  int
+
+
+.. py:function:: get_feature_layer_record_counts(url: str) -> RecordCounts
+
+   Retrieve the maximum and total record counts from the feature layer.
+
+   :param url: The URL of the feature layer.
+   :type url: str
+
+   :returns: A named tuple containing the maximum and total record counts of the feature layer.
+   :rtype: RecordCounts
+
+   :raises RuntimeError: If there is an issue with retrieving the record counts from the feature layer.
+
+
+.. py:function:: gen_query_param_list(url: str, area_of_interest: geopandas.GeoDataFrame = None, output_sr: int = None) -> List[Dict[str, Union[str, int]]]
+
+   Generate a list of API query parameters used to retrieve ArcGIS REST API data.
+
+   :param url: The URL of the feature layer.
+   :type url: str
+   :param area_of_interest: A GeoDataFrame representing the area of interest for data retrieval. If not provided, all data will be fetched.
+   :type area_of_interest: gpd.GeoDataFrame = None
+   :param output_sr: The EPSG code of the spatial reference system in which the requested data should be returned if no area of
+                     interest is provided.
+   :type output_sr: int = None
+
+   :returns: A list of API query parameters used to retrieve ArcGIS REST API data.
+   :rtype: List[Dict[str, Union[str, int]]]
+
+   :raises ValueError: If `output_sr` is provided when `area_of_interest` is given.
+
+
+.. py:function:: _fetch_geo_data(session: aiohttp.ClientSession, url: str, query_param: Dict[str, Union[str, int]]) -> geopandas.GeoDataFrame
+   :async:
+
+
+   Fetch geographic data using the provided query parameters within a single API call.
+
+   :param session: An instance of `aiohttp.ClientSession` used for making HTTP requests.
+   :type session: aiohttp.ClientSession
+   :param url: The URL of the feature layer.
+   :type url: str
+   :param query_param: The query parameters used to retrieve geographic data.
+   :type query_param: Dict[str, Union[str, int]]
+
+   :returns: A GeoDataFrame containing the fetched geographic data.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: fetch_geo_data_for_aoi(url: str, area_of_interest: geopandas.GeoDataFrame = None, output_sr: int = None) -> geopandas.GeoDataFrame
+   :async:
+
+
+   Retrieve geographic data for the area of interest using the ArcGIS REST API.
+
+   :param url: The URL of the feature layer.
+   :type url: str
+   :param area_of_interest: A GeoDataFrame representing the area of interest for data retrieval. If not provided, all data will be fetched.
+   :type area_of_interest: gpd.GeoDataFrame = None
+   :param output_sr: The EPSG code of the spatial reference system in which the requested data should be returned if no area of
+                     interest is provided.
+   :type output_sr: int = None
+
+   :returns: A GeoDataFrame containing the fetched geographic data for the area of interest.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: fetch_arcgis_rest_api_data(url: str, area_of_interest: geopandas.GeoDataFrame = None, output_sr: int = None) -> geopandas.GeoDataFrame
+
+   Retrieve geographic data for the area of interest using the ArcGIS REST API.
+
+   :param url: The URL of the feature layer.
+   :type url: str
+   :param area_of_interest: A GeoDataFrame representing the area of interest for data retrieval. If not provided, all data will be fetched.
+   :type area_of_interest: gpd.GeoDataFrame = None
+   :param output_sr: The EPSG code of the spatial reference system in which the requested data should be returned if no area of
+                     interest is provided.
+   :type output_sr: int = None
+
+   :returns: A GeoDataFrame containing the fetched geographic data for the area of interest.
+   :rtype: gpd.GeoDataFrame
+
+   :raises RuntimeError: If failed to fetch geographic data for the area of interest.
+
+

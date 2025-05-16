@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>floodresilience.flood_model.serve_model &mdash; Flood Resilience Digital Twin (FReDT) 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=51b770b3"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="floodresilience.run_all" href="../../run_all/index.html" />
+    <link rel="prev" title="floodresilience.flood_model.process_hydro_dem" href="../process_hydro_dem/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../src/index.html">src</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">floodresilience</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../blueprint/index.html">floodresilience.blueprint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dynamic_boundary_conditions/index.html">floodresilience.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">floodresilience.flood_model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../run_all/index.html">floodresilience.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../tables/index.html">floodresilience.tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../tasks/index.html">floodresilience.tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">floodresilience</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">floodresilience.flood_model</a></li>
+      <li class="breadcrumb-item active">floodresilience.flood_model.serve_model</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/floodresilience/flood_model/serve_model/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-floodresilience.flood_model.serve_model">
+<span id="floodresilience-flood-model-serve-model"></span><h1>floodresilience.flood_model.serve_model<a class="headerlink" href="#module-floodresilience.flood_model.serve_model" title="Link to this heading"></a></h1>
+<p>Takes generated models and adds them to GeoServer so they can be retrieved by API calls by the frontend
+or other clients.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.log" title="floodresilience.flood_model.serve_model.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model._xml_header" title="floodresilience.flood_model.serve_model._xml_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_xml_header</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible" title="floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_nc_to_geoserver_compatible</span></code></a>(→ pathlib.Path)</p></td>
+<td><p>Create a geoserver compliant netCDF file from a netCDF model output.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.convert_nc_to_gtiff" title="floodresilience.flood_model.serve_model.convert_nc_to_gtiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_nc_to_gtiff</span></code></a>(→ pathlib.Path)</p></td>
+<td><p>Create a GeoTiff file from a netCDF model output. The TIFF represents the max flood height in the model output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.create_building_layers" title="floodresilience.flood_model.serve_model.create_building_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_layers</span></code></a>(→ None)</p></td>
+<td><p>Create dynamic GeoServer layers &quot;nz_building_outlines&quot; and &quot;building_flood_status&quot; for the given workspace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists" title="floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_database_views_if_not_exists</span></code></a>(→ None)</p></td>
+<td><p>Create a GeoServer workspace and building layers using database views if they do not currently exist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.add_model_output_to_geoserver" title="floodresilience.flood_model.serve_model.add_model_output_to_geoserver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_output_to_geoserver</span></code></a>(→ None)</p></td>
+<td><p>Add the model output max depths to GeoServer, ready for serving.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="floodresilience.flood_model.serve_model.log">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="floodresilience.flood_model.serve_model._xml_header">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">_xml_header</span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model._xml_header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">convert_nc_to_geoserver_compatible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_nc_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible" title="Link to this definition"></a></dt>
+<dd><p>Create a geoserver compliant netCDF file from a netCDF model output.
+Following compliance from COARDS convention.</p>
+<blockquote>
+<div><p><a class="reference external" href="https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html#notes-on-supported-netcdfs">https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html#notes-on-supported-netcdfs</a></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>orig_nc_file_path</strong> (<em>pathlib.Path</em>) – The file path to the netCDF file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filepath of the new compliant netCDF file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pathlib.Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.serve_model.convert_nc_to_gtiff">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">convert_nc_to_gtiff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nc_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model.convert_nc_to_gtiff" title="Link to this definition"></a></dt>
+<dd><p>Create a GeoTiff file from a netCDF model output. The TIFF represents the max flood height in the model output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nc_file_path</strong> (<em>pathlib.Path</em>) – The file path to the netCDF file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filepath of the new GeoTiff file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pathlib.Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.serve_model.create_building_layers">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">create_building_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_store_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model.create_building_layers" title="Link to this definition"></a></dt>
+<dd><p>Create dynamic GeoServer layers “nz_building_outlines” and “building_flood_status” for the given workspace.
+If they already exist then do nothing.
+“building_flood_status” requires viewparam=scenario:{model_id} to dynamically fetch correct flood statuses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> (<em>str</em>) – The name of the workspace to create views for.</p></li>
+<li><p><strong>data_store_name</strong> (<em>str</em>) – The name of the datastore that the building layer is being created from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPError</strong> – If geoserver responds with an error, raises it as an exception since it is unexpected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">create_building_database_views_if_not_exists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists" title="Link to this definition"></a></dt>
+<dd><p>Create a GeoServer workspace and building layers using database views if they do not currently exist.
+These only need to be created once per database.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.serve_model.add_model_output_to_geoserver">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">add_model_output_to_geoserver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model.add_model_output_to_geoserver" title="Link to this definition"></a></dt>
+<dd><p>Add the model output max depths to GeoServer, ready for serving.
+The GeoServer layer name will be f”Output_{model_id}” and the workspace name will be “{db_name}-dt-model-outputs”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_output_path</strong> (<em>pathlib.Path</em>) – The file path to the model output to serve.</p></li>
+<li><p><strong>model_id</strong> (<em>int</em>) – The database id of the model output.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../process_hydro_dem/index.html" class="btn btn-neutral float-left" title="floodresilience.flood_model.process_hydro_dem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../run_all/index.html" class="btn btn-neutral float-right" title="floodresilience.run_all" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2025, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

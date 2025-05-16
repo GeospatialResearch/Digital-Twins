@@ -5,8 +5,8 @@ src.digitaltwin.get_data_using_geoapis
 
 .. autoapi-nested-parse::
 
-   This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ,
-   LRIS, and MFE, using the 'geoapis' library. To access data from each provider, you'll need to set an
+   This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ, and MFE,
+   using the 'geoapis' library. To access data from each provider, you'll need to set an
    API key in the environment variables.
 
 
@@ -70,7 +70,7 @@ Module Contents
 
    Fetch vector data using 'geoapis' based on the specified data provider, layer ID, and other parameters.
 
-   :param data_provider: The data provider to use. Supported values: "StatsNZ", "LINZ", "LRIS", "MFE".
+   :param data_provider: The data provider to use. Supported values: "StatsNZ", "LINZ", "MFE".
    :type data_provider: str
    :param layer_id: The ID of the layer to fetch.
    :type layer_id: int

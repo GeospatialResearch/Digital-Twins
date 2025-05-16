@@ -1,0 +1,68 @@
+src.geoserver.raster_layers
+===========================
+
+.. py:module:: src.geoserver.raster_layers
+
+.. autoapi-nested-parse::
+
+   Functions for serving raster layers via geoserver.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.geoserver.raster_layers.log
+   src.geoserver.raster_layers._xml_header
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.geoserver.raster_layers.create_layer_from_gtiff_store
+   src.geoserver.raster_layers.add_gtiff_to_geoserver
+   src.geoserver.raster_layers.create_viridis_style_if_not_exists
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:data:: _xml_header
+
+.. py:function:: create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace_name: str) -> None
+
+   Create a GeoServer Layer from a GeoServer store, making it ready to serve.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param layer_name: Defines the name of the layer in GeoServer.
+   :type layer_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, model_id: int) -> None
+
+   Upload a GeoTiff file to GeoServer, ready for serving to clients.
+
+   :param gtiff_filepath: The filepath to the GeoTiff file to be served.
+   :type gtiff_filepath: pathlib.Path
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param model_id: The id of the model being added, to facilitate layer naming.
+   :type model_id: int
+
+
+.. py:function:: create_viridis_style_if_not_exists() -> None
+
+   Create a GeoServer style for rasters using the viridis color scale.
+
+
