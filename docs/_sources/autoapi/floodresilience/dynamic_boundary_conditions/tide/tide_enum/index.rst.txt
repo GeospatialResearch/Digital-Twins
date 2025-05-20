@@ -1,0 +1,83 @@
+floodresilience.dynamic_boundary_conditions.tide.tide_enum
+==========================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.tide.tide_enum
+
+.. autoapi-nested-parse::
+
+   Enum(s) used in the tide_slr module.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.tide.tide_enum.DatumType
+   floodresilience.dynamic_boundary_conditions.tide.tide_enum.ApproachType
+
+
+Module Contents
+---------------
+
+.. py:class:: DatumType
+
+   Bases: :py:obj:`enum.StrEnum`
+
+
+   Enum class representing different datum types.
+
+   .. attribute:: LAT
+
+      Lowest astronomical tide.
+
+      :type: str
+
+   .. attribute:: MSL
+
+      Mean sea level.
+
+      :type: str
+
+
+   .. py:attribute:: LAT
+      :value: 'lat'
+
+
+
+   .. py:attribute:: MSL
+      :value: 'msl'
+
+
+
+.. py:class:: ApproachType
+
+   Bases: :py:obj:`enum.StrEnum`
+
+
+   Enum class representing different types of approaches.
+
+   .. attribute:: KING_TIDE
+
+      King Tide approach.
+
+      :type: str
+
+   .. attribute:: PERIOD_TIDE
+
+      Period Tide approach.
+
+      :type: str
+
+
+   .. py:attribute:: KING_TIDE
+      :value: 'king_tide'
+
+
+
+   .. py:attribute:: PERIOD_TIDE
+      :value: 'period_tide'
+
+
+

@@ -1,0 +1,33 @@
+src.check_celery_alive
+======================
+
+.. py:module:: src.check_celery_alive
+
+.. autoapi-nested-parse::
+
+   Defines functions and decorators for checking if Celery worker is running.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.check_celery_alive.check_celery_alive
+
+
+Module Contents
+---------------
+
+.. py:function:: check_celery_alive(f: Callable[Ellipsis, flask.Response]) -> Callable[Ellipsis, flask.Response]
+
+   Check if the Celery workers are running and return INTERNAL_SERVER_ERROR if they are down using function decorator.
+
+   :param f: The view function that is being decorated.
+   :type f: Callable[..., Response]
+
+   :returns: Response is SERVICE_UNAVAILABLE if the celery workers are down, otherwise continue to function f
+   :rtype: Callable[..., Response]
+
+

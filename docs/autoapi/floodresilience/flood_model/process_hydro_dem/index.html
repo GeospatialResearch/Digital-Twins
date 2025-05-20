@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>floodresilience.flood_model.process_hydro_dem &mdash; Flood Resilience Digital Twin (FReDT) 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=51b770b3"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="floodresilience.flood_model.serve_model" href="../serve_model/index.html" />
+    <link rel="prev" title="floodresilience.flood_model.flooded_buildings" href="../flooded_buildings/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../src/index.html">src</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">floodresilience</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../blueprint/index.html">floodresilience.blueprint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dynamic_boundary_conditions/index.html">floodresilience.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">floodresilience.flood_model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../run_all/index.html">floodresilience.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../tables/index.html">floodresilience.tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../tasks/index.html">floodresilience.tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">floodresilience</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">floodresilience.flood_model</a></li>
+      <li class="breadcrumb-item active">floodresilience.flood_model.process_hydro_dem</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/floodresilience/flood_model/process_hydro_dem/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-floodresilience.flood_model.process_hydro_dem">
+<span id="floodresilience-flood-model-process-hydro-dem"></span><h1>floodresilience.flood_model.process_hydro_dem<a class="headerlink" href="#module-floodresilience.flood_model.process_hydro_dem" title="Link to this heading"></a></h1>
+<p>This script fetches LiDAR terrain data for a region of interest and creates a hydrologically-conditioned DEM.
+It provides functions to retrieve information about the hydrologically-conditioned DEM and extract its boundary lines.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.process_hydro_dem.log" title="floodresilience.flood_model.process_hydro_dem.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.process_hydro_dem.retrieve_hydro_dem_info" title="floodresilience.flood_model.process_hydro_dem.retrieve_hydro_dem_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retrieve_hydro_dem_info</span></code></a>(→ Tuple[xarray.Dataset, ...)</p></td>
+<td><p>Retrieve the Hydrologically Conditioned DEM (Hydro DEM) data, along with its spatial extent and resolution,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.process_hydro_dem.get_hydro_dem_boundary_lines" title="floodresilience.flood_model.process_hydro_dem.get_hydro_dem_boundary_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hydro_dem_boundary_lines</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Get the boundary lines of the Hydrologically Conditioned DEM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.process_hydro_dem.ensure_lidar_datasets_initialised" title="floodresilience.flood_model.process_hydro_dem.ensure_lidar_datasets_initialised"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_lidar_datasets_initialised</span></code></a>(→ None)</p></td>
+<td><p>Check if LiDAR datasets table is initialised.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.process_hydro_dem.process_dem" title="floodresilience.flood_model.process_hydro_dem.process_dem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_dem</span></code></a>(→ None)</p></td>
+<td><p>Ensure hydrologically-conditioned DEM is processed for the given area and added to the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.process_hydro_dem.refresh_lidar_datasets" title="floodresilience.flood_model.process_hydro_dem.refresh_lidar_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refresh_lidar_datasets</span></code></a>(→ None)</p></td>
+<td><p>Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.process_hydro_dem.main" title="floodresilience.flood_model.process_hydro_dem.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ None)</p></td>
+<td><p>Retrieve LiDAR data for the selected polygon and processes it into a hydrologically-conditioned DEM.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="floodresilience.flood_model.process_hydro_dem.log">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.process_hydro_dem.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#floodresilience.flood_model.process_hydro_dem.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.process_hydro_dem.retrieve_hydro_dem_info">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.process_hydro_dem.</span></span><span class="sig-name descname"><span class="pre">retrieve_hydro_dem_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">xarray.Dataset</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">shapely.LineString</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#floodresilience.flood_model.process_hydro_dem.retrieve_hydro_dem_info" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the Hydrologically Conditioned DEM (Hydro DEM) data, along with its spatial extent and resolution,
+for the specified catchment area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the Hydro DEM data as a xarray Dataset, the spatial extent of the Hydro DEM as a LineString,
+and the resolution of the Hydro DEM as either an integer or a float.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[xr.Dataset, LineString, Union[int, float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.process_hydro_dem.get_hydro_dem_boundary_lines">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.process_hydro_dem.</span></span><span class="sig-name descname"><span class="pre">get_hydro_dem_boundary_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">catchment_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#floodresilience.flood_model.process_hydro_dem.get_hydro_dem_boundary_lines" title="Link to this definition"></a></dt>
+<dd><p>Get the boundary lines of the Hydrologically Conditioned DEM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>catchment_area</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the catchment area.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GeoDataFrame containing the boundary lines of the Hydrologically Conditioned DEM.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.process_hydro_dem.ensure_lidar_datasets_initialised">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.process_hydro_dem.</span></span><span class="sig-name descname"><span class="pre">ensure_lidar_datasets_initialised</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.flood_model.process_hydro_dem.ensure_lidar_datasets_initialised" title="Link to this definition"></a></dt>
+<dd><p>Check if LiDAR datasets table is initialised.
+This table holds URLs to data sources for LiDAR.
+If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.process_hydro_dem.process_dem">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.process_hydro_dem.</span></span><span class="sig-name descname"><span class="pre">process_dem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.flood_model.process_hydro_dem.process_dem" title="Link to this definition"></a></dt>
+<dd><p>Ensure hydrologically-conditioned DEM is processed for the given area and added to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selected_polygon_gdf</strong> (<em>gpd.GeoDataFrame</em>) – The polygon defining the selected area to process the DEM for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.process_hydro_dem.refresh_lidar_datasets">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.process_hydro_dem.</span></span><span class="sig-name descname"><span class="pre">refresh_lidar_datasets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.flood_model.process_hydro_dem.refresh_lidar_datasets" title="Link to this definition"></a></dt>
+<dd><p>Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
+Takes a long time to run but needs to be run periodically so that the datasets are up to date.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.flood_model.process_hydro_dem.main">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.process_hydro_dem.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../src/digitaltwin/utils/index.html#src.digitaltwin.utils.LogLevel" title="src.digitaltwin.utils.LogLevel"><span class="pre">src.digitaltwin.utils.LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.DEBUG</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.flood_model.process_hydro_dem.main" title="Link to this definition"></a></dt>
+<dd><p>Retrieve LiDAR data for the selected polygon and processes it into a hydrologically-conditioned DEM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_gdf</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the selected polygon, i.e., the catchment area.</p></li>
+<li><p><strong>log_level</strong> (<em>LogLevel = LogLevel.DEBUG</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+The available logging levels and their corresponding numeric values are:
+- LogLevel.CRITICAL (50)
+- LogLevel.ERROR (40)
+- LogLevel.WARNING (30)
+- LogLevel.INFO (20)
+- LogLevel.DEBUG (10)
+- LogLevel.NOTSET (0)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../flooded_buildings/index.html" class="btn btn-neutral float-left" title="floodresilience.flood_model.flooded_buildings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../serve_model/index.html" class="btn btn-neutral float-right" title="floodresilience.flood_model.serve_model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2025, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

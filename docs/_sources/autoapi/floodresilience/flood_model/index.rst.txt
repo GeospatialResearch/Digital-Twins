@@ -1,0 +1,24 @@
+floodresilience.flood_model
+===========================
+
+.. py:module:: floodresilience.flood_model
+
+.. autoapi-nested-parse::
+
+   Package to handle data and operations specific to flood models, such as running a model or saving results.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/floodresilience/flood_model/bg_flood_model/index
+   /autoapi/floodresilience/flood_model/flood_scenario_process_service/index
+   /autoapi/floodresilience/flood_model/flooded_buildings/index
+   /autoapi/floodresilience/flood_model/process_hydro_dem/index
+   /autoapi/floodresilience/flood_model/serve_model/index
+
+

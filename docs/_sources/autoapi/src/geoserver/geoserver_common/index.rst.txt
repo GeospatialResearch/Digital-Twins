@@ -1,0 +1,105 @@
+src.geoserver.geoserver_common
+==============================
+
+.. py:module:: src.geoserver.geoserver_common
+
+.. autoapi-nested-parse::
+
+   Core functions for serving data and working with workspaces in geoserver.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.geoserver.geoserver_common.log
+   src.geoserver.geoserver_common._xml_header
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.geoserver.geoserver_common.get_geoserver_url
+   src.geoserver.geoserver_common.create_workspace_if_not_exists
+   src.geoserver.geoserver_common.upload_file_to_store
+   src.geoserver.geoserver_common.send_create_layer_request
+   src.geoserver.geoserver_common.style_exists
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:data:: _xml_header
+
+.. py:function:: get_geoserver_url() -> str
+
+   Retrieve full GeoServer URL from environment variables.
+
+   :returns: The full GeoServer URL
+   :rtype: str
+
+
+.. py:function:: create_workspace_if_not_exists(workspace_name: str) -> None
+
+   Create a GeoServer workspace if it does not currently exist.
+
+   :param workspace_name: The name of the workspace to create if it does not exists.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: upload_file_to_store(geoserver_url: str, file_to_add: pathlib.Path, store_name: str, workspace_name: str) -> None
+
+   Upload a file to a new GeoServer store, to enable serving.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param file_to_add: The filepath to the GeoTiff file to be served, currently support NetCDF and GeoTiff.
+   :type file_to_add: pathlib.Path
+   :param store_name: The name of the new Geoserver store to be created.
+   :type store_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+   :raises ValueError: If file_to_add does not have a file extension matching one of the supported file types..
+
+
+.. py:function:: send_create_layer_request(geoserver_url: str, layer_name: str, workspace_name: str, coverage_payload: str) -> None
+
+   Create a GeoServer Layer from a GeoServer store, making it ready to serve.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param layer_name: Defines the name of the layer in GeoServer.
+   :type layer_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param coverage_payload: The coverage XML data to send in the Geoserver request payload.
+   :type coverage_payload: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: style_exists(style_name: str) -> bool
+
+   Check if a GeoServer style definition already exists for a given style_name.
+   The style definition may be empty.
+
+   :param style_name: The name of the style to check for
+   :type style_name: str
+
+   :returns: True if the style exists, although it may be empty.
+             False if it does not exist.
+   :rtype: bool
+
+   :raises HTTPError: If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
+
+

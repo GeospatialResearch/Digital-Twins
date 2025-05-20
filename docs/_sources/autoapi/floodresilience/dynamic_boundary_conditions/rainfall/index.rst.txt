@@ -1,0 +1,28 @@
+floodresilience.dynamic_boundary_conditions.rainfall
+====================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.rainfall
+
+.. autoapi-nested-parse::
+
+   Package to handle data and operations specific to rainfall.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/hirds_rainfall_data_from_db/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/hirds_rainfall_data_to_db/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/hyetograph/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/main_rainfall/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/rainfall_data_from_hirds/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/rainfall_enum/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/rainfall_model_input/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/rainfall_sites/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/rainfall/thiessen_polygons/index
+
+

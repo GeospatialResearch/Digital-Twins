@@ -1,0 +1,26 @@
+floodresilience.dynamic_boundary_conditions.tide
+================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.tide
+
+.. autoapi-nested-parse::
+
+   Package to handle data and operations specific to tide and sea level rise.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/floodresilience/dynamic_boundary_conditions/tide/main_tide_slr/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/tide/sea_level_rise_data/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/tide/tide_data_from_niwa/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/tide/tide_enum/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/tide/tide_query_location/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/tide/tide_slr_combine/index
+   /autoapi/floodresilience/dynamic_boundary_conditions/tide/tide_slr_model_input/index
+
+

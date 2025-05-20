@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>floodresilience.tasks &mdash; Flood Resilience Digital Twin (FReDT) 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=51b770b3"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="floodresilience.tables" href="../tables/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../src/index.html">src</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">floodresilience</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../blueprint/index.html">floodresilience.blueprint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dynamic_boundary_conditions/index.html">floodresilience.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../flood_model/index.html">floodresilience.flood_model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../run_all/index.html">floodresilience.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tables/index.html">floodresilience.tables</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">floodresilience.tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">floodresilience</a></li>
+      <li class="breadcrumb-item active">floodresilience.tasks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/floodresilience/tasks/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-floodresilience.tasks">
+<span id="floodresilience-tasks"></span><h1>floodresilience.tasks<a class="headerlink" href="#module-floodresilience.tasks" title="Link to this heading"></a></h1>
+<p>Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
+Allows the frontend to send tasks and retrieve status later.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.log" title="floodresilience.tasks.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.DepthTimePlot" title="floodresilience.tasks.DepthTimePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DepthTimePlot</span></code></a></p></td>
+<td><p>Represents the depths over time for a particular pixel location in a raster.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.on_startup" title="floodresilience.tasks.on_startup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_startup</span></code></a>(→ None)</p></td>
+<td><p>Initialise database, runs when Celery instance is ready.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.tasks.create_model_for_area" title="floodresilience.tasks.create_model_for_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_model_for_area</span></code></a>(→ celery.result.GroupResult)</p></td>
+<td><p>Create a model for the area using series of chained (sequential) sub-tasks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.process_dem" title="floodresilience.tasks.process_dem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_dem</span></code></a>(→ None)</p></td>
+<td><p>Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.tasks.generate_rainfall_inputs" title="floodresilience.tasks.generate_rainfall_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_rainfall_inputs</span></code></a>(→ None)</p></td>
+<td><p>Task to ensure rainfall input data for the given area is added to the database and model input files are created.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.generate_tide_inputs" title="floodresilience.tasks.generate_tide_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_tide_inputs</span></code></a>(→ None)</p></td>
+<td><p>Task to ensure tide input data for the given area is added to the database and model input files are created.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.tasks.generate_river_inputs" title="floodresilience.tasks.generate_river_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_river_inputs</span></code></a>(→ None)</p></td>
+<td><p>Task to ensure river input data for the given area is added to the database and model input files are created.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.run_flood_model" title="floodresilience.tasks.run_flood_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_flood_model</span></code></a>(→ int)</p></td>
+<td><p>Task to run flood model using input data from previous tasks.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.tasks.refresh_lidar_datasets" title="floodresilience.tasks.refresh_lidar_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refresh_lidar_datasets</span></code></a>(→ None)</p></td>
+<td><p>Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.ensure_lidar_datasets_initialised" title="floodresilience.tasks.ensure_lidar_datasets_initialised"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_lidar_datasets_initialised</span></code></a>(→ None)</p></td>
+<td><p>Check if LiDAR datasets table is initialised.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.tasks.get_model_output_filepath_from_model_id" title="floodresilience.tasks.get_model_output_filepath_from_model_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_output_filepath_from_model_id</span></code></a>(→ str)</p></td>
+<td><p>Task to query the database and find the filepath for the model output for the model_id.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.get_depth_by_time_at_point" title="floodresilience.tasks.get_depth_by_time_at_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_depth_by_time_at_point</span></code></a>(→ DepthTimePlot)</p></td>
+<td><p>Task to query a point in a flood model output and return the list of depths and times.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.tasks.get_model_extents_bbox" title="floodresilience.tasks.get_model_extents_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_extents_bbox</span></code></a>(→ str)</p></td>
+<td><p>Task to find the bounding box of a given model output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.tasks.get_valid_parameters_based_on_confidence_level" title="floodresilience.tasks.get_valid_parameters_based_on_confidence_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_parameters_based_on_confidence_level</span></code></a>(...)</p></td>
+<td><p>Task to get information on valid tide and sea-level-rise parameters based on the valid values in the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.tasks.validate_slr_parameters" title="floodresilience.tasks.validate_slr_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_slr_parameters</span></code></a>(...)</p></td>
+<td><p>Task to validate each of the sea-level-rise parameters.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="floodresilience.tasks.log">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#floodresilience.tasks.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="floodresilience.tasks.DepthTimePlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">DepthTimePlot</span></span><a class="headerlink" href="#floodresilience.tasks.DepthTimePlot" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>Represents the depths over time for a particular pixel location in a raster.
+Uses tuples and lists instead of Arrays or Dataframes because it needs to be easily serializable when communicating
+over message_broker.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="floodresilience.tasks.DepthTimePlot.depths">
+<span class="sig-name descname"><span class="pre">depths</span></span><a class="headerlink" href="#floodresilience.tasks.DepthTimePlot.depths" title="Link to this definition"></a></dt>
+<dd><p>A list of all of the depths in m for the pixel. Parallels the times list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="floodresilience.tasks.DepthTimePlot.times">
+<span class="sig-name descname"><span class="pre">times</span></span><a class="headerlink" href="#floodresilience.tasks.DepthTimePlot.times" title="Link to this definition"></a></dt>
+<dd><p>A list of all of the times in s for the pixel. Parallels the depts list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">depths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.on_startup">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">on_startup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">celery.worker.consumer.Consumer</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.tasks.on_startup" title="Link to this definition"></a></dt>
+<dd><p>Initialise database, runs when Celery instance is ready.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sender</strong> (<em>Consumer</em>) – The Celery worker node instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.create_model_for_area">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">create_model_for_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_wkt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">celery.result.GroupResult</span></span></span><a class="headerlink" href="#floodresilience.tasks.create_model_for_area" title="Link to this definition"></a></dt>
+<dd><p>Create a model for the area using series of chained (sequential) sub-tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to run the model for. Defined in WKT form.</p></li>
+<li><p><strong>scenario_options</strong> (<em>dict</em>) – Options for scenario modelling inputs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task result for the long-running group of tasks. The task ID represents the final task in the group.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>result.GroupResult</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.process_dem">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">process_dem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_wkt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.tasks.process_dem" title="Link to this definition"></a></dt>
+<dd><p>Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to process the DEM for. Defined in WKT form.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.generate_rainfall_inputs">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">generate_rainfall_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_wkt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.tasks.generate_rainfall_inputs" title="Link to this definition"></a></dt>
+<dd><p>Task to ensure rainfall input data for the given area is added to the database and model input files are created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to add rainfall data for. Defined in WKT form.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.generate_tide_inputs">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">generate_tide_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_wkt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.tasks.generate_tide_inputs" title="Link to this definition"></a></dt>
+<dd><p>Task to ensure tide input data for the given area is added to the database and model input files are created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to add tide data for. Defined in WKT form.</p></li>
+<li><p><strong>scenario_options</strong> (<em>dict</em>) – Options for scenario modelling inputs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.generate_river_inputs">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">generate_river_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_wkt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.tasks.generate_river_inputs" title="Link to this definition"></a></dt>
+<dd><p>Task to ensure river input data for the given area is added to the database and model input files are created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to add river data for. Defined in WKT form.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.run_flood_model">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">run_flood_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_wkt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#floodresilience.tasks.run_flood_model" title="Link to this definition"></a></dt>
+<dd><p>Task to run flood model using input data from previous tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to run the flood model for. Defined in WKT form.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The database ID of the flood model that has been run.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.refresh_lidar_datasets">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">refresh_lidar_datasets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.tasks.refresh_lidar_datasets" title="Link to this definition"></a></dt>
+<dd><p>Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
+Takes a long time to run but needs to be run periodically so that the datasets are up to date.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.ensure_lidar_datasets_initialised">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">ensure_lidar_datasets_initialised</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.tasks.ensure_lidar_datasets_initialised" title="Link to this definition"></a></dt>
+<dd><p>Check if LiDAR datasets table is initialised.
+This table holds URLs to data sources for LiDAR.
+If it is not initialised, then it initialises it by web-scraping OpenTopography which takes a long time.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.get_model_output_filepath_from_model_id">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">get_model_output_filepath_from_model_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#floodresilience.tasks.get_model_output_filepath_from_model_id" title="Link to this definition"></a></dt>
+<dd><p>Task to query the database and find the filepath for the model output for the model_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_id</strong> (<em>int</em>) – The database id of the model output to query.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Serialized posix-style str version of the filepath.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.get_depth_by_time_at_point">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">get_depth_by_time_at_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#floodresilience.tasks.DepthTimePlot" title="floodresilience.tasks.DepthTimePlot"><span class="pre">DepthTimePlot</span></a></span></span><a class="headerlink" href="#floodresilience.tasks.get_depth_by_time_at_point" title="Link to this definition"></a></dt>
+<dd><p>Task to query a point in a flood model output and return the list of depths and times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_id</strong> (<em>int</em>) – The database id of the model output to query.</p></li>
+<li><p><strong>lat</strong> (<em>float</em>) – The latitude of the point to query.</p></li>
+<li><p><strong>lng</strong> (<em>float</em>) – The longitude of the point to query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of depths list and times list for the pixel in the output nearest to the point.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#floodresilience.tasks.DepthTimePlot" title="floodresilience.tasks.DepthTimePlot">DepthTimePlot</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.get_model_extents_bbox">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">get_model_extents_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#floodresilience.tasks.get_model_extents_bbox" title="Link to this definition"></a></dt>
+<dd><p>Task to find the bounding box of a given model output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_id</strong> (<em>int</em>) – The database id of the model output to query.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The bounding box in ‘x1,y1,x2,y2’ format.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.get_valid_parameters_based_on_confidence_level">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">get_valid_parameters_based_on_confidence_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#floodresilience.tasks.get_valid_parameters_based_on_confidence_level" title="Link to this definition"></a></dt>
+<dd><p>Task to get information on valid tide and sea-level-rise parameters based on the valid values in the database.
+These parameters are mostly dependent on the “confidence_level” parameter, so that is the key in the returned dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, Dict[str, Union[str, int]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.tasks.validate_slr_parameters">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.tasks.</span></span><span class="sig-name descname"><span class="pre">validate_slr_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dynamic_boundary_conditions/tide/main_tide_slr/index.html#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult"><span class="pre">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult</span></a></span></span><a class="headerlink" href="#floodresilience.tasks.validate_slr_parameters" title="Link to this definition"></a></dt>
+<dd><p>Task to validate each of the sea-level-rise parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario_options</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Union</em><em>[</em><em>str</em><em>, </em><em>float</em><em>, </em><em>int</em><em>, </em><em>bool</em><em>]</em><em>]</em>) – Options for scenario modelling inputs, coming from JSON body.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Result of the validation, with validation failure reason if applicable</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../dynamic_boundary_conditions/tide/main_tide_slr/index.html#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult">main_tide_slr.ValidationResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tables/index.html" class="btn btn-neutral float-left" title="floodresilience.tables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2025, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

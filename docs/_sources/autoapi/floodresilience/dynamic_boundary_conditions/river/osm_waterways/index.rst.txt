@@ -1,0 +1,62 @@
+floodresilience.dynamic_boundary_conditions.river.osm_waterways
+===============================================================
+
+.. py:module:: floodresilience.dynamic_boundary_conditions.river.osm_waterways
+
+.. autoapi-nested-parse::
+
+   This script handles the fetching of OpenStreetMap (OSM) waterways data for the defined catchment area.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.river.osm_waterways.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.dynamic_boundary_conditions.river.osm_waterways.configure_osm_cache
+   floodresilience.dynamic_boundary_conditions.river.osm_waterways.fetch_osm_waterways
+   floodresilience.dynamic_boundary_conditions.river.osm_waterways.get_osm_waterways_data
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: configure_osm_cache() -> None
+
+   Change the directory for storing the OSM cache files.
+
+
+.. py:function:: fetch_osm_waterways(catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Fetch OpenStreetMap (OSM) waterways data for the specified catchment area.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing the retrieved OSM waterways data for the specified catchment area.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_osm_waterways_data(catchment_area: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame
+
+   Fetch OpenStreetMap (OSM) waterways data for the specified catchment area.
+   Only LineString geometries representing waterways of type "river" or "stream" are included.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+
+   :returns: A GeoDataFrame containing only LineString geometries representing waterways of type "river" or "stream".
+   :rtype: gpd.GeoDataFrame
+
+

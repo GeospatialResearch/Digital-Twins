@@ -4,7 +4,7 @@
 
 name: Run tests
 
-on: push
+on: [push, pull_request]
 
 jobs:
   linting-flake8:

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>floodresilience.dynamic_boundary_conditions.tide.main_tide_slr &mdash; Flood Resilience Digital Twin (FReDT) 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=51b770b3"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data" href="../sea_level_rise_data/index.html" />
+    <link rel="prev" title="floodresilience.dynamic_boundary_conditions.tide" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Flood Resilience Digital Twin (FReDT)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../src/index.html">src</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">floodresilience</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../blueprint/index.html">floodresilience.blueprint</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">floodresilience.dynamic_boundary_conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../flood_model/index.html">floodresilience.flood_model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../run_all/index.html">floodresilience.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../tables/index.html">floodresilience.tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../tasks/index.html">floodresilience.tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Flood Resilience Digital Twin (FReDT)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">floodresilience</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">floodresilience.dynamic_boundary_conditions</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">floodresilience.dynamic_boundary_conditions.tide</a></li>
+      <li class="breadcrumb-item active">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/floodresilience/dynamic_boundary_conditions/tide/main_tide_slr/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-floodresilience.dynamic_boundary_conditions.tide.main_tide_slr">
+<span id="floodresilience-dynamic-boundary-conditions-tide-main-tide-slr"></span><h1>floodresilience.dynamic_boundary_conditions.tide.main_tide_slr<a class="headerlink" href="#module-floodresilience.dynamic_boundary_conditions.tide.main_tide_slr" title="Link to this heading"></a></h1>
+<p>Main tide and sea level rise script used to fetch tide data, download and store sea level rise data in the database,
+and generate the requested tide uniform boundary model input for BG-Flood etc.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.log" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_polygon</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationResult</span></code></a></p></td>
+<td><p>Represents the result of checking validation on parameters.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_slr_parameters</span></code></a>(→ ValidationResult)</p></td>
+<td><p>Validate each of the sea-level-rise parameters have valid values by querying the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_parameters_based_on_confidence_level</span></code></a>(...)</p></td>
+<td><p>Get information on valid tide and sea-level-rise parameters based on the valid values in the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_existing_boundary_inputs</span></code></a>(→ None)</p></td>
+<td><p>Remove existing uniform boundary input files from the specified directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.main" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(→ None)</p></td>
+<td><p>Fetch tide data, read and store sea level rise data in the database, and generate the requested tide</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.log">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">ValidationResult</span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>Represents the result of checking validation on parameters.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult.is_valid">
+<span class="sig-name descname"><span class="pre">is_valid</span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult.is_valid" title="Link to this definition"></a></dt>
+<dd><p>If True then the parameters are valid, if False then they are invalid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult.invalid_reason">
+<span class="sig-name descname"><span class="pre">invalid_reason</span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult.invalid_reason" title="Link to this definition"></a></dt>
+<dd><p>An error message describing the reason the validation has failed. Can be <cite>None</cite> if <cite>is_valid is True</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">is_valid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">invalid_reason</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">validate_slr_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proj_year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssp_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_vlm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult"><span class="pre">ValidationResult</span></a></span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.validate_slr_parameters" title="Link to this definition"></a></dt>
+<dd><p>Validate each of the sea-level-rise parameters have valid values by querying the database.
+Returns a ValidationResult so that you can easily check for validation and the reason for failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>proj_year</strong> (<em>int</em>) – The projection year for which the combined tide and sea level rise data should be generated.</p></li>
+<li><p><strong>confidence_level</strong> (<em>str</em>) – The desired confidence level for the sea level rise data. Valid values are ‘low’ or ‘medium’.</p></li>
+<li><p><strong>ssp_scenario</strong> (<em>str</em>) – The desired Shared Socioeconomic Pathways (SSP) scenario for the sea level rise data.
+Valid options for both low and medium confidence are: ‘SSP1-2.6’, ‘SSP2-4.5’, or ‘SSP5-8.5’.
+Additional options for medium confidence are: ‘SSP1-1.9’ or ‘SSP3-7.0’.</p></li>
+<li><p><strong>add_vlm</strong> (<em>bool</em>) – Indicates whether Vertical Land Motion (VLM) should be included in the sea level rise data.
+Set to True if VLM should be included, False otherwise.</p></li>
+<li><p><strong>percentile</strong> (<em>int</em>) – The desired percentile for the sea level rise data. Valid values are 17, 50, or 83.</p></li>
+<li><p><strong>increment_year</strong> (<em>int = 1</em>) – The year interval used for interpolating the sea level rise data. Defaults to 1 year.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Result of the validation, with validation failure reason if applicable.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult" title="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult">ValidationResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">get_valid_parameters_based_on_confidence_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.get_valid_parameters_based_on_confidence_level" title="Link to this definition"></a></dt>
+<dd><p>Get information on valid tide and sea-level-rise parameters based on the valid values in the database.
+These parameters are mostly dependent on the “confidence_level” parameter, so that is the key in the returned dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, Dict[str, Union[str, int]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">remove_existing_boundary_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bg_flood_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.remove_existing_boundary_inputs" title="Link to this definition"></a></dt>
+<dd><p>Remove existing uniform boundary input files from the specified directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bg_flood_dir</strong> (<em>pathlib.Path</em>) – BG-Flood model directory containing the uniform boundary input files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.main">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_gdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">geopandas.GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tide_length_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_peak_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssp_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_vlm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../src/digitaltwin/utils/index.html#src.digitaltwin.utils.LogLevel" title="src.digitaltwin.utils.LogLevel"><span class="pre">src.digitaltwin.utils.LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.DEBUG</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.main" title="Link to this definition"></a></dt>
+<dd><p>Fetch tide data, read and store sea level rise data in the database, and generate the requested tide
+uniform boundary model input for BG-Flood.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_gdf</strong> (<em>gpd.GeoDataFrame</em>) – A GeoDataFrame representing the selected polygon, i.e., the catchment area.</p></li>
+<li><p><strong>tide_length_mins</strong> (<em>int</em>) – The length of the tide event in minutes.</p></li>
+<li><p><strong>time_to_peak_mins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – The time in minutes when the tide is at its greatest (reaches maximum).</p></li>
+<li><p><strong>interval_mins</strong> (<em>int</em>) – The time interval, in minutes, between each recorded tide data point.</p></li>
+<li><p><strong>proj_year</strong> (<em>int</em>) – The projection year for which the combined tide and sea level rise data should be generated.</p></li>
+<li><p><strong>confidence_level</strong> (<em>str</em>) – The desired confidence level for the sea level rise data. Valid values are ‘low’ or ‘medium’.</p></li>
+<li><p><strong>ssp_scenario</strong> (<em>str</em>) – The desired Shared Socioeconomic Pathways (SSP) scenario for the sea level rise data.
+Valid options for both low and medium confidence are: ‘SSP1-2.6’, ‘SSP2-4.5’, or ‘SSP5-8.5’.
+Additional options for medium confidence are: ‘SSP1-1.9’ or ‘SSP3-7.0’.</p></li>
+<li><p><strong>add_vlm</strong> (<em>bool</em>) – Indicates whether Vertical Land Motion (VLM) should be included in the sea level rise data.
+Set to True if VLM should be included, False otherwise.</p></li>
+<li><p><strong>percentile</strong> (<em>int</em>) – The desired percentile for the sea level rise data. Valid values are 17, 50, or 83.</p></li>
+<li><p><strong>log_level</strong> (<em>LogLevel = LogLevel.DEBUG</em>) – The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+The available logging levels and their corresponding numeric values are:
+- LogLevel.CRITICAL (50)
+- LogLevel.ERROR (40)
+- LogLevel.WARNING (30)
+- LogLevel.INFO (20)
+- LogLevel.DEBUG (10)
+- LogLevel.NOTSET (0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised when the supplied sea-level rise parameters are not valid with each other. Error will state more details.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon">
+<span class="sig-prename descclassname"><span class="pre">floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.</span></span><span class="sig-name descname"><span class="pre">sample_polygon</span></span><a class="headerlink" href="#floodresilience.dynamic_boundary_conditions.tide.main_tide_slr.sample_polygon" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="floodresilience.dynamic_boundary_conditions.tide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../sea_level_rise_data/index.html" class="btn btn-neutral float-right" title="floodresilience.dynamic_boundary_conditions.tide.sea_level_rise_data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2025, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

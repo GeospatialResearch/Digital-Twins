@@ -3,6 +3,11 @@ src.digitaltwin
 
 .. py:module:: src.digitaltwin
 
+.. autoapi-nested-parse::
+
+   Package to handle data and operations specific to geospatial layers.
+
+
 
 Submodules
 ----------
@@ -10,10 +15,11 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/src/digitaltwin/arcgis_rest_api/index
    /autoapi/src/digitaltwin/data_to_db/index
    /autoapi/src/digitaltwin/get_data_using_geoapis/index
    /autoapi/src/digitaltwin/instructions_records_to_db/index
-   /autoapi/src/digitaltwin/retrieve_static_boundaries/index
+   /autoapi/src/digitaltwin/retrieve_from_instructions/index
    /autoapi/src/digitaltwin/setup_environment/index
    /autoapi/src/digitaltwin/tables/index
    /autoapi/src/digitaltwin/utils/index

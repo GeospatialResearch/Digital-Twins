@@ -1,0 +1,89 @@
+floodresilience.flood_model.flood_scenario_process_service
+==========================================================
+
+.. py:module:: floodresilience.flood_model.flood_scenario_process_service
+
+.. autoapi-nested-parse::
+
+   Defines PyWPS WebProcessingService process for creating a flooding scenario.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   floodresilience.flood_model.flood_scenario_process_service.FloodScenarioProcessService
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   floodresilience.flood_model.flood_scenario_process_service.building_flood_status_catalog
+   floodresilience.flood_model.flood_scenario_process_service.flood_depth_catalog
+   floodresilience.flood_model.flood_scenario_process_service.query_time_dimension
+
+
+Module Contents
+---------------
+
+.. py:class:: FloodScenarioProcessService
+
+   Bases: :py:obj:`pywps.Process`
+
+
+   Class representing a WebProcessingService process for creating a flooding scenario
+
+
+   .. py:method:: _handler(request: pywps.WPSRequest, response: pywps.response.execute.ExecuteResponse) -> None
+      :staticmethod:
+
+
+      Process handler for modelling a flood scenario
+
+      :param request: The WPS request, containing input parameters.
+      :type request: WPSRequest
+      :param response: The WPS response, containing output data.
+      :type response: ExecuteResponse
+
+
+
+.. py:function:: building_flood_status_catalog(scenario_id: int) -> dict
+
+   Create a dictionary in the format of a terria js catalog json for the building flood status layer.
+
+   :param scenario_id: The ID of the scenario to create the catalog item for.
+   :type scenario_id: int
+
+   :returns: The TerriaJS catalog item JSON for the building flood status layer.
+   :rtype: dict
+
+
+.. py:function:: flood_depth_catalog(scenario_id: int) -> dict
+
+   Create a dictionary in the format of a terria js catalog json for the flood depth layer.
+
+   :param scenario_id: The ID of the scenario to create the catalog item for.
+   :type scenario_id: int
+
+   :returns: The TerriaJS catalog item JSON for the flood depth layer.
+   :rtype: dict
+
+
+.. py:function:: query_time_dimension(gs_flood_model_workspace: str, layer_name: str) -> str
+
+   Query Geoserver to find the time slices available for a given layer.
+
+   :param gs_flood_model_workspace: The name of the Geoserver workspace.
+   :type gs_flood_model_workspace: str
+   :param layer_name: The name of the Geoserver layer to query.
+   :type layer_name: str
+
+   :returns: Comma-separated list of time slices available in ISO8601 format
+             e.g. "2000-01-01T00:00:00.000Z,2000-01-01T00:00:01.000Z,2000-01-01T00:00:02.000Z"
+   :rtype: str
+
+

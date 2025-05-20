@@ -45,9 +45,6 @@ Module Contents
    :param url: The URL to validate.
    :type url: str
 
-   :returns: This function does not return any value.
-   :rtype: None
-
    :raises ValueError: - If the URL is invalid.
        - If the URL is unreachable.
 
@@ -62,16 +59,16 @@ Module Contents
    :param instruction: The instruction details.
    :type instruction: Dict[str, Union[str, int]]
 
-   :returns: This function does not return any value.
-   :rtype: None
-
    :raises ValueError: - If both 'coverage_area' and 'unique_column_name' are provided.
        - If both 'coverage_area' and 'unique_column_name' are not provided.
 
 
-.. py:function:: read_and_check_instructions_file() -> pandas.DataFrame
+.. py:function:: read_and_check_instructions_file(instruction_json_path: pathlib.Path) -> pandas.DataFrame
 
-   Read and check the static_boundary_instructions file, validating URLs and instruction fields.
+   Read and check an instructions json file, validating URLs and instruction fields.
+
+   :param instruction_json_path: Path to the instruction json file.
+   :type instruction_json_path: pathlib.Path
 
    :returns: The processed instructions DataFrame.
    :rtype: pd.DataFrame
@@ -101,14 +98,13 @@ Module Contents
    :rtype: pd.DataFrame
 
 
-.. py:function:: store_instructions_records_to_db(engine: sqlalchemy.engine.Engine) -> None
+.. py:function:: store_instructions_records_to_db(engine: sqlalchemy.engine.Engine, instruction_json_path: pathlib.Path) -> None
 
-   Store 'static_boundary_instructions' records in the 'geospatial_layers' table in the database.
+   Store insruction json file records in the 'geospatial_layers' table in the database.
 
    :param engine: The engine used to connect to the database.
    :type engine: Engine
-
-   :returns: This function does not return any value.
-   :rtype: None
+   :param instruction_json_path: The path to the instruction json file to store records for.
+   :type instruction_json_path: pathlib.Path
 
 

@@ -26,7 +26,6 @@ Classes
 .. autoapisummary::
 
    src.tasks.OnFailureStateTask
-   src.tasks.DepthTimePlot
 
 
 Functions
@@ -34,26 +33,16 @@ Functions
 
 .. autoapisummary::
 
-   src.tasks.create_model_for_area
    src.tasks.add_base_data_to_db
-   src.tasks.process_dem
-   src.tasks.generate_rainfall_inputs
-   src.tasks.generate_tide_inputs
-   src.tasks.generate_river_inputs
-   src.tasks.run_flood_model
-   src.tasks.refresh_lidar_datasets
    src.tasks.wkt_to_gdf
-   src.tasks.get_model_output_filepath_from_model_id
-   src.tasks.get_depth_by_time_at_point
-   src.tasks.get_model_extents_bbox
-   src.tasks.get_valid_parameters_based_on_confidence_level
-   src.tasks.validate_slr_parameters
 
 
 Module Contents
 ---------------
 
 .. py:data:: message_broker_url
+   :value: 'redis://Uninferable:6379/0'
+
 
 .. py:data:: app
 
@@ -64,197 +53,36 @@ Module Contents
    Bases: :py:obj:`app`
 
 
-   Task that switches state to FAILURE if an exception occurs
+   Task that switches state to FAILURE if an exception occurs.
 
 
-   .. py:method:: on_failure(exc, _task_id, _args, _kwargs, _einfo)
+   .. py:method:: on_failure(exc: Exception, _task_id: str, _args: Tuple, _kwargs: Dict, _einfo: billiard.einfo.ExceptionInfo) -> None
+
+      Change state to FAILURE and add exception to task data if an exception occurs.
+
+      :param exc: The exception raised by the task.
+      :type exc: Exception
 
 
-.. py:class:: DepthTimePlot
 
-   Bases: :py:obj:`NamedTuple`
+.. py:function:: add_base_data_to_db(selected_polygon_wkt: str, base_data_parameters: Dict[str, str]) -> None
 
-
-   Represents the depths over time for a particular pixel location in a raster.
-   Uses tuples and lists instead of Arrays or Dataframes because it needs to be easily serializable when communicating
-   over message_broker
-
-   .. attribute:: depths
-
-      A list of all of the depths in m for the pixel. Parallels the times list
-
-      :type: List[float]
-
-   .. attribute:: times
-
-      A list of all of the times in s for the pixel. Parallels the depts list
-
-      :type: List[float]
-
-
-   .. py:attribute:: depths
-      :type:  List[float]
-
-
-   .. py:attribute:: times
-      :type:  List[float]
-
-
-.. py:function:: create_model_for_area(selected_polygon_wkt: str, scenario_options: Dict[str, Union[str, float, int, bool]]) -> celery.result.GroupResult
-
-   Creates a model for the area using series of chained (sequential) sub-tasks.
-
-   :param selected_polygon_wkt: The polygon defining the selected area to run the model for. Defined in WKT form.
-   :type selected_polygon_wkt: str
-   :param scenario_options: Options for scenario modelling inputs, coming from JSON body.
-   :type scenario_options: Dict[str, Union[str, float, int, bool]]
-
-   :returns: The task result for the long-running group of tasks. The task ID represents the final task in the group.
-   :rtype: result.GroupResult
-
-
-.. py:function:: add_base_data_to_db(selected_polygon_wkt: str) -> None
-
-   Task to ensure static base data for the given area is added to the database
+   Task to ensure static base data for the given area is added to the database.
 
    :param selected_polygon_wkt: The polygon defining the selected area to add base data for. Defined in WKT form.
    :type selected_polygon_wkt: str
-
-   :returns: This task does not return anything
-   :rtype: None
-
-
-.. py:function:: process_dem(selected_polygon_wkt: str)
-
-   Task to ensure hydrologically-conditioned DEM is processed for the given area and added to the database.
-
-   :param selected_polygon_wkt: The polygon defining the selected area to process the DEM for. Defined in WKT form.
-   :type selected_polygon_wkt: str
-
-   :returns: This task does not return anything
-   :rtype: None
-
-
-.. py:function:: generate_rainfall_inputs(selected_polygon_wkt: str)
-
-   Task to ensure rainfall input data for the given area is added to the database and model input files are created.
-
-   :param selected_polygon_wkt: The polygon defining the selected area to add rainfall data for. Defined in WKT form.
-   :type selected_polygon_wkt: str
-
-   :returns: This task does not return anything
-   :rtype: None
-
-
-.. py:function:: generate_tide_inputs(selected_polygon_wkt: str, scenario_options: Dict[str, Union[str, float, int, bool]])
-
-   Task to ensure tide input data for the given area is added to the database and model input files are created.
-
-   :param selected_polygon_wkt: The polygon defining the selected area to add tide data for. Defined in WKT form.
-   :type selected_polygon_wkt: str
-   :param scenario_options: Options for scenario modelling inputs, coming from JSON body.
-   :type scenario_options: Dict[str, Union[str, float, int, bool]]
-
-   :returns: This task does not return anything
-   :rtype: None
-
-
-.. py:function:: generate_river_inputs(selected_polygon_wkt: str)
-
-   Task to ensure river input data for the given area is added to the database and model input files are created.
-
-   :param selected_polygon_wkt: The polygon defining the selected area to add river data for. Defined in WKT form.
-   :type selected_polygon_wkt: str
-
-   :returns: This task does not return anything
-   :rtype: None
-
-
-.. py:function:: run_flood_model(selected_polygon_wkt: str) -> int
-
-   Task to run flood model using input data from previous tasks.
-
-   :param selected_polygon_wkt: The polygon defining the selected area to run the flood model for. Defined in WKT form.
-   :type selected_polygon_wkt: str
-
-   :returns: The database ID of the flood model that has been run.
-   :rtype: int
-
-
-.. py:function:: refresh_lidar_datasets() -> None
-
-   Web-scrapes OpenTopography metadata to create the datasets table containing links to LiDAR data sources.
-   Takes a long time to run but needs to be run periodically so that the datasets are up to date
-
-   :returns: This task does not return anything
-   :rtype: None
+   :param base_data_parameters: The parameters from DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions] for the particular module.
+   :type base_data_parameters: Dict[str, str]
 
 
 .. py:function:: wkt_to_gdf(wkt: str) -> geopandas.GeoDataFrame
 
-   Transforms a WKT string polygon into a GeoDataFrame
+   Transform a WKT string polygon into a GeoDataFrame.
 
    :param wkt: The WKT form of the polygon to be transformed. In WGS84 CRS (epsg:4326).
    :type wkt: str
 
    :returns: The GeoDataFrame form of the polygon after being transformed.
    :rtype: gpd.GeoDataFrame
-
-
-.. py:function:: get_model_output_filepath_from_model_id(model_id: int) -> str
-
-   Task to query the database and find the filepath for the model output for the model_id.
-
-   :param model_id: The database id of the model output to query.
-   :type model_id: int
-
-   :returns: Serialized posix-style str version of the filepath
-   :rtype: str
-
-
-.. py:function:: get_depth_by_time_at_point(model_id: int, lat: float, lng: float) -> DepthTimePlot
-
-   Task to query a point in a flood model output and return the list of depths and times.
-
-   :param model_id: The database id of the model output to query.
-   :type model_id: int
-   :param lat: The latitude of the point to query.
-   :type lat: float
-   :param lng: The longitude of the point to query.
-   :type lng: float
-
-   :returns: Tuple of depths list and times list for the pixel in the output nearest to the point.
-   :rtype: DepthTimePlot
-
-
-.. py:function:: get_model_extents_bbox(model_id: int) -> str
-
-   Task to find the bounding box of a given model output
-
-   :param model_id: The database id of the model output to query.
-   :type model_id: int
-
-   :returns: The bounding box in 'x1,y1,x2,y2' format
-   :rtype: str
-
-
-.. py:function:: get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Union[str, int]]]
-
-   Task to get information on valid tide and sea-level-rise parameters based on the valid values in the database.
-   These parameters are mostly dependent on the "confidence_level" parameter, so that is the key in the returned dict.
-
-   :returns: Dictionary with confidence_level as the key, and 2nd level dict with allowed values for dependent values.
-   :rtype: Dict[str, Dict[str, Union[str, int]]]
-
-
-.. py:function:: validate_slr_parameters(scenario_options: Dict[str, Union[str, float, int, bool]]) -> src.dynamic_boundary_conditions.tide.main_tide_slr.ValidationResult
-
-   Task to validate each of the sea-level-rise parameters.
-
-   :param scenario_options: Options for scenario modelling inputs, coming from JSON body.
-   :type scenario_options: Dict[str, Union[str, float, int, bool]]
-
-   :returns: Result of the validation, with validation failure reason if applicable
-   :rtype: main_tide_slr.ValidationResult
 
 

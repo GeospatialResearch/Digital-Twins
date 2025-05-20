@@ -3,16 +3,11 @@ src
 
 .. py:module:: src
 
+.. autoapi-nested-parse::
 
-Subpackages
------------
+   Scripts directly in this package deal with managing server and process configuration.
+   Subpackages each perform processing, data handling, or modelling.
 
-.. toctree::
-   :maxdepth: 1
-
-   /autoapi/src/digitaltwin/index
-   /autoapi/src/dynamic_boundary_conditions/index
-   /autoapi/src/flood_model/index
 
 
 Submodules
@@ -22,7 +17,10 @@ Submodules
    :maxdepth: 1
 
    /autoapi/src/app/index
+   /autoapi/src/check_celery_alive/index
    /autoapi/src/config/index
+   /autoapi/src/digitaltwin/index
+   /autoapi/src/geoserver/index
    /autoapi/src/run_all/index
    /autoapi/src/tasks/index
 
@@ -39,6 +37,6 @@ Package Contents
 ----------------
 
 .. py:data:: __version__
-   :value: '0.1.0'
+   :value: '2.0.0'
 
 

@@ -15,6 +15,9 @@ Attributes
 .. autoapisummary::
 
    src.digitaltwin.utils.log
+   src.digitaltwin.utils.FuncArgsT
+   src.digitaltwin.utils.FuncKwargsT
+   src.digitaltwin.utils.FuncReturnT
 
 
 Classes
@@ -34,6 +37,7 @@ Functions
    src.digitaltwin.utils.setup_logging
    src.digitaltwin.utils.get_catchment_area
    src.digitaltwin.utils.get_nz_boundary
+   src.digitaltwin.utils.retry_function
 
 
 Module Contents
@@ -87,35 +91,44 @@ Module Contents
 
 
    .. py:attribute:: CRITICAL
+      :value: 50
+
 
 
    .. py:attribute:: ERROR
+      :value: 40
+
 
 
    .. py:attribute:: WARNING
+      :value: 30
+
 
 
    .. py:attribute:: INFO
+      :value: 20
+
 
 
    .. py:attribute:: DEBUG
+      :value: 10
+
 
 
    .. py:attribute:: NOTSET
+      :value: 0
+
 
 
 .. py:function:: log_execution_info() -> None
 
-   Logs a debug message indicating the execution of the function in the script.
-
-   :returns: This function does not return any value.
-   :rtype: None
+   Log a debug message indicating the execution of the function in the script.
 
 
 .. py:function:: setup_logging(log_level: LogLevel = LogLevel.INFO) -> None
 
-   Configures the root logger with the specified log level and formats, captures warnings, and excludes specific
-   loggers from propagating their messages to the root logger. Additionally, logs a debug message indicating the
+   Configure the root logger with the specified log level and formats, capture warnings, and exclude specific
+   loggers from propagating their messages to the root logger. Additionally, log a debug message indicating the
    execution of the function in the script.
 
    :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
@@ -127,9 +140,6 @@ Module Contents
                      - LogLevel.DEBUG (10)
                      - LogLevel.NOTSET (0)
    :type log_level: LogLevel = LogLevel.DEBUG
-
-   :returns: This function does not return any value.
-   :rtype: None
 
 
 .. py:function:: get_catchment_area(catchment_area: geopandas.GeoDataFrame, to_crs: int = 2193) -> geopandas.GeoDataFrame
@@ -156,5 +166,32 @@ Module Contents
 
    :returns: A GeoDataFrame representing the boundary of New Zealand in the specified CRS.
    :rtype: gpd.GeoDataFrame
+
+
+.. py:data:: FuncArgsT
+
+.. py:data:: FuncKwargsT
+
+.. py:data:: FuncReturnT
+
+.. py:function:: retry_function(func: Callable[[FuncArgsT, FuncKwargsT], FuncReturnT], max_retries: int, base_retry_delay: float, expected_exceptions: Type[Exception] | Tuple[Type[Exception]], *args: FuncArgsT, **kwargs: FuncKwargsT) -> FuncReturnT
+
+   Retry a function a number of times if an exception is raised.
+
+   :param func: The function to call and retry if it fails. Takes *args and **kwargs as arguments.
+   :type func: Callable[[FuncArgsT, FuncKwargsT], FuncReturnT]
+   :param max_retries: The maximum number of times to retry the function before allowing the exception to propagate
+   :type max_retries: int
+   :param base_retry_delay: The delay in seconds between retries. Each subsequent retry becomes extended by this amount.
+   :type base_retry_delay: float
+   :param expected_exceptions: The exceptions that are expected to be thrown, and so will be caught. Any others will be propagated.
+   :type expected_exceptions: Type[Exception] | Tuple[Type[Exception]]
+   :param \*args: The standard arguments for func.
+   :type \*args: FuncArgsT
+   :param \*\*kwargs: The keyword arguments for func.
+   :type \*\*kwargs: FuncKwargsT
+
+   :returns: The result of func(*args, **kwargs).
+   :rtype: FuncReturnT
 
 

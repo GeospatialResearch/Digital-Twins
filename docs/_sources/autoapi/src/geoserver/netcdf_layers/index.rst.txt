@@ -1,0 +1,63 @@
+src.geoserver.netcdf_layers
+===========================
+
+.. py:module:: src.geoserver.netcdf_layers
+
+.. autoapi-nested-parse::
+
+   Functions for serving NetCDF layers via geoserver.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.geoserver.netcdf_layers._xml_header
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.geoserver.netcdf_layers.create_layer_from_nc_store
+   src.geoserver.netcdf_layers.add_nc_to_geoserver
+
+
+Module Contents
+---------------
+
+.. py:data:: _xml_header
+
+.. py:function:: create_layer_from_nc_store(geoserver_url: str, layer_name: str, workspace_name: str, band_name: str) -> None
+
+   Create a GeoServer Layer from a GeoServer NetCDF store, making it ready to serve.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param layer_name: Defines the name of the layer in GeoServer.
+   :type layer_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param band_name: The name of the band within the NetCDF file to serve.
+   :type band_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: add_nc_to_geoserver(nc_filepath: pathlib.Path, band_name: str, workspace_name: str, model_id: int) -> None
+
+   Upload a NetCDF file to GeoServer, ready for serving to clients.
+
+   :param nc_filepath: The filepath to the NetCDF file to be served.
+   :type nc_filepath: pathlib.Path
+   :param band_name: The name of the NetCDF band/layer getting served
+   :type band_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param model_id: The id of the model being added, to facilitate layer naming.
+   :type model_id: int
+
+
