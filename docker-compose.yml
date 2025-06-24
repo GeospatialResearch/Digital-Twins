@@ -43,7 +43,6 @@ services:
     build:
       context: .
       dockerfile: src/Dockerfile
-    image: lparkinson/flood-resilience-dt:2.1
     container_name: backend_digital_twin
     entrypoint: ["src/backend_entrypoint.sh"]
     env_file:
@@ -69,7 +68,6 @@ services:
     build:
       context: .
       dockerfile: src/Dockerfile
-    image: lparkinson/flood-resilience-dt:2.1
     container_name: celery_worker_digital_twin
     entrypoint: ["src/celery_worker_entrypoint.sh"]
     restart: always
@@ -98,7 +96,6 @@ services:
     build:
       context: .
       dockerfile: geoserver.Dockerfile
-    image: lparkinson/geoserver-dt:2.0
     container_name: geoserver_digital_twin
     volumes:
       - geoserver_data:/opt/geoserver_data
@@ -122,7 +119,6 @@ services:
     # Front-end using terria.js
     build:
       context: terriajs
-    image: lparkinson/terria-dt:2.0
     ports:
       - "${WWW_PORT}:3001"
     environment:
