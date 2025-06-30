@@ -59,5 +59,6 @@ def write_wps_namelist(
 
 /
     """
+    print("test")
     with open(save_file_to, "w") as file:
         file.write(content)
