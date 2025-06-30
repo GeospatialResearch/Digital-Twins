@@ -62,3 +62,11 @@ def write_wps_namelist(
     print("test")
     with open(save_file_to, "w") as file:
         file.write(content)
+
+
+def domain_generation(
+    executable_command="./geogrid/geogrid.exe",
+    log_file="geogrid.log"
+):
+    with open(log_file, "w") as log:
+        subprocess.run(executable_command, stdout=log, stderr=subprocess.STDOUT, check=True)
