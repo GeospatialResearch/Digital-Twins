@@ -31,7 +31,14 @@ dependencies:
   - pytest>=7.4.3
   - psycopg2==2.9.3 # Needed for Linux environments
   - botocore>=1.33.10 # Minimum version that is compatible with python >= 3.10 is botocore>=1.13.0
+  - netcdf4 # Extra
+  - numpy # Extra
+  - gdal == 3.6.3 # Extra
+  - xarray # Extra
+  - pandas # Extra
+  - rioxarray >= 0.15.1 # Extra
   - pip:
+    - whitebox # Extra
     - git+https://github.com/LukeParky/NewZeaLiDAR.git@v0.3
 
 prefix:
