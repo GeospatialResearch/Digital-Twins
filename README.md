@@ -31,7 +31,7 @@ The following list defines the basic steps required to set up and run the digita
 Note: Other Linux-based operating systems are likely to work but have not been as thoroughly tested.
 
 ### Unsupported Operating Systems
-We unfortunately do not support MacOS. Please see #358 for updates or to contribute.
+We unfortunately do not support MacOS. Please see [#358](/../../issues/358) for updates or to contribute.
 
 
 ### Required Credentials:
