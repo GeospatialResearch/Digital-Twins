@@ -25,6 +25,8 @@ from pywps.response.execute import ExecuteResponse
 from shapely import box
 
 from floodresilience import tasks
+from floodresilience.dynamic_boundary_conditions.river import main_river
+from floodresilience.dynamic_boundary_conditions.tide import main_tide_slr
 from src.config import cast_str_to_bool, EnvVariable as EnvVar
 
 
@@ -48,7 +50,15 @@ class FloodScenarioProcessService(Process):
                 "SSP3-7",
                 "SSP5-8.5"
             ], default="SSP2-4.5"),
-            LiteralInput("addVlm", "Add Vertical Land Movement", data_type="string", allowed_values=["True", "False"])
+            LiteralInput("addVlm", "Add Vertical Land Movement", data_type="string", allowed_values=["True", "False"]),
+            LiteralInput("ari", "Annual Return Interval (ARI) Flow", data_type="integer", allowed_values=[
+                5,
+                10,
+                20,
+                50,
+                100,
+                1000,
+            ], default=10)
         ]
         # Create area WPS outputs
         outputs = [
@@ -87,16 +97,23 @@ class FloodScenarioProcessService(Process):
         # Form bounding box into standard shapely.box
         bounding_box = box(xmin, ymin, xmax, ymax)
 
+        # Nest scenario options by module name to keep them easily separable.
         scenario_options = {
-            "proj_year": request.inputs["projYear"][0].data,
-            "percentile": request.inputs["percentile"][0].data,
-            "ssp_scenario": request.inputs["sspScenario"][0].data,
-            "add_vlm": cast_str_to_bool(request.inputs["addVlm"][0].data),
-            "confidence_level": "medium"
+            main_tide_slr.__name__: {
+                "proj_year": request.inputs["projYear"][0].data,
+                "percentile": request.inputs["percentile"][0].data,
+                "ssp_scenario": request.inputs["sspScenario"][0].data,
+                "add_vlm": cast_str_to_bool(request.inputs["addVlm"][0].data),
+                "confidence_level": "medium",
+            },
+            main_river.__name__: {
+                "ari": request.inputs["ari"][0].data,
+            }
         }
 
-        modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
-        scenario_id = modelling_task.get()
+        # modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
+        # scenario_id = modelling_task.get()
+        scenario_id=5
 
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
         response.outputs['floodDepth'].data = json.dumps(flood_depth_catalog(scenario_id))

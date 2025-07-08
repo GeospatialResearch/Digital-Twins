@@ -84,7 +84,7 @@ def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> 
         process_dem.si(selected_polygon_wkt) |
         generate_rainfall_inputs.si(selected_polygon_wkt) |
         generate_tide_inputs.si(selected_polygon_wkt, scenario_options) |
-        generate_river_inputs.si(selected_polygon_wkt) |
+        generate_river_inputs.si(selected_polygon_wkt, scenario_options) |
         run_flood_model.si(selected_polygon_wkt)
     )()
 
@@ -131,13 +131,13 @@ def generate_tide_inputs(selected_polygon_wkt: str, scenario_options: dict) -> N
     scenario_options: dict
         Options for scenario modelling inputs.
     """
-    parameters = DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr] | scenario_options
+    parameters = DEFAULT_MODULES_TO_PARAMETERS[main_tide_slr] | scenario_options[main_tide_slr.__name__]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_tide_slr.main(selected_polygon, **parameters)
 
 
 @app.task(base=OnFailureStateTask)
-def generate_river_inputs(selected_polygon_wkt: str) -> None:
+def generate_river_inputs(selected_polygon_wkt: str, scenario_options: dict) -> None:
     """
     Task to ensure river input data for the given area is added to the database and model input files are created.
 
@@ -145,8 +145,10 @@ def generate_river_inputs(selected_polygon_wkt: str) -> None:
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add river data for. Defined in WKT form.
+    scenario_options: dict
+        Options for scenario modelling inputs.
     """
-    parameters = DEFAULT_MODULES_TO_PARAMETERS[main_river]
+    parameters = DEFAULT_MODULES_TO_PARAMETERS[main_river] | scenario_options[main_river.__name__]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     main_river.main(selected_polygon, **parameters)
 

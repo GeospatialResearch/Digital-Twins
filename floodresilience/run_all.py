@@ -61,8 +61,8 @@ DEFAULT_MODULES_TO_PARAMETERS = {
     main_river: {
         "flow_length_mins": 2880,
         "time_to_peak_mins": 1440,
-        "maf": True,
-        "ari": None,
+        "maf": False,
+        "ari": 10,
         "bound": BoundType.MIDDLE,
         "log_level": LogLevel.INFO
     },
