@@ -1,0 +1,14 @@
+<!--Template used for TerriaJS to display information about a flooded building-->
+<table class="cesium-infoBox-defaultTable">
+  <tbody>
+  <tr>
+    <td style="vertical-align: middle;"><b>Water Depth (m)</b></td>
+    <!-- Double-escaped so that after python string formatting it is still mustache formatted. -->
+    <td>{{{{Water_Depth__m_}}}}</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: middle;"><b>Flood Scenario ID</b></td>
+    <td>{flood_scenario_id}</td>
+  </tr>
+  </tbody>
+</table>
