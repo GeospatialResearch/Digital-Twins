@@ -34,38 +34,6 @@ log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}
 
 
-def convert_nc_to_geoserver_compatible(orig_nc_file_path: pathlib.Path) -> pathlib.Path:
-    """
-    Create a geoserver compliant netCDF file from a netCDF model output.
-    Following compliance from COARDS convention.
-        https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html#notes-on-supported-netcdfs
-
-    Parameters
-    ----------
-    orig_nc_file_path : pathlib.Path
-        The file path to the netCDF file.
-
-    Returns
-    -------
-    pathlib.Path
-        The filepath of the new compliant netCDF file.
-    """
-    log.info(f"Converting {orig_nc_file_path.name} to geoserver compliant netCDF file.")
-    temp_dir = pathlib.Path("tmp/gtiff")
-    # Create temporary storage folder if it does not already exist
-    temp_dir.mkdir(parents=True, exist_ok=True)
-    compliant_nc_path = temp_dir / orig_nc_file_path.name
-    # Convert the netcdf to WGS84, COARDS compliant coordinates
-    with xr.open_dataset(orig_nc_file_path, decode_coords="all") as ds:
-        ds = ds.drop_vars(["blockid", "blockxo", "blockyo", "blockwidth", "blocklevel", "blockstatus"])
-        wgs84_crs_code = 4326
-        ds_wgs84 = ds.rio.reproject(f"EPSG:{wgs84_crs_code}")
-        ds_wgs84.rio.write_crs(wgs84_crs_code, inplace=True)
-        ds_wgs84.to_netcdf(compliant_nc_path)
-
-    return pathlib.Path(os.getcwd()) / compliant_nc_path
-
-
 def convert_nc_to_gtiff(nc_file_path: pathlib.Path) -> pathlib.Path:
     """
     Create a GeoTiff file from a netCDF model output. The TIFF represents the max flood height in the model output.
@@ -189,15 +157,10 @@ def add_model_output_to_geoserver(model_output_path: pathlib.Path, model_id: int
         The database id of the model output.
     """
     log.debug("Adding model output to geoserver")
-    nc_filepath = convert_nc_to_geoserver_compatible(model_output_path)
+    gtiff_filepath = convert_nc_to_gtiff(model_output_path)
     db_name = EnvVariable.POSTGRES_DB
     # Assign a new workspace name based on the db_name, to prevent name clashes if running multiple databases
     workspace_name = f"{db_name}-dt-model-outputs"
     geoserver.create_workspace_if_not_exists(workspace_name)
-    band_name = "h_P0"  # The band for water depth
-    # Upload NetCDF output file to Geoserver, creating a layer for water depth
-    geoserver.add_nc_to_geoserver(nc_filepath, band_name, workspace_name, model_id)
-    # Delete temporary file
-    nc_filepath.unlink()
-    # Ensure styling for the layer is present in geoserver
+    geoserver.add_gtiff_to_geoserver(gtiff_filepath, workspace_name, model_id)
     geoserver.create_viridis_style_if_not_exists()
