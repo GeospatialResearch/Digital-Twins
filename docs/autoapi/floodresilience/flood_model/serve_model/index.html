@@ -115,19 +115,16 @@ or other clients.</p>
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible" title="floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_nc_to_geoserver_compatible</span></code></a>(→ pathlib.Path)</p></td>
-<td><p>Create a geoserver compliant netCDF file from a netCDF model output.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.convert_nc_to_gtiff" title="floodresilience.flood_model.serve_model.convert_nc_to_gtiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_nc_to_gtiff</span></code></a>(→ pathlib.Path)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.convert_nc_to_gtiff" title="floodresilience.flood_model.serve_model.convert_nc_to_gtiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_nc_to_gtiff</span></code></a>(→ pathlib.Path)</p></td>
 <td><p>Create a GeoTiff file from a netCDF model output. The TIFF represents the max flood height in the model output.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.create_building_layers" title="floodresilience.flood_model.serve_model.create_building_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_layers</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.create_building_layers" title="floodresilience.flood_model.serve_model.create_building_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_layers</span></code></a>(→ None)</p></td>
 <td><p>Create dynamic GeoServer layers &quot;nz_building_outlines&quot; and &quot;building_flood_status&quot; for the given workspace.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists" title="floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_database_views_if_not_exists</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists" title="floodresilience.flood_model.serve_model.create_building_database_views_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_building_database_views_if_not_exists</span></code></a>(→ None)</p></td>
 <td><p>Create a GeoServer workspace and building layers using database views if they do not currently exist.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.add_model_output_to_geoserver" title="floodresilience.flood_model.serve_model.add_model_output_to_geoserver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_output_to_geoserver</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.serve_model.add_model_output_to_geoserver" title="floodresilience.flood_model.serve_model.add_model_output_to_geoserver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_output_to_geoserver</span></code></a>(→ None)</p></td>
 <td><p>Add the model output max depths to GeoServer, ready for serving.</p></td>
 </tr>
 </tbody>
@@ -144,27 +141,6 @@ or other clients.</p>
 <dt class="sig sig-object py" id="floodresilience.flood_model.serve_model._xml_header">
 <span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">_xml_header</span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model._xml_header" title="Link to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible">
-<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.serve_model.</span></span><span class="sig-name descname"><span class="pre">convert_nc_to_geoserver_compatible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_nc_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#floodresilience.flood_model.serve_model.convert_nc_to_geoserver_compatible" title="Link to this definition"></a></dt>
-<dd><p>Create a geoserver compliant netCDF file from a netCDF model output.
-Following compliance from COARDS convention.</p>
-<blockquote>
-<div><p><a class="reference external" href="https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html#notes-on-supported-netcdfs">https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html#notes-on-supported-netcdfs</a></p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>orig_nc_file_path</strong> (<em>pathlib.Path</em>) – The file path to the netCDF file.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The filepath of the new compliant netCDF file.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pathlib.Path</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="floodresilience.flood_model.serve_model.convert_nc_to_gtiff">

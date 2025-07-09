@@ -23,7 +23,8 @@ Functions
 
 .. autoapisummary::
 
-   src.geoserver.raster_layers.create_layer_from_gtiff_store
+   src.geoserver.raster_layers.upload_gtiff_to_store
+   src.geoserver.raster_layers.create_layer_from_store
    src.geoserver.raster_layers.add_gtiff_to_geoserver
    src.geoserver.raster_layers.create_viridis_style_if_not_exists
 
@@ -35,7 +36,23 @@ Module Contents
 
 .. py:data:: _xml_header
 
-.. py:function:: create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace_name: str) -> None
+.. py:function:: upload_gtiff_to_store(geoserver_url: str, gtiff_filepath: pathlib.Path, store_name: str, workspace_name: str) -> None
+
+   Upload a GeoTiff file to a new GeoServer store, to enable serving.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param gtiff_filepath: The filepath to the GeoTiff file to be served.
+   :type gtiff_filepath: pathlib.Path
+   :param store_name: The name of the new Geoserver store to be created.
+   :type store_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: create_layer_from_store(geoserver_url: str, layer_name: str, workspace_name: str) -> None
 
    Create a GeoServer Layer from a GeoServer store, making it ready to serve.
 

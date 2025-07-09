@@ -18,7 +18,6 @@ Submodules
 
    /autoapi/src/geoserver/database_layers/index
    /autoapi/src/geoserver/geoserver_common/index
-   /autoapi/src/geoserver/netcdf_layers/index
    /autoapi/src/geoserver/raster_layers/index
 
 
@@ -30,7 +29,6 @@ Functions
    src.geoserver.create_datastore_layer
    src.geoserver.create_db_store_if_not_exists
    src.geoserver.create_workspace_if_not_exists
-   src.geoserver.add_nc_to_geoserver
    src.geoserver.add_gtiff_to_geoserver
    src.geoserver.create_viridis_style_if_not_exists
 
@@ -79,20 +77,6 @@ Package Contents
    :type workspace_name: str
 
    :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
-
-
-.. py:function:: add_nc_to_geoserver(nc_filepath: pathlib.Path, band_name: str, workspace_name: str, model_id: int) -> None
-
-   Upload a NetCDF file to GeoServer, ready for serving to clients.
-
-   :param nc_filepath: The filepath to the NetCDF file to be served.
-   :type nc_filepath: pathlib.Path
-   :param band_name: The name of the NetCDF band/layer getting served
-   :type band_name: str
-   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
-   :type workspace_name: str
-   :param model_id: The id of the model being added, to facilitate layer naming.
-   :type model_id: int
 
 
 .. py:function:: add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, model_id: int) -> None
