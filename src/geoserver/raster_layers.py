@@ -248,39 +248,6 @@ def add_style(style_file: pathlib.Path, replace: bool = False) -> None:
     log.info(f"Style '{style_name}.sld' created.")
 
 
-def create_viridis_style_if_not_exists() -> None:
-    """Create a GeoServer style for rasters using the viridis color scale."""
-    style_name = "viridis_raster"
-    log.info(f"Creating style '{style_name}.sld' if it does not exist.")
-    if style_exists(style_name):
-        log.debug(f"Style '{style_name}.sld' already exists.")
-    else:
-        # Create the style base
-        create_style_data = f"""
-        <style>
-            <name>{style_name}</name>
-            <filename>{style_name}.sld</filename>
-        </style>
-        """
-        create_style_response = requests.post(
-            f'{get_geoserver_url()}/styles',
-            data=create_style_data,
-            headers=_xml_header,
-            auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
-        )
-        create_style_response.raise_for_status()
-    # PUT the style definition .sld file into the style base
-    with open('floodresilience/flood_model/templates/viridis_raster.sld', 'rb') as payload:
-        sld_response = requests.put(
-            f'{get_geoserver_url()}/styles/{style_name}',
-            data=payload,
-            headers={"Content-type": "application/vnd.ogc.sld+xml"},
-            auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
-        )
-    sld_response.raise_for_status()
-    log.info(f"Style '{style_name}.sld' created.")
-
-
 def delete_store(store_name: str, workspace_name: str) -> None:
     """
     Delete a Geoserver CoverageStore from a workspace.
