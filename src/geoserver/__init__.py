@@ -22,13 +22,12 @@ Imports here are accessible directly by `from src import geoserver`.
 from .database_layers import create_datastore_layer, create_db_store_if_not_exists
 from .geoserver_common import create_workspace_if_not_exists
 from .netcdf_layers import add_nc_to_geoserver
-from .raster_layers import add_gtiff_to_geoserver, create_viridis_style_if_not_exists
+from .raster_layers import add_gtiff_to_geoserver
 
 __all__ = [
     "add_gtiff_to_geoserver",
     "add_nc_to_geoserver",
     "create_datastore_layer",
     "create_db_store_if_not_exists",
-    "create_viridis_style_if_not_exists",
     "create_workspace_if_not_exists",
 ]
