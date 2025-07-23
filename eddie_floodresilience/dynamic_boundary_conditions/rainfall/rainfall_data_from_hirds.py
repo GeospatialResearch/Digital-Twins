@@ -24,7 +24,7 @@ from typing import List, NamedTuple, Optional
 import pandas as pd
 import requests
 
-from floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites import get_hirds_headers
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites import get_hirds_headers
 
 
 def get_site_url_key(site_id: str, idf: bool) -> str:

@@ -26,15 +26,15 @@ import numpy as np
 from shapely.geometry import Point
 from sqlalchemy.engine import Engine
 
-from floodresilience.dynamic_boundary_conditions.river import river_data_to_from_db
-from floodresilience.dynamic_boundary_conditions.river.river_network_to_from_db import (
+from eddie_floodresilience.dynamic_boundary_conditions.river import river_data_to_from_db
+from eddie_floodresilience.dynamic_boundary_conditions.river.river_network_to_from_db import (
     get_next_network_id,
     add_network_exclusions_to_db,
     store_rec_network_to_db,
     get_existing_network_metadata_from_db,
     get_existing_network
 )
-from floodresilience.flood_model import process_hydro_dem
+from eddie_floodresilience.flood_model import process_hydro_dem
 
 log = logging.getLogger(__name__)
 

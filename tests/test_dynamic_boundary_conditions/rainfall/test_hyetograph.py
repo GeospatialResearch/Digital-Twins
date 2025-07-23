@@ -21,7 +21,7 @@ from typing import List
 import pandas as pd
 import numpy as np
 
-from floodresilience.dynamic_boundary_conditions.rainfall import hyetograph
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall import hyetograph
 
 
 class HyetographTest(unittest.TestCase):
@@ -246,7 +246,7 @@ class HyetographTest(unittest.TestCase):
                     else:
                         self.assertEqual(self.increment_mins / 2, row["mins"])
 
-    @patch("floodresilience.dynamic_boundary_conditions.rainfall.hyetograph.get_storm_length_increment_data")
+    @patch("eddie_floodresilience.dynamic_boundary_conditions.rainfall.hyetograph.get_storm_length_increment_data")
     def test_transform_data_for_selected_method_correct_columns_and_storm_length(self, mock_storm_length_data):
         """Test to ensure returned data have correct columns and storm length."""
         mock_storm_length_data.return_value = self.storm_length_data
@@ -265,7 +265,7 @@ class HyetographTest(unittest.TestCase):
             actual_storm_length = hyetograph_depth["mins"].iloc[-1]
             self.assertEqual(expected_storm_length, actual_storm_length)
 
-    @patch("floodresilience.dynamic_boundary_conditions.rainfall.hyetograph.get_storm_length_increment_data")
+    @patch("eddie_floodresilience.dynamic_boundary_conditions.rainfall.hyetograph.get_storm_length_increment_data")
     def test_transform_data_for_selected_method_correct_layout_and_rows(self, mock_storm_length_data):
         """Test to ensure returned data have correct output layout and number of rows."""
         mock_storm_length_data.return_value = self.storm_length_data

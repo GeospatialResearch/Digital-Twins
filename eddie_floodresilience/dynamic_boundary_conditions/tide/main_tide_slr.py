@@ -31,14 +31,14 @@ from sqlalchemy import text
 from src import config
 from src.digitaltwin import setup_environment, tables
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from floodresilience.dynamic_boundary_conditions.tide import (
+from eddie_floodresilience.dynamic_boundary_conditions.tide import (
     tide_query_location,
     tide_data_from_niwa,
     sea_level_rise_data,
     tide_slr_combine,
     tide_slr_model_input
 )
-from floodresilience.dynamic_boundary_conditions.tide.tide_enum import ApproachType
+from eddie_floodresilience.dynamic_boundary_conditions.tide.tide_enum import ApproachType
 
 log = logging.getLogger(__name__)
 

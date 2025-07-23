@@ -28,7 +28,7 @@ import geopandas as gpd
 from src import config
 from src.digitaltwin import setup_environment
 from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
-from floodresilience.dynamic_boundary_conditions.river import (
+from eddie_floodresilience.dynamic_boundary_conditions.river import (
     river_data_to_from_db,
     river_network_for_aoi,
     align_rec_osm,
@@ -36,7 +36,7 @@ from floodresilience.dynamic_boundary_conditions.river import (
     hydrograph,
     river_model_input
 )
-from floodresilience.dynamic_boundary_conditions.river.river_enum import BoundType
+from eddie_floodresilience.dynamic_boundary_conditions.river.river_enum import BoundType
 
 log = logging.getLogger(__name__)
 

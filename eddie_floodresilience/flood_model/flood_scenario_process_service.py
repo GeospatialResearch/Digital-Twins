@@ -26,7 +26,7 @@ from pywps.response.execute import ExecuteResponse
 import requests
 from shapely import box
 
-from floodresilience import tasks
+from eddie_floodresilience import tasks
 from src.config import cast_str_to_bool, EnvVariable as EnvVar
 
 
@@ -123,7 +123,7 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
     gs_building_workspace = f"{EnvVar.POSTGRES_DB}-buildings"
     gs_building_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_building_workspace}/ows"
     # Open and read HTML/mustache template file for infobox
-    with open("./floodresilience/flood_model/templates/flooded_building_infobox.mustache", encoding="utf-8") as file:
+    with open("./eddie_floodresilience/flood_model/templates/flooded_building_infobox.mustache", encoding="utf-8") as file:
         flooded_building_infobox_template = file.read()
     return {
         "type": "wfs",

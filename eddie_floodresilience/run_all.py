@@ -21,17 +21,17 @@ import pathlib
 from src.digitaltwin import retrieve_from_instructions
 from src.digitaltwin.utils import LogLevel
 from src.run_all import create_sample_polygon, main
-from floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
-from floodresilience.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
-from floodresilience.dynamic_boundary_conditions.river import main_river
-from floodresilience.dynamic_boundary_conditions.river.river_enum import BoundType
-from floodresilience.dynamic_boundary_conditions.tide import main_tide_slr
-from floodresilience.flood_model import bg_flood_model, process_hydro_dem
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType, HyetoMethod
+from eddie_floodresilience.dynamic_boundary_conditions.river import main_river
+from eddie_floodresilience.dynamic_boundary_conditions.river.river_enum import BoundType
+from eddie_floodresilience.dynamic_boundary_conditions.tide import main_tide_slr
+from eddie_floodresilience.flood_model import bg_flood_model, process_hydro_dem
 
 DEFAULT_MODULES_TO_PARAMETERS = {
     retrieve_from_instructions: {
         "log_level": LogLevel.INFO,
-        "instruction_json_path": pathlib.Path("floodresilience/static_boundary_instructions.json").as_posix()
+        "instruction_json_path": pathlib.Path("eddie_floodresilience/static_boundary_instructions.json").as_posix()
     },
     process_hydro_dem: {
         "log_level": LogLevel.INFO

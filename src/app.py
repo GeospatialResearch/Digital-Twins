@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """The main web application that serves the Digital Twin to the web through a Rest API."""
-
+import importlib
 import logging
 from http.client import OK
 
@@ -24,7 +24,7 @@ from flask import Flask, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 
-from floodresilience.blueprint import flood_resilience_blueprint
+from src.discover_plugins import discover_plugins
 from src.check_celery_alive import check_celery_alive
 
 # Initialise flask server object
@@ -41,7 +41,10 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
-app.register_blueprint(flood_resilience_blueprint)
+eddie_plugins = discover_plugins()
+for name, module in eddie_plugins.items():
+    importlib.import_module(f"{name}.blueprint")
+    app.register_blueprint(module.blueprint.blueprint)
 
 
 @app.route('/')

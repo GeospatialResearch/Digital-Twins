@@ -18,6 +18,7 @@
 Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
 Allows the frontend to send tasks and retrieve status later.
 """
+import importlib
 import logging
 import traceback
 from typing import Dict, Tuple
@@ -31,6 +32,7 @@ from celery import Celery, states
 from src.config import EnvVariable
 from src.digitaltwin import retrieve_from_instructions
 from src.digitaltwin.utils import retry_function, setup_logging
+from src.discover_plugins import discover_plugins
 
 # Setup celery backend task management
 message_broker_url = f"redis://{EnvVariable.MESSAGE_BROKER_HOST}:6379/0"
@@ -115,5 +117,7 @@ def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
     return selected_as_rectangle_2193
 
 
-# These must be imported after app to remove a circular dependency
-import floodresilience.tasks  # pylint: disable=wrong-import-position,unused-import # noqa: E402, F401
+# Plugins must be imported after app to remove a circular dependency
+eddie_plugins = discover_plugins()
+for name, module in eddie_plugins.items():
+    importlib.import_module(f"{name}.tasks")
