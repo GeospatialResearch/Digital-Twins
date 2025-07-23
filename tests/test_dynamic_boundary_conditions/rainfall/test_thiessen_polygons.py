@@ -18,7 +18,7 @@ import unittest
 
 import geopandas as gpd
 
-from floodresilience.dynamic_boundary_conditions.rainfall import thiessen_polygons
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall import thiessen_polygons
 
 
 class ThiessenPolygonsTest(unittest.TestCase):

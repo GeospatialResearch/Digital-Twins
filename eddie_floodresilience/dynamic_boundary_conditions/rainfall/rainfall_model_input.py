@@ -29,8 +29,8 @@ import pandas as pd
 import xarray as xr
 from geocube.api.core import make_geocube
 
-from floodresilience.dynamic_boundary_conditions.rainfall import hyetograph
-from floodresilience.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall import hyetograph
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall.rainfall_enum import RainInputType
 
 log = logging.getLogger(__name__)
 

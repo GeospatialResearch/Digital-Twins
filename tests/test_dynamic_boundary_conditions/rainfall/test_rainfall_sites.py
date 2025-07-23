@@ -20,7 +20,7 @@ import pathlib
 
 import geopandas as gpd
 
-from floodresilience.dynamic_boundary_conditions.rainfall import rainfall_sites
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall import rainfall_sites
 
 
 class RainfallSitesTest(unittest.TestCase):
@@ -42,7 +42,7 @@ class RainfallSitesTest(unittest.TestCase):
             return file_content
 
     @classmethod
-    @patch("floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites.get_rainfall_sites_data")
+    @patch("eddie_floodresilience.dynamic_boundary_conditions.rainfall.rainfall_sites.get_rainfall_sites_data")
     def setUpClass(cls, mock_sites_data):
         """Get rainfall sites data and convert it to tabular format."""
         data_dir = "tests/test_dynamic_boundary_conditions/rainfall/data"

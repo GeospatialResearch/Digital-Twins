@@ -21,7 +21,7 @@ import math
 
 import pandas as pd
 
-from floodresilience.dynamic_boundary_conditions.rainfall import rainfall_data_from_hirds
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall import rainfall_data_from_hirds
 
 
 class RainfallDataFromHirdsTest(unittest.TestCase):

@@ -43,7 +43,7 @@ from src.digitaltwin.tables import (
     create_table,
     execute_query
 )
-from floodresilience.tables import RiverNetworkExclusions, RiverNetwork
+from eddie_floodresilience.tables import RiverNetworkExclusions, RiverNetwork
 
 log = logging.getLogger(__name__)
 

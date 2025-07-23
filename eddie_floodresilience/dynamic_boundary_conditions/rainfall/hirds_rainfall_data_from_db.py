@@ -25,7 +25,7 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
-from floodresilience.dynamic_boundary_conditions.rainfall import hirds_rainfall_data_to_db
+from eddie_floodresilience.dynamic_boundary_conditions.rainfall import hirds_rainfall_data_to_db
 
 log = logging.getLogger(__name__)
 
