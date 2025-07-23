@@ -26,7 +26,7 @@ import xarray
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
-from floodresilience.flood_model.serve_model import create_building_database_views_if_not_exists
+from eddie_floodresilience.flood_model.serve_model import create_building_database_views_if_not_exists
 
 
 def store_flooded_buildings_in_database(engine: Engine, buildings: pd.DataFrame, flood_model_id: int) -> None:

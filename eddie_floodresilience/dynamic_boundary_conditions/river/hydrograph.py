@@ -26,7 +26,7 @@ import re
 
 import geopandas as gpd
 
-from floodresilience.dynamic_boundary_conditions.river.river_enum import BoundType
+from eddie_floodresilience.dynamic_boundary_conditions.river.river_enum import BoundType
 
 log = logging.getLogger(__name__)
 

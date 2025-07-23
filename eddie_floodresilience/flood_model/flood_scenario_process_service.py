@@ -25,7 +25,7 @@ from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process
 from pywps.response.execute import ExecuteResponse
 from shapely import box
 
-from floodresilience import tasks
+from eddie_floodresilience import tasks
 from src.config import cast_str_to_bool, EnvVariable as EnvVar
 
 

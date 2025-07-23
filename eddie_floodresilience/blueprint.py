@@ -4,11 +4,11 @@ from http.client import ACCEPTED
 from flask import Blueprint, jsonify, make_response, Response
 from pywps import Service
 
-from floodresilience import tasks
-from floodresilience.flood_model.flood_scenario_process_service import FloodScenarioProcessService
+from eddie_floodresilience import tasks
+from eddie_floodresilience.flood_model.flood_scenario_process_service import FloodScenarioProcessService
 from src.check_celery_alive import check_celery_alive
 
-flood_resilience_blueprint = Blueprint('floodresilience', __name__)
+blueprint = Blueprint('eddie_floodresilience', __name__)
 processes = [
     FloodScenarioProcessService()
 ]
@@ -18,7 +18,7 @@ process_descriptor = {process.identifier: process.abstract for process in proces
 service = Service(processes, ['src/pywps.cfg'])
 
 
-@flood_resilience_blueprint.route('/wps', methods=['GET', 'POST'])
+@blueprint.route('/wps', methods=['GET', 'POST'])
 @check_celery_alive
 def wps() -> Service:
     """
@@ -32,7 +32,7 @@ def wps() -> Service:
     return service
 
 
-@flood_resilience_blueprint.route('/datasets/update', methods=["POST"])
+@blueprint.route('/datasets/update', methods=["POST"])
 @check_celery_alive
 def refresh_lidar_data_sources() -> Response:
     """
