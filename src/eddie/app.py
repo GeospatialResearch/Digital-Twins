@@ -24,8 +24,8 @@ from flask import Flask, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 
-from src.discover_plugins import discover_plugins
-from src.check_celery_alive import check_celery_alive
+from eddie.discover_plugins import discover_plugins
+from eddie.check_celery_alive import check_celery_alive
 
 # Initialise flask server object
 app = Flask(__name__)

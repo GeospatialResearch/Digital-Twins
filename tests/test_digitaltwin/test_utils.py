@@ -4,7 +4,7 @@ import unittest
 
 import pytest
 
-from src.digitaltwin.utils import retry_function
+from eddie.digitaltwin.utils import retry_function
 
 
 class RetryFunctionTest(unittest.TestCase):

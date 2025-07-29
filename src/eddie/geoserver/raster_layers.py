@@ -22,8 +22,8 @@ import pathlib
 
 import requests
 
-from src.config import EnvVariable
-from src.geoserver.geoserver_common import get_geoserver_url, send_create_layer_request, upload_file_to_store, \
+from eddie.config import EnvVariable
+from eddie.geoserver.geoserver_common import get_geoserver_url, send_create_layer_request, upload_file_to_store, \
     style_exists
 
 log = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace
     HTTPError
         If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
-    with open("src/geoserver/templates/geotiff_coverage_template.xml", encoding="utf-8") as file:
+    with open("eddie/geoserver/templates/geotiff_coverage_template.xml", encoding="utf-8") as file:
         gtiff_coverage_template = file.read()
     # Fill template to get payload
     gtiff_coverage_payload = gtiff_coverage_template.format(layer_name=layer_name)

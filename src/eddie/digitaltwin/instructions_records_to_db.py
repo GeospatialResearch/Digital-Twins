@@ -30,7 +30,7 @@ import pandas as pd
 import validators
 from sqlalchemy.engine import Engine
 
-from src.digitaltwin.tables import GeospatialLayers, create_table
+from eddie.digitaltwin.tables import GeospatialLayers, create_table
 log = logging.getLogger(__name__)
 
 

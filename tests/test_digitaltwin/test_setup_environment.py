@@ -20,8 +20,8 @@ import unittest
 import pytest
 from sqlalchemy.exc import OperationalError
 
-from src import config
-from src.digitaltwin import setup_environment
+from eddie import config
+from eddie.digitaltwin import setup_environment
 
 
 class SetupEnvironmentTest(unittest.TestCase):

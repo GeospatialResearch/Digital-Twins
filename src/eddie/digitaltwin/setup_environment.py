@@ -27,7 +27,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.declarative import declarative_base
 
-from src.config import EnvVariable
+from eddie.config import EnvVariable
 
 log = logging.getLogger(__name__)
 

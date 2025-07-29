@@ -26,7 +26,7 @@ from typing import Optional
 import geopandas as gpd
 from geoapis.vector import StatsNz, Linz, WfsQueryBase
 
-from src import config
+from eddie import config
 
 
 class MFE(WfsQueryBase):

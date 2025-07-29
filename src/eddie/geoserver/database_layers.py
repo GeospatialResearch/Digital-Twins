@@ -22,8 +22,8 @@ from http import HTTPStatus
 
 import requests
 
-from src.config import EnvVariable
-from src.geoserver.geoserver_common import get_geoserver_url
+from eddie.config import EnvVariable
+from eddie.geoserver.geoserver_common import get_geoserver_url
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}

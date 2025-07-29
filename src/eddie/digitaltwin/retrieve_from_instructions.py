@@ -23,8 +23,8 @@ import pathlib
 
 import geopandas as gpd
 
-from src.digitaltwin import setup_environment, instructions_records_to_db, data_to_db
-from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
+from eddie.digitaltwin import setup_environment, instructions_records_to_db, data_to_db
+from eddie.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 
 def main(

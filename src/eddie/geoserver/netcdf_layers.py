@@ -19,7 +19,7 @@
 
 import pathlib
 
-from src.geoserver.geoserver_common import get_geoserver_url, upload_file_to_store, send_create_layer_request
+from eddie.geoserver.geoserver_common import get_geoserver_url, upload_file_to_store, send_create_layer_request
 
 _xml_header = {"Content-type": "text/xml"}
 
@@ -45,7 +45,7 @@ def create_layer_from_nc_store(geoserver_url: str, layer_name: str, workspace_na
         If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Read XML payload template
-    with open("src/geoserver/templates/netcdf_coverage_template.xml", encoding="utf-8") as file:
+    with open("eddie/geoserver/templates/netcdf_coverage_template.xml", encoding="utf-8") as file:
         netcdf_coverage_template = file.read()
     # Fill template to get payload
     netcdf_coverage_payload = netcdf_coverage_template.format(layer_name=layer_name, band_name=band_name)

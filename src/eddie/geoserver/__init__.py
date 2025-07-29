@@ -17,7 +17,7 @@
 
 """
 Functions and utilities for loading and serving data with geoserver.
-Imports here are accessible directly by `from src import geoserver`.
+Imports here are accessible directly by `from eddie import geoserver`.
 """
 from .database_layers import create_datastore_layer, create_db_store_if_not_exists
 from .geoserver_common import create_workspace_if_not_exists

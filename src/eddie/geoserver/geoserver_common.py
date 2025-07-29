@@ -25,7 +25,7 @@ import shutil
 import pathlib
 import requests
 
-from src.config import EnvVariable
+from eddie.config import EnvVariable
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}
@@ -123,7 +123,7 @@ def upload_file_to_store(
     if file_extension not in file_extension_to_types:
         raise ValueError(f"Unsupported file extension {file_extension} not in {file_extension_to_types.keys()}")
 
-    # Set file copying src and dest
+    # Set file copying eddie and dest
     geoserver_data_root = EnvVariable.DATA_DIR_GEOSERVER
     geoserver_data_dest = pathlib.Path("data") / workspace_name / file_to_add.name
     # Copy file to geoserver data folder
