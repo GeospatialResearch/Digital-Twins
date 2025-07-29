@@ -7,7 +7,7 @@ from typing import Callable, Dict, Tuple
 from flask import Response, make_response
 from kombu.exceptions import OperationalError
 
-from src import tasks
+from eddie import tasks
 
 
 def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:

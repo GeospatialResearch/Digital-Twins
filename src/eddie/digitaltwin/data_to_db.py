@@ -29,9 +29,9 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
-from src.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
-from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
-import src.geoserver as gs
+from eddie.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
+from eddie.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
+import eddie.geoserver as gs
 
 log = logging.getLogger(__name__)
 

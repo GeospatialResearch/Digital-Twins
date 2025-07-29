@@ -29,10 +29,10 @@ import shapely
 import sqlalchemy.exc
 from celery import Celery, states
 
-from src.config import EnvVariable
-from src.digitaltwin import retrieve_from_instructions
-from src.digitaltwin.utils import retry_function, setup_logging
-from src.discover_plugins import discover_plugins
+from eddie.config import EnvVariable
+from eddie.digitaltwin import retrieve_from_instructions
+from eddie.digitaltwin.utils import retry_function, setup_logging
+from eddie.discover_plugins import discover_plugins
 
 # Setup celery backend task management
 message_broker_url = f"redis://{EnvVariable.MESSAGE_BROKER_HOST}:6379/0"
