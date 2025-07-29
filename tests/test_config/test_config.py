@@ -17,7 +17,7 @@
 import os
 import unittest
 
-from src import config
+from eddie import config
 
 
 class GetEnvVariableTest(unittest.TestCase):

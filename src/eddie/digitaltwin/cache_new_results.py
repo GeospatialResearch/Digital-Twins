@@ -24,9 +24,9 @@ import logging
 import geopandas as gpd
 from sqlalchemy import insert
 
-from src.digitaltwin import setup_environment
-from src.digitaltwin.utils import LogLevel, setup_logging
-from src.digitaltwin.tables import CacheResults, create_table
+from eddie.digitaltwin import setup_environment
+from eddie.digitaltwin.utils import LogLevel, setup_logging
+from eddie.digitaltwin.tables import CacheResults, create_table
 
 log = logging.getLogger(__name__)
 

@@ -23,10 +23,10 @@ from http import HTTPStatus
 import geopandas as gpd
 import requests
 
-from src.config import EnvVariable
-from src.digitaltwin.tables import check_table_exists
-from src.digitaltwin.setup_environment import get_database
-from src.geoserver.geoserver_common import create_workspace_if_not_exists, get_geoserver_url
+from eddie.config import EnvVariable
+from eddie.digitaltwin.tables import check_table_exists
+from eddie.digitaltwin.setup_environment import get_database
+from eddie.geoserver.geoserver_common import create_workspace_if_not_exists, get_geoserver_url
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}

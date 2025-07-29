@@ -23,7 +23,7 @@ import os
 
 import requests
 
-from src.config import EnvVariable
+from eddie.config import EnvVariable
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}

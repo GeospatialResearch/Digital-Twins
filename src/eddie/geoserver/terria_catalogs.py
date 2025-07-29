@@ -19,7 +19,7 @@
 from enum import StrEnum
 from typing import Literal, TypeAlias
 
-from src.config import EnvVariable
+from eddie.config import EnvVariable
 from .database_layers import get_workspace_vector_layers
 from .raster_layers import get_workspace_raster_layers
 

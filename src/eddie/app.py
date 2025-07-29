@@ -24,9 +24,9 @@ from flask import Flask, jsonify, make_response, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 
-from src.discover_plugins import discover_plugins
-from src.check_celery_alive import check_celery_alive
-from src.geoserver import get_terria_catalog
+from eddie.discover_plugins import discover_plugins
+from eddie.check_celery_alive import check_celery_alive
+from eddie.geoserver import get_terria_catalog
 
 # Initialise flask server object
 app = Flask(__name__)
