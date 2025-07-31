@@ -22,9 +22,9 @@ from typing import Optional
 
 from dotenv import load_dotenv
 
-load_dotenv()
-load_dotenv("api_keys.env")
-
+cwd = pathlib.Path(os.getcwd())
+load_dotenv((cwd / ".env").as_posix())
+load_dotenv((cwd / "api_keys.env").as_posix())
 
 def _get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
     """
