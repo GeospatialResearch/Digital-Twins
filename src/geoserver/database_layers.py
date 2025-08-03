@@ -7,7 +7,7 @@ from http import HTTPStatus
 import requests
 
 from src.config import EnvVariable
-from src.geoserver.geoserver_common import get_geoserver_url
+from src.geoserver.geoserver_common import create_workspace_if_not_exists, get_geoserver_url
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}
@@ -164,3 +164,34 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
+
+
+def create_main_db_store(workspace_name: str) -> str:
+    """
+    Create PostGIS database store in a GeoServer workspace for the main PostGIS database.
+    If it already exists, do not do anything.
+
+    Parameters
+    ----------
+    workspace_name : str
+       The name of the workspace to create views for
+
+    Returns
+    -------
+    str
+        The name of the new datastore created.
+
+    Raises
+    ----------
+    HTTPError
+       If geoserver responds with an error, raises it as an exception since it is unexpected.
+    """
+    log.debug("Creating building database views if they do not exist")
+    db_name = EnvVariable.POSTGRES_DB
+    # Create workspace if it doesn't exist, so that the namespaces can be separated if multiple dbs are running
+    create_workspace_if_not_exists(workspace_name)
+    # Create a new database store if geoserver is not yet configured for that database
+    data_store_name = f"{db_name} PostGIS"
+    create_db_store_if_not_exists(db_name, workspace_name, data_store_name)
+
+    return data_store_name

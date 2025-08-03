@@ -136,10 +136,7 @@ def create_building_database_views_if_not_exists() -> None:
     db_name = EnvVariable.POSTGRES_DB
     workspace_name = f"{db_name}-buildings"
     # Create workspace if it doesn't exist, so that the namespaces can be separated if multiple dbs are running
-    geoserver.create_workspace_if_not_exists(workspace_name)
-    # Create a new database store if geoserver is not yet configured for that database
-    data_store_name = f"{db_name} PostGIS"
-    geoserver.create_db_store_if_not_exists(db_name, workspace_name, data_store_name)
+    data_store_name = geoserver.create_main_db_store(workspace_name)
     # Create SQL view layers so geoserver can dynamically serve building layers based on model outputs.
     create_building_layers(workspace_name, data_store_name)
 
