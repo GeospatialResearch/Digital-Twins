@@ -45,7 +45,8 @@ def create_layer_from_nc_store(geoserver_url: str, layer_name: str, workspace_na
         If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Read XML payload template
-    with open("eddie/geoserver/templates/netcdf_coverage_template.xml", encoding="utf-8") as file:
+    template_dir = pathlib.Path(__file__).parent.absolute() / "templates"
+    with open(template_dir / "netcdf_coverage_template.xml", encoding="utf-8") as file:
         netcdf_coverage_template = file.read()
     # Fill template to get payload
     netcdf_coverage_payload = netcdf_coverage_template.format(layer_name=layer_name, band_name=band_name)
