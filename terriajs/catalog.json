@@ -14,10 +14,18 @@
       "identifier": "fredt"
     },
     {
-      "type": "wms-group",
+      "type": "wfs-group",
       "name": "Input Layers",
       "description": "Geospatial layers fetched through the Flood Resilience Digital Twin backend.",
       "url": "$GEOSERVER_URL/geoserver/input_layers/ows",
+      "isOpen": true,
+      "sortMembersBy": "name"
+    },
+    {
+      "type": "wfs-group",
+      "name": "Static layers",
+      "description": "Geospatial layers fetched through the Flood Resilience Digital Twin backend.",
+      "url": "$GEOSERVER_URL/geoserver/static_files/ows",
       "isOpen": true,
       "sortMembersBy": "name"
     }

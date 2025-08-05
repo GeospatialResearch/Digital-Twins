@@ -429,6 +429,7 @@ def store_geospatial_layers_data_to_db(
     nz_geospatial_layers_data_to_db(engine, crs, verbose)
     # Store non-NZ geospatial layers data to the database
     non_nz_geospatial_layers_data_to_db(engine, catchment_area, crs, verbose)
+    serve_static_files(engine, pathlib.Path("./src/static/geo"))
 
 
 def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> None:
@@ -471,6 +472,7 @@ def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str
     str
         The name of the database table created.
     """
+    log.info(f"Adding vector file '{vector_file_path.name}' to the database.")
     # Read the prefix of the file name to make it the table name.
     file_name = vector_file_path.stem
     # Upload the file to the database
