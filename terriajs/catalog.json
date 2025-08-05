@@ -6,7 +6,14 @@
     "west": 174.8
   },
   "catalog": [
-
+    {
+      "type": "wms-group",
+      "name": "Input Layers",
+      "description": "Geospatial layers fetched through the Flood Resilience Digital Twin backend.",
+      "url": "$GEOSERVER_URL/geoserver/input_layers/ows",
+      "isOpen": true,
+      "sortMembersBy": "name"
+    }
   ],
   "viewerMode": "3dSmooth",
   "baseMaps": {
