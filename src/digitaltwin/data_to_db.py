@@ -21,6 +21,7 @@ It also saves user log information in the database.
 """
 
 import logging
+import pathlib
 from typing import Tuple, Set
 
 import geopandas as gpd
@@ -30,6 +31,7 @@ from sqlalchemy.sql import text
 
 from src.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
 from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
+from src import geoserver
 
 log = logging.getLogger(__name__)
 
@@ -182,6 +184,8 @@ def nz_geospatial_layers_data_to_db(
     # Get New Zealand geospatial layers
     nz_geo_layers = get_nz_geospatial_layers(engine)
 
+    gs_workspace = "input_layers"
+    data_store = geoserver.create_main_db_store(gs_workspace)
     # Iterate over each NZ geospatial layer
     for _, layer_row in nz_geo_layers.iterrows():
         # Extract geospatial layer information
@@ -197,7 +201,7 @@ def nz_geospatial_layers_data_to_db(
             # Insert vector data into the database
             log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
             vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-
+            geoserver.create_datastore_layer(gs_workspace, data_store, table_name)
 
 def get_non_intersection_area_from_db(
     engine: Engine,
@@ -295,6 +299,10 @@ def process_new_non_nz_geospatial_layers(
         # Insert vector data into the database
         log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
         vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
+        # Serve data with geoserver
+        gs_workspace = "input_layers"
+        data_store = geoserver.create_main_db_store(gs_workspace)
+        geoserver.create_datastore_layer(gs_workspace, data_store, table_name)
 
 
 def process_existing_non_nz_geospatial_layers(
@@ -445,3 +453,49 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
     query = UserLogInfo(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query
     execute_query(engine, query)
+
+
+def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str:
+    """
+    Adds a vector file to the database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    vector_file_path : pathlib.Path
+        The Path to the vector file.
+
+    Returns
+    -------
+    str
+        The name of the database table created.
+    """
+    # Read the prefix of the file name to make it the table name.
+    file_name = vector_file_path.stem
+    # Upload the file to the database
+    gdf = gpd.read_file(vector_file_path)
+    gdf.to_postgis(file_name, engine, if_exists="replace")
+    return file_name
+
+
+def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> None:
+    """
+    Adds all vector files (.geojson, .shp, .geodb) in directory to db and serves them.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    vector_file_directory : pathlib.Path
+        The Path to the directory containing the vector files.
+    """
+    workspace_name = "static_files"
+    data_store = geoserver.create_main_db_store(workspace_name)
+    for file in vector_file_directory.iterdir():
+        if file.is_file() and file.suffix in {".geojson", ".shp", ".geodb"}:
+            table_name = add_vector_file_to_db(engine, file)
+            geoserver.create_datastore_layer(workspace_name, data_store, table_name)
+
+
+
