@@ -59,7 +59,7 @@ def on_startup(sender: Consumer, **_kwargs: None) -> None:  # pylint: disable=mi
         base_data_parameters = DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions]
         sender.app.send_task("src.tasks.add_base_data_to_db", args=[aoi_wkt, base_data_parameters], connection=conn)
         # Send a task to ensure lidar datasets are evaluated.
-        sender.app.send_task("floodresilience.tasks.ensure_lidar_datasets_initialised")
+        # sender.app.send_task("floodresilience.tasks.ensure_lidar_datasets_initialised")
 
 
 def create_model_for_area(selected_polygon_wkt: str, scenario_options: dict) -> result.GroupResult:

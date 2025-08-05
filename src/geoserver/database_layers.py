@@ -66,10 +66,10 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
                 <crs class="projected">EPSG:2193</crs>
             </nativeBoundingBox>
             <latLonBoundingBox>
-                <minx>172.55213662778482</minx>
-                <maxx>172.75463365676134</maxx>
-                <miny>-43.576048923299616</miny>
-                <maxy>-43.48487164707726</maxy>
+                <minx>174.9216900648596</minx>
+                <maxx>175.24540158384417</maxx>
+                <miny>-40.96195378261949</miny>
+                <maxy>-40.79359007336633</maxy>
                 <crs>EPSG:4326</crs>
             </latLonBoundingBox>
             <store>

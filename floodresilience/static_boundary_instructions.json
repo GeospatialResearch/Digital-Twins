@@ -1,44 +1,23 @@
 {
   "instruction_1": {
-    "data_provider": "StatsNZ",
-    "layer_id": 111182,
-    "table_name": "region_geometry",
-    "coverage_area": "New Zealand",
-    "url": "https://datafinder.stats.govt.nz/layer/111182-regional-council-2023-generalised/"
+    "data_provider": "LINZ",
+    "layer_id": 101290,
+    "table_name": "nz_building_outlines",
+    "unique_column_name": "building_id",
+    "url": "https://data.linz.govt.nz/layer/101290-nz-building-outlines/"
   },
   "instruction_2": {
-    "data_provider": "StatsNZ",
-    "layer_id": 111181,
-    "table_name": "region_geometry_clipped",
-    "coverage_area": "New Zealand",
-    "url": "https://datafinder.stats.govt.nz/layer/111181-regional-council-2023-clipped-generalised/"
+    "data_provider": "LINZ",
+    "layer_id": 50823,
+    "table_name": "nz_primary_land_parcels",
+    "unique_column_name": "id",
+    "url": "https://data.linz.govt.nz/layer/50823-nz-primary-land-parcels/"
   },
   "instruction_3": {
-    "data_provider": "MFE",
-    "layer_id": 99776,
-    "table_name": "sea_draining_catchments",
-    "coverage_area": "New Zealand",
-    "url": "https://data.mfe.govt.nz/layer/99776-sea-draining-catchments/"
-  },
-  "instruction_4": {
     "data_provider": "LINZ",
-    "layer_id": 50258,
-    "table_name": "nz_coastlines",
-    "coverage_area": "New Zealand",
-    "url": "https://data.linz.govt.nz/layer/50258-nz-coastlines-topo-150k/"
-  },
-  "instruction_5": {
-    "data_provider": "LINZ",
-    "layer_id": 53382,
-    "table_name": "nz_roads",
-    "unique_column_name": "road_id",
-    "url": "https://data.linz.govt.nz/layer/53382-nz-roads-addressing/"
-  },
-  "instruction_6": {
-    "data_provider": "LINZ",
-    "layer_id": 101292,
-    "table_name": "nz_building_outlines",
-    "unique_column_name": "building_outline_id",
-    "url": "https://data.linz.govt.nz/layer/101292-nz-building-outlines-all-sources/"
+    "layer_id": 50796,
+    "table_name": "nz_primary_road_parcels",
+    "unique_column_name": "id",
+    "url": "https://data.linz.govt.nz/layer/50796-nz-primary-road-parcels/"
   }
 }

@@ -125,6 +125,8 @@ services:
       - CESIUM_ACCESS_TOKEN=$CESIUM_ACCESS_TOKEN
       - BACKEND_HOST=$BACKEND_HOST
       - BACKEND_PORT=$BACKEND_PORT
+      - GEOSERVER_HOST=$GEOSERVER_HOST
+      - GEOSERVER_PORT=$GEOSERVER_PORT
     healthcheck:
       test: curl --fail -s http://localhost:3001/ || exit 1
       timeout: 5s
