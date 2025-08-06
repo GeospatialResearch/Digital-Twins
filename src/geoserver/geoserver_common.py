@@ -201,7 +201,7 @@ def get_layers_as_terria_group(workspace_name: str, max_features: int = 30000) -
         catalog_group.append(catalog_item)
     return {
         "type": "group",
-        "name": workspace_name,
+        "name": workspace_name.replace("_", " ").title(),
         "members": catalog_group,
         "isOpen": True,
     }
