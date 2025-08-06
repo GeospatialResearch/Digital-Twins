@@ -1,6 +1,7 @@
 {
   "initializationUrls": [
-    "catalog"
+    "catalog",
+    "http://localhost:5000/terria-catalog.json"
   ],
   "parameters": {
     "appName": "Flood Resilience Digital Twin (FReDT)",
