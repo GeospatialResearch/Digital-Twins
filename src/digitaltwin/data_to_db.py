@@ -478,6 +478,8 @@ def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str
     file_name = vector_file_path.stem
     # Upload the file to the database
     gdf = gpd.read_file(vector_file_path)
+    if gdf.crs.to_epsg() is None:
+        raise KeyError(f"CRS is not defined in EPSG# form in vector file {vector_file_path}.")
     gdf.to_postgis(file_name, engine, if_exists="replace")
     return file_name
 
