@@ -20,7 +20,6 @@ This script fetches geospatial data from various providers using the 'geoapis' l
 It also saves user log information in the database.
 """
 
-from enum import StrEnum
 import logging
 import pathlib
 from typing import Tuple, Set
@@ -39,21 +38,6 @@ log = logging.getLogger(__name__)
 
 class NoNonIntersectionError(Exception):
     """Exception raised when no non-intersecting area is found."""
-
-
-class Workspaces(StrEnum):
-    """
-    Enum to label and access geoserver workspaces initialized within data_to_db.py.
-
-    Attributes
-    ----------
-    STATIC_FILES_WORKSPACE : str
-        Workspace containing layers loaded from static files.
-    INPUT_LAYERS_WORKSPACE : str
-        Workspace containing layers loaded from external sources used as input for later modelling or visualisation.
-    """
-    STATIC_FILES_WORKSPACE = "static_files"
-    INPUT_LAYERS_WORKSPACE = "input_layers"
 
 
 def get_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
@@ -200,7 +184,7 @@ def nz_geospatial_layers_data_to_db(
     # Get New Zealand geospatial layers
     nz_geo_layers = get_nz_geospatial_layers(engine)
 
-    workspace_name = Workspaces.INPUT_LAYERS_WORKSPACE
+    workspace_name = geoserver.Workspaces.INPUT_LAYERS_WORKSPACE
     data_store = geoserver.create_main_db_store(workspace_name)
     # Iterate over each NZ geospatial layer
     for _, layer_row in nz_geo_layers.iterrows():
@@ -317,7 +301,7 @@ def process_new_non_nz_geospatial_layers(
         log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
         vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
         # Serve data with geoserver
-        workspace_name = Workspaces.INPUT_LAYERS_WORKSPACE
+        workspace_name = geoserver.Workspaces.INPUT_LAYERS_WORKSPACE
         data_store = geoserver.create_main_db_store(workspace_name)
         geoserver.create_datastore_layer(workspace_name, data_store, table_name)
 
@@ -509,7 +493,7 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
     vector_file_directory : pathlib.Path
         The Path to the directory containing the vector files.
     """
-    workspace_name = Workspaces.STATIC_FILES_WORKSPACE
+    workspace_name = geoserver.Workspaces.STATIC_FILES_WORKSPACE
     data_store = geoserver.create_main_db_store(workspace_name)
     for file in vector_file_directory.iterdir():
         if file.is_file() and file.suffix in {".geojson", ".shp", ".geodb"}:
