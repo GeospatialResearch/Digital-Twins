@@ -36,6 +36,7 @@ class Workspaces(StrEnum):
     """
     STATIC_FILES_WORKSPACE = "static_files"
     INPUT_LAYERS_WORKSPACE = "input_layers"
+    EXTRUDED_LAYERS_WORKSPACE = "extruded_layers"
 
 
 def get_layers_as_terria_group(workspace_name: str, max_features: int = 60000) -> dict:
@@ -74,6 +75,8 @@ def get_layers_as_terria_group(workspace_name: str, max_features: int = 60000) -
             "typeNames": f"{workspace_name}:{layer_name}",
             "maxFeatures": max_features,
         }
+        if workspace_name == Workspaces.EXTRUDED_LAYERS_WORKSPACE:
+            catalog_item["heightProperty"] = "Ext_height"
         catalog_group.append(catalog_item)
     return {
         "type": "group",
