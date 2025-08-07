@@ -31,7 +31,7 @@ from sqlalchemy.sql import text
 
 from src.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
 from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
-from src import geoserver
+import src.geoserver as gs
 
 log = logging.getLogger(__name__)
 
@@ -184,8 +184,8 @@ def nz_geospatial_layers_data_to_db(
     # Get New Zealand geospatial layers
     nz_geo_layers = get_nz_geospatial_layers(engine)
 
-    workspace_name = geoserver.Workspaces.INPUT_LAYERS_WORKSPACE
-    data_store = geoserver.create_main_db_store(workspace_name)
+    workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
+    data_store = gs.create_main_db_store(workspace_name)
     # Iterate over each NZ geospatial layer
     for _, layer_row in nz_geo_layers.iterrows():
         # Extract geospatial layer information
@@ -201,7 +201,7 @@ def nz_geospatial_layers_data_to_db(
             # Insert vector data into the database
             log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
             vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-            geoserver.create_datastore_layer(workspace_name, data_store, table_name)
+            gs.create_datastore_layer(workspace_name, data_store, table_name)
 
 
 def get_non_intersection_area_from_db(
@@ -301,9 +301,9 @@ def process_new_non_nz_geospatial_layers(
         log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
         vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
         # Serve data with geoserver
-        workspace_name = geoserver.Workspaces.INPUT_LAYERS_WORKSPACE
-        data_store = geoserver.create_main_db_store(workspace_name)
-        geoserver.create_datastore_layer(workspace_name, data_store, table_name)
+        workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
+        data_store = gs.create_main_db_store(workspace_name)
+        gs.create_datastore_layer(workspace_name, data_store, table_name)
 
 
 def process_existing_non_nz_geospatial_layers(
@@ -495,9 +495,16 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
     vector_file_directory : pathlib.Path
         The Path to the directory containing the vector files.
     """
-    workspace_name = geoserver.Workspaces.STATIC_FILES_WORKSPACE
-    data_store = geoserver.create_main_db_store(workspace_name)
-    for file in vector_file_directory.iterdir():
-        if file.is_file() and file.suffix in {".geojson", ".shp", ".geodb"}:
-            table_name = add_vector_file_to_db(engine, file)
-            geoserver.create_datastore_layer(workspace_name, data_store, table_name)
+    for workspace_name in (
+        gs.Workspaces.STATIC_FILES_WORKSPACE,
+        gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE
+    ):
+        data_store = gs.create_main_db_store(workspace_name)
+        if workspace_name == gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE:
+            directory = vector_file_directory / "3d"
+        else:
+            directory = vector_file_directory
+        for file in directory.iterdir():
+            if file.is_file() and file.suffix in {".geojson", ".shp", ".geodb"}:
+                table_name = add_vector_file_to_db(engine, file)
+                gs.create_datastore_layer(workspace_name, data_store, table_name)
