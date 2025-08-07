@@ -145,6 +145,16 @@ class generateERA5Forcing:
 
     def download_ERA5_each_variable(self, each_hour):
         """
+        @Definition:
+            A function to download all ERA5 variables necessary
+            for WRF-Hydro forcing data given the time
+        @References:
+            None.
+        @Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        @Returns:
+            None.
         """
         # Loop each variable from total number of variables
         for each_variable in range(len(self.variable_names)):
@@ -162,6 +172,15 @@ class generateERA5Forcing:
 
     def generate_target_grid_dataset(self):
         """
+        @Definition:
+            A function to generate wrf file used to regrid
+        @References:
+            None.
+        @Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        @Returns:
+            None.
         """
         # Read geo_em.d0x.nc - domain file
         wrf_ds = xr.open_dataset(fr"{self.domain_path}\geo_em.d01.nc")
@@ -181,6 +200,16 @@ class generateERA5Forcing:
 
     def generate_sample_ERA5_to_regrid(self, each_hour):
         """
+        @Definition:
+            A function to generate sample ERA5 variable used to
+            mearure the regridder
+        @References:
+            None.
+        @Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        @Returns:
+            None.
         """
         # Generate information of a specific date
         year, month, day, hour, _ = self.generate_date_info(each_hour)
@@ -206,6 +235,15 @@ class generateERA5Forcing:
 
     def regrid_ERA5(self, each_hour):
         """
+        @Definition:
+            A function to generate regridder to regrid ERA5 variables
+        @References:
+            None.
+        @Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        @Returns:
+            None.
         """
         # Generate target grid dataset
         _, wrf_grid = self.generate_target_grid_dataset()
@@ -222,6 +260,15 @@ class generateERA5Forcing:
 
     def load_a_ERA5_variable(self, file_name_order, each_hour):
         """
+        @Definition:
+            A function to load each ERA5 variable
+        @References:
+            None.
+        @Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        @Returns:
+            None.
         """
         # Generate information of a specific date
         year, month, day, hour, _ = self.generate_date_info(each_hour)
@@ -236,6 +283,16 @@ class generateERA5Forcing:
 
     def load_ERA5_variables(self, each_hour):
         """
+        @Definition:
+            A function to load all ERA5 variables that are necessary
+            for WRF-Hydro forcing data
+        @References:
+            None.
+        @Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        @Returns:
+            None.
         """
         # Load all ERA5 variables
         t2m = self.load_a_ERA5_variable(0, each_hour)  # 2m temperature from ERA5
@@ -253,7 +310,18 @@ class generateERA5Forcing:
 
     def generate_merged_forcing_dataset(self, each_hour):
         """
-        At the moment, this function needs writing like this as the regridder cannot be reloaded
+        @Definition:
+            A function to compute and convert ERA5 variables into
+            WRF-Hydro forcing data and merge them together.
+            At the moment, this function cannot be splitted into
+            smaller functions because the regridder is called only once.
+        @References:
+            None.
+        @Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        @Returns:
+            None.
         """
 
         # Load all ERA5 variables
@@ -334,6 +402,16 @@ class generateERA5Forcing:
 
     def generate_LDASIN(self, each_hour):
         """
+        @Definition:
+            A function to convert them into LDASIN data that can be
+            used by WRF-Hydro
+        @References:
+            None.
+        @Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        @Returns:
+            None.
         """
 
         # Generate merged dataset
@@ -351,10 +429,12 @@ class generateERA5Forcing:
 
     ####################################
 
-    def execute_download_command(self):
+    def execute_download_and_convert_commands(self):
         """
         @Definition:
             A function to download forcing data from ERA5
+            and convert them into LDASIN data that can be
+            used by WRF-Hydro
         @References:
             None.
         @Arguments:
@@ -379,4 +459,4 @@ class generateERA5Forcing:
 #     [2020, 2, 29, 3]
 # )
 #
-# download_result.execute_download_command()
+# download_result.execute_download_and_convert_commands()
