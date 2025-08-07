@@ -34,9 +34,9 @@ _xml_header = {"Content-type": "text/xml"}
 MAIN_DB_STORE_NAME = f"{EnvVariable.POSTGRES_DB} PostGIS"
 
 
-def get_workspace_layers(workspace_name: str, data_store_name: str = MAIN_DB_STORE_NAME):
+def get_workspace_vector_layers(workspace_name: str, data_store_name: str = MAIN_DB_STORE_NAME) -> list[str]:
     """
-    Retrieve all layer names from a geoserver workspace.
+    Retrieve all vector layer names from a geoserver workspace.
 
     Parameters
     ----------
@@ -55,11 +55,12 @@ def get_workspace_layers(workspace_name: str, data_store_name: str = MAIN_DB_STO
     HTTPError
         If geoserver responds with anything but OK, raises it as an exception since it is unexpected.
     """
-    db_exists_response = requests.get(
+    vector_layers_response = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes.json',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
-    response_data = db_exists_response.json()
+    vector_layers_response.raise_for_status()
+    response_data = vector_layers_response.json()
     # Parse JSON structure to get list of feature names
     top_layer_node = response_data["featureTypes"]
     # defaults to empty list if no layers exist
@@ -94,7 +95,7 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
     layer_full_name = f"{workspace_name}:{layer_name}"
     log.info(f"Creating datastore layer '{layer_full_name}' if it does not already exist.")
 
-    if layer_name in get_workspace_layers(workspace_name):
+    if layer_name in get_workspace_vector_layers(workspace_name):
         # If the layer already exists, we don't have to add it again, and can instead return
         log.debug(f"Datastore layer '{layer_full_name}' already exists.")
         return

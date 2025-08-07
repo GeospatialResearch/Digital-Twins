@@ -21,7 +21,6 @@ from http import HTTPStatus
 import logging
 import os
 from urllib import parse
-from xml.etree import ElementTree
 
 import requests
 

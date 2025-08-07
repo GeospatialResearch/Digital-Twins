@@ -495,10 +495,9 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
     vector_file_directory : pathlib.Path
         The Path to the directory containing the vector files.
     """
-    for workspace_name in (
-        gs.Workspaces.STATIC_FILES_WORKSPACE,
-        gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE
-    ):
+    statics = {gs.Workspaces.STATIC_FILES_WORKSPACE, gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE}
+    non_statics = set(gs.Workspaces) - statics
+    for workspace_name in statics:
         data_store = gs.create_main_db_store(workspace_name)
         if workspace_name == gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE:
             directory = vector_file_directory / "3d"
@@ -513,3 +512,8 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
                     gs.create_datastore_layer(workspace_name, data_store, table_name)
                 case ".tif" | ".tiff" | ".geotiff":
                     gs.add_gtiff_to_geoserver(file, workspace_name, file.stem)
+                case ".sld":
+                    gs.add_style(file, replace=True)
+    for workspace_name in non_statics:
+        # These stores also should be initialised.
+        gs.create_main_db_store(workspace_name)
