@@ -513,3 +513,5 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
                     gs.create_datastore_layer(workspace_name, data_store, table_name)
                 case ".tif" | ".tiff" | ".geotiff":
                     gs.add_gtiff_to_geoserver(file, workspace_name, file.stem)
+                case ".sld":
+                    gs.add_style(file)

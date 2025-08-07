@@ -22,6 +22,7 @@ import pathlib
 import shutil
 
 import requests
+from owslib import coverage
 
 from src.config import EnvVariable
 from src.geoserver.geoserver_common import get_geoserver_url, style_exists
@@ -176,10 +177,56 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, la
         The name of the layer being added must be unique within the workspace. #todo check uniqueness
     """
     gs_url = get_geoserver_url()
+    if layer_name in get_workspace_raster_layers(workspace_name):
+        log.info(f"Replacing raster layer {workspace_name}:{layer_name} because it already exists.")
+        delete_store(layer_name, workspace_name)
     # Upload the raster into geoserver
     upload_gtiff_to_store(gs_url, gtiff_filepath, layer_name, workspace_name)
     # Create a GIS layer from the raster file to be served from geoserver
     create_layer_from_store(gs_url, layer_name, workspace_name)
+
+
+def delete_style(style_name: str) -> None:
+    delete_style_response = requests.delete(
+        f'{get_geoserver_url()}/styles',
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    delete_style_response.raise_for_status()
+
+
+def add_style(style_file: pathlib.Path, replace=False) -> None:
+    """Create a GeoServer style for rasters using a SLD style definition file."""
+    style_name = style_file.stem
+    log.info(f"Creating style '{style_file.name}' if it does not exist.")
+    if style_exists(style_name):
+        log.debug(f"Style '{style_name}.sld' already exists.")
+        if replace:
+            delete_style(style_name)
+    else:
+        # Create the style base
+        create_style_data = f"""
+           <style>
+               <name>{style_name}</name>
+               <filename>{style_name}.sld</filename>
+           </style>
+           """
+        create_style_response = requests.post(
+            f'{get_geoserver_url()}/styles',
+            data=create_style_data,
+            headers=_xml_header,
+            auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+        )
+        create_style_response.raise_for_status()
+    # PUT the style definition .sld file into the style base
+    with open(style_file, 'rb') as payload:
+        sld_response = requests.put(
+            f'{get_geoserver_url()}/styles/{style_name}',
+            data=payload,
+            headers={"Content-type": "application/vnd.ogc.sld+xml"},
+            auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+        )
+    sld_response.raise_for_status()
+    log.info(f"Style '{style_name}.sld' created.")
 
 
 def create_viridis_style_if_not_exists() -> None:
@@ -213,3 +260,46 @@ def create_viridis_style_if_not_exists() -> None:
         )
     sld_response.raise_for_status()
     log.info(f"Style '{style_name}.sld' created.")
+
+
+def delete_store(store_name: str, workspace_name: str):
+    delete_store_request = requests.delete(
+        f'{get_geoserver_url()}/workspaces/{workspace_name}/coveragestores/{store_name}',
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD),
+        params={"purge": "all", "recurse": True}
+    )
+    delete_store_request.raise_for_status()
+
+
+def get_workspace_raster_layers(workspace_name: str) -> list[str]:
+    """
+    Retrieve all raster layer names from a geoserver workspace.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the geoserver workspace being queried.
+
+    Returns
+    -------
+    list[str]
+        The names of each layer, not including the workspace name.
+
+    Raises
+    -------
+    HTTPError
+        If geoserver responds with anything but OK, raises it as an exception since it is unexpected.
+    """
+    raster_stores_request = requests.get(
+        f'{get_geoserver_url()}/workspaces/{workspace_name}/coveragestores.json',
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    raster_stores_request.raise_for_status()
+    response_data = raster_stores_request.json()
+    # Parse JSON structure to get list of feature names
+    top_layer_node = response_data["coverageStores"]
+    # defaults to empty list if no layers exist
+    layers = top_layer_node["coverageStore"] if top_layer_node else []
+    layer_names = [layer["name"] for layer in layers]
+
+    return layer_names

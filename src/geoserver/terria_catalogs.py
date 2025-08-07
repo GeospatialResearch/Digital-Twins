@@ -19,7 +19,8 @@
 from enum import StrEnum
 from urllib.parse import urlencode
 
-from .database_layers import get_workspace_layers
+from .database_layers import get_workspace_vector_layers
+from .raster_layers import get_workspace_raster_layers
 from src.config import EnvVariable
 
 
@@ -39,7 +40,37 @@ class Workspaces(StrEnum):
     EXTRUDED_LAYERS_WORKSPACE = "extruded_layers"
 
 
-def get_layers_as_terria_group(workspace_name: str, max_features: int = 60000) -> dict:
+def create_vector_layer_catalog_item(
+    workspace_name: str,
+    workspace_url: str,
+    layer_name: str,
+    max_features: int = 60000
+) -> dict:
+    catalog_item = {
+        "type": "wfs",
+        "name": layer_name,
+        "description": "Geospatial layers fetched through the Flood Resilience Digital Twin backend.",
+        "url": f"{workspace_url}/ows",
+        "typeNames": f"{workspace_name}:{layer_name}",
+        "maxFeatures": max_features,
+    }
+    if workspace_name == Workspaces.EXTRUDED_LAYERS_WORKSPACE:
+        catalog_item["heightProperty"] = "Ext_height"
+    return catalog_item
+
+
+def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> dict:
+    catalog_item = {
+        "type": "wms",
+        "name": layer_name,
+        "url": f"{workspace_url}/wms",
+        "layers": layer_name,
+        "styles": layer_name,
+    }
+    return catalog_item
+
+
+def get_layers_as_terria_group(workspace_name: str) -> dict:
     """
     Query geoserver for available layers within a workspace, and return a terria catalog to serve the data.
     The style definition may be empty.
@@ -48,8 +79,6 @@ def get_layers_as_terria_group(workspace_name: str, max_features: int = 60000) -
     ----------
     workspace_name : str
         The name of the geoserver workspace to query for.
-    max_features : int = 30000
-        The maximum number of features to serve for each layer.
 
     Returns
     -------
@@ -61,22 +90,13 @@ def get_layers_as_terria_group(workspace_name: str, max_features: int = 60000) -
     HTTPError
         If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
-
-    workspace_url = f"{EnvVariable.GEOSERVER_INTERNAL_HOST}:{EnvVariable.GEOSERVER_INTERNAL_PORT}/geoserver/{workspace_name}"
-
     catalog_group = []
-    layer_url = f"{workspace_url}/ows"
-    for layer_name in get_workspace_layers(workspace_name):
-        catalog_item = {
-            "type": "wfs",
-            "name": layer_name,
-            "description": "Geospatial layers fetched through the Flood Resilience Digital Twin backend.",
-            "url": layer_url,
-            "typeNames": f"{workspace_name}:{layer_name}",
-            "maxFeatures": max_features,
-        }
-        if workspace_name == Workspaces.EXTRUDED_LAYERS_WORKSPACE:
-            catalog_item["heightProperty"] = "Ext_height"
+    workspace_url = f"{EnvVariable.GEOSERVER_INTERNAL_HOST}:{EnvVariable.GEOSERVER_INTERNAL_PORT}/geoserver/{workspace_name}"
+    for vector_layer in get_workspace_vector_layers(workspace_name):
+        catalog_item = create_vector_layer_catalog_item(workspace_name, workspace_url, vector_layer)
+        catalog_group.append(catalog_item)
+    for raster_layer in get_workspace_raster_layers(workspace_name):
+        catalog_item = create_raster_layer_catalog_item(workspace_url, raster_layer)
         catalog_group.append(catalog_item)
     return {
         "type": "group",
