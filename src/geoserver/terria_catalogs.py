@@ -38,7 +38,7 @@ class Workspaces(StrEnum):
     INPUT_LAYERS_WORKSPACE = "input_layers"
 
 
-def get_layers_as_terria_group(workspace_name: str, max_features: int = 30000) -> dict:
+def get_layers_as_terria_group(workspace_name: str, max_features: int = 60000) -> dict:
     """
     Query geoserver for available layers within a workspace, and return a terria catalog to serve the data.
     The style definition may be empty.
@@ -64,20 +64,15 @@ def get_layers_as_terria_group(workspace_name: str, max_features: int = 30000) -
     workspace_url = f"{EnvVariable.GEOSERVER_INTERNAL_HOST}:{EnvVariable.GEOSERVER_INTERNAL_PORT}/geoserver/{workspace_name}"
 
     catalog_group = []
+    layer_url = f"{workspace_url}/ows"
     for layer_name in get_workspace_layers(workspace_name):
-        layer_url_params = {
-            "service": "WFS",
-            "version": "1.0.0",
-            "request": "GetFeature",
-            "typeName": f"{workspace_name}:{layer_name}",
-            "outputFormat": "application/json",
-        }
-        layer_url = f"{workspace_url}/ows?{urlencode(layer_url_params)}"
         catalog_item = {
-            "type": "geojson",
+            "type": "wfs",
             "name": layer_name,
             "description": "Geospatial layers fetched through the Flood Resilience Digital Twin backend.",
             "url": layer_url,
+            "typeNames": f"{workspace_name}:{layer_name}",
+            "maxFeatures": max_features,
         }
         catalog_group.append(catalog_item)
     return {
