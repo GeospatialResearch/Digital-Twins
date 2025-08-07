@@ -162,7 +162,7 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, workspace_name:
         raise requests.HTTPError(response.text, response=response)
 
 
-def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, model_id: int) -> None:
+def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, layer_name: str) -> None:
     """
     Upload a GeoTiff file to GeoServer, ready for serving to clients.
 
@@ -172,15 +172,12 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, mo
         The filepath to the GeoTiff file to be served.
     workspace_name : str
         The name of the existing GeoServer workspace that the store is to be added to.
-    model_id : int
-        The id of the model being added, to facilitate layer naming.
+    layer_name : str
+        The name of the layer being added must be unique within the workspace. #todo check uniqueness
     """
     gs_url = get_geoserver_url()
-    layer_name = f"output_{model_id}"
     # Upload the raster into geoserver
     upload_gtiff_to_store(gs_url, gtiff_filepath, layer_name, workspace_name)
-    # We can remove the temporary raster
-    gtiff_filepath.unlink()
     # Create a GIS layer from the raster file to be served from geoserver
     create_layer_from_store(gs_url, layer_name, workspace_name)
 
