@@ -505,6 +505,11 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
         else:
             directory = vector_file_directory
         for file in directory.iterdir():
-            if file.is_file() and file.suffix in {".geojson", ".shp", ".geodb"}:
-                table_name = add_vector_file_to_db(engine, file)
-                gs.create_datastore_layer(workspace_name, data_store, table_name)
+            if not file.is_file():
+                continue
+            match file.suffix:
+                case ".geojson" | ".shp" | ".geodb":
+                    table_name = add_vector_file_to_db(engine, file)
+                    gs.create_datastore_layer(workspace_name, data_store, table_name)
+                case ".tif" | ".tiff" | ".geotiff":
+                    gs.add_gtiff_to_geoserver(file, workspace_name, file.stem)
