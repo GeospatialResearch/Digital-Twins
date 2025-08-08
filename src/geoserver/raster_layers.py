@@ -138,7 +138,7 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, workspace_name:
         </supportedFormats>
         <dimensions>
         <coverageDimension>
-          <name>Water Depth (m)</name>
+          <name>{layer_name}</name>
           <unit>m</unit>
           <dimensionType>
             <name>REAL_32BITS</name>
