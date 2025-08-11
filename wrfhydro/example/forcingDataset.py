@@ -375,10 +375,15 @@ class generateERA5Forcing:
         q2 = (0.622 * es_Pa) / (sp_adj - 0.378 * es_Pa)
         q2_positive = xr.where(q2 < 0, 0, q2)  # Make sure specific humidity is positive
 
-        ## Generate regridded radiation, precipitation, and wind
+        ## Regrid total precipitation
+        # Convert total precipitation to meter
+        # and to rate (unit is mm/s)
+        tp_conversion = tp * 1000 / 3600
+        tp_regridded = regridder(tp_conversion['tp'])
+
+        ## Generate regridded radiation, and wind
         lwr_regridded = regridder(lwr['avg_sdlwrf'])  # regridded long wave radiation
         swr_regridded = regridder(swr['avg_sdswrf'])  # regridded short wave radiation
-        tp_regridded = regridder(tp['tp'])  # regridded total precipitation
         v10m_regridded = regridder(v10m['v10'])  # regridded v 10m wind
         u10m_regridded = regridder(u10m['u10'])  # regridded u 10m wind
 
