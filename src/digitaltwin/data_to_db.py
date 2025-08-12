@@ -504,6 +504,9 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
             directory = vector_file_directory / "3d"
         else:
             directory = vector_file_directory
+        if not directory.exists():
+            log.warning(f"Directory '{directory}' does not exist. Cannot serve static files from '{directory}'.")
+            continue
         for file in directory.iterdir():
             if not file.is_file():
                 continue
