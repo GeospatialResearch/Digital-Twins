@@ -495,17 +495,25 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
     vector_file_directory : pathlib.Path
         The Path to the directory containing the vector files.
     """
+    # Find the set of all served workspaces that deal with static files
     statics = {gs.Workspaces.STATIC_FILES_WORKSPACE, gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE}
+    # Find the served workspaces that are not the static ones
     non_statics = set(gs.Workspaces) - statics
+    # Serve the static files
     for workspace_name in statics:
         data_store = gs.create_main_db_store(workspace_name)
         if workspace_name == gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE:
+            # Extruded files are stored in another directory to help manage them
             directory = vector_file_directory / "3d"
         else:
             directory = vector_file_directory
+        if not directory.exists():
+            log.warning(f"Directory '{directory}' does not exist. Cannot serve static files from '{directory}'.")
+            continue
         for file in directory.iterdir():
             if not file.is_file():
                 continue
+            # Serve each file according to its data type
             match file.suffix:
                 case ".geojson" | ".shp" | ".geodb":
                     table_name = add_vector_file_to_db(engine, file)
@@ -514,6 +522,7 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
                     gs.add_gtiff_to_geoserver(file, workspace_name, file.stem)
                 case ".sld":
                     gs.add_style(file, replace=True)
+    # If no models have been run we may still want to serve the non-static datasets, so create the stores.
     for workspace_name in non_statics:
         # These stores also should be initialised.
         gs.create_main_db_store(workspace_name)
