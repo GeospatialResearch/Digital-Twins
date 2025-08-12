@@ -91,7 +91,7 @@ def get_layers_as_terria_group(workspace_name: str) -> dict:
         If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
     catalog_group = []
-    workspace_url = f"{EnvVariable.GEOSERVER_INTERNAL_HOST}:{EnvVariable.GEOSERVER_INTERNAL_PORT}/geoserver/{workspace_name}"
+    workspace_url = f"{EnvVariable.GEOSERVER_HOST}:{EnvVariable.GEOSERVER_PORT}/geoserver/{workspace_name}"
     for vector_layer in get_workspace_vector_layers(workspace_name):
         catalog_item = create_vector_layer_catalog_item(workspace_name, workspace_url, vector_layer)
         catalog_group.append(catalog_item)
