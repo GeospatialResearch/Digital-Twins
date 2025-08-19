@@ -4,14 +4,14 @@
     "http://localhost:5000/terria-catalog.json"
   ],
   "parameters": {
-    "appName": "Flood Uncertainty",
-    "supportEmail": "gri-enquiries+fredt@canterbury.ac.nz",
+    "appName": "Porirua Explorer",
+    "supportEmail": "gri-enquiries+porirua_explorer@canterbury.ac.nz",
     "cesiumIonAccessToken": "$CESIUM_ACCESS_TOKEN",
     "brandBarElements": [
-      "<div style=\"display: flex; align-items: center;\">\n  <h1 style=\"color: white;\">Flood Resilience Digital Twin (FReDT)</h1>\n</div>"
+      "<div style=\"display: flex; align-items: center;\">\n  <h1 style=\"color: white;\">Porirua Explorer</h1>\n</div>"
     ],
     "brandBarSmallElements": [
-      "<div style=\"display: flex; align-items: center;\">\n  <h3 style=\"color: white;\">Flood Resilience Digital Twin (FReDT)</h3>\n</div>"
+      "<div style=\"display: flex; align-items: center;\">\n  <h3 style=\"color: white;\">Porirua Explorer</h3>\n</div>"
     ],
     "relatedMaps": []
   }

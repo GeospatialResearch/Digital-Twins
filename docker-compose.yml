@@ -17,9 +17,9 @@
 # Defines services, their images, and interactions between services.
 
 volumes:
-  postgres_db_vol_survey:
-  stored_data_survey:
-  geoserver_data_survey:
+  postgres_db_vol_porirua:
+  stored_data_porirua:
+  geoserver_data_porirua:
 
 services:
   db_postgres:
@@ -30,7 +30,7 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
-      - postgres_db_vol_survey:/var/lib/postgresql/data
+      - postgres_db_vol_porirua:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -50,7 +50,7 @@ services:
       - api_keys.env
       - .env.docker-override
     volumes:
-      - stored_data_survey:/stored_data
+      - stored_data_porirua:/stored_data
     healthcheck:
       test: curl --fail -s http://localhost:5000/ || exit 1
       interval: 10s
@@ -77,8 +77,8 @@ services:
       - .env.docker-override
     volumes:
       # Bind host data directories to container, allowing different instances to share data sources.
-      - stored_data_survey:/stored_data
-      - geoserver_data_survey:/stored_data/geoserver
+      - stored_data_porirua:/stored_data
+      - geoserver_data_porirua:/stored_data/geoserver
     ports:
       - "5001:5001"
     healthcheck:
@@ -98,7 +98,7 @@ services:
       dockerfile: geoserver.Dockerfile
     container_name: geoserver_digital_twin
     volumes:
-      - geoserver_data_survey:/opt/geoserver_data
+      - geoserver_data_porirua:/opt/geoserver_data
     depends_on:
       - db_postgres
     environment:
