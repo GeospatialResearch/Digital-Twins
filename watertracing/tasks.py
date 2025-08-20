@@ -32,6 +32,7 @@ from src.digitaltwin import setup_environment, retrieve_from_instructions
 from src.digitaltwin.utils import setup_logging
 from src.tasks import add_base_data_to_db, app, OnFailureStateTask, wkt_to_gdf  # pylint: disable=cyclic-import
 from watertracing import serve_outputs
+from watertracing.run_all import DEFAULT_MODULES_TO_PARAMETERS
 
 setup_logging()
 log = logging.getLogger(__name__)
@@ -63,4 +64,4 @@ def upload_water_tracing_data() -> None:
     Task to ensure model output data for water tracing is uploaded to geoserver.
     """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[serve_outputs]
-    watertracing.main(None, **parameters)
+    serve_outputs.main(None, **parameters)
