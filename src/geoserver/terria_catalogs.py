@@ -38,6 +38,7 @@ class Workspaces(StrEnum):
     STATIC_FILES_WORKSPACE = "static_files"
     INPUT_LAYERS_WORKSPACE = "input_layers"
     EXTRUDED_LAYERS_WORKSPACE = "extruded_layers"
+    MODEL_OUTPUTS_WORKSPACE = "model_outputs"
 
 
 def create_vector_layer_catalog_item(
