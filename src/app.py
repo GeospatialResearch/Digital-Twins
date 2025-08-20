@@ -37,7 +37,7 @@ API_URL = "/static/api_documentation.yml"
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
-    config={"app_name": "Flood Resilience Digital Twin (FReDT)"}
+    config={"app_name": "Porirua Explorer"}
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
