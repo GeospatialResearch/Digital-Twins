@@ -127,11 +127,6 @@ def cast_str_to_bool(string: str) -> bool:
 class EnvVariable:  # pylint: disable=too-few-public-methods
     """Encapsulates all environment variable fetching, ensuring proper defaults and types."""
 
-    STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY")
-    LINZ_API_KEY = _get_env_variable("LINZ_API_KEY")
-    MFE_API_KEY = _get_env_variable("MFE_API_KEY")
-    NIWA_API_KEY = _get_env_variable("NIWA_API_KEY")
-
     DEBUG_TRACEBACK = _get_bool_env_variable("DEBUG_TRACEBACK", default=False)
     TEST_DATABASE_INTEGRATION = _get_bool_env_variable("TEST_DATABASE_INTEGRATION", default=True)
 
@@ -157,9 +152,3 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     GEOSERVER_INTERNAL_PORT = _get_env_variable("GEOSERVER_INTERNAL_PORT", default=GEOSERVER_PORT)
     GEOSERVER_ADMIN_NAME = _get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
     GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
-
-    # NewZealidar config that we must ensure have values.
-    _LIDAR_DIR = _get_env_variable("LIDAR_DIR")
-    _DEM_DIR = _get_env_variable("DEM_DIR")
-    _LAND_FILE = _get_env_variable("LAND_FILE", allow_empty=True)
-    _INSTRUCTIONS_FILE = _get_env_variable("INSTRUCTIONS_FILE")
