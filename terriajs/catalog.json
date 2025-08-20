@@ -14,9 +14,23 @@
       "identifier": "fredt"
     }
   ],
-  "viewerMode": "3dSmooth",
   "baseMaps": {
-    "defaultBaseMapId": "basemap-openstreetmap",
+    "items": [
+      {
+        "item": {
+          "id": "basemap-linz-aerial",
+          "type": "wmts",
+          "url": "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/WMTSCapabilities.xml?api=c01k0qh9ca8rae7b5wm22g5b9eg",
+          "layer": "aerial"
+        },
+        "image": "https://basemaps.linz.govt.nz/favicon-32x32.png"
+      }
+    ],
+    "enabledBaseMaps": [
+      "basemap-linz-aerial",
+      "basemap-openstreetmap"
+    ],
+    "defaultBaseMapId": "basemap-linz-aerial",
     "previewBaseMapId": "basemap-openstreetmap"
   }
 }
