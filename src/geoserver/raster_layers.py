@@ -187,22 +187,42 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, la
 
 
 def delete_style(style_name: str) -> None:
+    """
+    Deletes a style from the default geoserver workspace
+
+    Parameters
+    ----------
+    style_name : str
+        The name of the style being deleted.
+    """
     delete_style_response = requests.delete(
-        f'{get_geoserver_url()}/styles',
+        f'{get_geoserver_url()}/styles/{style_name}',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     delete_style_response.raise_for_status()
 
 
 def add_style(style_file: pathlib.Path, replace=False) -> None:
-    """Create a GeoServer style for rasters using a SLD style definition file."""
+    """
+    Create a GeoServer style in the default workspace for rasters using a SLD style definition file.
+
+    Parameters
+    ----------
+    style_file : pathlib.Path
+        The path to the style definition (SLD) file to upload.
+    replace : bool = False
+        True if you want to replace the existing style, False to skip adding the style if one already exists.
+    """
     style_name = style_file.stem
     log.info(f"Creating style '{style_file.name}' if it does not exist.")
-    if style_exists(style_name):
+    style_currently_exists = style_exists(style_name)
+    if style_currently_exists:
         log.debug(f"Style '{style_name}.sld' already exists.")
         if replace:
+            log.debug(f"Deleting '{style_name}.sld'.")
             delete_style(style_name)
-    else:
+            style_currently_exists = False
+    if not style_currently_exists: # Check again instead of using else because it may have been deleted
         # Create the style base
         create_style_data = f"""
            <style>
