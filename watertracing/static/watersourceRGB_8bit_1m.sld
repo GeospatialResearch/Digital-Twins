@@ -20,7 +20,6 @@ http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
                                 <SourceChannelName>3</SourceChannelName>
                             </BlueChannel>
                         </ChannelSelection>
-                        <Opacity>1.0</Opacity>
                     </RasterSymbolizer>
                 </Rule>
             </FeatureTypeStyle>

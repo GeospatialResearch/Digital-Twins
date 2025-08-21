@@ -6,6 +6,33 @@
     "west": 174.82
   },
   "catalog": [
+    {
+      "type": "wms",
+      "name": "Water Sources",
+      "url": "$GEOSERVER_URL/geoserver/model_outputs/wms",
+      "layers": "watersourceRGB_8bit_1m",
+      "styles": "watersourceRGB_8bit_1m",
+      "isOpenInWorkbench": true,
+      "legends": [
+        {
+          "title": "Water Sources",
+          "items": [
+            {
+              "title": "Streams",
+              "color": "#FF0000"
+            },
+            {
+              "title": "Rain",
+              "color": "#00FF00"
+            },
+            {
+              "title": "Tide",
+              "color": "#0000FF"
+            }
+          ]
+        }
+      ]
+    }
   ],
   "baseMaps": {
     "items": [

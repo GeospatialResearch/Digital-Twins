@@ -103,7 +103,7 @@ def get_layers_as_terria_group(workspace_name: str) -> dict:
         "type": "group",
         "name": workspace_name.replace("_", " ").title(),
         "members": catalog_group,
-        "isOpen": True,
+        "isOpen": False,
     }
 
 
