@@ -1,7 +1,7 @@
 {
   "initializationUrls": [
     "catalog",
-    "http://localhost:5000/terria-catalog.json"
+    "$BACKEND_URL/terria-catalog.json"
   ],
   "parameters": {
     "appName": "Porirua Explorer",
