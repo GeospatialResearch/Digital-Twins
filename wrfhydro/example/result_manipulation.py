@@ -1,43 +1,47 @@
+"""Runs to adjust the results"""
 # Necessary packages
-import matplotlib.pyplot as plt
-import rioxarray as rxr
-import geopandas as gpd
-import xarray as xr
-import glob
-import os
+from typing import List, Tuple
 
+import glob
 from pathlib import Path
 
+import rioxarray as rxr
+import xarray as xr
+
+
 # Develop a class to manipulate the simulated result
-class resultManipulation:
+class ResultManipulation:
+    """A class to manipulate the simulation results"""
+
     def __init__(
             self,
-            domain_path
-    ):
+            domain_path: str
+    ) -> None:
         """
-        @Definition:
-            A class to manipulate the simulation results
-        @References:
+        Definition:
+            Init function to state common arguments
+        References:
             None.
-        @Arguments:
+        Arguments:
             domain_path (str):
                 Define domain path that stores necessary inputs to run
                 WRF-Hydro simulation, especially TBL files, DOMAIN, FORCING
-        @Returns:
-            None.
         """
         self.domain_path = domain_path
 
-    def generate_dem_and_paths(self):
+    def generate_dem_and_paths(self) -> Tuple[List[str], rxr.open_rasterio]:
         """
-        @Definition:
+        Definition:
             A function to generate DEM and streamflow paths
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             Already defined above
-        @Returns:
-            None.
+        Returns:
+            streamflow_files (list):
+                A list of paths
+            dem (rxr.open_rasterio):
+                A raster that contains multiple topographic features including DEM
         """
         # Load Topographic data (DEM)
         load_dem = rxr.open_rasterio(fr"{self.domain_path}\DOMAIN\Fulldom_hires.nc", mask_and_scale=True)
@@ -49,22 +53,25 @@ class resultManipulation:
         # Return streamflow_files and DEM
         return streamflow_files, dem
 
-    def generate_flipped_reprojected_streamflow(self, each_file, dem):
+    def generate_flipped_reprojected_streamflow(
+            self,
+            each_file: str,
+            dem: xr.Dataset
+    ) -> xr.DataArray:
         """
-        @Definition:
+        Definition:
             A function to generate flipped and reprojected streamflow files
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             each_file (str):
                 Path of each streamflow file
-            dem (rxr format):
+            dem (xr.DataArray):
                 DEM raster that stores coordinates and crs information
-        @Returns:
-            streamflow_flipped_reprojected (rxr format):
+        Returns:
+            streamflow_flipped_reprojected (xr.DataArray):
                 Streamflow raster that were flipped upside down and reprojected
         """
-
         # Load CHRTOUT streamflow
         ds = xr.open_dataset(fr"{each_file}", mask_and_scale=True)
         streamflow = ds.streamflow.squeeze()
@@ -82,19 +89,21 @@ class resultManipulation:
         # Return flipped streamflow with new coordinates
         return streamflow_flipped_reprojected
 
-    def write_out_nc_and_tiff(self, each_file, streamflow_flipped_reprojected):
+    def write_out_nc_and_tiff(
+            self,
+            each_file: str,
+            streamflow_flipped_reprojected: xr.DataArray
+    ) -> None:
         """
-        @Definition:
+        Definition:
             A function to generate flipped and reprojected streamflow files
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             each_file (str):
                 Path of each streamflow file
-            streamflow_flipped_reprojected (rxr format):
+            streamflow_flipped_reprojected (xr.DataArray):
                 Streamflow raster that were flipped upside down and reprojected
-        @Returns:
-            None.
         """
         # Create paths to save out
         simulations_tiff = fr"{self.domain_path}\simulations\streamflows\tiff"
@@ -109,17 +118,15 @@ class resultManipulation:
         streamflow_flipped_reprojected.rio.to_raster(fr"{simulations_tiff}\{saveout_filename}.tiff")
         streamflow_flipped_reprojected.to_netcdf(fr"{simulations_nc}\{saveout_filename}.nc")
 
-    def execute_write_out_commands(self):
+    def execute_write_out_commands(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to write out flipped and reprojected streamflow files
             into GeoTiff and netCDF format.
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         # Generate DEM and streamflow paths
         streamflow_files, dem = self.generate_dem_and_paths()
@@ -131,6 +138,7 @@ class resultManipulation:
 
             # Write out flipped and reprojected streamflow into GeoTiff and NetCDF files
             self.write_out_nc_and_tiff(each_file, streamflow_flipped_reprojected)
+
 
 # EXAMPLES
 # result_simulations = resultManipulation(

@@ -92,7 +92,7 @@ def add_base_data_to_db(selected_polygon_wkt: str, base_data_parameters: Dict[st
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
     """
-    Transform a WKT string polygon into a GeoDataFrame.
+        Transform a WKT string polygon into a GeoDataFrame.
 
     Parameters
     ----------
@@ -112,8 +112,8 @@ def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
     selected_as_rectangle_2193 = gpd.GeoDataFrame(index=[0], crs="epsg:2193",
                                                   geometry=[shapely.box(xmin, ymin, xmax, ymax)])
 
-    return selected_as_rectangle_2193
 
+return selected_as_rectangle_2193
 
 # These must be imported after app to remove a circular dependency
 import floodresilience.tasks  # pylint: disable=wrong-import-position,unused-import # noqa: E402, F401

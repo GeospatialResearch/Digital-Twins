@@ -6,15 +6,15 @@ import sys
 sys.path.append(r'C:\Users\mng42\wrf_wps\wrf_hydro_simulation')
 
 # Necessary packages
-from domainFiles import generateDomainFiles
-from routingStack import generateRouting
-from forcingDataset import generateERA5Forcing
-from WRFHydroSimulation import generateWRFHydroSimulation
-from simulatedResultManipulation import resultManipulation
+from domain_files import GenerateDomainFiles
+from routing_stack import GenerateRouting
+from forcing_dataset import GenerateERA5Forcing
+from wrfhydro_simulation import GenerateWRFHydroSimulation
+from result_manipulation import ResultManipulation
 
 # State variables
 # Generate domain files
-domain_files = generateDomainFiles(
+domain_files = GenerateDomainFiles(
     400, 800,
     -45.907, 168.8,
     200, 200,
@@ -23,14 +23,14 @@ domain_files = generateDomainFiles(
 )
 
 # Generate routing stack
-routing_files = generateRouting(
+routing_files = GenerateRouting(
     r"S:\FloodRiskResearch\Martin\WRF-Hydro\wrfhydro_mataura_002",
     4,
     2000
 )
 
 # Download and convert ERA5 variables into WRF-Hydro forcing data
-forcing_files = generateERA5Forcing(
+forcing_files = GenerateERA5Forcing(
     r"S:\FloodRiskResearch\Martin\WRF-Hydro\wrfhydro_mataura_002",
     r"Y:\Temporary\ERA_003",
     [2020, 2, 29, 1],
@@ -38,7 +38,7 @@ forcing_files = generateERA5Forcing(
 )
 
 # Generate WRF-Hydro simulations
-simulation_files = generateWRFHydroSimulation(
+simulation_files = GenerateWRFHydroSimulation(
     # Paths
     r"S:\FloodRiskResearch\Martin\WRF-Hydro\wrfhydro_mataura_002",
 
@@ -62,7 +62,7 @@ simulation_files = generateWRFHydroSimulation(
 )
 
 # Manipulate simulated results
-result_simulation_files = resultManipulation(
+result_simulation_files = ResultManipulation(
     r"S:\FloodRiskResearch\Martin\WRF-Hydro\wrfhydro_mataura_002"
 )
 

@@ -1,30 +1,46 @@
+"""Runs to generate domain files which are inputs for WRF-Hydro"""
+# pylint: disable=too-many-instance-attributes
+
 # Necessary packages
 from pathlib import Path
 import subprocess
 import shutil
 
+
 # Develop a class to generate domain files
-class generateDomainFiles:
+class GenerateDomainFiles:
+    """
+    A class to generate domain files, which mainly includes:
+        - geo_em.d01.nc:
+                Static geographical data for a specific model domain
+        - soil_properties.nc:
+                Provides spatially distributed soil parameters for the land surface model (Noah-MP LSM)
+        - hydro2dtbl.nc:
+                Spatially distributed netCDF version of HYDRO.TBL (parameter table for lateral flow routing)
+        - wrfinput_d01.nc:
+                Describe initial conditions for the land surface,
+                such as soil moisture, soil temperature, and snow states
+    """
+
     def __init__(
             self,
-            e_we, e_sn,
-            ref_lat, ref_lon,
-            dx, dy,
-            geog_data_path,
-            save_path,
-            max_dom=1,
-            geog_data_res='default'
-    ):
+            e_we: int,
+            e_sn: int,
+            ref_lat: float,
+            ref_lon: float,
+            dx: int,
+            dy: int,
+            geog_data_path: str,
+            save_path: str,
+            max_dom: int = 1,
+            geog_data_res: str = 'default'
+    ) -> None:
         """
-        @Definition:
-            A class to generate domain files, which mainly includes:
-                - geo_em.d01.nc: Static geographical data for a specific model domain
-                - soil_properties.nc: Provides spatially distributed soil parameters for the land surface model (Noah-MP LSM)
-                - hydro2dtbl.nc: Spatially distributed netCDF version of HYDRO.TBL (parameter table for lateral flow routing)
-                - wrfinput_d01.nc: Describe initial conditions for the land surface, such as soil moisture, soil temperature, and snow states
-        @References:
+        Definition:
+            Init function to state common arguments
+        References:
             https://wrf-hydro.readthedocs.io/en/readthedocs/model-inputs-preproc.html
-        @Arguments:
+        Arguments:
             e_we, e_sn (int):
                 Extents in west-east (e_we) and south-north (e_sn) directions.
             ref_lat, ref_lon (float):
@@ -43,8 +59,6 @@ class generateDomainFiles:
             geog_data_res (str):
                 A string that defines data resolution when interpolating static terrestrial data.
                 Default is MODIS IGBP 21-category or "default".
-        @Returns:
-            None.
         """
         # A Window path where geogrid folder, create_soilproperties.R, create_wrfinput.R,
         # CHANPARM.TBL, GENPARM.TBL, HYDRO.TBL, MPTABLE.TBL, and SOILPARM.TBL are located
@@ -63,15 +77,15 @@ class generateDomainFiles:
         self.max_dom = max_dom
         self.geog_data_res = geog_data_res
 
-    def convert_window_to_wsl_path(self):
+    def convert_window_to_wsl_path(self) -> str:
         """
-        @Definition:
+        Definition:
             A function to convert window path to Window-Subsystem-for-Linux path
-        @References:
+        References:
             https://pypi.org/project/wsl-path-converter/ (NOT USE HERE)
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
+        Returns:
             A Window-Subsystem-for-Linux path
         """
         # Convert to Path object and resolve to absolute
@@ -86,17 +100,15 @@ class generateDomainFiles:
         # Join with /mnt/
         return f"/mnt/{drive_letter}{unix_part}"
 
-    def generate_namelist_wps(self):
+    def generate_namelist_wps(self) -> str:
         """
-        @Definition:
+        Definition:
             A function to generate namelist.wps to run geogrid.exe to generate static geographical data
-        @References:
+        References:
             https://www2.mmm.ucar.edu/wrf/users/namelist_best_prac_wps.html
             http://140.112.69.65/research/coawst/COAWST_TUTORIAL/training_2019/monday/werner_wps.pdf
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         # Calculate truelat1, truelat2, and stand_lon
         # The truelat1 and truelat2 defines where the cone slices the globe.
@@ -162,21 +174,26 @@ geog_data_path = '{self.geog_data_path}'
 /
 """
         # Generate the namelist.wps file
-        with open(f'{self.window_geogrid_path}/namelist.wps', "w") as namelist_wps_file:
+        with open(f'{self.window_geogrid_path}/namelist.wps', "w", encoding="utf-8") as namelist_wps_file:
             namelist_wps_file.write(content)
 
-    def generate_domain_commands(self, command_notes, log_name):
+    def generate_domain_commands(
+            self,
+            command_notes: str,
+            log_name: str
+    ) -> None:
         """
-        @Definition:
+        Definition:
             A function to design common commands to generate domain files
-        @References:
+        References:
             https://stackoverflow.com/questions/57693460/using-wsl-bash-from-within-python
             https://stackoverflow.com/questions/78219632/run-a-linux-application-on-wsl-from-a-windows-python-script
             https://forum.freecad.org/viewtopic.php?t=91659
-        @Arguments:
-            Already defined above.
-        @Returns:
-            None.
+        Arguments:
+            command_notes (str):
+                A command to be executed in WSL
+            log_name (str):
+                A name of the log file
         """
         # Full command notes that change the directory into the wsl_path
         # and are executed to obtain the results
@@ -197,11 +214,12 @@ geog_data_path = '{self.geog_data_path}'
             ["wsl", "bash", "-c", command_execution],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
+            check=True
         )
 
         # Print out log file after generating geo_em netcdf file
-        with open(fr"{self.window_geogrid_path}\{log_name}.log", "w") as f:
+        with open(fr"{self.window_geogrid_path}\{log_name}.log", "w", encoding="utf-8") as f:
             f.write("*** RETURNCODE ***\n")
             f.write(f"Return code: {result.returncode}\n")
             f.write("*** STDOUT ***\n")
@@ -209,17 +227,15 @@ geog_data_path = '{self.geog_data_path}'
             f.write("*** STDERR ***\n")
             f.write(result.stderr)
 
-    def generate_geogrid_files(self):
+    def generate_geogrid_files(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to run geogrid.exe and generate geo_em.d0x.nc file
-        @References:
+        References:
             https://wrf-hydro.readthedocs.io/en/latest/appendices.html
             https://ral.ucar.edu/sites/default/files/public/HowToBuildandRunWRF-HydroV5inStandaloneMode_0.pdf
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         # Define command notes and log name
         command_notes = r"./geogrid/geogrid.exe"
@@ -228,17 +244,15 @@ geog_data_path = '{self.geog_data_path}'
         # Run geogrid.exe
         self.generate_domain_commands(command_notes, log_name)
 
-    def generate_soilproperties_hydro2dtbl_files(self):
+    def generate_soilproperties_hydro2dtbl_files(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to run Rscript create_soilproperties.R to generate soil parameters
-        @References:
+        References:
             https://ral.ucar.edu/projects/wrf_hydro/pre-processing-tools
             https://wrf-hydro.readthedocs.io/en/readthedocs/model-inputs-preproc.html
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         # Define command notes and log name
         command_notes = "Rscript create_soilproperties.R --geogrid=geo_em.d01.nc --outfile=soil_properties.nc"
@@ -247,17 +261,15 @@ geog_data_path = '{self.geog_data_path}'
         # Run Rscript create_soilproperties.R
         self.generate_domain_commands(command_notes, log_name)
 
-    def generate_wrfinput_files(self):
+    def generate_wrfinput_files(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to run Rscript create_wrfinput.R to generate initial conditions for land
-        @References:
+        References:
             https://ral.ucar.edu/projects/wrf_hydro/pre-processing-tools
             https://wrf-hydro.readthedocs.io/en/readthedocs/model-inputs-preproc.html
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         # Define command notes and log name
         command_notes = "Rscript create_wrfinput.R --geogrid=geo_em.d01.nc --outfile=wrfinput_d01.nc"
@@ -266,23 +278,21 @@ geog_data_path = '{self.geog_data_path}'
         # Run Rscript create_wrfinput.R
         self.generate_domain_commands(command_notes, log_name)
 
-    def copy_files(self):
+    def copy_files(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to copy all generated domain files into the save path
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         all_files_paths = Path(self.window_geogrid_path).glob('*')
-        selected_all_files_paths = [each_file_path for each_file_path in all_files_paths \
+        selected_all_files_paths = [each_file_path for each_file_path in all_files_paths
                                     if each_file_path.is_file() and each_file_path.suffix == '.nc']
 
         # Create the destination folder
-        domain_path = f"{self.save_path}\DOMAIN"
+        domain_path = fr"{self.save_path}\DOMAIN"
         Path(domain_path).mkdir(parents=True, exist_ok=True)
 
         # Move selected files
@@ -293,20 +303,18 @@ geog_data_path = '{self.geog_data_path}'
                 str(Path(domain_path) / source_path.name)
             )
 
-    def move_files(self):
+    def move_files(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to move all generated domain files into the save path
-        @References:
+        References:
             https://stackoverflow.com/questions/39909655/listing-of-all-files-in-directory
             https://stackoverflow.com/questions/8858008/how-do-i-move-a-file-in-python
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         all_files_paths = Path(self.window_geogrid_path).glob('*')
-        selected_all_files_paths = [each_file_path for each_file_path in all_files_paths \
+        selected_all_files_paths = [each_file_path for each_file_path in all_files_paths
                                     if each_file_path.is_file() and each_file_path.suffix in ['.wps', '.nc', '.log']]
 
         # Create the destination folder
@@ -320,16 +328,14 @@ geog_data_path = '{self.geog_data_path}'
                 str(Path(self.save_path) / source_path.name)
             )
 
-    def execute_domain_commands(self):
+    def execute_domain_commands(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to generate domain files
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         # Generate namelist.wps
         self.generate_namelist_wps()
@@ -348,7 +354,6 @@ geog_data_path = '{self.geog_data_path}'
 
         # Move all generated domain files to the save path
         self.move_files()
-
 
 # EXAMPLES
 # domain_files = generateDomainFiles(

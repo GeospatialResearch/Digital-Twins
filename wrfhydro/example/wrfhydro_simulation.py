@@ -1,42 +1,51 @@
+"""Runs WRF-Hydro to generate simulations"""
+# pylint: disable=invalid-name, too-many-instance-attributes
+
 # Necessary packages
+from typing import Tuple
+
 import shutil
-import cdsapi
-from datetime import datetime, timedelta, date
+from datetime import datetime
 
 import subprocess
 from pathlib import Path
 
+
 # Develop a class to generate WRF-Hydro simulation
-class generateWRFHydroSimulation:
+class GenerateWRFHydroSimulation:
+    """A class to run WRF-Hydro simulation"""
+
     def __init__(
             self,
             # Paths
-            domain_path,
+            domain_path: str,
 
             # namelist.hrldas
-            START_DATE,
-            KHOUR,
-            RESTART_FREQUENCY_HOURS,
+            START_DATE: str,
+            KHOUR: int,
+            RESTART_FREQUENCY_HOURS: int,
 
             # hydro.namelist
-            DXRT, AGGFACTRT,
-            DTRT_CH, DTRT_TER,
-            rst_dt=300,
-            CHRTOUT_DOMAIN=1,
-            CHANOBS_DOMAIN=1,
-            CHRTOUT_GRID=1,
-            LSMOUT_DOMAIN=1,
-            RTOUT_DOMAIN=1,
-            output_gw=1,
-            outlake=0,
-            frxst_pts_out=1
-    ):
+            DXRT: float,
+            AGGFACTRT: float,
+            DTRT_CH: float,
+            DTRT_TER: float,
+            rst_dt: int = 300,
+            CHRTOUT_DOMAIN: int = 1,
+            CHANOBS_DOMAIN: int = 1,
+            CHRTOUT_GRID: int = 1,
+            LSMOUT_DOMAIN: int = 1,
+            RTOUT_DOMAIN: int = 1,
+            output_gw: int = 1,
+            outlake: int = 0,
+            frxst_pts_out: int = 1
+    ) -> None:
         """
-        @Definition:
-            A class to run WRF-Hydro simulation
-        @References:
+        Definition:
+            Init function to state common arguments
+        References:
             None.
-        @Arguments:
+        Arguments:
             domain_path (str):
                 Define domain path that stores necessary inputs to run
                 WRF-Hydro simulation, especially TBL files, DOMAIN, FORCING
@@ -69,8 +78,6 @@ class generateWRFHydroSimulation:
                     - 0: Deactivate that output file
                 The explanation of each of them are detailed in functions to
                 generate hydro.namelist and namelist.hrldas
-        @Returns:
-            None.
         """
         # Define domain path
         self.domain_path = domain_path
@@ -82,7 +89,7 @@ class generateWRFHydroSimulation:
         self.KHOUR = KHOUR
         self.RESTART_FREQUENCY_HOURS = RESTART_FREQUENCY_HOURS
 
-        ## HYDRO.NAMELIST
+        # HYDRO.NAMELIST
         self.DXRT = DXRT
         self.AGGFACTRT = AGGFACTRT
         self.DTRT_CH = DTRT_CH
@@ -97,15 +104,15 @@ class generateWRFHydroSimulation:
         self.outlake = outlake
         self.frxst_pts_out = frxst_pts_out
 
-    def generate_simulation_date_info(self):
+    def generate_simulation_date_info(self) -> Tuple[str, str, str, str, str]:
         """
-        @Definition:
+        Definition:
             A function to generate start date information to run WRF-Hydro simulation
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
+        Returns:
             year, month, day, hour, minute (str):
                 Information of a specific start date
         """
@@ -123,18 +130,15 @@ class generateWRFHydroSimulation:
 
         return YEAR, MONTH, DAY, HOUR, MINUTE
 
-    def generate_namelist_hrldas(self):
+    def generate_namelist_hrldas(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to generate namelist.hrldas to run WRF-Hydro simulation
-        @References:
+        References:
             https://ral.ucar.edu/sites/default/files/public/Noahhrldas.namelistfiledescriptionofoptionsWHV5.pdf
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
-
         # Generate information of a specific start date
         YEAR, MONTH, DAY, HOUR, MINUTE = self.generate_simulation_date_info()
 
@@ -235,21 +239,18 @@ FORC_TYP = 1
 
 """
         # Generate the hydro.namelist file
-        with open(f'{self.domain_path}/namelist.hrldas', "w") as namelist_hrldas_file:
+        with open(f'{self.domain_path}/namelist.hrldas', "w", encoding="utf-8") as namelist_hrldas_file:
             namelist_hrldas_file.write(content)
 
-    def generate_hydro_namelist(self):
+    def generate_hydro_namelist(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to generate hydro.namelist
-        @References:
+        References:
             https://ral.ucar.edu/sites/default/files/public/WRF-Hydrohydro.namelistfiledescriptionofoptionsV5.pdf
-        @Arguments:
-            Already defined above.
-        @Returns:
-            None.
+        Arguments:
+            Already defined above
         """
-
         # Content of hydro.namelist to run WRF-Hydro simulation
         content = f"""&HYDRO_nlist
 !!!! ---------------------- SYSTEM COUPLING ----------------------- !!!!
@@ -441,23 +442,21 @@ UDMP_OPT = 0
 """
 
         # Generate the hydro.namelist file
-        with open(f'{self.domain_path}/hydro.namelist', "w") as hydro_namelist_file:
+        with open(f'{self.domain_path}/hydro.namelist', "w", encoding="utf-8") as hydro_namelist_file:
             hydro_namelist_file.write(content)
 
-    def copy_TBL_files(self):
+    def copy_TBL_files(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to copy CHANPARM.TBL, GENPARM.TBL, HYDRO.TBL, SOILPARM.TBL
             to the directory that runs simulations
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         all_files_paths = Path(self.window_simulation_path).glob('*')
-        selected_all_files_paths = [each_file_path for each_file_path in all_files_paths \
+        selected_all_files_paths = [each_file_path for each_file_path in all_files_paths
                                     if each_file_path.is_file() and each_file_path.suffix in ['.TBL', '.exe']]
 
         # Create the destination folder
@@ -470,15 +469,15 @@ UDMP_OPT = 0
                 str(Path(self.domain_path) / Path(each_file_path).name)
             )
 
-    def convert_window_to_wsl_path(self):
+    def convert_window_to_wsl_path(self) -> str:
         """
-        @Definition:
+        Definition:
             A function to convert window path to Window-Subsystem-for-Linux path
-        @References:
+        References:
             https://pypi.org/project/wsl-path-converter/ (NOT USE HERE)
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
+        Returns:
             A Window-Subsystem-for-Linux path
         """
         # Convert to Path object
@@ -493,18 +492,23 @@ UDMP_OPT = 0
         # Join with /mnt/
         return f"/mnt/{drive_letter}{unix_part}"
 
-    def generate_simulation_commands(self, command_notes, log_name):
+    def generate_simulation_commands(
+            self,
+            command_notes: str,
+            log_name: str
+    ) -> None:
         """
-        @Definition:
+        Definition:
             A function to design common commands to generate domain files
-        @References:
+        References:
             https://stackoverflow.com/questions/57693460/using-wsl-bash-from-within-python
             https://stackoverflow.com/questions/78219632/run-a-linux-application-on-wsl-from-a-windows-python-script
             https://forum.freecad.org/viewtopic.php?t=91659
-        @Arguments:
-            Already defined above.
-        @Returns:
-            None.
+        Arguments:
+            command_notes (str):
+                A command to be executed in WSL
+            log_name (str):
+                A name of the log file
         """
         # Full command notes that change the directory into the wsl_path
         # and are executed to obtain the results
@@ -525,11 +529,12 @@ UDMP_OPT = 0
             ["wsl", "bash", "-c", command_execution],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
+            check=True
         )
 
         # Print out log file after generating geo_em netcdf file
-        with open(fr"{self.domain_path}\{log_name}.log", "w") as f:
+        with open(fr"{self.domain_path}\{log_name}.log", "w", encoding="utf-8") as f:
             f.write("*** RETURNCODE ***\n")
             f.write(f"Return code: {result.returncode}\n")
             f.write("*** STDOUT ***\n")
@@ -537,17 +542,15 @@ UDMP_OPT = 0
             f.write("*** STDERR ***\n")
             f.write(result.stderr)
 
-    def generate_simulation_files(self):
+    def generate_simulation_files(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to run WRF-Hydro simulation
-        @References:
+        References:
             https://wrf-hydro.readthedocs.io/en/latest/appendices.html
             https://ral.ucar.edu/sites/default/files/public/HowToBuildandRunWRF-HydroV5inStandaloneMode_0.pdf
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         # Define command notes and log name
         command_notes = r"mpirun -np 2 ./wrf_hydro_NoahMP.exe >> run.log 2>&1"
@@ -556,17 +559,15 @@ UDMP_OPT = 0
         # Run geogrid.exe
         self.generate_simulation_commands(command_notes, log_name)
 
-    def move_files(self):
+    def move_files(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to move all generated simulation files into the save path
-        @References:
+        References:
             https://stackoverflow.com/questions/39909655/listing-of-all-files-in-directory
             https://stackoverflow.com/questions/8858008/how-do-i-move-a-file-in-python
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
         # List all necessary prefix and suffix
         prefix = [
@@ -581,10 +582,10 @@ UDMP_OPT = 0
 
         # Select necessary simulated results to put into simulations folder
         all_files_paths = Path(self.domain_path).glob('*')
-        selected_all_files_paths = [each_file_path for each_file_path in all_files_paths \
-                                    if each_file_path.is_file() \
-                                    and each_file_path.stem in prefix \
-                                    or each_file_path.suffix in suffix]
+        selected_all_files_paths = [
+            each_file_path for each_file_path in all_files_paths
+            if each_file_path.is_file() and each_file_path.stem in prefix or each_file_path.suffix in suffix
+        ]
 
         # Create the simulation folder
         simulations_path = f"{self.domain_path}\simulations"
@@ -597,18 +598,15 @@ UDMP_OPT = 0
                 str(Path(simulations_path) / Path(each_file_path).name)
             )
 
-    def execute_simulation_commands(self):
+    def execute_simulation_commands(self) -> None:
         """
-        @Definition:
+        Definition:
             A function to run WRF-Hydro simulation
-        @References:
+        References:
             None.
-        @Arguments:
+        Arguments:
             Already defined above.
-        @Returns:
-            None.
         """
-
         # Generate namelist.hrldas
         self.generate_namelist_hrldas()
 
@@ -623,6 +621,7 @@ UDMP_OPT = 0
 
         # Copy all simulated results to
         self.move_files()
+
 
 # EXAMPLES
 # simulation = generateWRFHydroSimulation(
