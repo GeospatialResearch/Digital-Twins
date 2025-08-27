@@ -18,7 +18,7 @@ jobs:
           python -m pip install flake8==7.1.0 flake8-docstrings==1.7.0 flake8-annotations==3.1.1
       - name: Run lint with flake8
         run: |
-          flake8 src floodresilience
+          flake8 src floodresilience wrfhydro
 
   linting-pylint:
     name: Lint Python with pylint
@@ -46,7 +46,7 @@ jobs:
           python -m pip install pylint==3.2.6
       - name: Run lint with pylint
         run: |
-          pylint src floodresilience
+          pylint src floodresilience wrfhydro
 
   unit-tests:
     name: Run unit tests with pytest
