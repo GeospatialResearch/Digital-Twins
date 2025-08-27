@@ -7,16 +7,16 @@ from typing import Tuple
 from pathlib import Path
 import os
 os.environ["ESMFMKFILE"] = r"C:\Users\mng42\AppData\Local\anaconda3\envs\wrfhydro_005\Library\lib\esmf.mk"
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta  # noqa: E402
 
-import xesmf as xe
-import xarray as xr
-import numpy as np
-import cdsapi
+import xesmf as xe  # noqa: E402
+import xarray as xr  # noqa: E402
+import numpy as np  # noqa: E402
+import cdsapi  # noqa: E402
 
 
 # Develop a class to generate WRF-Hydro forcing data from ERA5
-class GenerateERA5Forcing:
+class DownloadERA5Forcing:
     """A class to download forcing data from ERA5"""
 
     def __init__(
@@ -188,17 +188,48 @@ class GenerateERA5Forcing:
             # Download ERA5 forcing data
             self.download_era5_forcing_data(request, each_file_name)
 
-    ####################################
 
-    def generate_target_grid_dataset(self) -> Tuple[xr.Dataset, xr.Dataset]:
+class GenerateERA5Forcing:
+    """A class to generate forcing data from ERA5"""
+
+    def __init__(
+            self,
+            domain_path: str,
+            download_path: str,
+            start_date: str,
+            end_date: str,
+    ) -> None:
+        """
+        Definition:
+            Init function to state common arguments
+        References:
+            https://cds.climate.copernicus.eu/how-to-api
+            https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview
+        Arguments:
+            domain_path (str):
+                A path that stores the domain files, especially the geo_em.d0x.nc
+            download_path (str):
+                A path to store downloaded forcing data from ERA5
+            start_date, end_date (list):
+                Specific information of start and end dates that the forcing data needs downloading
+                The format of the list is [yyyy, m, d, h]
+        """
+        # Define variables
+        self.era5_information = DownloadERA5Forcing(
+            domain_path,
+            download_path,
+            start_date,
+            end_date
+        )
+
+    def generate_wrf_grid(self) -> xr.Dataset:
         """
         Definition:
             A function to generate wrf file used to regrid
         References:
             None.
         Arguments:
-            each_hour (int):
-                Each hour represents an increment added to the current time
+            None.
         Returns:
             wrf_ds (xr.Dataset):
                 A raster that includes domain features
@@ -206,7 +237,7 @@ class GenerateERA5Forcing:
                 A raster that includes latitude and longitude of domain
         """
         # Read geo_em.d0x.nc - domain file
-        wrf_ds = xr.open_dataset(fr"{self.domain_path}\geo_em.d01.nc")
+        wrf_ds = xr.open_dataset(fr"{self.era5_information.domain_path}\geo_em.d01.nc")
 
         # Extract 2D lat and lon
         wrf_lat = wrf_ds['XLAT_M'].isel(Time=0)
@@ -221,71 +252,87 @@ class GenerateERA5Forcing:
         # Return the target grid dataset
         return wrf_ds, wrf_grid
 
-    def generate_sample_era5_to_regrid(
+    def adjust_longitude(
             self,
-            each_hour: int
+            ds: xr.Dataset
     ) -> xr.Dataset:
         """
         Definition:
-            A function to generate sample ERA5 variable used to
-            mearure the regridder
+            A function to adjust longitude from [0, 360] to [-180, 180]
         References:
             None.
         Arguments:
-            each_hour (int):
-                Each hour represents an increment added to the current time
+            ds (xr.Dataset):
+                A raster of an ERA5 file
+        Returns:
+            sorted_ds (xr.Dataset):
+                A raster that has longitude adjusted
+        """
+        # Adjust longitude of er4 variable from [0, 360] to [-180, 180]
+        ds['longitude'] = ((ds['longitude'] + 180) % 360) - 180
+
+        # Make sure the longitudes are sorted after shifting
+        sorted_ds = ds.sortby('longitude')
+
+        # Return sorted dataset
+        return sorted_ds
+
+    def generate_era5_grid(self) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate ERA5 grid
+        References:
+            None.
+        Arguments:
+            None.
         Returns:
             era5_grid (xr.Dataset):
-                A raster includes latitude and longitude of ERA5 files
+                A raster of a variable (t2m chosen here) that includes latitude and longitude
         """
-        # Generate information of a specific date
-        year, month, day, hour, _ = self.generate_date_info(each_hour)
+        # Get information of initial date
+        s_year = self.era5_information.start_date.strftime("%Y")
+        s_month = self.era5_information.start_date.strftime("%m")
+        s_day = self.era5_information.start_date.strftime("%d")
+        s_hour = self.era5_information.start_date.strftime("%H")
 
-        # Choose t2m as the sample variable to regrid
-        t2m = xr.open_dataset(fr"{self.download_path}\t2m_{year}-{month}-{day}_{hour}_00_00.nc")
-        t2m_copy = t2m.copy(deep=True)
+        # Adjust 2m temperature longitude from [0, 360] to [-180, 180]
+        t2m_for_regridder = self.adjust_longitude(
+            xr.open_dataset(fr"{self.era5_information.download_path}\t2m_{s_year}-{s_month}-{s_day}_{s_hour}_00_00.nc")
+        )
 
-        # Adjust t2m longitude from [0, 360] to [-180, 180]
-        # and then extract 2D lat and lon
-        t2m_copy['longitude'] = ((t2m_copy['longitude'] + 180) % 360) - 180
-        t2m_copy = t2m_copy.sortby('longitude')  # make sure the longitudes are sorted after shifting
-        lon_2d, lat_2d = np.meshgrid(t2m_copy['longitude'], t2m_copy['latitude'])
-
-        # Generate sample ERA5 file to regrid
+        # Generate era5 grid
+        lon_2d, lat_2d = np.meshgrid(t2m_for_regridder['longitude'], t2m_for_regridder['latitude'])
         era5_grid = xr.Dataset({
             'lat': (['y', 'x'], lat_2d),
             'lon': (['y', 'x'], lon_2d)
         })
 
-        # Return sample ERA5
+        # Return era5 grid
         return era5_grid
 
-    def regrid_era5(
-            self,
-            each_hour: int
-    ) -> xe.Regridder:
+    def generate_regridder(self) -> xe.Regridder:
         """
         Definition:
-            A function to generate regridder to regrid ERA5 variables
+            A function to generate regridder function
         References:
             None.
         Arguments:
-            each_hour (int):
-                Each hour represents an increment added to the current time
+            None.
         Returns:
-            regridder (xe.Regridder):
-                A regridder function to regrid era5 files
+            regridder (xr.Dataset):
+                A raster of a variable (t2m chosen here) that includes latitude and longitude
         """
-        # Generate target grid dataset
-        _, wrf_grid = self.generate_target_grid_dataset()
+        # Generate target wrf grid
+        _, wrf_grid = self.generate_wrf_grid()
 
-        # Generate sample ERA5 file to regrid
-        era5_grid = self.generate_sample_era5_to_regrid(each_hour)
+        # Generate era5 grid
+        era5_grid = self.generate_era5_grid()
 
-        # Regrid to WRF-Hydro domain
-        regridder = xe.Regridder(era5_grid, wrf_grid, 'bilinear', reuse_weights=False)
+        # Generate regridder
+        regridder = xe.Regridder(era5_grid, wrf_grid, 'bilinear',
+                                 reuse_weights=False)
 
-        # Return regridder function
+        # Return the regridder
         return regridder
 
     def load_an_era5_variable(
@@ -308,23 +355,23 @@ class GenerateERA5Forcing:
                 An ERA5-variable raster
         """
         # Generate information of a specific date
-        year, month, day, hour, _ = self.generate_date_info(each_hour)
+        year, month, day, hour, _ = self.era5_information.generate_date_info(each_hour)
 
         # Generate ERA5 file name
-        era5_file_name = f"{self.file_names[file_name_order]}_{year}-{month}-{day}_{hour}_00_00.nc"
+        era5_file_name = f"{self.era5_information.file_names[file_name_order]}_{year}-{month}-{day}_{hour}_00_00.nc"
 
         # Load ERA5 variable
-        era5_variable = xr.open_dataset(fr"{self.download_path}\{era5_file_name}")
+        era5_variable = self.adjust_longitude(
+            xr.open_dataset(fr"{self.era5_information.download_path}\{era5_file_name}")
+        )
 
+        # Return the ERA5 variable
         return era5_variable
 
     def load_era5_variables(
             self,
             each_hour: int
-    ) -> Tuple[
-        xr.Dataset, xr.Dataset, xr.Dataset, xr.Dataset, xr.Dataset,
-        xr.Dataset, xr.Dataset, xr.Dataset, xr.Dataset
-    ]:
+    ) -> dict:
         """
         Definition:
             A function to load all ERA5 variables that are necessary
@@ -335,16 +382,17 @@ class GenerateERA5Forcing:
             each_hour (int):
                 Each hour represents an increment added to the current time
         Returns:
-            t2m, d2m, sp, u10m, v10m, msdlwrf, msdswrf, tp, geo (xr.Dataset):
-                2m temperature (K)
-                2m dewpoint temperature (K)
-                surface pressure (Pa)
-                10m wind u-component (m/s)
-                10m wind v-component (m/s)
-                long-wave radiation (W/m2)
-                short-wave radiation (W/m2)
-                total precipitation (m)
-                geopotential (m2/s2)
+            era5_variables (dict):
+                A dictionary that includes:
+                    t2m - 2m temperature (K)
+                    d2m - 2m dewpoint temperature (K)
+                    sp - surface pressure (Pa)
+                    u10m - 10m wind u-component (m/s)
+                    v10m - 10m wind v-component (m/s)
+                    msdlwrf - long-wave radiation (W/m2)
+                    msdswrf - short-wave radiation (W/m2)
+                    tp - total precipitation (m)
+                    geo - geopotential (m2/s2)
         """
         # Load all ERA5 variables
         t2m = self.load_an_era5_variable(0, each_hour)  # 2m temperature from ERA5
@@ -357,8 +405,370 @@ class GenerateERA5Forcing:
         tp = self.load_an_era5_variable(7, each_hour)  # total precipitation from ERA5
         geo = self.load_an_era5_variable(8, each_hour)  # geopotential from ERA5
 
+        # Store them into a dictionary
+        era5_variables = {
+            "t2m": t2m,
+            "d2m": d2m,
+            "sp": sp,
+            "u10m": u10m,
+            "v10m": v10m,
+            "msdlwrf": msdlwrf,
+            "msdswrf": msdswrf,
+            "tp": tp,
+            "geo": geo
+        }
+
         # Return ERA5 variables
-        return t2m, d2m, sp, u10m, v10m, msdlwrf, msdswrf, tp, geo
+        return era5_variables
+
+    def generate_ght_regridded(
+            self,
+            geo: xr.Dataset,
+            regridder: xe.Regridder
+    ) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate geopotential height or surface height
+        References:
+            None.
+        Arguments:
+            geo (xr.Dataset):
+                A raster of ERA5 variable - geopotential
+            regridder (xe.Regridder):
+                A function to regrid ERA5 variable
+        Returns:
+            ght_regridded (xr.Dataset):
+                A raster of regridded geopotential height
+        """
+        # Define gravity (m/S^2)
+        gravity = 9.80665
+
+        # Convert geopotential to geopotential height
+        ght = geo['z'] / gravity
+
+        # Regrid to WRF-Hydro domain
+        ght_regridded = regridder(ght)
+
+        # Return regridded ght
+        return ght_regridded
+
+    def generate_terrain_difference(
+            self,
+            geo: xr.Dataset,
+            regridder: xe.Regridder
+    ) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate terrain difference
+        References:
+            None.
+        Arguments:
+            geo (xr.Dataset):
+                A raster of ERA5 variable - geopotential
+            regridder (xe.Regridder):
+                A function to regrid ERA5 variable
+        Returns:
+            terrain_diff (xr.Dataset):
+                A raster of terrain difference
+        """
+        # Generate wrf dataset
+        wrf_ds, _ = self.generate_wrf_grid()
+
+        # Extract the WRF-Hydro terrain height
+        wrf_terrain = wrf_ds['HGT_M'].isel(Time=0)
+
+        # Generate regridded geopotential height
+        ght_regridded = self.generate_ght_regridded(geo, regridder)
+
+        # Compute the elevation difference
+        terrain_diff = ght_regridded - wrf_terrain
+
+        # Return terrain difference
+        return terrain_diff
+
+    def generate_adjusted_t2m(
+            self,
+            t2m: xr.Dataset,
+            geo: xr.Dataset,
+            regridder: xe.Regridder
+    ) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate adjusted 2m temperature
+        References:
+            None.
+        Arguments:
+            t2m (xr.Dataset):
+                A raster of ERA5 variable - 2m temperature
+            geo (xr.Dataset):
+                A raster of ERA5 variable - geopotential
+            regridder (xe.Regridder):
+                A function to regrid ERA5 variable
+        Returns:
+            t2m_adj (xr.Dataset):
+                A raster of adjusted 2m temperature
+        """
+        # Define lapse rate in K/m
+        lapse_rate = 0.00649
+
+        # Generate 2m temperature (in K)
+        t2m_k_regridded = regridder(t2m)
+
+        # Generate terrain difference
+        terrain_diff = self.generate_terrain_difference(geo, regridder)
+
+        # Generate adjusted 2m temperature (in K)
+        t2m_adj = t2m_k_regridded - lapse_rate * terrain_diff
+
+        # Return adjusted 2m temperature
+        return t2m_adj
+
+    def generate_adjusted_surface_pressure(
+            self,
+            t2m: xr.Dataset,
+            sp: xr.Dataset,
+            geo: xr.Dataset,
+            regridder: xe.Regridder
+    ) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate adjusted surface pressure
+        References:
+            None.
+        Arguments:
+            t2m (xr.Dataset):
+                A raster of ERA5 variable - 2m temperature
+            sp (xr.Dataset):
+                A raster of ERA5 variable - surface pressure
+            geo (xr.Dataset):
+                A raster of ERA5 variable - geopotential
+            regridder (xe.Regridder):
+                A function to regrid ERA5 variable
+        Returns:
+            sp_adj (xr.Dataset):
+                A raster of adjusted surface pressure
+        """
+        # Define dry air constant (J/kg/K)
+        dry_air_constant = 287
+
+        # Define gravity (m/S^2)
+        gravity = 9.80665
+
+        # Generate regridded surface pressure
+        sp_regridded = regridder(sp)
+
+        # Generate adjusted 2m temperature
+        t2m_adj = self.generate_adjusted_t2m(t2m, geo, regridder)
+
+        # Generate terrain difference
+        terrain_diff = self.generate_terrain_difference(geo, regridder)
+
+        # Generate adjusted surface pressure
+        sp_adj = sp_regridded * np.exp(-gravity * terrain_diff / (dry_air_constant * t2m_adj['t2m']))
+
+        # Return adjusted surface pressure
+        return sp_adj
+
+    def generate_adjusted_d2m(
+            self,
+            d2m: xr.Dataset,
+            geo: xr.Dataset,
+            regridder: xe.Regridder
+    ) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate adjusted 2m dewpoint temperature
+        References:
+            None.
+        Arguments:
+            d2m (xr.Dataset):
+                A raster of ERA5 variable - 2m dewpoint temperature
+            geo (xr.Dataset):
+                A raster of ERA5 variable - geopotential
+            regridder (xe.Regridder):
+                A function to regrid ERA5 variable
+        Returns:
+            d2m_c_adj (xr.Dataset):
+                A raster of adjusted 2m dewpoint temperature
+        """
+        # Define lapse rate in K/m
+        lapse_rate = 0.00649
+
+        # Convert K to C
+        d2m_c = d2m - 273.15
+
+        # Generate regridded 2m dewpoint temperature
+        d2m_c_regridded = regridder(d2m_c)
+
+        # Generate terrain difference
+        terrain_diff = self.generate_terrain_difference(geo, regridder)
+
+        # Generate adjusted 2m dewpoint temperature
+        d2m_c_adj = d2m_c_regridded - lapse_rate * terrain_diff
+
+        # Return adjusted 2m dewpoint temperature
+        return d2m_c_adj
+
+    def generate_specific_humidity(
+            self,
+            t2m: xr.Dataset,
+            d2m: xr.Dataset,
+            sp: xr.Dataset,
+            geo: xr.Dataset,
+            regridder: xe.Regridder
+    ) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate adjusted surface pressure
+        References:
+            None.
+        Arguments:
+            t2m (xr.Dataset):
+                A raster of ERA5 variable - 2m temperature
+            d2m (xr.Dataset):
+                A raster of ERA5 variable - 2m dewpoint temperature
+            sp (xr.Dataset):
+                A raster of ERA5 variable - surface pressure
+            geo (xr.Dataset):
+                A raster of ERA5 variable - geopotential
+            regridder (xe.Regridder):
+                A function to regrid ERA5 variable
+        Returns:
+            q2_positive (xr.Dataset):
+                A raster of specific humidity
+        """
+        # Generate adjusted 2m dewpoint temperature
+        d2m_c_adj = self.generate_adjusted_d2m(
+            d2m,
+            geo,
+            regridder
+        )
+
+        # Generate saturation vapor pressure
+        es_hpa = 6.112 * np.exp((17.67 * d2m_c_adj['d2m']) / (d2m_c_adj['d2m'] + 243.5))
+
+        # Convert hPa to Pa
+        es_pa = es_hpa * 100
+
+        # Generate adjusted specific humidity
+        sp_adj = self.generate_adjusted_surface_pressure(t2m, sp, geo, regridder)
+
+        # Generate specific humidity
+        q2 = (0.622 * es_pa) / (sp_adj - 0.378 * es_pa)
+
+        # Make sure specific humidity is positive
+        q2_positive = xr.where(q2 < 0, 0, q2)
+
+        # Return positive specific humidity
+        return q2_positive
+
+    def generate_conversed_precipitation(
+            self,
+            tp: xr.Dataset,
+            regridder: xe.Regridder
+    ) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate adjusted surface pressure
+        References:
+            None.
+        Arguments:
+            tp (xr.Dataset):
+                A raster of ERA5 variable:
+                    total precipitation
+            regridder (xe.Regridder):
+                A function to regrid ERA5 variable
+        Returns:
+            tp_regridded (xr.Dataset):
+                A raster of conversed total precipitation
+        """
+        # Convert total precipitation in meter
+        # and to rate (unit is mm/s)
+        tp_conversion = tp * 1000 / 3600
+
+        # Regrid conversed total precipitation
+        tp_regridded = regridder(tp_conversion['tp'])
+
+        # Return conversed total precipitation
+        return tp_regridded
+
+    def generate_forcing_dataset(
+            self,
+            each_hour: int
+    ) -> xr.Dataset:
+        """
+        Definition:
+            A function to generate all forcing dataset
+        References:
+            None.
+        Arguments:
+            each_hour (int):
+                Each hour represents an increment added to the current time
+        Returns:
+            forcing_dataset (dict):
+                A dictionary that includes:
+                    adjusted t2m - 2m temperature (K)
+                    adjusted sp - surface pressure (Pa)
+                    regridded u10m - 10m wind u-component (m/s)
+                    regridded v10m - 10m wind v-component (m/s)
+                    regridded msdlwrf - long-wave radiation (W/m2)
+                    regridded msdswrf - short-wave radiation (W/m2)
+                    regridded and conversed tp - total precipitation (m)
+        """
+        # Load all ERA5 variables
+        era5_variables = self.load_era5_variables(each_hour)
+
+        # Generate regridder
+        regridder = self.generate_regridder()
+
+        # Generate adjusted 2m temperature
+        t2m_adj = self.generate_adjusted_t2m(
+            era5_variables['t2m'], era5_variables['geo'], regridder)
+
+        # Generate adjusted surface pressure
+        sp_adj = self.generate_adjusted_surface_pressure(
+            era5_variables['t2m'],
+            era5_variables['sp'],
+            era5_variables['geo'],
+            regridder
+        )
+
+        # Generate specific humidity
+        q2_positive = self.generate_specific_humidity(
+            era5_variables['t2m'],
+            era5_variables['d2m'],
+            era5_variables['sp'],
+            era5_variables['geo'],
+            regridder
+        )
+
+        # Generate conversed precipitation
+        tp_regridded = self.generate_conversed_precipitation(
+            era5_variables['tp'],
+            regridder)
+
+        # Generate regridded short- and long-wave radiations
+        lwr_regridded = regridder(era5_variables['msdlwrf']['avg_sdlwrf'])
+        swr_regridded = regridder(era5_variables['msdswrf']['avg_sdswrf'])
+
+        # Generate regridded wind with u- and v-components
+        v10m_regridded = regridder(era5_variables['v10m']['v10'])
+        u10m_regridded = regridder(era5_variables['u10m']['u10'])
+
+        # Set up a dictionary to list all variables
+        forcing_dataset = {
+            "t2m_adj": t2m_adj,
+            "sp_adj": sp_adj,
+            "q2_positive": q2_positive,
+            "u10m_regridded": u10m_regridded,
+            "v10m_regridded": v10m_regridded,
+            "lwr_regridded": lwr_regridded,
+            "swr_regridded": swr_regridded,
+            "tp_regridded": tp_regridded
+        }
+
+        # Return forcing dataset
+        return forcing_dataset
 
     def generate_merged_forcing_dataset(
             self,
@@ -366,10 +776,7 @@ class GenerateERA5Forcing:
     ) -> xr.Dataset:
         """
         Definition:
-            A function to compute and convert ERA5 variables into
-            WRF-Hydro forcing data and merge them together.
-            At the moment, this function cannot be splitted into
-            smaller functions because the regridder is called only once.
+            A function to merged all forcing dataset
         References:
             None.
         Arguments:
@@ -385,84 +792,25 @@ class GenerateERA5Forcing:
                     LWDOWN, SWDOWN: long- and short-wave radiation (W/m2)
                     RAINRATE: Total precipitation rate (mm/s)
         """
-        # Load all ERA5 variables
-        t2m, d2m, sp, u10m, v10m, lwr, swr, tp, geo = self.load_era5_variables(each_hour)
+        # Generate forcing dataset
+        forcing_dataset = self.generate_forcing_dataset(each_hour)
 
-        # Generate regridder
-        regridder = self.regrid_era5(each_hour)
-
-        # Generate geopotential height or surface height ----
-        # Convert geopotential to geopotential height
-        ght = geo['z'] / 9.80665
-        # Regrid to WRF-Hydro domain
-        ght_regridded = regridder(ght)
-
-        # Generate terrain difference ----
-        # Generate target grid dataset and geopotential height
-        wrf_ds, _ = self.generate_target_grid_dataset()
-        # Extract the WRF-Hydro terrian height
-        wrf_terrain = wrf_ds['HGT_M'].isel(Time=0)
-        # Compute the elevation difference
-        terrain_diff = ght_regridded - wrf_terrain
-
-        # Generate adjusted 2m temperature ----
-        # Define lapse rate in K/m
-        lapse_rate = 0.00649
-        # Generate 2m temperature (in K)
-        t2m_k_regridded = regridder(t2m)
-        # Generate adjusted 2m temperature (in K)
-        t2m_adj = t2m_k_regridded - lapse_rate * terrain_diff
-
-        # Generate surface pressure ----
-        dry_air_constant = 287  # dry air constant (J/kg/K)
-        gravity = 9.80665  # gravity (m/S^2)
-        # Generate regridded surface pressure
-        sp_regridded = regridder(sp)
-        # Generate adjusted surface pressure
-        sp_adj = sp_regridded * np.exp(-gravity * terrain_diff / (dry_air_constant * t2m_adj['t2m']))
-
-        # Generate specific humidity ----
-        # Convert K to C
-        d2m_c = d2m - 273.15  # K to C
-        # Generate regridded dewpoint temperature
-        d2m_c_regridded = regridder(d2m_c)
-        # Generate adjusted dewpoint temperature
-        d2m_c_adj = d2m_c_regridded - lapse_rate * terrain_diff
-        # Generate saturation vapor pressure
-        es_hpa = 6.112 * np.exp((17.67 * d2m_c_adj['d2m']) / (d2m_c_adj['d2m'] + 243.5))
-        es_pa = es_hpa * 100  # convert hPa to Pa
-        # Generate specific humidity
-        q2 = (0.622 * es_pa) / (sp_adj - 0.378 * es_pa)
-        q2_positive = xr.where(q2 < 0, 0, q2)  # Make sure specific humidity is positive
-
-        # Regrid total precipitation ----
-        # Convert total precipitation to meter
-        # and to rate (unit is mm/s)
-        tp_conversion = tp * 1000 / 3600
-        tp_regridded = regridder(tp_conversion['tp'])
-
-        # Generate regridded radiation, and wind ----
-        lwr_regridded = regridder(lwr['avg_sdlwrf'])  # regridded long wave radiation
-        swr_regridded = regridder(swr['avg_sdswrf'])  # regridded short wave radiation
-        v10m_regridded = regridder(v10m['v10'])  # regridded v 10m wind
-        u10m_regridded = regridder(u10m['u10'])  # regridded u 10m wind
-
-        # List WRF-Hydro forcing data
+        # List WRF-Hydro forcing dataset
         datasets = [
-            t2m_adj.rename({"t2m": "T2D"}),
-            sp_adj.rename({"sp": "PSFC"}),
-            q2_positive.rename({"sp": "Q2D"}),
-            u10m_regridded.rename("U10"),
-            v10m_regridded.rename("V10"),
-            lwr_regridded.rename("LWDOWN"),
-            swr_regridded.rename("SWDOWN"),
-            tp_regridded.rename("RAINRATE")
+            forcing_dataset['t2m_adj'].rename({"t2m": "T2D"}),
+            forcing_dataset['sp_adj'].rename({"sp": "PSFC"}),
+            forcing_dataset['q2_positive'].rename({"sp": "Q2D"}),
+            forcing_dataset['u10m_regridded'].rename("U10"),
+            forcing_dataset['v10m_regridded'].rename("V10"),
+            forcing_dataset['lwr_regridded'].rename("LWDOWN"),
+            forcing_dataset['swr_regridded'].rename("SWDOWN"),
+            forcing_dataset['tp_regridded'].rename("RAINRATE")
         ]
 
-        # Merge WRF-Hydro forcing data
+        # Merge WRF-Hydro forcing dataset
         combined_dataset = xr.merge(datasets)
 
-        # Return WRF-Hydro forcing data
+        # Return WRF-Hydro forcing dataset
         return combined_dataset
 
     def generate_ldasin(
@@ -482,14 +830,16 @@ class GenerateERA5Forcing:
         combined_dataset = self.generate_merged_forcing_dataset(each_hour)
 
         # Create forcing folder to store all forcing data
-        forcing_path = fr"{self.domain_path}\FORCING"
+        forcing_path = fr"{self.era5_information.domain_path}\FORCING"
         Path(forcing_path).mkdir(parents=True, exist_ok=True)
 
         # Generate information of a specific date
-        year, month, day, hour, _ = self.generate_date_info(each_hour)
+        year, month, day, hour, _ = self.era5_information.generate_date_info(each_hour)
 
         # Write out the merged dataset
-        combined_dataset.to_netcdf(fr"{self.domain_path}\\FORCING\\{year}{month}{day}{hour}.LDASIN_DOMAIN1")
+        combined_dataset.to_netcdf(
+            fr"{self.era5_information.domain_path}\\FORCING\\{year}{month}{day}{hour}.LDASIN_DOMAIN1"
+        )
 
     ####################################
 
@@ -505,9 +855,9 @@ class GenerateERA5Forcing:
             Already defined above.
         """
         # Loop each hour from total number of hours
-        for each_hour in range(int(self.number_of_hours)):
+        for each_hour in range(int(self.era5_information.number_of_hours)):
             # Download ERA5 data
-            self.download_era5_each_variable(each_hour)
+            self.era5_information.download_era5_each_variable(each_hour)
 
             # Convert ERA5 dataset into WRF-Hydro forcing variable
             # and write out as YYYYMMDDHH.LDASIN_DOMAIN1
