@@ -24,7 +24,7 @@ volumes:
 services:
   db_postgres:
     # Database to store all vector data, states, and links to raster data.
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:16-3.5
     container_name: db_postgres_digital_twin
     restart: always
     ports:
