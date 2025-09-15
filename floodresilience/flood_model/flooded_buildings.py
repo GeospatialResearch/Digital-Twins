@@ -77,7 +77,7 @@ def find_flooded_buildings(engine: Engine,
     """
     # Open flood output and read the maximum depth raster
     with xarray.open_dataset(flood_model_output_path, decode_coords="all") as ds:
-        max_depth_raster = ds["hmax_P0"]
+        max_depth_raster = ds["hmax"]
     # Find areas flooded in a polygon format, if they are deeper than flood_depth_threshold
     thresholded_flood_polygons = polygonize_flooded_area(max_depth_raster, flood_depth_threshold)
     # Get building outlines from database
@@ -137,7 +137,7 @@ def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFram
     crs = area_of_interest.crs.to_epsg()
     # Construct the query to find buildings within the area of interest
     command_text = """
-    SELECT building_outline_id, geometry FROM nz_building_outlines
+    SELECT building_id, geometry FROM nz_building_outlines
     WHERE ST_INTERSECTS(nz_building_outlines.geometry, ST_GeomFromText(:aoi_wkt, :crs));
     """
     query = text(command_text).bindparams(
@@ -145,7 +145,7 @@ def retrieve_building_outlines(engine: Engine, area_of_interest: gpd.GeoDataFram
         crs=str(crs)
     )
     # Execute the query and retrieve the result as a GeoDataFrame
-    gdf = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_outline_id", geom_col="geometry")
+    gdf = gpd.GeoDataFrame.from_postgis(query, engine, index_col="building_id", geom_col="geometry")
     return gdf
 
 

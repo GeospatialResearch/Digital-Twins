@@ -3,9 +3,9 @@
                        xsi:schemaLocation="http://www.opengis.net/sld
 http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
     <NamedLayer>
-        <Name>Waikanae_LisFlood_dx10m_ARI100y_48h_0c_hmax</Name>
+        <Name>Gore_100y_60h_0c_Inundation_Floodmap_hmax</Name>
         <UserStyle>
-            <Title>Waikanae_LisFlood_dx10m_ARI100y_48h_0c_hmax</Title>
+            <Title>Gore_100y_60h_0c_Inundation_Floodmap_hmax</Title>
             <FeatureTypeStyle>
                 <Rule>
                     <RasterSymbolizer>

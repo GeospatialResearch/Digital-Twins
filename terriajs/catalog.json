@@ -6,7 +6,32 @@
     "west": 174.8
   },
   "catalog": [
-
+    {
+      "type": "wfs",
+      "name": "Building Flood Status",
+      "url": "http://localhost:8088/geoserver/db-buildings/ows",
+      "typeNames": "db-buildings:building_flood_status",
+      "parameters": {
+        "viewparams": "scenario:676767"
+      },
+      "maxFeatures": 300000,
+      "heightProperty": "extruded_height",
+      "legends": [
+        {
+          "title": "Building Flood Status",
+          "items": [
+            {
+              "title": "Non-Flooded",
+              "color": "darkgreen"
+            },
+            {
+              "title": "Flooded",
+              "color": "darkred"
+            }
+          ]
+        }
+      ]
+    }
   ],
   "viewerMode": "3dSmooth",
   "baseMaps": {

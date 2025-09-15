@@ -59,15 +59,20 @@ def main(
     # Get catchment area.
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
     # Store records from instruction json in the 'geospatial_layers' table in the database.
-    instructions_records_to_db.store_instructions_records_to_db(engine, instruction_json_path)
-    # Store geospatial layers data in the database
-    data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
-    # Store user log information in the database
-    data_to_db.user_log_info_to_db(engine, catchment_area)
+    # instructions_records_to_db.store_instructions_records_to_db(engine, instruction_json_path)
+    # # Store geospatial layers data in the database
+    # data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
+    # # Store user log information in the database
+    # data_to_db.user_log_info_to_db(engine, catchment_area)
+    from floodresilience.flood_model.flooded_buildings import find_flooded_buildings, store_flooded_buildings_in_database
+    # flooded_buildings = find_flooded_buildings(engine, catchment_area, pathlib.Path("/mnt/r/FloodRiskResearch/NIWA/GRI/Gore/100y_60h_0c/BG_Flood/clipped/Gore_100y_60h_0c_Inundation_Floodmap_hmax.nc"), 0.1)
+    from floodresilience.flood_model.serve_model import create_building_database_views_if_not_exists
+    create_building_database_views_if_not_exists()
+    print(flooded_buildings)
 
 
 if __name__ == "__main__":
-    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    sample_polygon = gpd.GeoDataFrame.from_file("/mnt/r/DigitalTwins/smartideas/qgis/gore/gore_mataura_aoi.geojson")
     sample_instruction_path = pathlib.Path("floodresilience/static_boundary_instructions.json")
     main(
         selected_polygon_gdf=sample_polygon,

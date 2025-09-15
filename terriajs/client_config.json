@@ -6,7 +6,7 @@
   "parameters": {
     "appName": "Flood Uncertainty",
     "supportEmail": "gri-enquiries+fredt@canterbury.ac.nz",
-    "cesiumIonAccessToken": "$CESIUM_ACCESS_TOKEN",
+    "cesiumIonAccessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YzE5YjZkMy1kM2FkLTRkOWYtODRhMi1iMjc0ZTlkMWE4YzciLCJpZCI6Nzk4NzUsImlhdCI6MTczMTM2NzI3OH0.KJEyY72gEIrUrPo_lPLEZO63XURTOIpBmPs95kaGa4A",
     "brandBarElements": [
       "<div style=\"display: flex; align-items: center;\">\n  <h1 style=\"color: white;\">Flood Resilience Digital Twin (FReDT)</h1>\n</div>"
     ],

@@ -92,9 +92,8 @@ def create_building_layers(workspace_name: str, data_store_name: str) -> None:
                    ELSE 'darkgreen'
                END             AS fill
         FROM nz_building_outlines
-                 LEFT OUTER JOIN building_flood_status USING (building_outline_id)
-        WHERE building_outline_lifecycle ILIKE 'current'
-        AND flood_model_id=%scenario%
+                 LEFT OUTER JOIN building_flood_status USING (building_id)
+        WHERE flood_model_id=%scenario%
     """
     xml_escaped_sql = saxutils.escape(flooded_buildings_sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
 
