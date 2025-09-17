@@ -3,9 +3,9 @@
                        xsi:schemaLocation="http://www.opengis.net/sld
 http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
     <NamedLayer>
-        <Name>viridis_raster</Name>
+        <Name>Waikanae_LisFlood_dx10m_ARI50y_48h_0c_hmax</Name>
         <UserStyle>
-            <Title>Viridis Raster</Title>
+            <Title>Waikanae_LisFlood_dx10m_ARI50y_48h_0c_hmax</Title>
             <FeatureTypeStyle>
                 <Rule>
                     <RasterSymbolizer>

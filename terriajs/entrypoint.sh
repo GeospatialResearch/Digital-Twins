@@ -11,8 +11,15 @@ fi
 
 export BACKEND_URL
 
+GEOSERVER_URL=$GEOSERVER_HOST
+if [[ ! -z "$GEOSERVER_PORT" ]]; then
+  GEOSERVER_URL=$GEOSERVER_URL:$GEOSERVER_PORT
+fi
+
+export GEOSERVER_URL
+
 # List of variables to substitute
-ENV_VARS_TO_FILL='$CESIUM_ACCESS_TOKEN,$BACKEND_URL'
+ENV_VARS_TO_FILL='$CESIUM_ACCESS_TOKEN,$LINZ_BASEMAPS_API_KEY,$BACKEND_URL,$GEOSERVER_URL'
 
 # Substitute variables and save whole file to variable, sponge is not available to buffer.
 for FILE_TO_SUB in "wwwroot/config.json" "wwwroot/init/catalog.json"
