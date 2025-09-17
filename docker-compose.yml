@@ -38,30 +38,7 @@ services:
     healthcheck:
       test: pg_isready -h 127.0.0.1 -U $POSTGRES_USER -d $POSTGRES_DB
 
-  backend:
-    # Performs analysis, computation, handles web requests, facilitates database interactions
-    build:
-      context: .
-      dockerfile: src/Dockerfile
-    container_name: backend_digital_twin
-    entrypoint: ["src/backend_entrypoint.sh"]
-    env_file:
-      - .env
-      - api_keys.env
-      - .env.docker-override
-    volumes:
-      - stored_data_porirua:/stored_data
-    healthcheck:
-      test: curl --fail -s http://localhost:5000/ || exit 1
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db_postgres
-      - message_broker
-      - geoserver
+
 
   celery_worker:
     # Performs tasks such as complex computation asynchronously on behalf of backend
