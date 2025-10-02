@@ -81,7 +81,7 @@ def health_check() -> Response:
 @app.route('/terria-catalog.json')
 def terria_catalog() -> Response:
     """
-    Returns a terria catalog that includes entries for static files and input layers from geoserver.
+    Return a terria catalog that includes entries for static files and input layers from geoserver.
     Supported methods: GET
 
     Returns
@@ -89,8 +89,9 @@ def terria_catalog() -> Response:
     Response
         The HTTP Response. Expect OK if health check is successful
     """
-    terria_catalog = get_terria_catalog()
-    return make_response(jsonify(terria_catalog), OK)
+    catalog = get_terria_catalog()
+    return make_response(jsonify(catalog), OK)
+
 
 # Development server
 if __name__ == '__main__':

@@ -22,7 +22,6 @@ import pathlib
 import shutil
 
 import requests
-from owslib import coverage
 
 from src.config import EnvVariable
 from src.geoserver.geoserver_common import get_geoserver_url, style_exists
@@ -188,7 +187,7 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, la
 
 def delete_style(style_name: str) -> None:
     """
-    Deletes a style from the default geoserver workspace
+    Delete a style from the default geoserver workspace
 
     Parameters
     ----------
@@ -202,7 +201,7 @@ def delete_style(style_name: str) -> None:
     delete_style_response.raise_for_status()
 
 
-def add_style(style_file: pathlib.Path, replace=False) -> None:
+def add_style(style_file: pathlib.Path, replace: bool = False) -> None:
     """
     Create a GeoServer style in the default workspace for rasters using a SLD style definition file.
 
@@ -222,7 +221,7 @@ def add_style(style_file: pathlib.Path, replace=False) -> None:
             log.debug(f"Deleting '{style_name}.sld'.")
             delete_style(style_name)
             style_currently_exists = False
-    if not style_currently_exists: # Check again instead of using else because it may have been deleted
+    if not style_currently_exists:  # Check again instead of using else because it may have been deleted
         # Create the style base
         create_style_data = f"""
            <style>
@@ -282,7 +281,22 @@ def create_viridis_style_if_not_exists() -> None:
     log.info(f"Style '{style_name}.sld' created.")
 
 
-def delete_store(store_name: str, workspace_name: str):
+def delete_store(store_name: str, workspace_name: str) -> None:
+    """
+    Delete a Geoserver CoverageStore from a workspace.
+
+    Parameters
+    ----------
+    store_name : str
+        The name of the Geoserver CoverageStore to delete.
+    workspace_name : str
+        The name of the workspace to delete the store from.
+
+    Raises
+    ------
+    HTTPError
+        If geoserver responds with an error status code.
+    """
     delete_store_request = requests.delete(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/coveragestores/{store_name}',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD),
