@@ -17,7 +17,6 @@
 
 """Functions for handling creating TerriaJS catalog items by reading the geoserver workspaces."""
 from enum import StrEnum
-from urllib.parse import urlencode
 
 from .database_layers import get_workspace_vector_layers
 from .raster_layers import get_workspace_raster_layers
@@ -35,6 +34,7 @@ class Workspaces(StrEnum):
     INPUT_LAYERS_WORKSPACE : str
         Workspace containing layers loaded from external sources used as input for later modelling or visualisation.
     """
+
     STATIC_FILES_WORKSPACE = "static_files"
     INPUT_LAYERS_WORKSPACE = "input_layers"
     EXTRUDED_LAYERS_WORKSPACE = "extruded_layers"
@@ -46,6 +46,25 @@ def create_vector_layer_catalog_item(
     layer_name: str,
     max_features: int = 60000
 ) -> dict:
+    """
+    Create a JSON TerriaJS catalog item for a single GeoServer vector WFS layer.
+
+    Parameters
+    ----------
+    workspace_name : str
+
+    workspace_url : str
+        The URL to the GeoServer workspace.
+    layer_name : str
+        The name of the layer in Geoserver.
+    max_features : int = 60000
+        The maximum number of features to fetch from Geoserver.
+
+    Returns
+    -------
+    dict
+        JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
+    """
     catalog_item = {
         "type": "wfs",
         "name": layer_name,
@@ -60,6 +79,21 @@ def create_vector_layer_catalog_item(
 
 
 def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> dict:
+    """
+    Create a JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
+
+    Parameters
+    ----------
+    workspace_url : str
+        The URL to the GeoServer workspace.
+    layer_name : str
+        The name of the layer in Geoserver.
+
+    Returns
+    -------
+    dict
+        JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
+    """
     catalog_item = {
         "type": "wms",
         "name": layer_name,

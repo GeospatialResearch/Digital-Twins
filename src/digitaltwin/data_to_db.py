@@ -459,7 +459,7 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
 
 def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str:
     """
-    Adds a vector file to the database.
+    Add a vector file to the database.
 
     Parameters
     ----------
@@ -486,7 +486,7 @@ def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str
 
 def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> None:
     """
-    Adds all vector files (.geojson, .shp, .geodb) in directory to db and serves them.
+    Add all vector files (.geojson, .shp, .geodb) in directory to db and serve them.
 
     Parameters
     ----------

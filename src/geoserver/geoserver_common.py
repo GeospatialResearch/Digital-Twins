@@ -20,7 +20,6 @@
 from http import HTTPStatus
 import logging
 import os
-from urllib import parse
 
 import requests
 
