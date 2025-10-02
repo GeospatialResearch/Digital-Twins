@@ -18,9 +18,9 @@
 """Functions for handling creating TerriaJS catalog items by reading the geoserver workspaces."""
 from enum import StrEnum
 
+from src.config import EnvVariable
 from .database_layers import get_workspace_vector_layers
 from .raster_layers import get_workspace_raster_layers
-from src.config import EnvVariable
 
 
 class Workspaces(StrEnum):

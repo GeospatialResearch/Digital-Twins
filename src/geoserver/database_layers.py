@@ -119,7 +119,7 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
                 <minx>{minx}</minx>
                 <maxx>{maxx}</maxx>
                 <miny>{miny}</miny>
-                <maxy>{maxx}</maxy>
+                <maxy>{maxy}</maxy>
                 <crs class="projected">EPSG:{crs}</crs>
             </nativeBoundingBox>
             <latLonBoundingBox>

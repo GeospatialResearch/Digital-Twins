@@ -468,6 +468,11 @@ def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str
     vector_file_path : pathlib.Path
         The Path to the vector file.
 
+    Raises
+    ------
+    KeyError
+        Raised if the vector file does not have a correctly defined EPSG# CRS.
+
     Returns
     -------
     str
