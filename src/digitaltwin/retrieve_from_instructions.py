@@ -29,7 +29,7 @@ from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
-        instruction_json_path: pathlib.Path,
+        instruction_json_path: pathlib.Path | str,
         log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
     Connect to various data providers to fetch geospatial data for the selected polygon, i.e., the catchment area.
@@ -40,7 +40,7 @@ def main(
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
-    instruction_json_path : pathlib.Path
+    instruction_json_path : pathlib.Path | str
         The path to the instruction json file that specifies the geospatial data to be retrieved.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
@@ -54,6 +54,9 @@ def main(
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
+    # Cast str paths to pathlib.Path
+    if isinstance(instruction_json_path, str):
+        instruction_json_path = pathlib.Path(instruction_json_path)
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area.

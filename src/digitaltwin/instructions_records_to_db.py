@@ -31,6 +31,7 @@ import validators
 from sqlalchemy.engine import Engine
 
 from src.digitaltwin.tables import GeospatialLayers, create_table
+
 log = logging.getLogger(__name__)
 
 
@@ -95,19 +96,24 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
             f"Neither 'coverage_area' nor 'unique_column_name' provided for {section}. One must be provided.")
 
 
-def read_and_check_instructions_file(instruction_json_path: pathlib.Path) -> pd.DataFrame:
+def read_and_check_instructions_file(instruction_json_path: pathlib.Path | None) -> pd.DataFrame:
     """
     Read and check an instructions json file, validating URLs and instruction fields.
 
     Parameters
     -------
-    instruction_json_path: pathlib.Path
+    instruction_json_path: pathlib.Path | None
         Path to the instruction json file.
     Returns
     -------
     pd.DataFrame
         The processed instructions DataFrame.
     """
+    if instruction_json_path is None or not instruction_json_path.is_file():
+        # If the file does not exist, return a dataframe of the correct shape with no rows.
+        columns = ["section", "data_provider", "layer_id", "table_name", "unique_column_name", "url"]
+        return pd.DataFrame({col_name: pd.Series(dtype='object') for col_name in columns})
+
     # Read the instructions json file
     with open(instruction_json_path, "r", encoding="utf-8") as file:
         # Load content from the file
