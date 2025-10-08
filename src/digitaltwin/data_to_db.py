@@ -21,6 +21,7 @@ It also saves user log information in the database.
 """
 
 import logging
+import pathlib
 from typing import Tuple, Set
 
 import geopandas as gpd
@@ -30,6 +31,7 @@ from sqlalchemy.sql import text
 
 from src.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
 from src.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
+import src.geoserver as gs
 
 log = logging.getLogger(__name__)
 
@@ -182,6 +184,8 @@ def nz_geospatial_layers_data_to_db(
     # Get New Zealand geospatial layers
     nz_geo_layers = get_nz_geospatial_layers(engine)
 
+    workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
+    data_store = gs.create_main_db_store(workspace_name)
     # Iterate over each NZ geospatial layer
     for _, layer_row in nz_geo_layers.iterrows():
         # Extract geospatial layer information
@@ -197,6 +201,7 @@ def nz_geospatial_layers_data_to_db(
             # Insert vector data into the database
             log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
             vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
+            gs.create_datastore_layer(workspace_name, data_store, table_name)
 
 
 def get_non_intersection_area_from_db(
@@ -295,6 +300,10 @@ def process_new_non_nz_geospatial_layers(
         # Insert vector data into the database
         log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
         vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
+        # Serve data with geoserver
+        workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
+        data_store = gs.create_main_db_store(workspace_name)
+        gs.create_datastore_layer(workspace_name, data_store, table_name)
 
 
 def process_existing_non_nz_geospatial_layers(
@@ -421,6 +430,7 @@ def store_geospatial_layers_data_to_db(
     nz_geospatial_layers_data_to_db(engine, crs, verbose)
     # Store non-NZ geospatial layers data to the database
     non_nz_geospatial_layers_data_to_db(engine, catchment_area, crs, verbose)
+    serve_static_files(engine, pathlib.Path("./src/static/geo"))
 
 
 def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> None:
@@ -445,3 +455,73 @@ def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> Non
     query = UserLogInfo(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query
     execute_query(engine, query)
+
+
+def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str:
+    """
+    Add a vector file to the database.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    vector_file_path : pathlib.Path
+        The Path to the vector file.
+
+    Raises
+    ------
+    KeyError
+        Raised if the vector file does not have a correctly defined EPSG# CRS.
+
+    Returns
+    -------
+    str
+        The name of the database table created.
+    """
+    log.info(f"Adding vector file '{vector_file_path.name}' to the database.")
+    # Read the prefix of the file name to make it the table name.
+    file_name = vector_file_path.stem
+    # Upload the file to the database
+    gdf = gpd.read_file(vector_file_path)
+    if gdf.crs.to_epsg() is None:
+        raise KeyError(f"CRS is not defined in EPSG# form in vector file {vector_file_path}.")
+    gdf.to_postgis(file_name, engine, if_exists="replace")
+    return file_name
+
+
+def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> None:
+    """
+    Add all vector files (.geojson, .shp, .geodb) in directory to db and serve them.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    vector_file_directory : pathlib.Path
+        The Path to the directory containing the vector files.
+    """
+    statics = {gs.Workspaces.STATIC_FILES_WORKSPACE, gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE}
+    non_statics = set(gs.Workspaces) - statics
+    for workspace_name in statics:
+        data_store = gs.create_main_db_store(workspace_name)
+        if workspace_name == gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE:
+            directory = vector_file_directory / "3d"
+        else:
+            directory = vector_file_directory
+        if not directory.exists():
+            log.warning(f"Directory '{directory}' does not exist. Cannot serve static files from '{directory}'.")
+            continue
+        for file in directory.iterdir():
+            if not file.is_file():
+                continue
+            match file.suffix:
+                case ".geojson" | ".shp" | ".geodb":
+                    table_name = add_vector_file_to_db(engine, file)
+                    gs.create_datastore_layer(workspace_name, data_store, table_name)
+                case ".tif" | ".tiff" | ".geotiff":
+                    gs.add_gtiff_to_geoserver(file, workspace_name, file.stem)
+                case ".sld":
+                    gs.add_style(file, replace=True)
+    for workspace_name in non_statics:
+        # These stores also should be initialised.
+        gs.create_main_db_store(workspace_name)

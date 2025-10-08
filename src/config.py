@@ -138,10 +138,14 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     DATA_DIR = pathlib.Path(_get_env_variable("DATA_DIR"))
     DATA_DIR_MODEL_OUTPUT = pathlib.Path(_get_env_variable("DATA_DIR_MODEL_OUTPUT"))
     DATA_DIR_GEOSERVER = pathlib.Path(_get_env_variable("DATA_DIR_GEOSERVER"))
+    DATA_DIR_REC = pathlib.Path(_get_env_variable("DATA_DIR_REC"))
     FLOOD_MODEL_DIR = pathlib.Path(_get_env_variable("FLOOD_MODEL_DIR"))
 
     POSTGRES_HOST = _get_env_variable("POSTGRES_HOST", default="localhost")
     POSTGRES_PORT = _get_env_variable("POSTGRES_PORT", default="5431")
+    POSTGRES_INTERNAL_HOST = "db_postgres" \
+        if _get_env_variable("POSTGRES_HOST", default="localhost") == "localhost" \
+        else _get_env_variable("POSTGRES_HOST")
     POSTGRES_DB = _get_env_variable("POSTGRES_DB", default="db")
     POSTGRES_USER = _get_env_variable("POSTGRES_USER", default="postgres")
     POSTGRES_PASSWORD = _get_env_variable("POSTGRES_PASSWORD")

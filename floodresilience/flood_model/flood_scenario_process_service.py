@@ -20,6 +20,7 @@
 import json
 from urllib.parse import urlencode
 
+import geopandas as gpd
 from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest
 from pywps.response.execute import ExecuteResponse
 from shapely import box
@@ -37,7 +38,6 @@ class FloodScenarioProcessService(Process):
         """Define inputs and outputs of the WPS process, and assign process handler."""
         # Create bounding box WPS inputs
         inputs = [
-            BoundingBoxInput("bboxIn", "Area of Interest", crss=["epsg:4326"]),
             LiteralInput("projYear", "Projected Year", data_type="integer",
                          allowed_values=list(range(2026, 2151))),
             LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
@@ -79,13 +79,15 @@ class FloodScenarioProcessService(Process):
         response : ExecuteResponse
             The WPS response, containing output data.
         """
-        # Get coordinates from bounding box input
-        bounding_box_input = request.inputs['bboxIn'][0]
-        ymin, xmin = bounding_box_input.ll  # lower left
-        ymax, xmax = bounding_box_input.ur  # upper right
+        aoi = gpd.read_file("selected_polygon.geojson")
+        # Convert to WGS84 to deliberately introduce rounding errors. Ensures our development acts like production.
+        # These rounding errors occur in production when serialising WGS84 polygons
+        aoi = aoi.to_crs(4326)
 
-        # Form bounding box into standard shapely.box
-        bounding_box = box(xmin, ymin, xmax, ymax)
+        bbox_4326 = aoi.bounds.rename(
+            columns={"minx": "xmin", "maxx": "xmax", "miny": "ymin", "maxy": "ymax"})
+        # Create sample polygon from bounding box
+        bounding_box = box(**bbox_4326.iloc[0])
 
         scenario_options = {
             "proj_year": request.inputs["projYear"][0].data,
@@ -95,8 +97,12 @@ class FloodScenarioProcessService(Process):
             "confidence_level": "medium"
         }
 
-        modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
-        scenario_id = modelling_task.get()
+        check_cache_task = tasks.check_cache.delay(bounding_box.wkt, scenario_options)
+        scenario_id = check_cache_task.get()
+
+        if scenario_id is None:
+            modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
+            scenario_id = modelling_task.get()
 
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
         response.outputs['floodDepth'].data = json.dumps(flood_depth_catalog(scenario_id))

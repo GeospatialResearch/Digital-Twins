@@ -20,12 +20,13 @@
 import logging
 from http.client import OK
 
-from flask import Flask, Response
+from flask import Flask, jsonify, make_response, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 
 from floodresilience.blueprint import flood_resilience_blueprint
 from src.check_celery_alive import check_celery_alive
+from src.geoserver import get_terria_catalog
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -75,6 +76,21 @@ def health_check() -> Response:
         The HTTP Response. Expect OK if health check is successful
     """
     return Response("Healthy", OK)
+
+
+@app.route('/terria-catalog.json')
+def terria_catalog() -> Response:
+    """
+    Return a terria catalog that includes entries for static files and input layers from geoserver.
+    Supported methods: GET
+
+    Returns
+    -------
+    Response
+        The HTTP Response. Expect OK if health check is successful
+    """
+    catalog = get_terria_catalog()
+    return make_response(jsonify(catalog), OK)
 
 
 # Development server

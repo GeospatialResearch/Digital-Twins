@@ -29,7 +29,7 @@ from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 def main(
         selected_polygon_gdf: gpd.GeoDataFrame,
-        instruction_json_path: pathlib.Path,
+        instruction_json_path: pathlib.Path | str,
         log_level: LogLevel = LogLevel.DEBUG) -> None:
     """
     Connect to various data providers to fetch geospatial data for the selected polygon, i.e., the catchment area.
@@ -40,7 +40,7 @@ def main(
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
-    instruction_json_path : pathlib.Path
+    instruction_json_path : pathlib.Path | str
         The path to the instruction json file that specifies the geospatial data to be retrieved.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
@@ -54,16 +54,27 @@ def main(
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
+    # Cast str paths to pathlib.Path
+    if isinstance(instruction_json_path, str):
+        instruction_json_path = pathlib.Path(instruction_json_path)
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area.
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
     # Store records from instruction json in the 'geospatial_layers' table in the database.
-    instructions_records_to_db.store_instructions_records_to_db(engine, instruction_json_path)
-    # Store geospatial layers data in the database
-    data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
-    # Store user log information in the database
-    data_to_db.user_log_info_to_db(engine, catchment_area)
+    # instructions_records_to_db.store_instructions_records_to_db(engine, instruction_json_path)
+    # # Store geospatial layers data in the database
+    # data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
+    # # Store user log information in the database
+    # data_to_db.user_log_info_to_db(engine, catchment_area)
+    from floodresilience.flood_model.flooded_buildings import find_flooded_buildings, store_flooded_buildings_in_database
+    flooded_buildings = find_flooded_buildings(engine, catchment_area, pathlib.Path("src/static/geo/Waimakariri_100y_42h_3c_Inundation.tif"), 0.1)
+    from floodresilience.flood_model.serve_model import create_building_database_views_if_not_exists
+    store_flooded_buildings_in_database(engine, flooded_buildings, -2)
+    flooded_buildings = find_flooded_buildings(engine, catchment_area, pathlib.Path("src/static/geo/Waimakariri_100y_42h_3c_SLR15_Inundation.tif"), 0.1)
+    from floodresilience.flood_model.serve_model import create_building_database_views_if_not_exists
+    store_flooded_buildings_in_database(engine, flooded_buildings, -3)
+    print(flooded_buildings)
 
 
 if __name__ == "__main__":
