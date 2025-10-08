@@ -62,11 +62,19 @@ def main(
     # Get catchment area.
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
     # Store records from instruction json in the 'geospatial_layers' table in the database.
-    instructions_records_to_db.store_instructions_records_to_db(engine, instruction_json_path)
-    # Store geospatial layers data in the database
-    data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
-    # Store user log information in the database
-    data_to_db.user_log_info_to_db(engine, catchment_area)
+    # instructions_records_to_db.store_instructions_records_to_db(engine, instruction_json_path)
+    # # Store geospatial layers data in the database
+    # data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
+    # # Store user log information in the database
+    # data_to_db.user_log_info_to_db(engine, catchment_area)
+    from floodresilience.flood_model.flooded_buildings import find_flooded_buildings, store_flooded_buildings_in_database
+    flooded_buildings = find_flooded_buildings(engine, catchment_area, pathlib.Path("src/static/geo/Waimakariri_100y_42h_3c_Inundation.tif"), 0.1)
+    from floodresilience.flood_model.serve_model import create_building_database_views_if_not_exists
+    store_flooded_buildings_in_database(engine, flooded_buildings, -2)
+    flooded_buildings = find_flooded_buildings(engine, catchment_area, pathlib.Path("src/static/geo/Waimakariri_100y_42h_3c_SLR15_Inundation.tif"), 0.1)
+    from floodresilience.flood_model.serve_model import create_building_database_views_if_not_exists
+    store_flooded_buildings_in_database(engine, flooded_buildings, -3)
+    print(flooded_buildings)
 
 
 if __name__ == "__main__":
