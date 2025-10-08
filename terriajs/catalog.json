@@ -12,6 +12,103 @@
       "description": "Model a climate scenario that will impact the flood scenario",
       "url": "$BACKEND_URL/wps",
       "identifier": "fredt"
+    },
+    {
+      "type": "group",
+      "name": "Static Files",
+      "isOpen": true,
+      "members": [
+        {
+          "type": "wfs",
+          "name": "Waimakariri_100y_42h_0c Building Flood Status",
+          "url": "http://localhost:8088/geoserver/db-buildings/ows",
+          "typeNames": "db-buildings:building_flood_status",
+          "parameters": {
+            "viewparams": "scenario:-1"
+          },
+          "maxFeatures": 300000,
+          "heightProperty": "extruded_height",
+          "featureInfoTemplate": {
+            "name": "Building Flood Status - {{flood_model_id}} - {{building_outline_id}}",
+            "template": "<!--Template used for TerriaJS to display information about a flooded building--><table class=\"cesium-infoBox-defaultTable\">  <tbody>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Outline Id</b></td>    <td>{{building_outline_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Id</b></td>    <td>{{building_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Name</b></td>    <td>{{name}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Use</b></td>    <td>{{use}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Suburb Locality</b></td>    <td>{{suburb_locality}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Town City</b></td>    <td>{{town_city}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Territorial Authority</b></td>    <td>{{territorial_authority}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Method</b></td>    <td>{{capture_method}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Group</b></td>    <td>{{capture_source_group}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Id</b></td>    <td>{{capture_source_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Name</b></td>    <td>{{capture_source_name}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source From</b></td>    <td>{{capture_source_from}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source To</b></td>    <td>{{capture_source_to}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Outline Lifecycle</b></td>    <td>{{building_outline_lifecycle}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Begin Lifespan</b></td>    <td>{{begin_lifespan}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>End Lifespan</b></td>    <td>{{end_lifespan}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Last Modified</b></td>    <td>{{last_modified}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Is Flooded</b></td>    <td>{{is_flooded}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Flood Scenario ID</b></td>    <td>{{flood_model_id}}</td>  </tr>  </tbody></table>"
+          },
+          "legends": [
+            {
+              "title": "Building Flood Status",
+              "items": [
+                {
+                  "title": "Non-Flooded",
+                  "color": "darkgreen"
+                },
+                {
+                  "title": "Flooded",
+                  "color": "darkred"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "wfs",
+          "name": "Waimakariri_100y_42h_3c Building Flood Status",
+          "url": "http://localhost:8088/geoserver/db-buildings/ows",
+          "typeNames": "db-buildings:building_flood_status",
+          "parameters": {
+            "viewparams": "scenario:-2"
+          },
+          "maxFeatures": 300000,
+          "heightProperty": "extruded_height",
+          "featureInfoTemplate": {
+            "name": "Building Flood Status - {{flood_model_id}} - {{building_outline_id}}",
+            "template": "<!--Template used for TerriaJS to display information about a flooded building--><table class=\"cesium-infoBox-defaultTable\">  <tbody>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Outline Id</b></td>    <td>{{building_outline_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Id</b></td>    <td>{{building_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Name</b></td>    <td>{{name}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Use</b></td>    <td>{{use}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Suburb Locality</b></td>    <td>{{suburb_locality}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Town City</b></td>    <td>{{town_city}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Territorial Authority</b></td>    <td>{{territorial_authority}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Method</b></td>    <td>{{capture_method}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Group</b></td>    <td>{{capture_source_group}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Id</b></td>    <td>{{capture_source_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Name</b></td>    <td>{{capture_source_name}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source From</b></td>    <td>{{capture_source_from}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source To</b></td>    <td>{{capture_source_to}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Outline Lifecycle</b></td>    <td>{{building_outline_lifecycle}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Begin Lifespan</b></td>    <td>{{begin_lifespan}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>End Lifespan</b></td>    <td>{{end_lifespan}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Last Modified</b></td>    <td>{{last_modified}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Is Flooded</b></td>    <td>{{is_flooded}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Flood Scenario ID</b></td>    <td>{{flood_model_id}}</td>  </tr>  </tbody></table>"
+          },
+          "legends": [
+            {
+              "title": "Building Flood Status",
+              "items": [
+                {
+                  "title": "Non-Flooded",
+                  "color": "darkgreen"
+                },
+                {
+                  "title": "Flooded",
+                  "color": "darkred"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "wfs",
+          "name": "Waimakariri_100y_42h_3c_SLR15 Building Flood Status",
+          "url": "http://localhost:8088/geoserver/db-buildings/ows",
+          "typeNames": "db-buildings:building_flood_status",
+          "parameters": {
+            "viewparams": "scenario:-3"
+          },
+          "maxFeatures": 300000,
+          "heightProperty": "extruded_height",
+          "featureInfoTemplate": {
+            "name": "Building Flood Status - {{flood_model_id}} - {{building_outline_id}}",
+            "template": "<!--Template used for TerriaJS to display information about a flooded building--><table class=\"cesium-infoBox-defaultTable\">  <tbody>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Outline Id</b></td>    <td>{{building_outline_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Id</b></td>    <td>{{building_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Name</b></td>    <td>{{name}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Use</b></td>    <td>{{use}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Suburb Locality</b></td>    <td>{{suburb_locality}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Town City</b></td>    <td>{{town_city}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Territorial Authority</b></td>    <td>{{territorial_authority}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Method</b></td>    <td>{{capture_method}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Group</b></td>    <td>{{capture_source_group}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Id</b></td>    <td>{{capture_source_id}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source Name</b></td>    <td>{{capture_source_name}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source From</b></td>    <td>{{capture_source_from}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Capture Source To</b></td>    <td>{{capture_source_to}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Building Outline Lifecycle</b></td>    <td>{{building_outline_lifecycle}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Begin Lifespan</b></td>    <td>{{begin_lifespan}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>End Lifespan</b></td>    <td>{{end_lifespan}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Last Modified</b></td>    <td>{{last_modified}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Is Flooded</b></td>    <td>{{is_flooded}}</td>  </tr>  <tr>    <td style=\"vertical-align: middle;\"><b>Flood Scenario ID</b></td>    <td>{{flood_model_id}}</td>  </tr>  </tbody></table>"
+          },
+          "legends": [
+            {
+              "title": "Building Flood Status",
+              "items": [
+                {
+                  "title": "Non-Flooded",
+                  "color": "darkgreen"
+                },
+                {
+                  "title": "Flooded",
+                  "color": "darkred"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "baseMaps": {
