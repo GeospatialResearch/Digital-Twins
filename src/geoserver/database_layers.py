@@ -102,7 +102,10 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
     # Find SRS/CRS information
     engine = get_database()
     if check_table_exists(engine, layer_name):
-        gdf = gpd.read_postgis(f'SELECT * FROM "{layer_name}"', engine, "geometry")
+        try:
+            gdf = gpd.read_postgis(f'SELECT * FROM "{layer_name}"', engine, "geometry")
+        except ValueError:
+            gdf = gpd.read_file("selected_polygon.geojson")
     else:
         # Default values if nothing else is available
         gdf = gpd.read_file("selected_polygon.geojson")
