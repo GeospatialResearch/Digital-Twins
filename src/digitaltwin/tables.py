@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, DateTime, inspect, Integer, String
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, JSON
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, Query
@@ -95,6 +95,33 @@ class UserLogInfo(Base):
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
+
+class CacheResults(Base):
+    """
+    Class representing the 'cache_results' table. Used to store variables used for a model run and find matching cached outputs.
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each cache entry (primary key).
+    flood_model_id : int
+        Foreign key to the flood model associated with the cache entry.
+    scenario_options : dict
+        Scenario options associated with the cache entry.
+    created_at : datetime
+        Timestamp indicating when the cache entry was created.
+    geometry : Polygon
+        Geometric representation of the catchment area coverage.
+    """  # pylint: disable=too-few-public-methods
+    __tablename__ = "cache_results"
+    unique_id = Column(Integer, primary_key=True, autoincrement=True)
+    flood_model_id = Column(Integer)
+    scenario_options = Column(JSON)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
+    geometry = Column(Geometry("POLYGON", srid=2193))
+
 
 
 def create_table(engine: Engine, table: Base) -> None:
