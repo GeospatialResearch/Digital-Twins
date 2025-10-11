@@ -126,9 +126,9 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
     dataset_name = "Building Flood Status"
     gs_building_workspace = f"{EnvVar.POSTGRES_DB}-buildings"
     gs_building_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_building_workspace}/ows"
-    # Open and read HTML/mustache template file for infobox
-    with open("./floodresilience/flood_model/templates/flooded_building_infobox.mustache", encoding="utf-8") as file:
-        flooded_building_infobox_template = file.read()
+
+    flooded_color = "darkred"
+    non_flooded_color = "darkgreen"
     return {
         "type": "wfs",
         "name": dataset_name,
@@ -138,24 +138,43 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
             "viewparams": f"scenario:{scenario_id}",
         },
         "maxFeatures": 300000,
-        "heightProperty": "extruded_height",
-        "featureInfoTemplate": {
-            "name": "Building Flood Status - {{flood_model_id}} - {{building_outline_id}}",
-            "template": flooded_building_infobox_template
-        },
-        "legends": [{
-            "title": "Building Flood Status",
-            "items": [
-                {
-                    "title": "Non-Flooded",
-                    "color": "darkgreen"
+        "styles": [{
+            "id": "is_flooded",
+            "title": dataset_name,
+            "color": {
+                "mapType": "enum",
+                "colorColumn": "is_flooded_int",
+                "legend": {
+                    "title": dataset_name,
+                    "items": [
+                        {
+                            "title": "Non-Flooded",
+                            "color": non_flooded_color
+                        },
+                        {
+                            "title": "Flooded",
+                            "color": flooded_color
+                        }
+                    ]
                 },
-                {
-                    "title": "Flooded",
-                    "color": "darkred"
+                "enumColors": [
+                    {
+                        "value": "0",
+                        "color": non_flooded_color
+                    },
+                    {
+                        "value": "1",
+                        "color": flooded_color
+                    }
+                ]
+            },
+            "outline": {
+                "null": {
+                    "width": 0
                 }
-            ]
-        }]
+            }
+        }],
+        "activeStyle": "is_flooded"
     }
 
 
