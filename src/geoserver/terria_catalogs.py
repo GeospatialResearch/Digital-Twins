@@ -17,10 +17,15 @@
 
 """Functions for handling creating TerriaJS catalog items by reading the geoserver workspaces."""
 from enum import StrEnum
+from typing import Literal, TypeAlias
 
 from src.config import EnvVariable
 from .database_layers import get_workspace_vector_layers
 from .raster_layers import get_workspace_raster_layers
+
+CatalogItem: TypeAlias = dict[str, str | int]
+CatalogGroup: TypeAlias = dict[str, str | bool | list[CatalogItem]]
+Catalog: TypeAlias = dict[Literal["catalog"], list[CatalogGroup]]
 
 
 class Workspaces(StrEnum):
@@ -45,7 +50,7 @@ def create_vector_layer_catalog_item(
     workspace_url: str,
     layer_name: str,
     max_features: int = 60000
-) -> dict:
+) -> CatalogItem:
     """
     Create a JSON TerriaJS catalog item for a single GeoServer vector WFS layer.
 
@@ -62,7 +67,7 @@ def create_vector_layer_catalog_item(
 
     Returns
     -------
-    dict
+    CatalogItem
         JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
     """
     catalog_item = {
@@ -78,7 +83,7 @@ def create_vector_layer_catalog_item(
     return catalog_item
 
 
-def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> dict:
+def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> CatalogItem:
     """
     Create a JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
 
@@ -91,7 +96,7 @@ def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> dic
 
     Returns
     -------
-    dict
+    CatalogItem
         JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
     """
     catalog_item = {
@@ -104,7 +109,7 @@ def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> dic
     return catalog_item
 
 
-def get_layers_as_terria_group(workspace_name: str) -> dict:
+def get_layers_as_terria_group(workspace_name: str) -> CatalogGroup:
     """
     Query geoserver for available layers within a workspace, and return a terria catalog to serve the data.
     The style definition may be empty.
@@ -116,7 +121,7 @@ def get_layers_as_terria_group(workspace_name: str) -> dict:
 
     Returns
     -------
-    dict
+    CatalogGroup
         Represents the Terria JSON catalog group items for each layer within the workspace.
 
     Raises
@@ -140,13 +145,13 @@ def get_layers_as_terria_group(workspace_name: str) -> dict:
     }
 
 
-def get_terria_catalog() -> dict:
+def get_terria_catalog() -> Catalog:
     """
     Query geoserver for available layers from key workspaces, and return a terria catalog to serve the data.
 
     Returns
     -------
-    dict
+    Catalog
         Represents the Terria JSON catalog items for each layer within the workspaces.
 
     Raises
