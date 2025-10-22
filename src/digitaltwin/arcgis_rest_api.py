@@ -228,7 +228,7 @@ async def fetch_geo_data_for_aoi(
         # Convert all column names to lowercase
         geo_data.columns = geo_data.columns.str.lower()
         # Get the unique EPSG code from the query parameters
-        epsg_code = set(param['outSR'] for param in query_param_list).pop()
+        epsg_code = {param['outSR'] for param in query_param_list}.pop()
         # Apply the unique EPSG code as the CRS for geo_data
         geo_data.set_crs(epsg=epsg_code, inplace=True)
     return geo_data

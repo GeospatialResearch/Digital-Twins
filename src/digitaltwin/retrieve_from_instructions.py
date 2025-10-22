@@ -28,9 +28,10 @@ from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
 
 
 def main(
-        selected_polygon_gdf: gpd.GeoDataFrame,
-        instruction_json_path: pathlib.Path,
-        log_level: LogLevel = LogLevel.DEBUG) -> None:
+    selected_polygon_gdf: gpd.GeoDataFrame,
+    instruction_json_path: pathlib.Path | str | None,
+    log_level: LogLevel = LogLevel.DEBUG
+) -> None:
     """
     Connect to various data providers to fetch geospatial data for the selected polygon, i.e., the catchment area.
     Subsequently, populate the 'geospatial_layers' table in the database and store user log information for
@@ -40,8 +41,11 @@ def main(
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
-    instruction_json_path : pathlib.Path
+    instruction_json_path : pathlib.Path | str | None
         The path to the instruction json file that specifies the geospatial data to be retrieved.
+        Can be a string to allow crossing over interfaces that only allow more primitive types.
+        If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still\
+        be initialised.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
         The available logging levels and their corresponding numeric values are:
@@ -54,6 +58,9 @@ def main(
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
+    # Cast str paths to pathlib.Path
+    if isinstance(instruction_json_path, str):
+        instruction_json_path = pathlib.Path(instruction_json_path)
     # Connect to the database
     engine = setup_environment.get_database()
     # Get catchment area.
