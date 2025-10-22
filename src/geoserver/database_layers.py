@@ -24,7 +24,7 @@ import geopandas as gpd
 import requests
 
 from src.config import EnvVariable
-from src.digitaltwin.data_to_db import check_table_exists
+from src.digitaltwin.tables import check_table_exists
 from src.digitaltwin.setup_environment import get_database
 from src.geoserver.geoserver_common import create_workspace_if_not_exists, get_geoserver_url
 
