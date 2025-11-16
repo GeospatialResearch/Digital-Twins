@@ -23,6 +23,7 @@ The following list defines the basic steps required to set up and run the digita
 
 ### Requirements
 * [Docker](https://www.docker.com/)
+* [CUDA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 
 ### Officially Supported Operating Systems
 * Windows 10/11
