@@ -71,7 +71,7 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "end_time": 2,
         "resolution": None,
         "mask": 9999,
-        "gpu_device": -1,
+        "gpu_device": 0,
         "small_nc": 0,
         "log_level": LogLevel.INFO
     }

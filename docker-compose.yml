@@ -90,6 +90,13 @@ services:
       - db_postgres
       - message_broker
       - geoserver
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all # Use all available GPUs
+              capabilities: [ gpu ]
 
   geoserver:
     # Serves geospatial web data through interactions with files and database
