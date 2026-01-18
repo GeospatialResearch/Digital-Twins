@@ -1,0 +1,40 @@
+[build-system]
+requires = [
+    "setuptools>=61.0.0",
+    "setuptools-scm>=8.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eddie"
+version = "3.0.0-14"
+description = "A framework for building modular spatial digital twins."
+readme = "README.md"
+authors = [{ name = "Luke Parkinson", email = "luke.parkinson@canterbury.ac.nz" }]
+license = { file = "LICENSE" }
+keywords = ["EDDIE", "Digital Twin", "Geospatial", "Spatial", "Framework"]
+dependencies = [
+    "celery",
+    "flask",
+    "flask-cors",
+    "flask_swagger_ui",
+    "geoalchemy",
+    "geoapis",
+    "geopandas",
+    "gevent",
+    "gunicorn",
+    "pandas",
+    "pytest",
+    "dotenv",
+    "pywps",
+    "sqlalchemy",
+    "validators",
+]
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+dev = ["pip-tools", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/GeospatialResearch/Digital-Twins"
