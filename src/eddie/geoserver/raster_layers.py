@@ -24,8 +24,7 @@ import shutil
 import requests
 
 from eddie.config import EnvVariable
-from eddie.geoserver.geoserver_common import get_geoserver_url, send_create_layer_request, upload_file_to_store, \
-    style_exists
+from eddie.geoserver.geoserver_common import get_geoserver_url, style_exists
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}

@@ -22,7 +22,7 @@ Imports here are accessible directly by `from eddie import geoserver`.
 from .database_layers import create_datastore_layer, create_db_store_if_not_exists, create_main_db_store
 from .geoserver_common import create_workspace_if_not_exists, style_exists
 from .terria_catalogs import get_terria_catalog, Workspaces
-from .raster_layers import add_gtiff_to_geoserver, add_style, create_viridis_style_if_not_exists
+from .raster_layers import add_gtiff_to_geoserver, add_style
 
 __all__ = [
     "add_gtiff_to_geoserver",
@@ -30,7 +30,6 @@ __all__ = [
     "create_datastore_layer",
     "create_db_store_if_not_exists",
     "create_main_db_store",
-    "create_viridis_style_if_not_exists",
     "create_workspace_if_not_exists",
     "get_terria_catalog",
     "Workspaces",
