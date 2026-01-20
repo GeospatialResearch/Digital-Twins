@@ -16,30 +16,46 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This script automates the retrieval and storage of geospatial data from various providers using the 'geoapis' library.
-It populates the 'geospatial_layers' table in the database and stores user log information for tracking and reference.
+This script facilitates caching model results, allowing results to be retrieved immediately if the same
+scenario options are queried later.
 """
-import pathlib
+import logging
 
 import geopandas as gpd
 from sqlalchemy import insert
-from sqlalchemy.engine import Engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql import text
 
-from src.digitaltwin import setup_environment, instructions_records_to_db, data_to_db
-from src.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
+from src.digitaltwin import setup_environment
+from src.digitaltwin.utils import LogLevel, setup_logging
 from src.digitaltwin.tables import CacheResults, create_table
+
+log = logging.getLogger(__name__)
 
 
 def main(
     selected_polygon_gdf: gpd.GeoDataFrame,
     model_id: int,
-    cache_table: str,
     scenario_options: dict,
     log_level: LogLevel = LogLevel.DEBUG,
-) -> None:
+) -> int:
     """
+    Cache the scenario options used to generate the existing model with the given model id, for faster retrieval later.
+
+    Parameters
+    ----------
+    selected_polygon_gdf: gpd.GeoDataFrame
+        The selected area of interest to cache, any area fully intersecting this one can be retrieved later if the other
+        parameters match.
+    model_id : int
+        The database id of the existing model output to attach the cached parameters to.
+    scenario_options : dict
+        The input parameters to the model to cache, which must match for later retrieval.
+    log_level : LogLevel = LogLevel.DEBUG
+        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+
+    Returns
+    -------
+    int
+        model_id re-returned to allow method chaining.
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
@@ -47,9 +63,13 @@ def main(
     engine = setup_environment.get_database()
     create_table(engine, CacheResults)
     geometry = selected_polygon_gdf.geometry[0].wkt
+
+    # Cache the results attached to the scenario input parameters
+    log.info("Caching model results.")
     query = insert(CacheResults).values(flood_model_id=model_id, geometry=geometry, scenario_options=scenario_options)
     with engine.begin() as conn:
         conn.execute(query)
+    # return the model_id to allow method chaining
     return model_id
 
 

@@ -19,7 +19,6 @@
 import pathlib
 
 from src.digitaltwin import retrieve_from_instructions, cache_new_results
-from src.digitaltwin.tables import CacheResults
 from src.digitaltwin.utils import LogLevel
 from src.run_all import create_sample_polygon, main
 from floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
@@ -30,10 +29,6 @@ from floodresilience.dynamic_boundary_conditions.tide import main_tide_slr
 from floodresilience.flood_model import bg_flood_model, process_hydro_dem
 
 DEFAULT_MODULES_TO_PARAMETERS = {
-    # check_cache_results: {
-    #     "log_level": LogLevel.INFO,
-    #     "cache_table": CacheResults.__tablename__
-    # },
     retrieve_from_instructions: {
         "log_level": LogLevel.INFO,
         "instruction_json_path": pathlib.Path("floodresilience/static_boundary_instructions.json").as_posix()
@@ -72,10 +67,8 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "log_level": LogLevel.INFO
     },
     bg_flood_model: {
-        # "output_timestep": 100,
-        "output_timestep": 1,
-        # "end_time": 900,
-        "end_time": 2,
+        "output_timestep": 100,
+        "end_time": 900,
         "resolution": None,
         "mask": 9999,
         "gpu_device": 0,
@@ -84,8 +77,6 @@ DEFAULT_MODULES_TO_PARAMETERS = {
     },
     cache_new_results: {
         "log_level": LogLevel.INFO,
-        "cache_table": CacheResults.__tablename__,
-        "scenario_options": {}
     }
 }
 

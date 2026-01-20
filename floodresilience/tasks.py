@@ -192,13 +192,50 @@ def run_flood_model(selected_polygon_wkt: str) -> int:
 
 @app.task(base=OnFailureStateTask)
 def cache_results(flood_model_id: int, selected_polygon_wkt: str, scenario_options: dict) -> int:
+    """
+    Task to cache the scenario options used to generate an existing model with the given model id, for faster retrieval.
+
+    Parameters
+    ----------
+    flood_model_id : int
+        The database id of the existing model output to attach the cached parameters to.
+    selected_polygon_wkt: gpd.GeoDataFrame
+        The selected area of interest to cache, in WKT form.
+        Any area fully intersecting this one can be retrieved later if the other parameters match.
+
+    scenario_options : dict
+        The input parameters to the model to cache, which must match for later retrieval.
+
+    Returns
+    -------
+    int
+        model_id re-returned to allow method chaining.
+    """
     parameters = DEFAULT_MODULES_TO_PARAMETERS[cache_new_results]
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
-    cache_new_results.main(selected_polygon, flood_model_id, parameters["cache_table"], scenario_options, parameters["log_level"])
+    cache_new_results.main(selected_polygon, flood_model_id, scenario_options, parameters["log_level"])
     return flood_model_id
+
 
 @app.task(base=OnFailureStateTask)
 def check_cache(selected_polygon_wkt: str, scenario_options: dict) -> int | None:
+    """
+    Task to search the cache for model input generated with identical scenario_options and a selected polygon which
+    contains this function's selected_polygon.
+
+    Parameters
+    ----------
+    selected_polygon_wkt : str
+        The area of interest to search the cache for in WKT form.
+        Positive results if the cached polygon contains this polygon.
+    scenario_options : dict
+        The model input parameters, which must match exactly with the cached results for a positive match.
+
+    Returns
+    -------
+    int | None
+        Returns the matching model_id if a match is found. Otherwise, None.
+    """
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     flood_model_id = check_cache_results.main(selected_polygon, scenario_options)
     return flood_model_id

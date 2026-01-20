@@ -29,7 +29,6 @@ from sqlalchemy.sql import text
 
 from src.digitaltwin.tables import check_table_exists
 from src.config import EnvVariable
-from floodresilience.dynamic_boundary_conditions.river import river_data_from_niwa
 from floodresilience.dynamic_boundary_conditions.river.river_network_to_from_db import add_network_exclusions_to_db
 
 log = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ log = logging.getLogger(__name__)
 
 def load_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
     """
-    Loads REC data from the NIWA REC dataset.
+    Load REC data from the NIWA REC dataset.
 
     Returns
     -------
@@ -126,7 +125,8 @@ def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gp
 def get_rec_data_with_sdc_from_db(
     engine: Engine,
     catchment_area: gpd.GeoDataFrame,
-    river_network_id: int) -> gpd.GeoDataFrame:
+    river_network_id: int
+) -> gpd.GeoDataFrame:
     """
     Retrieve REC data from the database for the specified catchment area with an additional column that identifies
     the associated sea-draining catchment for each REC geometry.

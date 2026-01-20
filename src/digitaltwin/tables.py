@@ -96,9 +96,11 @@ class UserLogInfo(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
 
+
 class CacheResults(Base):
     """
-    Class representing the 'cache_results' table. Used to store variables used for a model run and find matching cached outputs.
+    Class representing the 'cache_results' table.
+    Used to store variables used for a model run and find matching cached outputs.
 
     Attributes
     ----------
@@ -115,13 +117,13 @@ class CacheResults(Base):
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """  # pylint: disable=too-few-public-methods
+
     __tablename__ = "cache_results"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     flood_model_id = Column(Integer)
     scenario_options = Column(JSON)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))
-
 
 
 def create_table(engine: Engine, table: Base) -> None:
