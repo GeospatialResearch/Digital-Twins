@@ -21,7 +21,7 @@ import json
 from urllib.parse import urlencode
 
 import geopandas as gpd
-from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest
+from pywps import ComplexOutput, Format, LiteralInput, Process, WPSRequest
 from pywps.response.execute import ExecuteResponse
 from shapely import box
 
