@@ -17,6 +17,7 @@
 
 """Functions for serving raster layers via geoserver."""
 
+from importlib import resources
 import logging
 import pathlib
 import shutil
@@ -103,9 +104,7 @@ def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace
     HTTPError
         If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
-    from importlib import resources
-
-    # with open("eddie/geoserver/templates/geotiff_coverage_template.xml", encoding="utf-8") as file:
+    # Read the template xml file in a way that works for downstream users of the eddie library.
     gtiff_coverage_template = resources.read_text("eddie.geoserver.templates", "geotiff_coverage_template.xml")
     # Fill template to get payload
     gtiff_coverage_payload = gtiff_coverage_template.format(layer_name=layer_name)
