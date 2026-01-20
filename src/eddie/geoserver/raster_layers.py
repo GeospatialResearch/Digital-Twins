@@ -85,7 +85,7 @@ def upload_gtiff_to_store(
     log.info(f"Uploaded {gtiff_filepath.name} to Geoserver workspace {workspace_name}.")
 
 
-def create_layer_from_store(geoserver_url: str, layer_name: str, workspace_name: str) -> None:
+def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace_name: str) -> None:
     """
     Create a GeoServer Layer from a GeoServer store, making it ready to serve.
 
@@ -103,64 +103,42 @@ def create_layer_from_store(geoserver_url: str, layer_name: str, workspace_name:
     HTTPError
         If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
-    with open("eddie/geoserver/templates/geotiff_coverage_template.xml", encoding="utf-8") as file:
-        gtiff_coverage_template = file.read()
+    from importlib import resources
+
+    # with open("eddie/geoserver/templates/geotiff_coverage_template.xml", encoding="utf-8") as file:
+    gtiff_coverage_template = resources.read_text("eddie.geoserver.templates", "geotiff_coverage_template.xml")
     # Fill template to get payload
     gtiff_coverage_payload = gtiff_coverage_template.format(layer_name=layer_name)
     # Send request to create layer
     send_create_layer_request(geoserver_url, layer_name, workspace_name, gtiff_coverage_payload)
-    data = f"""
-    <coverage>
-        <name>{layer_name}</name>
-        <title>{layer_name}</title>
-        <nativeCRS class="projected">
-            PROJCS[&quot;NZGD2000 / New Zealand Transverse Mercator 2000&quot;,
-            GEOGCS[&quot;NZGD2000&quot;,
-              DATUM[&quot;New Zealand Geodetic Datum 2000&quot;,
-                SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]],
-                TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                AUTHORITY[&quot;EPSG&quot;,&quot;6167&quot;]],
-              PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],
-              UNIT[&quot;degree&quot;, 0.017453292519943295],
-              AXIS[&quot;Geodetic longitude&quot;, EAST],
-              AXIS[&quot;Geodetic latitude&quot;, NORTH],
-              AUTHORITY[&quot;EPSG&quot;,&quot;4167&quot;]],
-            PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]],
-            PARAMETER[&quot;central_meridian&quot;, 173.0],
-            PARAMETER[&quot;latitude_of_origin&quot;, 0.0],
-            PARAMETER[&quot;scale_factor&quot;, 0.9996],
-            PARAMETER[&quot;false_easting&quot;, 1600000.0],
-            PARAMETER[&quot;false_northing&quot;, 10000000.0],
-            UNIT[&quot;m&quot;, 1.0],
-            AXIS[&quot;Easting&quot;, EAST],
-            AXIS[&quot;Northing&quot;, NORTH],
-            AUTHORITY[&quot;EPSG&quot;,&quot;2193&quot;]]
-        </nativeCRS>
-        <supportedFormats>
-            <string>GEOTIFF</string>
-            <string>TIFF</string>
-            <string>PNG</string>
-        </supportedFormats>
-        <dimensions>
-        <coverageDimension>
-          <name>{layer_name}</name>
-          <unit>m</unit>
-          <dimensionType>
-            <name>REAL_32BITS</name>
-          </dimensionType>
-        </coverageDimension>
-        </dimensions>
-        <requestSRS><string>EPSG:2193</string></requestSRS>
-        <responseSRS><string>EPSG:2193</string></responseSRS>
-        <srs>EPSG:2193</srs>
-    </coverage>
-    """
 
+
+def send_create_layer_request(geoserver_url: str, layer_name: str, workspace_name: str, coverage_payload: str) -> None:
+    """
+    Create a GeoServer Layer from a GeoServer store, making it ready to serve.
+
+    Parameters
+    ----------
+    geoserver_url : str
+        The URL to the geoserver instance.
+    layer_name : str
+        Defines the name of the layer in GeoServer.
+    workspace_name : str
+        The name of the existing GeoServer workspace that the store is to be added to.
+    coverage_payload : str
+        The coverage XML data to send in the Geoserver request payload.
+
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
+    """
+    # Send request to create layer
     response = requests.post(
         f"{geoserver_url}/workspaces/{workspace_name}/coveragestores/{layer_name}/coverages",
         params={"configure": "all"},
         headers=_xml_header,
-        data=data,
+        data=coverage_payload,
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if not response.ok:
@@ -188,7 +166,7 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, la
     # Upload the raster into geoserver
     upload_gtiff_to_store(gs_url, gtiff_filepath, layer_name, workspace_name)
     # Create a GIS layer from the raster file to be served from geoserver
-    create_layer_from_store(gs_url, layer_name, workspace_name)
+    create_layer_from_gtiff_store(gs_url, layer_name, workspace_name)
 
 
 def delete_style(style_name: str) -> None:
