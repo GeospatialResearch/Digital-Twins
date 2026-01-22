@@ -17,6 +17,7 @@
 
 """Defines PyWPS WebProcessingService process for creating a flooding scenario."""
 
+from datetime import datetime
 import json
 from urllib.parse import urlencode
 
@@ -36,10 +37,11 @@ class FloodScenarioProcessService(Process):
     def __init__(self) -> None:
         """Define inputs and outputs of the WPS process, and assign process handler."""
         # Create bounding box WPS inputs
+        current_year = datetime.today().year
         inputs = [
             BoundingBoxInput("bboxIn", "Area of Interest", crss=["epsg:4326"]),
             LiteralInput("projYear", "Projected Year", data_type="integer",
-                         allowed_values=list(range(2026, 2151))),
+                         allowed_values=list(range(current_year, 2151))),
             LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
             LiteralInput("sspScenario", "SSP Scenario", data_type="string", allowed_values=[
                 "SSP1-1.9",
