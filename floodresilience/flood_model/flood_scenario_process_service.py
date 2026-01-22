@@ -20,8 +20,7 @@
 import json
 from urllib.parse import urlencode
 
-import geopandas as gpd
-from pywps import ComplexOutput, Format, LiteralInput, Process, WPSRequest
+from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest
 from pywps.response.execute import ExecuteResponse
 from shapely import box
 
@@ -38,6 +37,7 @@ class FloodScenarioProcessService(Process):
         """Define inputs and outputs of the WPS process, and assign process handler."""
         # Create bounding box WPS inputs
         inputs = [
+            BoundingBoxInput("bboxIn", "Area of Interest", crss=["epsg:4326"]),
             LiteralInput("projYear", "Projected Year", data_type="integer",
                          allowed_values=list(range(2026, 2151))),
             LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
@@ -79,15 +79,13 @@ class FloodScenarioProcessService(Process):
         response : ExecuteResponse
             The WPS response, containing output data.
         """
-        aoi = gpd.read_file("selected_polygon.geojson")
-        # Convert to WGS84 to deliberately introduce rounding errors. Ensures our development acts like production.
-        # These rounding errors occur in production when serialising WGS84 polygons
-        aoi = aoi.to_crs(4326)
+        # Get coordinates from bounding box input
+        bounding_box_input = request.inputs['bboxIn'][0]
+        ymin, xmin = bounding_box_input.ll  # lower left
+        ymax, xmax = bounding_box_input.ur  # upper right
 
-        bbox_4326 = aoi.bounds.rename(
-            columns={"minx": "xmin", "maxx": "xmax", "miny": "ymin", "maxy": "ymax"})
-        # Create sample polygon from bounding box
-        bounding_box = box(**bbox_4326.iloc[0])
+        # Form bounding box into standard shapely.box
+        bounding_box = box(xmin, ymin, xmax, ymax)
 
         scenario_options = {
             "proj_year": request.inputs["projYear"][0].data,
