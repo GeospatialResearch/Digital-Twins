@@ -158,6 +158,8 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     GEOSERVER_ADMIN_NAME = _get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
     GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
 
+    IS_ON_GITHUB_ACTIONS = _get_bool_env_variable("GITHUB_ACTIONS", default=False)
+
     # NewZealidar config that we must ensure have values.
     _LIDAR_DIR = _get_env_variable("LIDAR_DIR")
     _DEM_DIR = _get_env_variable("DEM_DIR")

@@ -14,14 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import unittest
-import pathlib
-from typing import List, Optional
 import math
+import pathlib
+import pytest
+from typing import List, Optional
+import unittest
 
 import pandas as pd
 
 from floodresilience.dynamic_boundary_conditions.rainfall import rainfall_data_from_hirds
+from src.config import EnvVariable
 
 
 class RainfallDataFromHirdsTest(unittest.TestCase):
@@ -169,6 +171,10 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
                     site_data[i], self.example_site_id, block_structure)
                 self.assertEqual((12, 18), rain_table.shape)
 
+    @pytest.mark.skipif(
+        EnvVariable.IS_ON_GITHUB_ACTIONS,
+        reason="Failing on GitHub Actions. See Issue https://github.com/GeospatialResearch/Digital-Twins/issues/367"
+    )
     def test_get_site_url_key_not_empty(self):
         """Test to ensure that the site url key for both rainfall depths and intensities data fetched from
         the HIRDS website is not empty."""
@@ -177,6 +183,10 @@ class RainfallDataFromHirdsTest(unittest.TestCase):
         self.assertGreater(len(site_url_key_depth), 0)
         self.assertGreater(len(site_url_key_intensity), 0)
 
+    @pytest.mark.skipif(
+        EnvVariable.IS_ON_GITHUB_ACTIONS,
+        reason="Failing on GitHub Actions. See Issue https://github.com/GeospatialResearch/Digital-Twins/issues/367"
+    )
     def test_get_data_from_hirds_not_empty(self):
         """Test to ensure that the rainfall depths and intensities data fetched from the HIRDS website is not empty."""
         depth_data = rainfall_data_from_hirds.get_data_from_hirds(self.example_site_id, idf=False)
