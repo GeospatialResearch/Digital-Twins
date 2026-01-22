@@ -157,7 +157,7 @@ def get_valid_parameters_based_on_confidence_level() -> Dict[str, Dict[str, Unio
         SELECT DISTINCT
             confidence_level,
             CONCAT(ssp, '-', scenario) AS ssp_scenarios,
-            (DATE_PART('year', now()) + 1)::NUMERIC::BIGINT AS min_year,
+            (DATE_PART('year', now()))::NUMERIC::BIGINT AS min_year,
             MAX(year) AS max_year
         FROM {slr_table_name}
         GROUP BY
