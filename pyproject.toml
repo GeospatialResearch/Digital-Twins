@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eddie"
-version = "3.0.0-14"
+version = "3.0.0-16"
 description = "A framework for building modular spatial digital twins."
 readme = "README.md"
 authors = [{ name = "Luke Parkinson", email = "luke.parkinson@canterbury.ac.nz" }]
