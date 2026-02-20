@@ -201,7 +201,7 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
           <name>{new_data_store_name}</name>
           <connectionParameters>
             <host>{EnvVariable.POSTGRES_INTERNAL_HOST}</host>
-            <port>{EnvVariable.POSTGRES_PORT}</port>
+            <port>{EnvVariable.POSTGRES_INTERNAL_PORT}</port>
             <database>{db_name}</database>
             <user>{EnvVariable.POSTGRES_USER}</user>
             <passwd>{EnvVariable.POSTGRES_PASSWORD}</passwd>
