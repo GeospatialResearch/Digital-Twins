@@ -31,13 +31,7 @@
         <string>PNG</string>
     </supportedFormats>
     <dimensions>
-        <coverageDimension>
-            <name>Water Depth</name>
-            <unit>m</unit>
-            <dimensionType>
-                <name>REAL_32BITS</name>
-            </dimensionType>
-        </coverageDimension>
+        {coverage_dimensions_xml}
     </dimensions>
     <requestSRS>
         <string>EPSG:2193</string>
