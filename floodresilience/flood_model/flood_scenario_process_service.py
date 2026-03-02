@@ -17,13 +17,12 @@
 
 """Defines PyWPS WebProcessingService process for creating a flooding scenario."""
 
+from datetime import datetime
 import json
 from urllib.parse import urlencode
-import xml.etree.ElementTree as et
 
 from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest
 from pywps.response.execute import ExecuteResponse
-import requests
 from shapely import box
 
 from floodresilience import tasks
@@ -38,10 +37,11 @@ class FloodScenarioProcessService(Process):
     def __init__(self) -> None:
         """Define inputs and outputs of the WPS process, and assign process handler."""
         # Create bounding box WPS inputs
+        current_year = datetime.today().year
         inputs = [
             BoundingBoxInput("bboxIn", "Area of Interest", crss=["epsg:4326"]),
             LiteralInput("projYear", "Projected Year", data_type="integer",
-                         allowed_values=list(range(2026, 2151))),
+                         allowed_values=list(range(current_year, 2151))),
             LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
             LiteralInput("sspScenario", "SSP Scenario", data_type="string", allowed_values=[
                 "SSP1-1.9",
@@ -54,9 +54,9 @@ class FloodScenarioProcessService(Process):
         ]
         # Create area WPS outputs
         outputs = [
-            ComplexOutput("floodedBuildings", "Flooded Buildings",
-                          supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
             ComplexOutput("floodDepth", "Maximum Flood Depth",
+                          supported_formats=[Format("application/vnd.terriajs.catalog-member+json")]),
+            ComplexOutput("floodedBuildings", "Flooded Buildings",
                           supported_formats=[Format("application/vnd.terriajs.catalog-member+json")])
         ]
 
@@ -97,12 +97,16 @@ class FloodScenarioProcessService(Process):
             "confidence_level": "medium"
         }
 
-        modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
-        scenario_id = modelling_task.get()
+        check_cache_task = tasks.check_cache.delay(bounding_box.wkt, scenario_options)
+        scenario_id = check_cache_task.get()
+
+        if scenario_id is None:
+            modelling_task = tasks.create_model_for_area(bounding_box.wkt, scenario_options)
+            scenario_id = modelling_task.get()
 
         # Add Geoserver JSON Catalog entries to WPS response for use by Terria
-        response.outputs['floodedBuildings'].data = json.dumps(building_flood_status_catalog(scenario_id))
         response.outputs['floodDepth'].data = json.dumps(flood_depth_catalog(scenario_id))
+        response.outputs['floodedBuildings'].data = json.dumps(building_flood_status_catalog(scenario_id))
 
 
 def building_flood_status_catalog(scenario_id: int) -> dict:
@@ -122,9 +126,9 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
     dataset_name = "Building Flood Status"
     gs_building_workspace = f"{EnvVar.POSTGRES_DB}-buildings"
     gs_building_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_building_workspace}/ows"
-    # Open and read HTML/mustache template file for infobox
-    with open("./floodresilience/flood_model/templates/flooded_building_infobox.mustache", encoding="utf-8") as file:
-        flooded_building_infobox_template = file.read()
+
+    flooded_color = "darkred"
+    non_flooded_color = "darkgreen"
     return {
         "type": "wfs",
         "name": dataset_name,
@@ -134,24 +138,43 @@ def building_flood_status_catalog(scenario_id: int) -> dict:
             "viewparams": f"scenario:{scenario_id}",
         },
         "maxFeatures": 300000,
-        "heightProperty": "extruded_height",
-        "featureInfoTemplate": {
-            "name": "Building Flood Status - {{flood_model_id}} - {{building_outline_id}}",
-            "template": flooded_building_infobox_template
-        },
-        "legends": [{
-            "title": "Building Flood Status",
-            "items": [
-                {
-                    "title": "Non-Flooded",
-                    "color": "darkgreen"
+        "styles": [{
+            "id": "is_flooded",
+            "title": dataset_name,
+            "color": {
+                "mapType": "enum",
+                "colorColumn": "is_flooded_int",
+                "legend": {
+                    "title": dataset_name,
+                    "items": [
+                        {
+                            "title": "Non-Flooded",
+                            "color": non_flooded_color
+                        },
+                        {
+                            "title": "Flooded",
+                            "color": flooded_color
+                        }
+                    ]
                 },
-                {
-                    "title": "Flooded",
-                    "color": "darkred"
+                "enumColors": [
+                    {
+                        "value": "0",
+                        "color": non_flooded_color
+                    },
+                    {
+                        "value": "1",
+                        "color": flooded_color
+                    }
+                ]
+            },
+            "outline": {
+                "null": {
+                    "width": 0
                 }
-            ]
-        }]
+            }
+        }],
+        "activeStyle": "is_flooded"
     }
 
 
@@ -170,10 +193,12 @@ def flood_depth_catalog(scenario_id: int) -> dict:
         The TerriaJS catalog item JSON for the flood depth layer.
     """
     gs_flood_model_workspace = f"{EnvVar.POSTGRES_DB}-dt-model-outputs"
-    gs_flood_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_flood_model_workspace}/wms"
+    gs_flood_url = f"{EnvVar.GEOSERVER_HOST}:{EnvVar.GEOSERVER_PORT}/geoserver/{gs_flood_model_workspace}/ows"
     layer_name = f"{gs_flood_model_workspace}:output_{scenario_id}"
     style_name = "viridis_raster"
-
+    # Open and read HTML/mustache template file for infobox
+    with open("./floodresilience/flood_model/templates/flood_depth_infobox.mustache", encoding="utf-8") as file:
+        flood_depth_infobox_template = file.read()
     # Parameters for the Geoserver GetLegendGraphic request
     legend_url_params = {
         "service": "WMS",
@@ -193,23 +218,15 @@ def flood_depth_catalog(scenario_id: int) -> dict:
     }
     legend_url = f"{gs_flood_url}?{urlencode(legend_url_params)}"
 
-    # Retrieve times available time slices for layer
-    time_dimension = query_time_dimension(gs_flood_model_workspace, layer_name)
-
     return {
         "type": "wms",
         "name": "Flood Depth",
         "url": gs_flood_url,
         "layers": layer_name,
         "styles": style_name,
-        "supportsGetTimeseries": True,
-        "multiplierDefaultDeltaStep": 6,  # Slow down timeline to give more time for rasters to load.
-        "getFeatureInfoParameters": {
-            "request": "GetTimeSeries",  # Terria tries to send "GetTimeseries", but Geoserver ncWMS is case-sensitive.
-            "time": time_dimension  # Must manually fill time dimension because getFeatureInfoParameters overrides it.
-        },
         "featureInfoTemplate": {
             "name": f"Flood depth - {scenario_id}",
+            "template": flood_depth_infobox_template.format(flood_scenario_id=scenario_id)
         },
         "legends": [{
             "title": "Flood Depth",
@@ -217,35 +234,3 @@ def flood_depth_catalog(scenario_id: int) -> dict:
             "urlMimeType": "image/png"
         }],
     }
-
-
-def query_time_dimension(gs_flood_model_workspace: str, layer_name: str) -> str:
-    """
-    Query Geoserver to find the time slices available for a given layer.
-
-    Parameters
-    ----------
-    gs_flood_model_workspace : str
-        The name of the Geoserver workspace.
-    layer_name : str
-        The name of the Geoserver layer to query.
-
-    Returns
-    ----------
-    str
-        Comma-separated list of time slices available in ISO8601 format
-        e.g. "2000-01-01T00:00:00.000Z,2000-01-01T00:00:01.000Z,2000-01-01T00:00:02.000Z"
-    """
-    # Get the URL for sending a request from within the docker container
-    internal_workspace_wms_url = (f"{EnvVar.GEOSERVER_INTERNAL_HOST}:{EnvVar.GEOSERVER_INTERNAL_PORT}"
-                                  f"/geoserver/{gs_flood_model_workspace}/wms")
-    query_parameters = {
-        "request": "GetCapabilities",
-        "dataset": layer_name,
-    }
-    capabilities_response = requests.post(internal_workspace_wms_url, params=query_parameters)
-    xml_root = et.fromstring(capabilities_response.content)
-    namespaces = {"wms": "http://www.opengis.net/wms"}
-    time_dim_elem = xml_root.find('.//wms:Dimension[@name="time"]', namespaces)
-
-    return time_dim_elem.text

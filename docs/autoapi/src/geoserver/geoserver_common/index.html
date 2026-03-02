@@ -22,7 +22,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="src.geoserver.netcdf_layers" href="../netcdf_layers/index.html" />
+    <link rel="next" title="src.geoserver.raster_layers" href="../raster_layers/index.html" />
     <link rel="prev" title="src.geoserver.database_layers" href="../database_layers/index.html" /> 
 </head>
 
@@ -121,12 +121,6 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.create_workspace_if_not_exists" title="src.geoserver.geoserver_common.create_workspace_if_not_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_workspace_if_not_exists</span></code></a>(→ None)</p></td>
 <td><p>Create a GeoServer workspace if it does not currently exist.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.upload_file_to_store" title="src.geoserver.geoserver_common.upload_file_to_store"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_file_to_store</span></code></a>(→ None)</p></td>
-<td><p>Upload a file to a new GeoServer store, to enable serving.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.send_create_layer_request" title="src.geoserver.geoserver_common.send_create_layer_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_create_layer_request</span></code></a>(→ None)</p></td>
-<td><p>Create a GeoServer Layer from a GeoServer store, making it ready to serve.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.geoserver.geoserver_common.style_exists" title="src.geoserver.geoserver_common.style_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">style_exists</span></code></a>(→ bool)</p></td>
 <td><p>Check if a GeoServer style definition already exists for a given style_name.</p></td>
 </tr>
@@ -174,47 +168,6 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="src.geoserver.geoserver_common.upload_file_to_store">
-<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">upload_file_to_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geoserver_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_to_add</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.geoserver.geoserver_common.upload_file_to_store" title="Link to this definition"></a></dt>
-<dd><p>Upload a file to a new GeoServer store, to enable serving.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>geoserver_url</strong> (<em>str</em>) – The URL to the geoserver instance.</p></li>
-<li><p><strong>file_to_add</strong> (<em>pathlib.Path</em>) – The filepath to the GeoTiff file to be served, currently support NetCDF and GeoTiff.</p></li>
-<li><p><strong>store_name</strong> (<em>str</em>) – The name of the new Geoserver store to be created.</p></li>
-<li><p><strong>workspace_name</strong> (<em>str</em>) – The name of the existing GeoServer workspace that the store is to be added to.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>HTTPError</strong> – If geoserver responds with an error, raises it as an exception since it is unexpected.</p></li>
-<li><p><strong>ValueError</strong> – If file_to_add does not have a file extension matching one of the supported file types..</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.geoserver.geoserver_common.send_create_layer_request">
-<span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">send_create_layer_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geoserver_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverage_payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.geoserver.geoserver_common.send_create_layer_request" title="Link to this definition"></a></dt>
-<dd><p>Create a GeoServer Layer from a GeoServer store, making it ready to serve.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>geoserver_url</strong> (<em>str</em>) – The URL to the geoserver instance.</p></li>
-<li><p><strong>layer_name</strong> (<em>str</em>) – Defines the name of the layer in GeoServer.</p></li>
-<li><p><strong>workspace_name</strong> (<em>str</em>) – The name of the existing GeoServer workspace that the store is to be added to.</p></li>
-<li><p><strong>coverage_payload</strong> (<em>str</em>) – The coverage XML data to send in the Geoserver request payload.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>HTTPError</strong> – If geoserver responds with an error, raises it as an exception since it is unexpected.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="src.geoserver.geoserver_common.style_exists">
 <span class="sig-prename descclassname"><span class="pre">src.geoserver.geoserver_common.</span></span><span class="sig-name descname"><span class="pre">style_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.geoserver.geoserver_common.style_exists" title="Link to this definition"></a></dt>
 <dd><p>Check if a GeoServer style definition already exists for a given style_name.
@@ -244,7 +197,7 @@ False if it does not exist.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../database_layers/index.html" class="btn btn-neutral float-left" title="src.geoserver.database_layers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../netcdf_layers/index.html" class="btn btn-neutral float-right" title="src.geoserver.netcdf_layers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../raster_layers/index.html" class="btn btn-neutral float-right" title="src.geoserver.raster_layers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

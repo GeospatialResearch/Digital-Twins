@@ -15,7 +15,7 @@ The digital twin, when used to run flood models combined with other sources of i
 
 Data for analysis and modelling are collected from open data portals provided by multiple organisations or data providers such as LINZ, StatsNZ, opentopography, NIWA, MFE, and more.
 
-See our [draft paper for Journal of Open Source Software](paper/paper.pdf) for more details.
+<!-- See our [draft paper for Journal of Open Source Software](paper/paper.pdf) for more details. -->
 
 ## Basic running instructions
 The following list defines the basic steps required to set up and run the digital twin.
@@ -23,6 +23,16 @@ The following list defines the basic steps required to set up and run the digita
 
 ### Requirements
 * [Docker](https://www.docker.com/)
+* [CUDA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+
+### Officially Supported Operating Systems
+* Windows 10/11
+* Ubuntu 22.04
+
+Note: Other Linux-based operating systems are likely to work but have not been as thoroughly tested.
+
+### Unsupported Operating Systems
+We unfortunately do not support MacOS. Please see [#358](/../../issues/358) for updates or to contribute.
 
 
 ### Required Credentials:

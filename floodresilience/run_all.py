@@ -18,7 +18,7 @@
 """This script runs each module in the Digital Twin using a Sample Polygon."""
 import pathlib
 
-from src.digitaltwin import retrieve_from_instructions
+from src.digitaltwin import retrieve_from_instructions, cache_new_results
 from src.digitaltwin.utils import LogLevel
 from src.run_all import create_sample_polygon, main
 from floodresilience.dynamic_boundary_conditions.rainfall import main_rainfall
@@ -67,13 +67,16 @@ DEFAULT_MODULES_TO_PARAMETERS = {
         "log_level": LogLevel.INFO
     },
     bg_flood_model: {
-        "output_timestep": 1,
-        "end_time": 2,
+        "output_timestep": 100,
+        "end_time": 900,
         "resolution": None,
         "mask": 9999,
-        "gpu_device": -1,
+        "gpu_device": 0,
         "small_nc": 0,
         "log_level": LogLevel.INFO
+    },
+    cache_new_results: {
+        "log_level": LogLevel.INFO,
     }
 }
 

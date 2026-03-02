@@ -117,9 +117,6 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#floodresilience.flood_model.flood_scenario_process_service.flood_depth_catalog" title="floodresilience.flood_model.flood_scenario_process_service.flood_depth_catalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flood_depth_catalog</span></code></a>(→ dict)</p></td>
 <td><p>Create a dictionary in the format of a terria js catalog json for the flood depth layer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floodresilience.flood_model.flood_scenario_process_service.query_time_dimension" title="floodresilience.flood_model.flood_scenario_process_service.query_time_dimension"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_time_dimension</span></code></a>(→ str)</p></td>
-<td><p>Query Geoserver to find the time slices available for a given layer.</p></td>
-</tr>
 </tbody>
 </table>
 </section>
@@ -176,27 +173,6 @@
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="floodresilience.flood_model.flood_scenario_process_service.query_time_dimension">
-<span class="sig-prename descclassname"><span class="pre">floodresilience.flood_model.flood_scenario_process_service.</span></span><span class="sig-name descname"><span class="pre">query_time_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gs_flood_model_workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#floodresilience.flood_model.flood_scenario_process_service.query_time_dimension" title="Link to this definition"></a></dt>
-<dd><p>Query Geoserver to find the time slices available for a given layer.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gs_flood_model_workspace</strong> (<em>str</em>) – The name of the Geoserver workspace.</p></li>
-<li><p><strong>layer_name</strong> (<em>str</em>) – The name of the Geoserver layer to query.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Comma-separated list of time slices available in ISO8601 format
-e.g. “2000-01-01T00:00:00.000Z,2000-01-01T00:00:01.000Z,2000-01-01T00:00:02.000Z”</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>

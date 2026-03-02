@@ -19,12 +19,13 @@
 
 import asyncio
 import logging
-from typing import List, Dict, Union, NamedTuple
+from typing import List, Dict, Union
 
 import aiohttp
 import geopandas as gpd
 import pandas as pd
 import requests
+from tqdm.asyncio import tqdm_asyncio
 from shapely.geometry import LineString
 from sqlalchemy.engine import Engine
 
@@ -33,28 +34,13 @@ from src.digitaltwin.utils import get_nz_boundary
 log = logging.getLogger(__name__)
 
 # URL for retrieving REC data from NIWA using the ArcGIS REST API
-REC_API_URL = "https://gis.niwa.co.nz/server/rest/services/HYDRO/Flood_Statistics_Henderson_Collins_V2/MapServer/2"
+REC_API_URL = ("https://services3.arcgis.com/fp1tibNcN9mbExhG/arcgis/rest/services/"
+               "NZ_Flood_Statistics_Henderson_Collins_V2_REC1_Layer_WFL1/FeatureServer/0")
 
 
-class RecordCounts(NamedTuple):
+def get_feature_layer_record_ids(url: str = REC_API_URL) -> list[int]:
     """
-    Represents the record counts of the REC feature layer.
-
-    Attributes
-    ----------
-    max_record_count : int
-        The maximum number of records that will be returned per query.
-    total_record_count : int
-        The total number of records available in the feature layer.
-    """  # pylint: disable=duplicate-code
-
-    max_record_count: int
-    total_record_count: int
-
-
-def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
-    """
-    Retrieve the maximum and total record counts from the REC feature layer.
+    Retrieve the complete list of record ids of the feature layer.
 
     Parameters
     ----------
@@ -63,8 +49,33 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
 
     Returns
     -------
-    RecordCounts
-        A named tuple containing the maximum and total record counts of the REC feature layer.
+    list[int]
+        The list of record ids of the feature layer.
+    """
+    params = {
+        "f": "json",
+        "returnIdsOnly": True,
+        "where": "1=1"
+    }
+    response = requests.get(f"{url}/query", params=params)
+    response.raise_for_status()
+    object_ids = response.json()["objectIds"]
+    return sorted(object_ids)
+
+
+def get_feature_layer_max_record_count(url: str = REC_API_URL) -> int:
+    """
+    Retrieve the maximum record number of records that can be queried in a single request from the REC feature layer.
+
+    Parameters
+    ----------
+    url : str = REC_API_URL
+        The URL of the REC feature layer. Defaults to `REC_API_URL`.
+
+    Returns
+    -------
+    int
+        The maximum record count.
 
     Raises
     ------
@@ -74,26 +85,16 @@ def get_feature_layer_record_counts(url: str = REC_API_URL) -> RecordCounts:
     # Set up parameters for the initial request to get the maximum record count
     params = {"f": "json"}
     response = requests.get(url=url, params=params)
+    response.raise_for_status()
     # Extract the maximum record count from the response
-    max_record_count = response.json()["maxRecordCount"]
-    # Set up parameters for the second request to get the total record count
-    params["where"] = "1=1"
-    params["returnCountOnly"] = True
-    response = requests.get(url=f"{url}/query", params=params)
-    try:
-        # Extract the total record count from the response
-        total_record_count = response.json()["count"]
-    except KeyError as e:
-        # Raise a RuntimeError to indicate the API failure
-        raise RuntimeError("Failed to fetch rec data feature layer record counts.") from e
-    # Returns the maximum and total record counts of the REC feature layer
-    return RecordCounts(max_record_count, total_record_count)
+    return response.json()["maxRecordCount"]
 
 
 def gen_rec_query_param_list(
-        engine: Engine,
-        max_record_count: int,
-        total_record_count: int) -> List[Dict[str, Union[str, int]]]:
+    engine: Engine,
+    max_record_count: int,
+    feature_ids: list[int]
+) -> List[Dict[str, Union[str, int]]]:
     """
     Generate a list of API query parameters used to retrieve REC data in New Zealand.
 
@@ -103,8 +104,8 @@ def gen_rec_query_param_list(
         The engine used to connect to the database.
     max_record_count : int
         The maximum number of records that will be returned per query.
-    total_record_count : int
-        The total number of records available in the feature layer.
+    feature_ids : list[int]
+        The complete list of feature IDs to query
 
     Returns
     -------
@@ -122,8 +123,10 @@ def gen_rec_query_param_list(
     query_param_list = []
     # Use a while loop to generate query parameters in batches
     result_offset = 0
+    total_record_count = len(feature_ids)
     while result_offset < total_record_count:
         # Define the query parameters for the current batch
+        object_ids = feature_ids[result_offset:result_offset + max_record_count]
         query_params = {
             "where": "1=1",
             "outFields": "*",
@@ -133,7 +136,7 @@ def gen_rec_query_param_list(
             "spatialRel": "esriSpatialRelContains",
             "outSR": 2193,
             "f": "json",
-            "resultOffset": result_offset
+            "objectIds": ",".join([str(id) for id in object_ids]),
         }
         # Append the current batch of query parameters to the list
         query_param_list.append(query_params)
@@ -144,9 +147,10 @@ def gen_rec_query_param_list(
 
 
 async def fetch_rec_data(
-        session: aiohttp.ClientSession,
-        query_param: Dict[str, Union[str, int]],
-        url: str = f"{REC_API_URL}/query") -> gpd.GeoDataFrame:
+    session: aiohttp.ClientSession,
+    query_param: Dict[str, Union[str, int]],
+    url: str = f"{REC_API_URL}/query"
+) -> gpd.GeoDataFrame:
     """
     Fetch REC data using the provided query parameters within a single API call.
 
@@ -168,6 +172,10 @@ async def fetch_rec_data(
     async with session.get(url, params=query_param) as resp:
         # Process the response as JSON
         resp_dict = await resp.json(content_type=None)
+        if resp_dict.get("error"):
+            # This can happen due to incorrect query parameters, allow empty dataframes to be
+            # generated by individual queries, but we will check them when gathering
+            return gpd.GeoDataFrame()
         # Extract the features from the response
         features = resp_dict["features"]
         # Create a Pandas DataFrame from the attributes of each feature in the response
@@ -181,8 +189,9 @@ async def fetch_rec_data(
 
 
 async def fetch_rec_data_for_nz(
-        query_param_list: List[Dict[str, Union[str, int]]],
-        url: str = REC_API_URL) -> gpd.GeoDataFrame:
+    query_param_list: List[Dict[str, Union[str, int]]],
+    url: str = REC_API_URL
+) -> gpd.GeoDataFrame:
     """
     Iterate over the list of API query parameters to fetch REC data in New Zealand.
 
@@ -203,8 +212,8 @@ async def fetch_rec_data_for_nz(
         query_url = f"{url}/query"
         # Create a list of tasks to fetch REC data for each query parameter
         tasks = [fetch_rec_data(session, query_param, query_url) for query_param in query_param_list]
-        # Wait for all tasks to complete and retrieve the results
-        query_results = await asyncio.gather(*tasks, return_exceptions=True)
+        # Wait for all tasks to complete and retrieve the results, using a progress bar because it may take a long time.
+        query_results = await tqdm_asyncio.gather(*tasks)
         # Concatenate the results into a single GeoDataFrame
         rec_data = gpd.GeoDataFrame(pd.concat(query_results))
         # Convert all column names to lowercase
@@ -237,57 +246,23 @@ def fetch_rec_data_from_niwa(engine: Engine, url: str = REC_API_URL) -> gpd.GeoD
     RuntimeError
         If failed to fetch REC data.
     """
-    # Retrieves the maximum and total record counts from the REC feature layer
-    max_record_count, total_record_count = get_feature_layer_record_counts(url)
+    upper_bound = 250  # Empirically derived manually, this appears to be the maximum we can achieve without errors
+    # Retrieves the maximum and total record counts from the REC feature layer, with an upper limit
+    max_record_count = min(get_feature_layer_max_record_count(url), upper_bound)
+
+    # Get the complete list of feature IDs in the REC dataset
+    feature_ids = get_feature_layer_record_ids(url)
+
     # Generate a list of API query parameters used to retrieve REC data in New Zealand
-    query_param_list = gen_rec_query_param_list(engine, max_record_count, total_record_count)
+    query_param_list = gen_rec_query_param_list(engine, max_record_count, feature_ids)
     try:
         # Log that the fetching of REC data has started
         log.info("Fetching 'rec_data' from NIWA using the ArcGIS REST API.")
         # Iterate over the list of API query parameters to fetch REC data in New Zealand
-        rec_data = asyncio.run(fetch_rec_data_for_nz(query_param_list, url))
+        rec_data = asyncio.run(fetch_rec_data_for_nz(query_param_list[:10], url))
         # Log that the REC data has been successfully fetched
         log.info("Successfully fetched 'rec_data' from NIWA using the ArcGIS REST API.")
         return rec_data
     except TypeError as e:
         # Raise a RuntimeError to indicate the failure
         raise RuntimeError("Failed to fetch 'rec_data' from NIWA using the ArcGIS REST API.") from e
-
-
-def fetch_backup_rec_data_from_niwa() -> gpd.GeoDataFrame:
-    """
-    Retrieve REC data in New Zealand from NIWA OpenData.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the fetched REC data in New Zealand.
-
-    Raises
-    -------
-    RuntimeError
-        If failed to fetch REC data.
-    """
-    # Log a message indicating the start of fetching process
-    log.info("Fetching backup 'rec_data' from NIWA OpenData.")
-    # URL for the GeoJSON REC data
-    url = ("https://opendata.arcgis.com/api/v3/datasets/ae4316ef6bc842c4aed6a76b10b0c39e_2/downloads/data?"
-           "format=geojson&spatialRefId=4326&where=1%3D1")
-    # Send a GET request to the URL
-    response = requests.get(url)
-    # Check if the request was successful (status code 200)
-    if response.status_code == 200:
-        # Parse the JSON response
-        geojson_data = response.json()
-        # Convert GeoJSON data to GeoDataFrame
-        rec_data = gpd.GeoDataFrame.from_features(geojson_data['features'])
-        # Ensure consistent column naming convention by converting all column names to lowercase
-        rec_data.columns = rec_data.columns.str.lower()
-        # Move the 'geometry' column to the end, ensuring spatial columns are located at the end of database tables
-        rec_data['geometry'] = rec_data.pop('geometry')
-        # Log a message indicating successful fetching
-        log.info("Successfully fetched backup 'rec_data' from NIWA OpenData.")
-        return rec_data
-    else:
-        # Raise a RuntimeError if fetching failed
-        raise RuntimeError("Failed to fetch backup 'rec_data' from NIWA OpenData.")

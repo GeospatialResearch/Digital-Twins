@@ -25,8 +25,6 @@ Functions
 
    src.geoserver.geoserver_common.get_geoserver_url
    src.geoserver.geoserver_common.create_workspace_if_not_exists
-   src.geoserver.geoserver_common.upload_file_to_store
-   src.geoserver.geoserver_common.send_create_layer_request
    src.geoserver.geoserver_common.style_exists
 
 
@@ -51,39 +49,6 @@ Module Contents
 
    :param workspace_name: The name of the workspace to create if it does not exists.
    :type workspace_name: str
-
-   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
-
-
-.. py:function:: upload_file_to_store(geoserver_url: str, file_to_add: pathlib.Path, store_name: str, workspace_name: str) -> None
-
-   Upload a file to a new GeoServer store, to enable serving.
-
-   :param geoserver_url: The URL to the geoserver instance.
-   :type geoserver_url: str
-   :param file_to_add: The filepath to the GeoTiff file to be served, currently support NetCDF and GeoTiff.
-   :type file_to_add: pathlib.Path
-   :param store_name: The name of the new Geoserver store to be created.
-   :type store_name: str
-   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
-   :type workspace_name: str
-
-   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
-   :raises ValueError: If file_to_add does not have a file extension matching one of the supported file types..
-
-
-.. py:function:: send_create_layer_request(geoserver_url: str, layer_name: str, workspace_name: str, coverage_payload: str) -> None
-
-   Create a GeoServer Layer from a GeoServer store, making it ready to serve.
-
-   :param geoserver_url: The URL to the geoserver instance.
-   :type geoserver_url: str
-   :param layer_name: Defines the name of the layer in GeoServer.
-   :type layer_name: str
-   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
-   :type workspace_name: str
-   :param coverage_payload: The coverage XML data to send in the Geoserver request payload.
-   :type coverage_payload: str
 
    :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
 

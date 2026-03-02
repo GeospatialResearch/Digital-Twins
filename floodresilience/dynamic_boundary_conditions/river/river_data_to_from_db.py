@@ -49,14 +49,8 @@ def store_rec_data_to_db(engine: Engine) -> None:
     if check_table_exists(engine, table_name):
         log.info(f"'{table_name}' already exists in the database.")
     else:
-        try:
-            # Retrieve REC data from NIWA using the ArcGIS REST API
-            rec_data = river_data_from_niwa.fetch_rec_data_from_niwa(engine)
-        except RuntimeError as error:
-            # Log a warning message to indicate that a runtime error occurred while fetching REC data
-            log.warning(error)
-            # Retrieve backup REC data from NIWA OpenData
-            rec_data = river_data_from_niwa.fetch_backup_rec_data_from_niwa()
+        # Retrieve REC data from NIWA's OpenData API
+        rec_data = river_data_from_niwa.fetch_rec_data_from_niwa(engine)
         # Store the REC data to the database table
         log.info(f"Adding '{table_name}' to the database.")
         rec_data.to_postgis(table_name, engine, index=False, if_exists="replace")
@@ -96,9 +90,10 @@ def get_sdc_data_from_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> gp
 
 
 def get_rec_data_with_sdc_from_db(
-        engine: Engine,
-        catchment_area: gpd.GeoDataFrame,
-        river_network_id: int) -> gpd.GeoDataFrame:
+    engine: Engine,
+    catchment_area: gpd.GeoDataFrame,
+    river_network_id: int
+) -> gpd.GeoDataFrame:
     """
     Retrieve REC data from the database for the specified catchment area with an additional column that identifies
     the associated sea-draining catchment for each REC geometry.
