@@ -21,7 +21,7 @@ from datetime import datetime
 import json
 from urllib.parse import urlencode
 
-from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest
+from pywps import BoundingBoxInput, ComplexOutput, Format, LiteralInput, Process, WPSRequest, ComplexInput
 from pywps.response.execute import ExecuteResponse
 from shapely import box
 
@@ -39,18 +39,36 @@ class FloodScenarioProcessService(Process):
         # Create bounding box WPS inputs
         current_year = datetime.today().year
         inputs = [
-            BoundingBoxInput("bboxIn", "Area of Interest", crss=["epsg:4326"]),
-            LiteralInput("projYear", "Projected Year", data_type="integer",
-                         allowed_values=list(range(current_year, 2151))),
-            LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
-            LiteralInput("sspScenario", "SSP Scenario", data_type="string", allowed_values=[
-                "SSP1-1.9",
-                "SSP1-2.6",
-                "SSP2-4.5",
-                "SSP3-7",
-                "SSP5-8.5"
-            ], default="SSP2-4.5"),
-            LiteralInput("addVlm", "Add Vertical Land Movement", data_type="string", allowed_values=["True", "False"])
+            ComplexInput('location', 'New Land Cover Area',
+                         supported_formats=[
+                             Format(mime_type='application/vnd.geo+json',
+                                    schema='http://geojson.org/geojson-spec.html#geojson')],
+                         workdir='workdir'
+                         ),
+            LiteralInput("projYear", "Landcover Class", data_type="integer",
+                         allowed_values=[
+                             "Cropland",
+                             "Cropland Mosaic",
+                             "Evergreen Forest",
+                             "Dense Deciduous Forest",
+                             "Deciduous Forest",
+                             "Needleleaf Forest",
+                             "Grassland Mosaic",
+                             "Shrubland",
+                             "Grassland",
+                             "Urban",
+                             "Bare Land",
+                             "Water"
+                         ]),
+            # LiteralInput("percentile", "Percentile", data_type="integer", allowed_values=[17, 50, 83], default=50),
+            # LiteralInput("sspScenario", "SSP Scenario", data_type="string", allowed_values=[
+            #     "SSP1-1.9",
+            #     "SSP1-2.6",
+            #     "SSP2-4.5",
+            #     "SSP3-7",
+            #     "SSP5-8.5"
+            # ], default="SSP2-4.5"),
+            # LiteralInput("addVlm", "Add Vertical Land Movement", data_type="string", allowed_values=["True", "False"])
         ]
         # Create area WPS outputs
         outputs = [
@@ -64,7 +82,7 @@ class FloodScenarioProcessService(Process):
         super().__init__(
             self._handler,
             identifier="fredt",
-            title="Model a flood scenario.",
+            title="Model Land Cover change flood impacts.",
             inputs=inputs,
             outputs=outputs,
         )

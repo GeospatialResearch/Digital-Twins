@@ -1,17 +1,169 @@
 {
   "homeCamera": {
-    "north": -43.35,
-    "east": 172.76,
-    "south": -43.42,
-    "west": 172.55
+    "west": 168.384,
+    "south": -46.383,
+    "east": 169.405,
+    "north": -46.035
   },
   "catalog": [
     {
       "type": "wps",
-      "name": "Model a flood scenario",
-      "description": "Model a climate scenario that will impact the flood scenario",
+      "name": "Model a land cover change flood scenario",
+      "description": "Model a land cover change scenario that will impact the flood scenario",
       "url": "$BACKEND_URL/wps",
       "identifier": "fredt"
+    },
+    {
+      "type": "group",
+      "name": "Pre-Human Land Cover",
+      "isOpen": true,
+      "members": [
+        {
+          "type": "wms",
+          "name": "Pre-Human Land Cover",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "pre_human_landcover",
+          "styles": "Landcover",
+          "isOpenInWorkbench": true
+        },
+        {
+          "type": "wms",
+          "name": "2020 Flood Event - Pre-Human Land Cover",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "2020_flood_event_natural_landcover",
+          "styles": "Flood_Inundation",
+          "isOpenInWorkbench": true
+        },
+        {
+          "type": "wfs",
+          "name": "Building Flood Status - Pre-Human Land Cover",
+          "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
+          "typeNames": "db-buildings:building_flood_status",
+          "parameters": {
+            "viewparams": "scenario:-2"
+          },
+          "maxFeatures": 300000,
+          "styles": [
+            {
+              "id": "is_flooded",
+              "title": "Building Flood Status",
+              "color": {
+                "mapType": "enum",
+                "colorColumn": "is_flooded_int",
+                "legend": {
+                  "title": "Building Flood Status",
+                  "items": [
+                    {
+                      "title": "Non-Flooded",
+                      "color": "darkgreen"
+                    },
+                    {
+                      "title": "Flooded",
+                      "color": "darkred"
+                    }
+                  ]
+                },
+                "enumColors": [
+                  {
+                    "value": "0",
+                    "color": "darkgreen"
+                  },
+                  {
+                    "value": "1",
+                    "color": "darkred"
+                  }
+                ]
+              },
+              "outline": {
+                "null": {
+                  "width": 0
+                }
+              }
+            }
+          ],
+          "activeStyle": "is_flooded"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "Current Land Cover",
+      "isOpen": true,
+      "members": [
+        {
+          "type": "wms",
+          "name": "2020 Flood Event - Current Land Cover",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "2020_flood_event_current_landcover",
+          "styles": "Flood_Inundation",
+          "isOpenInWorkbench": true
+        },
+        {
+          "type": "wms",
+          "name": "Current Land Cover",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "current_landcover",
+          "styles": "Landcover",
+          "isOpenInWorkbench": true
+        },
+        {
+          "type": "wfs",
+          "name": "Building Flood Status - Current Land Cover",
+          "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
+          "typeNames": "db-buildings:building_flood_status",
+          "parameters": {
+            "viewparams": "scenario:-1"
+          },
+          "maxFeatures": 300000,
+          "styles": [
+            {
+              "id": "is_flooded",
+              "title": "Building Flood Status",
+              "color": {
+                "mapType": "enum",
+                "colorColumn": "is_flooded_int",
+                "legend": {
+                  "title": "Building Flood Status",
+                  "items": [
+                    {
+                      "title": "Non-Flooded",
+                      "color": "darkgreen"
+                    },
+                    {
+                      "title": "Flooded",
+                      "color": "darkred"
+                    }
+                  ]
+                },
+                "enumColors": [
+                  {
+                    "value": "0",
+                    "color": "darkgreen"
+                  },
+                  {
+                    "value": "1",
+                    "color": "darkred"
+                  }
+                ]
+              },
+              "outline": {
+                "null": {
+                  "width": 0
+                }
+              }
+            }
+          ],
+          "activeStyle": "is_flooded"
+        }
+      ]
+    },
+    {
+      "type": "wms",
+      "name": "2020 Flood Event - Difference",
+      "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+      "layers": "difference_in_max_depth_pyramided",
+      "styles": "Difference_0_2_magma",
+      "isOpenInWorkbench": true
     }
   ],
   "baseMaps": {

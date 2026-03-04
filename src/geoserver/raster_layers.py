@@ -118,7 +118,7 @@ def reproject_raster_to_web_mercator(src_path: pathlib.Path, dst_path: pathlib.P
                     src_crs=src.crs,
                     dst_transform=dst.transform,
                     dst_crs=dst.crs,
-                    resampling=warp.Resampling.bilinear
+                    resampling=warp.Resampling.nearest
                 )
 
 

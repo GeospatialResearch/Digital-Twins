@@ -77,7 +77,7 @@ def find_flooded_buildings(engine: Engine,
     """
     # Open flood output and read the maximum depth raster
     with xarray.open_dataset(flood_model_output_path, decode_coords="all") as ds:
-        max_depth_raster = ds["hmax_P0"]
+        max_depth_raster = ds["band_data"]
     # Find areas flooded in a polygon format, if they are deeper than flood_depth_threshold
     thresholded_flood_polygons = polygonize_flooded_area(max_depth_raster, flood_depth_threshold)
     # Get building outlines from database
@@ -178,3 +178,22 @@ def polygonize_flooded_area(flood_raster: xarray.DataArray, flood_depth_threshol
         new_row = {"geometry": shapely_poly}
         polygons_records.append(new_row)
     return gpd.GeoDataFrame(polygons_records, crs=flood_raster.rio.crs.wkt)
+
+def do_stuff():
+    from src.digitaltwin.setup_environment import get_database
+    from src.digitaltwin.utils import setup_logging
+    import logging
+    setup_logging()
+    log = logging.getLogger(__name__)
+    flood_rasters = list(pathlib.Path("./src/static/geo").glob("2020_flood_event_*.tif"))
+    engine = get_database()
+    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    flood_depth_threshold = 0.1
+
+    for i, flood_raster in enumerate(flood_rasters):
+        model_id = -(i + 1)
+        log.info(f"Getting buildings for flood raster {flood_raster}")
+        buildings = find_flooded_buildings(engine, sample_polygon, flood_raster, flood_depth_threshold)
+        log.info(f"Saving buildings for flood raster {flood_raster}")
+        store_flooded_buildings_in_database(engine, buildings, model_id)
+    create_building_database_views_if_not_exists()

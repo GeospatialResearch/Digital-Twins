@@ -71,6 +71,8 @@ def main(
     data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
     # Store user log information in the database
     data_to_db.user_log_info_to_db(engine, catchment_area)
+    from floodresilience.flood_model.flooded_buildings import do_stuff
+    do_stuff()
 
 
 if __name__ == "__main__":
