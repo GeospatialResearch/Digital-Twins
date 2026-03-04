@@ -25,7 +25,7 @@ import shutil
 import requests
 
 from eddie.config import EnvVariable
-from eddie.geoserver.geoserver_common import get_geoserver_url, style_exists
+from eddie.geoserver.geoserver_common import get_geoserver_url
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}
@@ -166,6 +166,40 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, la
     upload_gtiff_to_store(gs_url, gtiff_filepath, layer_name, workspace_name)
     # Create a GIS layer from the raster file to be served from geoserver
     create_layer_from_gtiff_store(gs_url, layer_name, workspace_name)
+
+
+def style_exists(style_name: str) -> bool:
+    """
+    Check if a GeoServer style definition already exists for a given style_name.
+    The style definition may be empty.
+
+    Parameters
+    ----------
+    style_name : str
+        The name of the style to check for
+
+    Returns
+    -------
+    bool
+        True if the style exists, although it may be empty.
+        False if it does not exist.
+
+    Raises
+    -------
+    HTTPError
+        If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
+    """
+    response = requests.get(
+        f'{get_geoserver_url()}/styles/{style_name}.sld',
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    if response.status_code == HTTPStatus.OK:
+        return True
+    if response.status_code == HTTPStatus.NOT_FOUND:
+        return False
+    # If it does not meet the expected results then raise an error
+    # Raise error manually, so we can configure the text
+    raise requests.HTTPError(response.text, response=response)
 
 
 def delete_style(style_name: str) -> None:
