@@ -4,7 +4,7 @@
 
 name: Run tests
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   linting-flake8:
@@ -18,7 +18,7 @@ jobs:
           python -m pip install flake8==7.1.0 flake8-docstrings==1.7.0 flake8-annotations==3.1.1
       - name: Run lint with flake8
         run: |
-          flake8 src eddie_floodresilience
+          flake8 src
 
   linting-pylint:
     name: Lint Python with pylint
@@ -36,7 +36,7 @@ jobs:
           # only cache environment
           cache-environment: true
           cache-downloads: false
-      - run: | 
+      - run: |
           conda info
           conda list
           conda config --show-sources
@@ -46,7 +46,7 @@ jobs:
           python -m pip install pylint==3.2.6
       - name: Run lint with pylint
         run: |
-          pylint src eddie_floodresilience
+          pylint src
 
   unit-tests:
     name: Run unit tests with pytest
@@ -73,6 +73,10 @@ jobs:
           conda list
           conda config --show-sources
           conda config --show
+
+      - name: Install Eddie library
+        run: |
+          pip install lib/eddie
 
       - name: Create .env file with API keys
         env:
