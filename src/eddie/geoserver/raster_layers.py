@@ -17,10 +17,11 @@
 
 """Functions for serving raster layers via geoserver."""
 
-from importlib import resources
 import logging
 import pathlib
 import shutil
+from http import HTTPStatus
+from importlib import resources
 
 import requests
 

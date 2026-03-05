@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 import inspect
 import logging
 import pathlib
-import time
-from typing import Callable, Tuple, Type, TypeVar
 import warnings
 from enum import IntEnum
+from typing import Callable, Tuple, Type, TypeVar
 
 import geopandas as gpd
+import time
 from sqlalchemy.engine import Engine
 
 log = logging.getLogger(__name__)

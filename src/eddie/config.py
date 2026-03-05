@@ -1,4 +1,4 @@
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ from dotenv import load_dotenv
 cwd = pathlib.Path(os.getcwd())
 load_dotenv((cwd / ".env").as_posix())
 load_dotenv((cwd / "api_keys.env").as_posix())
+
 
 def _get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
     """

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -24,8 +24,8 @@ from flask import Flask, jsonify, make_response, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 
-from eddie.discover_plugins import discover_plugins
 from eddie.check_celery_alive import check_celery_alive
+from eddie.discover_plugins import discover_plugins
 from eddie.geoserver import get_terria_catalog
 
 # Initialise flask server object
@@ -48,7 +48,7 @@ for name, module in eddie_plugins.items():
     app.register_blueprint(module.blueprint.blueprint)
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index() -> Response:
     """
     Ping this endpoint to check that the flask app is running.
@@ -66,7 +66,7 @@ def index() -> Response:
     """, OK)
 
 
-@app.route('/health-check')
+@app.route('/health-check', methods=['GET'])
 @check_celery_alive
 def health_check() -> Response:
     """
@@ -81,7 +81,7 @@ def health_check() -> Response:
     return Response("Healthy", OK)
 
 
-@app.route('/terria-catalog.json')
+@app.route('/terria-catalog.json', methods=['GET'])
 def terria_catalog() -> Response:
     """
     Return a terria catalog that includes entries for static files and input layers from geoserver.
@@ -98,7 +98,7 @@ def terria_catalog() -> Response:
 
 # Development server
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='localhost')
 
 # Production server
 if __name__ != '__main__':

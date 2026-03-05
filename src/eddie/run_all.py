@@ -53,7 +53,7 @@ def main(
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
         if module == cache_new_results:
-            # We currently do not cache when directly running run_all, due to complexities in tracing the scenario options
+            # We currently do not cache when directly running run_all, due to complexity in tracing the scenario options
             continue
         # Call the main function of each module with the selected polygon and specified parameters
         module.main(selected_polygon_gdf, **parameters)
