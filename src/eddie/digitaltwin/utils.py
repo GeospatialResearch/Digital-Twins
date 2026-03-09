@@ -17,15 +17,15 @@
 
 """This script provides utility functions for logging configuration and geospatial data manipulation."""
 
+from enum import IntEnum
 import inspect
 import logging
 import pathlib
-import warnings
-from enum import IntEnum
+import time
 from typing import Callable, Tuple, Type, TypeVar
+import warnings
 
 import geopandas as gpd
-import time
 from sqlalchemy.engine import Engine
 
 log = logging.getLogger(__name__)
