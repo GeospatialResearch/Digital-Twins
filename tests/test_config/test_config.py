@@ -57,7 +57,7 @@ class GetEnvVariableTest(unittest.TestCase):
         test_var_value = "True"
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
-        self.assertEqual(config._get_bool_env_variable_func(self.TEST_VAR_KEY), True)
+        self.assertTrue(config._get_bool_env_variable_func(self.TEST_VAR_KEY))
 
     def test_false_bool_env_var(self):
         test_var_value = "F"
