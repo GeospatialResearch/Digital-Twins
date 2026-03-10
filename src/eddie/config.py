@@ -131,15 +131,8 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY")
     LINZ_API_KEY = _get_env_variable("LINZ_API_KEY")
     MFE_API_KEY = _get_env_variable("MFE_API_KEY")
-    NIWA_API_KEY = _get_env_variable("NIWA_API_KEY")
 
-    DEBUG_TRACEBACK = _get_bool_env_variable("DEBUG_TRACEBACK", default=False)
-    TEST_DATABASE_INTEGRATION = _get_bool_env_variable("TEST_DATABASE_INTEGRATION", default=True)
-
-    DATA_DIR = pathlib.Path(_get_env_variable("DATA_DIR"))
-    DATA_DIR_MODEL_OUTPUT = pathlib.Path(_get_env_variable("DATA_DIR_MODEL_OUTPUT"))
     DATA_DIR_GEOSERVER = pathlib.Path(_get_env_variable("DATA_DIR_GEOSERVER"))
-    FLOOD_MODEL_DIR = pathlib.Path(_get_env_variable("FLOOD_MODEL_DIR"))
 
     POSTGRES_HOST = _get_env_variable("POSTGRES_HOST", default="localhost")
     POSTGRES_PORT = _get_env_variable("POSTGRES_PORT", default="5431")
@@ -161,9 +154,3 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
 
     IS_ON_GITHUB_ACTIONS = _get_bool_env_variable("GITHUB_ACTIONS", default=False)
-
-    # NewZealidar config that we must ensure have values.
-    _LIDAR_DIR = _get_env_variable("LIDAR_DIR")
-    _DEM_DIR = _get_env_variable("DEM_DIR")
-    _LAND_FILE = _get_env_variable("LAND_FILE", allow_empty=True)
-    _INSTRUCTIONS_FILE = _get_env_variable("INSTRUCTIONS_FILE")
