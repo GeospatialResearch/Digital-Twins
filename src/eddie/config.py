@@ -27,12 +27,13 @@ load_dotenv((cwd / ".env").as_posix())
 load_dotenv((cwd / "api_keys.env").as_posix())
 
 
-def _get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
+def _get_env_variable_func(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
     """
     Read a string environment variable, with settings to allow defaults, empty values.
     To read a boolean use _get_bool_env_variable.
 
     For public use please use EnvVariable.
+    This module-level function is used by EnvVariable and children, but has been separated to simplify their usage.
 
     Parameters
     ----------
@@ -62,13 +63,14 @@ def _get_env_variable(var_name: str, default: Optional[str] = None, allow_empty:
     return env_var
 
 
-def _get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool:
+def _get_bool_env_variable_func(var_name: str, default: Optional[bool] = None) -> bool:
     """
     Read an environment variable and attempts to cast to bool, with settings to allow defaults.
     For bool casting we have the problem where bool("False") == True
     but this function fixes that so get_bool_env_variable("False") == False
 
     For public use please use EnvVariable.
+    This module-level function is used by EnvVariable and children, but has been separated to simplify their usage.
 
     Parameters
     ----------
@@ -87,7 +89,7 @@ def _get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> boo
     ValueError
         If allow_empty is False and the environment variable is empty string or None
     """
-    env_variable = _get_env_variable(var_name, str(default))
+    env_variable = _get_env_variable_func(var_name, str(default))
     try:
         return cast_str_to_bool(env_variable)
     except ValueError as e:
@@ -127,6 +129,63 @@ def cast_str_to_bool(string: str) -> bool:
 
 class EnvVariable:  # pylint: disable=too-few-public-methods
     """Encapsulates all environment variable fetching, ensuring proper defaults and types."""
+
+    @staticmethod
+    def _get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str:
+        """
+        Read a string environment variable, with settings to allow defaults, empty values.
+        To read a boolean use _get_bool_env_variable.
+
+        For public use please use EnvVariable.
+
+        Parameters
+        ----------
+        var_name : str
+            The name of the environment variable to retrieve.
+        default : Optional[str] = None
+            Default return value if the environment variable is empty or does not exist.
+        allow_empty : bool
+            If False then a KeyError will be raised if the environment variable is empty.
+
+        Returns
+        -------
+        str
+            The environment variable, or default if it is empty or does not exist.
+
+        Raises
+        ------
+        KeyError
+            If allow_empty is False and the environment variable is empty string or None
+        """
+        return _get_env_variable_func(var_name, default, allow_empty)
+
+    @staticmethod
+    def _get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool:
+        """
+        Read an environment variable and attempts to cast to bool, with settings to allow defaults.
+        For bool casting we have the problem where bool("False") == True
+        but this function fixes that so get_bool_env_variable("False") == False
+
+        For public use please use EnvVariable.
+
+        Parameters
+        ----------
+        var_name : str
+            The name of the environment variable to retrieve.
+        default : Optional[bool] = None
+            Default return value if the environment variable does not exist.
+
+        Returns
+        -------
+        bool
+            The environment variable, or default if it does not exist
+
+        Raises
+        ------
+        ValueError
+            If allow_empty is False and the environment variable is empty string or None
+        """
+        return _get_bool_env_variable_func(var_name, default)
 
     STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY")
     LINZ_API_KEY = _get_env_variable("LINZ_API_KEY")
