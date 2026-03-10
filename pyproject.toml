@@ -38,3 +38,6 @@ dev = ["pip-tools", "pytest"]
 
 [project.urls]
 Homepage = "https://github.com/GeospatialResearch/Digital-Twins"
+
+[tool.setuptools.package-data]
+"eddie" = ["**/*.xml"]
