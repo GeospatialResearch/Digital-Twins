@@ -4,7 +4,7 @@
 
 name: Run tests
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   linting-flake8:
@@ -18,7 +18,7 @@ jobs:
           python -m pip install flake8==7.1.0 flake8-docstrings==1.7.0 flake8-annotations==3.1.1
       - name: Run lint with flake8
         run: |
-          flake8 src floodresilience
+          flake8 src
 
   linting-pylint:
     name: Lint Python with pylint
@@ -29,6 +29,7 @@ jobs:
     steps:
       - name: Checkout github repo
         uses: actions/checkout@v2
+
       - name: Install package dependencies
         uses: mamba-org/setup-micromamba@4b9113af4fba0e9e1124b252dd6497a419e7396d
         with:
@@ -41,12 +42,18 @@ jobs:
           conda list
           conda config --show-sources
           conda config --show
+
       - name: Install pylint
         run: |
           python -m pip install pylint==3.2.6
+
+      - name: Install Eddie library (So imports can find `eddie` package)
+        run: |
+          pip install .
+
       - name: Run lint with pylint
         run: |
-          pylint src floodresilience
+          pylint src
 
   unit-tests:
     name: Run unit tests with pytest
@@ -73,6 +80,10 @@ jobs:
           conda list
           conda config --show-sources
           conda config --show
+
+      - name: Install Eddie library
+        run: |
+          pip install .
 
       - name: Create .env file with API keys
         env:

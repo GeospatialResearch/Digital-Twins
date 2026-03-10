@@ -15,5 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Scripts directly in this package deal with managing server and process configuration for the EDDIE library."""
-__version__ = "3.0.0"
+"""A module to represent a plugin, to be used to test if it can be found"""
+
+
+def example():
+    raise NotImplementedError("This function is just to provide a stub for testing")

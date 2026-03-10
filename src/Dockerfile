@@ -1,4 +1,4 @@
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -94,7 +94,7 @@ COPY --chown=root:root --chmod=555 --from=build /venv /venv
 COPY --chown=root:root --chmod=444 selected_polygon.geojson .
 COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
 COPY --chown=root:root --chmod=555 src src/
-COPY --chown=root:root --chmod=555 floodresilience floodresilience/
+COPY --chown=root:root --chmod=555 eddie_floodresilience eddie_floodresilience/
 COPY --chown=nonroot:nonroot --chmod=644 src/pywps.cfg src/
 
 USER nonroot

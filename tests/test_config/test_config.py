@@ -1,4 +1,4 @@
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 import os
 import unittest
 
-from src import config
+from eddie import config
 
 
 class GetEnvVariableTest(unittest.TestCase):
@@ -29,41 +29,41 @@ class GetEnvVariableTest(unittest.TestCase):
         # Manually set empty env variable
         os.environ[self.TEST_VAR_KEY] = ""
         with self.assertRaises(KeyError, msg="get_env_variable should raise a KeyError if the env variable is empty"):
-            config._get_env_variable(self.TEST_VAR_KEY)
+            config._get_env_variable_func(self.TEST_VAR_KEY)
 
     def test_empty_str_env_var_allow_empty(self):
         # Manually set empty env variable
         os.environ[self.TEST_VAR_KEY] = ""
-        self.assertEqual(config._get_env_variable(self.TEST_VAR_KEY, allow_empty=True), "")
+        self.assertEqual(config._get_env_variable_func(self.TEST_VAR_KEY, allow_empty=True), "")
 
     def test_non_existent_env_var(self):
         with self.assertRaises(KeyError,
                                msg="get_env_variable should raise a KeyError if the env variable does not exist"):
-            config._get_env_variable("NON_INITIALISED_ENVIRONMENT_VARIABLE_TEST_KEY")
+            config._get_env_variable_func("NON_INITIALISED_ENVIRONMENT_VARIABLE_TEST_KEY")
 
     def test_str_env_var(self):
         test_var_value = "TEST VALUE"
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
-        self.assertEqual(config._get_env_variable(self.TEST_VAR_KEY), test_var_value)
+        self.assertEqual(config._get_env_variable_func(self.TEST_VAR_KEY), test_var_value)
 
     def test_int_env_var(self):
         test_var_value = "10"
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
-        self.assertEqual(int(config._get_env_variable(self.TEST_VAR_KEY)), 10)
+        self.assertEqual(int(config._get_env_variable_func(self.TEST_VAR_KEY)), 10)
 
     def test_true_bool_env_var(self):
         test_var_value = "True"
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
-        self.assertEqual(config._get_bool_env_variable(self.TEST_VAR_KEY), True)
+        self.assertTrue(config._get_bool_env_variable_func(self.TEST_VAR_KEY))
 
     def test_false_bool_env_var(self):
         test_var_value = "F"
         # Manually set string env variable
         os.environ[self.TEST_VAR_KEY] = test_var_value
-        self.assertFalse(config._get_bool_env_variable(self.TEST_VAR_KEY))
+        self.assertFalse(config._get_bool_env_variable_func(self.TEST_VAR_KEY))
 
     def test_unknown_bool_env_var(self):
         test_var_value = "UNKNOWN"
@@ -71,17 +71,17 @@ class GetEnvVariableTest(unittest.TestCase):
         os.environ[self.TEST_VAR_KEY] = test_var_value
         with self.assertRaises(ValueError,
                                msg="get_env_variable should raise a ValueError if variable is being casted to bool but it is not explicitly True or False"):
-            config._get_bool_env_variable(self.TEST_VAR_KEY)
+            config._get_bool_env_variable_func(self.TEST_VAR_KEY)
 
     def test_default_env_var(self):
         default_string = "default test string"
-        self.assertEqual(config._get_env_variable(self.TEST_VAR_KEY, default=default_string), default_string)
+        self.assertEqual(config._get_env_variable_func(self.TEST_VAR_KEY, default=default_string), default_string)
 
     def test_empty_str_env_var_allow_empty_with_default(self):
         test_default_value = "TEST VALUE"
         # Manually set empty env variable
         os.environ[self.TEST_VAR_KEY] = ""
-        self.assertEqual(config._get_env_variable(self.TEST_VAR_KEY, allow_empty=True, default=test_default_value),
+        self.assertEqual(config._get_env_variable_func(self.TEST_VAR_KEY, allow_empty=True, default=test_default_value),
                          test_default_value)
 
     def test_empty_bool_env_var_with_default(self):
@@ -89,11 +89,12 @@ class GetEnvVariableTest(unittest.TestCase):
         # Manually set empty env variable
         os.environ[self.TEST_VAR_KEY] = ""
         self.assertEqual(
-            config._get_bool_env_variable(self.TEST_VAR_KEY, default=test_default_value),
+            config._get_bool_env_variable_func(self.TEST_VAR_KEY, default=test_default_value),
             test_default_value)
 
     def test_non_existent_env_var_allow_empty(self):
-        self.assertIsNone(config._get_env_variable("NON_INITIALISED_ENVIRONMENT_VARIABLE_TEST_KEY", allow_empty=True))
+        self.assertIsNone(
+            config._get_env_variable_func("NON_INITIALISED_ENVIRONMENT_VARIABLE_TEST_KEY", allow_empty=True))
 
 
 if __name__ == '__main__':

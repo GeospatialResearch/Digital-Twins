@@ -15,5 +15,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Scripts directly in this package deal with managing server and process configuration for the EDDIE library."""
-__version__ = "3.0.0"
+"""
+Functions and utilities for loading and serving data with geoserver.
+Imports here are accessible directly by `from eddie import geoserver`.
+"""
+from .database_layers import create_datastore_layer, create_db_store_if_not_exists, create_main_db_store
+from .geoserver_common import create_workspace_if_not_exists, get_geoserver_url
+from .raster_layers import add_gtiff_to_geoserver, add_style, style_exists
+from .terria_catalogs import Workspaces, get_terria_catalog
+
+__all__ = [
+    "add_gtiff_to_geoserver",
+    "add_style",
+    "create_datastore_layer",
+    "create_db_store_if_not_exists",
+    "create_main_db_store",
+    "create_workspace_if_not_exists",
+    "get_geoserver_url",
+    "get_terria_catalog",
+    "Workspaces",
+    "style_exists"
+]
