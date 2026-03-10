@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,8 +25,8 @@ import geopandas as gpd
 from sqlalchemy import insert
 
 from eddie.digitaltwin import setup_environment
-from eddie.digitaltwin.utils import LogLevel, setup_logging
 from eddie.digitaltwin.tables import CacheResults, create_table
+from eddie.digitaltwin.utils import LogLevel, setup_logging
 
 log = logging.getLogger(__name__)
 

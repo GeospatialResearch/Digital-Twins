@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@ API key in the environment variables.
 
 from typing import Optional
 
+from geoapis.vector import Linz, StatsNz, WfsQueryBase
 import geopandas as gpd
-from geoapis.vector import StatsNz, Linz, WfsQueryBase
 
 from eddie import config
 

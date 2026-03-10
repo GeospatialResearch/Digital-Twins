@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,8 @@ Imports here are accessible directly by `from eddie import geoserver`.
 """
 from .database_layers import create_datastore_layer, create_db_store_if_not_exists, create_main_db_store
 from .geoserver_common import create_workspace_if_not_exists, get_geoserver_url
-from .terria_catalogs import get_terria_catalog, Workspaces
 from .raster_layers import add_gtiff_to_geoserver, add_style, style_exists
+from .terria_catalogs import Workspaces, get_terria_catalog
 
 __all__ = [
     "add_gtiff_to_geoserver",

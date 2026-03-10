@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,11 @@
 
 """Functions for serving raster layers via geoserver."""
 
+from http import HTTPStatus
+from importlib import resources
 import logging
 import pathlib
 import shutil
-from http import HTTPStatus
-from importlib import resources
 
 import requests
 

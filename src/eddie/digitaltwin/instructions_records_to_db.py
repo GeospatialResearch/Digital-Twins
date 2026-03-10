@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,10 +25,10 @@ import logging
 import pathlib
 from typing import Dict, Union
 
-import requests
 import pandas as pd
-import validators
+import requests
 from sqlalchemy.engine import Engine
+import validators
 
 from eddie.digitaltwin.tables import GeospatialLayers, create_table
 

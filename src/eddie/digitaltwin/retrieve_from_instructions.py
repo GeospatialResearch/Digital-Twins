@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@ import pathlib
 
 import geopandas as gpd
 
-from eddie.digitaltwin import setup_environment, instructions_records_to_db, data_to_db
-from eddie.digitaltwin.utils import LogLevel, setup_logging, get_catchment_area
+from eddie.digitaltwin import data_to_db, instructions_records_to_db, setup_environment
+from eddie.digitaltwin.utils import LogLevel, get_catchment_area, setup_logging
 
 
 def main(

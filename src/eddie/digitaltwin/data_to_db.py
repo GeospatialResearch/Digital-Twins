@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -22,15 +22,15 @@ It also saves user log information in the database.
 
 import logging
 import pathlib
-from typing import Tuple, Set
+from typing import Set, Tuple
 
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
-from eddie.digitaltwin.tables import GeospatialLayers, UserLogInfo, create_table, check_table_exists, execute_query
 from eddie.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
+from eddie.digitaltwin.tables import GeospatialLayers, UserLogInfo, check_table_exists, create_table, execute_query
 import eddie.geoserver as gs
 
 log = logging.getLogger(__name__)

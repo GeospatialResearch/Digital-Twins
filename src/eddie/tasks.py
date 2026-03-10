@@ -1,4 +1,4 @@
-# Copyright © 2021-2025 Geospatial Research Institute Toi Hangarau
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 # LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
 #
 # This program is free software: you can redistribute it and/or modify
@@ -24,10 +24,10 @@ import traceback
 from typing import Dict, Tuple
 
 import billiard.einfo
+from celery import Celery, states
 import geopandas as gpd
 import shapely
 import sqlalchemy.exc
-from celery import Celery, states
 
 from eddie.config import EnvVariable
 from eddie.digitaltwin import retrieve_from_instructions

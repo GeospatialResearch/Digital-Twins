@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Methods used to find packages that are eddie plugins, and return information to help import them."""
 """Test cases for the eddie.discover_plugins module"""
 
 import pathlib
