@@ -16,4 +16,4 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """Scripts directly in this package deal with managing server and process configuration for the EDDIE library."""
-__version__ = "2.1.0"
+__version__ = "3.0.0"
