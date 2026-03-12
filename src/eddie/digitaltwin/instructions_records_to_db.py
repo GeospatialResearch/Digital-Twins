@@ -28,7 +28,6 @@ from typing import Dict, Union
 import pandas as pd
 import requests
 from sqlalchemy.engine import Engine
-import validators
 
 from eddie.digitaltwin.tables import GeospatialLayers, create_table
 
@@ -37,7 +36,7 @@ log = logging.getLogger(__name__)
 
 def validate_url_reachability(section: str, url: str) -> None:
     """
-    Validate the URL by checking its format and reachability.
+    Validate the URL by checking its eachability.
 
     Parameters
     ----------
@@ -49,12 +48,8 @@ def validate_url_reachability(section: str, url: str) -> None:
     Raises
     ------
     ValueError
-        - If the URL is invalid.
         - If the URL is unreachable.
     """
-    # Check if the URL is valid
-    if not validators.url(url):
-        raise ValueError(f"Invalid URL provided for {section}: '{url}'")
     # Check if the URL is reachable
     try:
         # Send a GET request to the URL

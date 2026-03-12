@@ -33,7 +33,6 @@ dependencies:
   - python-pdal==3.2.2 # Not on PyPI so needs to be added here and not through pip geofabrics
   - pytest>=7.4.3
   - psycopg2==2.9.3 # Needed for Linux environments
-  - validators==0.22.0  # Try remove in future
   - setuptools==80.10.2
   - sqlalchemy==1.4.49 # To migrate to sqlalchemy 2 some db connection code needs to change
   - geoalchemy2>=0.14.2
