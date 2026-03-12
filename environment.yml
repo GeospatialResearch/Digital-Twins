@@ -29,8 +29,6 @@ dependencies:
   - lxml==4.9.2
   - pandas==1.5.3
   - geopandas==0.12.2 # Needs to be explicit otherwise the dependencies required to use sjoin are not installed
-  - rasterio==1.3.6 # Needs to be explicit as wheel fails to build if insalled as a dependency of geofabrics
-  - python-pdal==3.2.2 # Not on PyPI so needs to be added here and not through pip geofabrics
   - pytest>=7.4.3
   - psycopg2==2.9.3 # Needed for Linux environments
   - setuptools==80.10.2
@@ -46,12 +44,9 @@ dependencies:
   - pip:
       - pandas==1.5.3
       - flask_swagger_ui==4.11.1
-      - selenium==4.16.0
-      - geovoronoi==0.4.0
       - geoapis==0.3.2
       - celery[redis]==5.2.7
       - gunicorn==20.1.0
-      - git+https://github.com/LukeParky/NewZeaLiDAR.git@v0.3
       - pywps==4.6.0 # pywps is available in conda but our fork of OWSLib is required for bounding boxes
       - git+https://github.com/GeospatialResearch/OWSLib.git
 
