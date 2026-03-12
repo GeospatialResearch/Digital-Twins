@@ -36,7 +36,6 @@ dependencies:
   - setuptools==80.10.2
   - sqlalchemy==1.4.49 # To migrate to sqlalchemy 2 some db connection code needs to change
   - geoalchemy2>=0.14.2
-  - plotly==5.18.0
   - geocube==0.4.2
   - pyarrow>=12.0.1
   - aiohttp==3.9.1
