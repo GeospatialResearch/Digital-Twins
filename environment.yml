@@ -22,32 +22,31 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - aiohttp==3.9.1
+  - botocore>=1.33.10 # Minimum version that is compatible with python >= 3.10 is botocore>=1.13.0
   - conda-pack==0.7.1 # Versions past this have bugs with scrapy dependencies not being packaged
-  - python==3.11  # 11 for StrEnum
-  - pip
-  - python-dotenv==1.0.0
+  - flask-cors==4.0.0
+  - flask>=1.9.3
+  - geoalchemy2>=0.14.2
+  - geopandas==0.12.2 # Needs to be explicit otherwise the dependencies required to use sjoin are not installed
+  - gevent==23.9.1
   - lxml==4.9.2
   - pandas==1.5.3
-  - geopandas==0.12.2 # Needs to be explicit otherwise the dependencies required to use sjoin are not installed
-  - pytest>=7.4.3
+  - pip
   - psycopg2==2.9.3 # Needed for Linux environments
+  - pyarrow>=12.0.1
+  - pytest>=7.4.3
+  - python-dotenv==1.0.0
+  - python==3.11  # 11 for StrEnum
+  - scrapy==2.11.1
   - setuptools==80.10.2
   - sqlalchemy==1.4.49 # To migrate to sqlalchemy 2 some db connection code needs to change
-  - geoalchemy2>=0.14.2
-  - pyarrow>=12.0.1
-  - aiohttp==3.9.1
-  - flask>=1.9.3
-  - flask-cors==4.0.0
-  - botocore>=1.33.10 # Minimum version that is compatible with python >= 3.10 is botocore>=1.13.0
-  - scrapy==2.11.1
-  - gevent==23.9.1
   - pip:
-      - pandas==1.5.3
+      - celery[redis]==5.2.7
       - flask_swagger_ui==4.11.1
       - geoapis==0.3.2
-      - celery[redis]==5.2.7
       - gunicorn==20.1.0
-      - pywps==4.6.0 # pywps is available in conda but our fork of OWSLib is required for bounding boxes
       - git+https://github.com/GeospatialResearch/OWSLib.git
-
+      - pandas==1.5.3
+      - pywps==4.6.0 # pywps is available in conda but our fork of OWSLib is required for bounding boxes
 prefix: 
