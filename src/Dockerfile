@@ -16,7 +16,7 @@
 
 # Main Dockerfile for setting up services defined in docker-compose.yml.
 
-FROM continuumio/miniconda3:23.10.0-1 AS build
+FROM continuumio/miniconda3:26.1.1 AS build
 # Miniconda layer for building conda environment
 WORKDIR /app
 
@@ -92,9 +92,7 @@ COPY --chown=root:root --chmod=555 --from=build /venv /venv
 
 # Copy source files and essential runtime files
 COPY --chown=root:root --chmod=444 selected_polygon.geojson .
-COPY --chown=nonroot:nonroot --chmod=644 instructions.json .
 COPY --chown=root:root --chmod=555 src src/
-COPY --chown=root:root --chmod=555 eddie_floodresilience eddie_floodresilience/
 COPY --chown=nonroot:nonroot --chmod=644 src/pywps.cfg src/
 
 USER nonroot
