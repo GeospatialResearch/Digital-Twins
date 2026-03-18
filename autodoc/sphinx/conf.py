@@ -12,16 +12,16 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../eddie'))
-sys.path.insert(0, os.path.abspath('../../eddie_floodresilience'))
+
+sys.path.insert(0, os.path.abspath('../../src/eddie'))
 
 from __init__ import __version__
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Flood Resilience Digital Twin (FReDT)'
-copyright = '2021-2025, Geospatial Research Institute Toi Hangarau'
+project = 'Environmental Digital Data Intelligence Engine (EDDIE)'
+copyright = '2021-2026, Geospatial Research Institute Toi Hangarau'
 author = 'Geospatial Research Institute Toi Hangarau'
 
 # The full version, including alpha/beta/rc tags
@@ -38,7 +38,7 @@ extensions = [
     'autoapi.extension',
 ]
 # -- Extension configuration -------------------------------------------------
-autoapi_dirs = ["../../eddie/", "../../eddie_floodresilience/"]
+autoapi_dirs = ["../../src"]
 
 
 # Add any paths that contain templates here, relative to this directory.
