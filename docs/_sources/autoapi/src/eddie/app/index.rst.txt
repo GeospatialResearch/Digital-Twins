@@ -1,0 +1,80 @@
+src.eddie.app
+=============
+
+.. py:module:: src.eddie.app
+
+.. autoapi-nested-parse::
+
+   The main web application that serves the Digital Twin to the web through a Rest API.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.app.app
+   src.eddie.app.SWAGGER_URL
+   src.eddie.app.API_URL
+   src.eddie.app.swagger_ui_blueprint
+   src.eddie.app.eddie_plugins
+   src.eddie.app.gunicorn_logger
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.app.index
+   src.eddie.app.health_check
+   src.eddie.app.terria_catalog
+
+
+Module Contents
+---------------
+
+.. py:data:: app
+
+.. py:data:: SWAGGER_URL
+   :value: '/swagger'
+
+
+.. py:data:: API_URL
+   :value: '/static/api_documentation.yml'
+
+
+.. py:data:: swagger_ui_blueprint
+
+.. py:data:: eddie_plugins
+
+.. py:function:: index() -> flask.Response
+
+   Ping this endpoint to check that the flask app is running.
+   Supported methods: GET
+
+   :returns: The HTTP Response. Expect OK if health check is successful
+   :rtype: Response
+
+
+.. py:function:: health_check() -> flask.Response
+
+   Ping this endpoint to check that the server is up and running.
+   Supported methods: GET
+
+   :returns: The HTTP Response. Expect OK if health check is successful
+   :rtype: Response
+
+
+.. py:function:: terria_catalog() -> flask.Response
+
+   Return a terria catalog that includes entries for static files and input layers from geoserver.
+   Supported methods: GET
+
+   :returns: The HTTP Response. Expect OK if health check is successful
+   :rtype: Response
+
+
+.. py:data:: gunicorn_logger
+

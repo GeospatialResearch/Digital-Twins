@@ -1,0 +1,47 @@
+src.eddie.digitaltwin.check_cache_results
+=========================================
+
+.. py:module:: src.eddie.digitaltwin.check_cache_results
+
+.. autoapi-nested-parse::
+
+   This script checks the cache for a matching model output for given input parameters,
+   and retrieves the model_id if a match is found.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.digitaltwin.check_cache_results.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.digitaltwin.check_cache_results.main
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: main(selected_polygon: geopandas.GeoDataFrame, scenario_options: dict) -> int | None
+
+   Search the cache for model input generated with identical scenario_options and a selected polygon which contains
+   this function's selected_polygon.
+
+   :param selected_polygon: The area of interest to search the cache for. Positive results if the cached polygon contains this polygon.
+   :type selected_polygon: gpd.GeoDataFrame
+   :param scenario_options: The model input parameters, which must match exactly with the cached results for a positive match.
+   :type scenario_options: dict
+
+   :returns: Returns the matching model_id if a match is found. Otherwise, None.
+   :rtype: int | None
+
+

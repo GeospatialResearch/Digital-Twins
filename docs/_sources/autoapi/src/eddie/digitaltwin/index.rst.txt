@@ -1,0 +1,29 @@
+src.eddie.digitaltwin
+=====================
+
+.. py:module:: src.eddie.digitaltwin
+
+.. autoapi-nested-parse::
+
+   Package to handle data and operations specific to geospatial layers.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/src/eddie/digitaltwin/arcgis_rest_api/index
+   /autoapi/src/eddie/digitaltwin/cache_new_results/index
+   /autoapi/src/eddie/digitaltwin/check_cache_results/index
+   /autoapi/src/eddie/digitaltwin/data_to_db/index
+   /autoapi/src/eddie/digitaltwin/get_data_using_geoapis/index
+   /autoapi/src/eddie/digitaltwin/instructions_records_to_db/index
+   /autoapi/src/eddie/digitaltwin/retrieve_from_instructions/index
+   /autoapi/src/eddie/digitaltwin/setup_environment/index
+   /autoapi/src/eddie/digitaltwin/tables/index
+   /autoapi/src/eddie/digitaltwin/utils/index
+
+

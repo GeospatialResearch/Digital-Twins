@@ -1,0 +1,144 @@
+src.eddie.geoserver.terria_catalogs
+===================================
+
+.. py:module:: src.eddie.geoserver.terria_catalogs
+
+.. autoapi-nested-parse::
+
+   Functions for handling creating TerriaJS catalog items by reading the geoserver workspaces.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.geoserver.terria_catalogs.CatalogItem
+   src.eddie.geoserver.terria_catalogs.CatalogGroup
+   src.eddie.geoserver.terria_catalogs.Catalog
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.eddie.geoserver.terria_catalogs.Workspaces
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.geoserver.terria_catalogs.create_vector_layer_catalog_item
+   src.eddie.geoserver.terria_catalogs.create_raster_layer_catalog_item
+   src.eddie.geoserver.terria_catalogs.get_layers_as_terria_group
+   src.eddie.geoserver.terria_catalogs.get_terria_catalog
+
+
+Module Contents
+---------------
+
+.. py:type:: CatalogItem
+   :canonical: dict[str, str | int]
+
+
+.. py:type:: CatalogGroup
+   :canonical: dict[str, str | bool | list[CatalogItem]]
+
+
+.. py:type:: Catalog
+   :canonical: dict[Literal['catalog'], list[CatalogGroup]]
+
+
+.. py:class:: Workspaces
+
+   Bases: :py:obj:`enum.StrEnum`
+
+
+   Enum to label and access geoserver workspaces initialized within data_to_db.py.
+
+   .. attribute:: STATIC_FILES_WORKSPACE
+
+      Workspace containing layers loaded from static files.
+
+      :type: str
+
+   .. attribute:: INPUT_LAYERS_WORKSPACE
+
+      Workspace containing layers loaded from external sources used as input for later modelling or visualisation.
+
+      :type: str
+
+
+   .. py:attribute:: STATIC_FILES_WORKSPACE
+      :value: 'static_files'
+
+
+
+   .. py:attribute:: INPUT_LAYERS_WORKSPACE
+      :value: 'input_layers'
+
+
+
+   .. py:attribute:: EXTRUDED_LAYERS_WORKSPACE
+      :value: 'extruded_layers'
+
+
+
+.. py:function:: create_vector_layer_catalog_item(workspace_name: str, workspace_url: str, layer_name: str, max_features: int = 60000) -> CatalogItem
+
+   Create a JSON TerriaJS catalog item for a single GeoServer vector WFS layer.
+
+   :param workspace_name:
+   :type workspace_name: str
+   :param workspace_url: The URL to the GeoServer workspace.
+   :type workspace_url: str
+   :param layer_name: The name of the layer in Geoserver.
+   :type layer_name: str
+   :param max_features: The maximum number of features to fetch from Geoserver.
+   :type max_features: int = 60000
+
+   :returns: JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
+   :rtype: CatalogItem
+
+
+.. py:function:: create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> CatalogItem
+
+   Create a JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
+
+   :param workspace_url: The URL to the GeoServer workspace.
+   :type workspace_url: str
+   :param layer_name: The name of the layer in Geoserver.
+   :type layer_name: str
+
+   :returns: JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
+   :rtype: CatalogItem
+
+
+.. py:function:: get_layers_as_terria_group(workspace_name: str) -> CatalogGroup
+
+   Query geoserver for available layers within a workspace, and return a terria catalog to serve the data.
+   The style definition may be empty.
+
+   :param workspace_name: The name of the geoserver workspace to query for.
+   :type workspace_name: str
+
+   :returns: Represents the Terria JSON catalog group items for each layer within the workspace.
+   :rtype: CatalogGroup
+
+   :raises HTTPError: If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
+
+
+.. py:function:: get_terria_catalog() -> Catalog
+
+   Query geoserver for available layers from key workspaces, and return a terria catalog to serve the data.
+
+   :returns: Represents the Terria JSON catalog items for each layer within the workspaces.
+   :rtype: Catalog
+
+   :raises HTTPError: If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
+
+

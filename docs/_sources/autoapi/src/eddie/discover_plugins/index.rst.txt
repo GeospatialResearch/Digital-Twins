@@ -1,0 +1,41 @@
+src.eddie.discover_plugins
+==========================
+
+.. py:module:: src.eddie.discover_plugins
+
+.. autoapi-nested-parse::
+
+   Methods used to find packages that are eddie plugins, and return information to help import them.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.discover_plugins.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.discover_plugins.discover_plugins
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: discover_plugins() -> dict[str, types.ModuleType]
+
+   Collate all plugin packages that start with 'eddie_' and return their information as a dict
+
+   :returns: Dictionary of all packages found in the current environment starting with 'eddie_'.
+             The key is the package name, the value is the package module itself.
+   :rtype: dict[str, ModuleType]
+
+

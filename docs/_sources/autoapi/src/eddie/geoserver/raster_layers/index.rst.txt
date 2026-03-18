@@ -1,0 +1,159 @@
+src.eddie.geoserver.raster_layers
+=================================
+
+.. py:module:: src.eddie.geoserver.raster_layers
+
+.. autoapi-nested-parse::
+
+   Functions for serving raster layers via geoserver.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.geoserver.raster_layers.log
+   src.eddie.geoserver.raster_layers._xml_header
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.geoserver.raster_layers.upload_gtiff_to_store
+   src.eddie.geoserver.raster_layers.create_layer_from_gtiff_store
+   src.eddie.geoserver.raster_layers.send_create_layer_request
+   src.eddie.geoserver.raster_layers.add_gtiff_to_geoserver
+   src.eddie.geoserver.raster_layers.style_exists
+   src.eddie.geoserver.raster_layers.delete_style
+   src.eddie.geoserver.raster_layers.add_style
+   src.eddie.geoserver.raster_layers.delete_store
+   src.eddie.geoserver.raster_layers.get_workspace_raster_layers
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:data:: _xml_header
+
+.. py:function:: upload_gtiff_to_store(geoserver_url: str, gtiff_filepath: pathlib.Path, store_name: str, workspace_name: str) -> None
+
+   Upload a GeoTiff file to a new GeoServer store, to enable serving.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param gtiff_filepath: The filepath to the GeoTiff file to be served.
+   :type gtiff_filepath: pathlib.Path
+   :param store_name: The name of the new Geoserver store to be created.
+   :type store_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace_name: str) -> None
+
+   Create a GeoServer Layer from a GeoServer store, making it ready to serve.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param layer_name: Defines the name of the layer in GeoServer.
+   :type layer_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: send_create_layer_request(geoserver_url: str, layer_name: str, workspace_name: str, coverage_payload: str) -> None
+
+   Create a GeoServer Layer from a GeoServer store, making it ready to serve.
+
+   :param geoserver_url: The URL to the geoserver instance.
+   :type geoserver_url: str
+   :param layer_name: Defines the name of the layer in GeoServer.
+   :type layer_name: str
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param coverage_payload: The coverage XML data to send in the Geoserver request payload.
+   :type coverage_payload: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+
+.. py:function:: add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, layer_name: str) -> None
+
+   Upload a GeoTiff file to GeoServer, ready for serving to clients.
+
+   :param gtiff_filepath: The filepath to the GeoTiff file to be served.
+   :type gtiff_filepath: pathlib.Path
+   :param workspace_name: The name of the existing GeoServer workspace that the store is to be added to.
+   :type workspace_name: str
+   :param layer_name: The name of the layer being added must be unique within the workspace. #todo check uniqueness
+   :type layer_name: str
+
+
+.. py:function:: style_exists(style_name: str) -> bool
+
+   Check if a GeoServer style definition already exists for a given style_name.
+   The style definition may be empty.
+
+   :param style_name: The name of the style to check for
+   :type style_name: str
+
+   :returns: True if the style exists, although it may be empty.
+             False if it does not exist.
+   :rtype: bool
+
+   :raises HTTPError: If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
+
+
+.. py:function:: delete_style(style_name: str) -> None
+
+   Delete a style from the default geoserver workspace
+
+   :param style_name: The name of the style being deleted.
+   :type style_name: str
+
+
+.. py:function:: add_style(style_file: pathlib.Path, replace: bool = False) -> None
+
+   Create a GeoServer style in the default workspace for rasters using a SLD style definition file.
+
+   :param style_file: The path to the style definition (SLD) file to upload.
+   :type style_file: pathlib.Path
+   :param replace: True if you want to replace the existing style, False to skip adding the style if one already exists.
+   :type replace: bool = False
+
+
+.. py:function:: delete_store(store_name: str, workspace_name: str) -> None
+
+   Delete a Geoserver CoverageStore from a workspace.
+
+   :param store_name: The name of the Geoserver CoverageStore to delete.
+   :type store_name: str
+   :param workspace_name: The name of the workspace to delete the store from.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error status code.
+
+
+.. py:function:: get_workspace_raster_layers(workspace_name: str) -> list[str]
+
+   Retrieve all raster layer names from a geoserver workspace.
+
+   :param workspace_name: The name of the geoserver workspace being queried.
+   :type workspace_name: str
+
+   :returns: The names of each layer, not including the workspace name.
+   :rtype: list[str]
+
+   :raises HTTPError: If geoserver responds with anything but OK, raises it as an exception since it is unexpected.
+
+

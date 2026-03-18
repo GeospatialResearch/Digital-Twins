@@ -1,0 +1,54 @@
+src.eddie.digitaltwin.cache_new_results
+=======================================
+
+.. py:module:: src.eddie.digitaltwin.cache_new_results
+
+.. autoapi-nested-parse::
+
+   This script facilitates caching model results, allowing results to be retrieved immediately if the same
+   scenario options are queried later.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.digitaltwin.cache_new_results.log
+   src.eddie.digitaltwin.cache_new_results.sample_polygon
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.digitaltwin.cache_new_results.main
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: main(selected_polygon_gdf: geopandas.GeoDataFrame, model_id: int, scenario_options: dict, log_level: eddie.digitaltwin.utils.LogLevel = LogLevel.DEBUG) -> int
+
+   Cache the scenario options used to generate the existing model with the given model id, for faster retrieval later.
+
+   :param selected_polygon_gdf: The selected area of interest to cache, any area fully intersecting this one can be retrieved later if the other
+                                parameters match.
+   :type selected_polygon_gdf: gpd.GeoDataFrame
+   :param model_id: The database id of the existing model output to attach the cached parameters to.
+   :type model_id: int
+   :param scenario_options: The input parameters to the model to cache, which must match for later retrieval.
+   :type scenario_options: dict
+   :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+   :type log_level: LogLevel = LogLevel.DEBUG
+
+   :returns: model_id re-returned to allow method chaining.
+   :rtype: int
+
+
+.. py:data:: sample_polygon
+

@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Digital Twin for Flood Resilience in Aotearoa New Zealand's documentation!
+Welcome to the Environmental Digital Data Intelligence Engine (EDDIE) documentation!
 =====================================================================================
 
 REST API specification
@@ -15,7 +15,8 @@ Python codebase documentation
 ===============================
 
 .. toctree::
-   :maxdepth: 4
+   :titlesonly:
+   :maxdepth: 5
    :caption: Contents:
 
 

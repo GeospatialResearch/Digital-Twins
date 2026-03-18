@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.eddie.tasks &mdash; Environmental Digital Data Intelligence Engine (EDDIE) 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="prev" title="src.eddie.run_all" href="../run_all/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Environmental Digital Data Intelligence Engine (EDDIE)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">src</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">src.eddie</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../app/index.html">src.eddie.app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../check_celery_alive/index.html">src.eddie.check_celery_alive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../config/index.html">src.eddie.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../digitaltwin/index.html">src.eddie.digitaltwin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../discover_plugins/index.html">src.eddie.discover_plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../geoserver/index.html">src.eddie.geoserver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../run_all/index.html">src.eddie.run_all</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">src.eddie.tasks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Environmental Digital Data Intelligence Engine (EDDIE)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.eddie</a></li>
+      <li class="breadcrumb-item active">src.eddie.tasks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/src/eddie/tasks/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.eddie.tasks">
+<span id="src-eddie-tasks"></span><h1>src.eddie.tasks<a class="headerlink" href="#module-src.eddie.tasks" title="Link to this heading"></a></h1>
+<p>Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
+Allows the frontend to send tasks and retrieve status later.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.tasks.message_broker_url" title="src.eddie.tasks.message_broker_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">message_broker_url</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.tasks.app" title="src.eddie.tasks.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.tasks.log" title="src.eddie.tasks.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.tasks.eddie_plugins" title="src.eddie.tasks.eddie_plugins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eddie_plugins</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.tasks.OnFailureStateTask" title="src.eddie.tasks.OnFailureStateTask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OnFailureStateTask</span></code></a></p></td>
+<td><p>Task that switches state to FAILURE if an exception occurs.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.tasks.add_base_data_to_db" title="src.eddie.tasks.add_base_data_to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_base_data_to_db</span></code></a>(→ None)</p></td>
+<td><p>Task to ensure static base data for the given area is added to the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.tasks.wkt_to_gdf" title="src.eddie.tasks.wkt_to_gdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wkt_to_gdf</span></code></a>(→ geopandas.GeoDataFrame)</p></td>
+<td><p>Transform a WKT string polygon into a GeoDataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.tasks.message_broker_url">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.tasks.</span></span><span class="sig-name descname"><span class="pre">message_broker_url</span></span><a class="headerlink" href="#src.eddie.tasks.message_broker_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.tasks.app">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.tasks.</span></span><span class="sig-name descname"><span class="pre">app</span></span><a class="headerlink" href="#src.eddie.tasks.app" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.tasks.log">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.tasks.</span></span><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#src.eddie.tasks.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.eddie.tasks.OnFailureStateTask">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.eddie.tasks.</span></span><span class="sig-name descname"><span class="pre">OnFailureStateTask</span></span><a class="headerlink" href="#src.eddie.tasks.OnFailureStateTask" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.eddie.tasks.app" title="src.eddie.tasks.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a></p>
+<p>Task that switches state to FAILURE if an exception occurs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.eddie.tasks.OnFailureStateTask.on_failure">
+<span class="sig-name descname"><span class="pre">on_failure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_task_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_einfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">billiard.einfo.ExceptionInfo</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.eddie.tasks.OnFailureStateTask.on_failure" title="Link to this definition"></a></dt>
+<dd><p>Change state to FAILURE and add exception to task data if an exception occurs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>exc</strong> (<em>Exception</em>) – The exception raised by the task.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.tasks.add_base_data_to_db">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.tasks.</span></span><span class="sig-name descname"><span class="pre">add_base_data_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_polygon_wkt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_data_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.eddie.tasks.add_base_data_to_db" title="Link to this definition"></a></dt>
+<dd><p>Task to ensure static base data for the given area is added to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selected_polygon_wkt</strong> (<em>str</em>) – The polygon defining the selected area to add base data for. Defined in WKT form.</p></li>
+<li><p><strong>base_data_parameters</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – The parameters from DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions] for the particular module.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.tasks.wkt_to_gdf">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.tasks.</span></span><span class="sig-name descname"><span class="pre">wkt_to_gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wkt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">geopandas.GeoDataFrame</span></span></span><a class="headerlink" href="#src.eddie.tasks.wkt_to_gdf" title="Link to this definition"></a></dt>
+<dd><p>Transform a WKT string polygon into a GeoDataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>wkt</strong> (<em>str</em>) – The WKT form of the polygon to be transformed. In WGS84 CRS (epsg:4326).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The GeoDataFrame form of the polygon after being transformed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.tasks.eddie_plugins">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.tasks.</span></span><span class="sig-name descname"><span class="pre">eddie_plugins</span></span><a class="headerlink" href="#src.eddie.tasks.eddie_plugins" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../run_all/index.html" class="btn btn-neutral float-left" title="src.eddie.run_all" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

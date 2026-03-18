@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.eddie.geoserver.terria_catalogs &mdash; Environmental Digital Data Intelligence Engine (EDDIE) 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="src.eddie.run_all" href="../../run_all/index.html" />
+    <link rel="prev" title="src.eddie.geoserver.templates" href="../templates/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Environmental Digital Data Intelligence Engine (EDDIE)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">src</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html">src.eddie</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../app/index.html">src.eddie.app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../check_celery_alive/index.html">src.eddie.check_celery_alive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../config/index.html">src.eddie.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../digitaltwin/index.html">src.eddie.digitaltwin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../discover_plugins/index.html">src.eddie.discover_plugins</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">src.eddie.geoserver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../run_all/index.html">src.eddie.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../tasks/index.html">src.eddie.tasks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Environmental Digital Data Intelligence Engine (EDDIE)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src.eddie</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.eddie.geoserver</a></li>
+      <li class="breadcrumb-item active">src.eddie.geoserver.terria_catalogs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/src/eddie/geoserver/terria_catalogs/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.eddie.geoserver.terria_catalogs">
+<span id="src-eddie-geoserver-terria-catalogs"></span><h1>src.eddie.geoserver.terria_catalogs<a class="headerlink" href="#module-src.eddie.geoserver.terria_catalogs" title="Link to this heading"></a></h1>
+<p>Functions for handling creating TerriaJS catalog items by reading the geoserver workspaces.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogItem" title="src.eddie.geoserver.terria_catalogs.CatalogItem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CatalogItem</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogGroup" title="src.eddie.geoserver.terria_catalogs.CatalogGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CatalogGroup</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.Catalog" title="src.eddie.geoserver.terria_catalogs.Catalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Catalog</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.Workspaces" title="src.eddie.geoserver.terria_catalogs.Workspaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Workspaces</span></code></a></p></td>
+<td><p>Enum to label and access geoserver workspaces initialized within data_to_db.py.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.create_vector_layer_catalog_item" title="src.eddie.geoserver.terria_catalogs.create_vector_layer_catalog_item"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_vector_layer_catalog_item</span></code></a>(→ CatalogItem)</p></td>
+<td><p>Create a JSON TerriaJS catalog item for a single GeoServer vector WFS layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.create_raster_layer_catalog_item" title="src.eddie.geoserver.terria_catalogs.create_raster_layer_catalog_item"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_raster_layer_catalog_item</span></code></a>(→ CatalogItem)</p></td>
+<td><p>Create a JSON TerriaJS catalog item for a single GeoServer raster WMS layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.get_layers_as_terria_group" title="src.eddie.geoserver.terria_catalogs.get_layers_as_terria_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_layers_as_terria_group</span></code></a>(→ CatalogGroup)</p></td>
+<td><p>Query geoserver for available layers within a workspace, and return a terria catalog to serve the data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.get_terria_catalog" title="src.eddie.geoserver.terria_catalogs.get_terria_catalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_terria_catalog</span></code></a>(→ Catalog)</p></td>
+<td><p>Query geoserver for available layers from key workspaces, and return a terria catalog to serve the data.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py type">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.CatalogItem">
+<span class="property"><span class="k"><span class="pre">type</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.eddie.geoserver.terria_catalogs.</span></span><span class="sig-name descname"><span class="pre">CatalogItem</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.CatalogItem" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py type">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.CatalogGroup">
+<span class="property"><span class="k"><span class="pre">type</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.eddie.geoserver.terria_catalogs.</span></span><span class="sig-name descname"><span class="pre">CatalogGroup</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogItem" title="src.eddie.geoserver.terria_catalogs.CatalogItem"><span class="pre">CatalogItem</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.CatalogGroup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py type">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.Catalog">
+<span class="property"><span class="k"><span class="pre">type</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.eddie.geoserver.terria_catalogs.</span></span><span class="sig-name descname"><span class="pre">Catalog</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'catalog'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogGroup" title="src.eddie.geoserver.terria_catalogs.CatalogGroup"><span class="pre">CatalogGroup</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.Catalog" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.Workspaces">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.eddie.geoserver.terria_catalogs.</span></span><span class="sig-name descname"><span class="pre">Workspaces</span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.Workspaces" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.StrEnum</span></code></p>
+<p>Enum to label and access geoserver workspaces initialized within data_to_db.py.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.Workspaces.STATIC_FILES_WORKSPACE">
+<span class="sig-name descname"><span class="pre">STATIC_FILES_WORKSPACE</span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.Workspaces.STATIC_FILES_WORKSPACE" title="Link to this definition"></a></dt>
+<dd><p>Workspace containing layers loaded from static files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.Workspaces.INPUT_LAYERS_WORKSPACE">
+<span class="sig-name descname"><span class="pre">INPUT_LAYERS_WORKSPACE</span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.Workspaces.INPUT_LAYERS_WORKSPACE" title="Link to this definition"></a></dt>
+<dd><p>Workspace containing layers loaded from external sources used as input for later modelling or visualisation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">STATIC_FILES_WORKSPACE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'static_files'</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">INPUT_LAYERS_WORKSPACE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'input_layers'</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.Workspaces.EXTRUDED_LAYERS_WORKSPACE">
+<span class="sig-name descname"><span class="pre">EXTRUDED_LAYERS_WORKSPACE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'extruded_layers'</span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.Workspaces.EXTRUDED_LAYERS_WORKSPACE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.create_vector_layer_catalog_item">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.geoserver.terria_catalogs.</span></span><span class="sig-name descname"><span class="pre">create_vector_layer_catalog_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogItem" title="src.eddie.geoserver.terria_catalogs.CatalogItem"><span class="pre">CatalogItem</span></a></span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.create_vector_layer_catalog_item" title="Link to this definition"></a></dt>
+<dd><p>Create a JSON TerriaJS catalog item for a single GeoServer vector WFS layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_name</strong> (<em>str</em>)</p></li>
+<li><p><strong>workspace_url</strong> (<em>str</em>) – The URL to the GeoServer workspace.</p></li>
+<li><p><strong>layer_name</strong> (<em>str</em>) – The name of the layer in Geoserver.</p></li>
+<li><p><strong>max_features</strong> (<em>int = 60000</em>) – The maximum number of features to fetch from Geoserver.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON TerriaJS catalog item for a single GeoServer raster WMS layer.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogItem" title="src.eddie.geoserver.terria_catalogs.CatalogItem">CatalogItem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.create_raster_layer_catalog_item">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.geoserver.terria_catalogs.</span></span><span class="sig-name descname"><span class="pre">create_raster_layer_catalog_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogItem" title="src.eddie.geoserver.terria_catalogs.CatalogItem"><span class="pre">CatalogItem</span></a></span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.create_raster_layer_catalog_item" title="Link to this definition"></a></dt>
+<dd><p>Create a JSON TerriaJS catalog item for a single GeoServer raster WMS layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_url</strong> (<em>str</em>) – The URL to the GeoServer workspace.</p></li>
+<li><p><strong>layer_name</strong> (<em>str</em>) – The name of the layer in Geoserver.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON TerriaJS catalog item for a single GeoServer raster WMS layer.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogItem" title="src.eddie.geoserver.terria_catalogs.CatalogItem">CatalogItem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.get_layers_as_terria_group">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.geoserver.terria_catalogs.</span></span><span class="sig-name descname"><span class="pre">get_layers_as_terria_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogGroup" title="src.eddie.geoserver.terria_catalogs.CatalogGroup"><span class="pre">CatalogGroup</span></a></span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.get_layers_as_terria_group" title="Link to this definition"></a></dt>
+<dd><p>Query geoserver for available layers within a workspace, and return a terria catalog to serve the data.
+The style definition may be empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>workspace_name</strong> (<em>str</em>) – The name of the geoserver workspace to query for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Represents the Terria JSON catalog group items for each layer within the workspace.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.CatalogGroup" title="src.eddie.geoserver.terria_catalogs.CatalogGroup">CatalogGroup</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPError</strong> – If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.geoserver.terria_catalogs.get_terria_catalog">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.geoserver.terria_catalogs.</span></span><span class="sig-name descname"><span class="pre">get_terria_catalog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.Catalog" title="src.eddie.geoserver.terria_catalogs.Catalog"><span class="pre">Catalog</span></a></span></span><a class="headerlink" href="#src.eddie.geoserver.terria_catalogs.get_terria_catalog" title="Link to this definition"></a></dt>
+<dd><p>Query geoserver for available layers from key workspaces, and return a terria catalog to serve the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Represents the Terria JSON catalog items for each layer within the workspaces.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#src.eddie.geoserver.terria_catalogs.Catalog" title="src.eddie.geoserver.terria_catalogs.Catalog">Catalog</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>HTTPError</strong> – If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../templates/index.html" class="btn btn-neutral float-left" title="src.eddie.geoserver.templates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../run_all/index.html" class="btn btn-neutral float-right" title="src.eddie.run_all" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

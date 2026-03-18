@@ -1,0 +1,209 @@
+src.eddie.config
+================
+
+.. py:module:: src.eddie.config
+
+.. autoapi-nested-parse::
+
+   Collection of utils that are used for system and environment configuration.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.config.cwd
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.eddie.config.EnvVariable
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.config._get_env_variable_func
+   src.eddie.config._get_bool_env_variable_func
+   src.eddie.config.cast_str_to_bool
+
+
+Module Contents
+---------------
+
+.. py:data:: cwd
+
+.. py:function:: _get_env_variable_func(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str
+
+   Read a string environment variable, with settings to allow defaults, empty values.
+   To read a boolean use _get_bool_env_variable.
+
+   For public use please use EnvVariable.
+   This module-level function is used by EnvVariable and children, but has been separated to simplify their usage.
+
+   :param var_name: The name of the environment variable to retrieve.
+   :type var_name: str
+   :param default: Default return value if the environment variable is empty or does not exist.
+   :type default: Optional[str] = None
+   :param allow_empty: If False then a KeyError will be raised if the environment variable is empty.
+   :type allow_empty: bool
+
+   :returns: The environment variable, or default if it is empty or does not exist.
+   :rtype: str
+
+   :raises KeyError: If allow_empty is False and the environment variable is empty string or None
+
+
+.. py:function:: _get_bool_env_variable_func(var_name: str, default: Optional[bool] = None) -> bool
+
+   Read an environment variable and attempts to cast to bool, with settings to allow defaults.
+   For bool casting we have the problem where bool("False") == True
+   but this function fixes that so get_bool_env_variable("False") == False
+
+   For public use please use EnvVariable.
+   This module-level function is used by EnvVariable and children, but has been separated to simplify their usage.
+
+   :param var_name: The name of the environment variable to retrieve.
+   :type var_name: str
+   :param default: Default return value if the environment variable does not exist.
+   :type default: Optional[bool] = None
+
+   :returns: The environment variable, or default if it does not exist
+   :rtype: bool
+
+   :raises ValueError: If allow_empty is False and the environment variable is empty string or None
+
+
+.. py:function:: cast_str_to_bool(string: str) -> bool
+
+   Attempt to cast a str to bool.
+   For bool casting we have the problem where bool("False") == True
+   but this function fixes that so cast_str_to_bool("False") == False
+
+   :param string: The string to be cast to bool.
+   :type string: str
+
+   :returns: The interpreted value of the string.
+   :rtype: bool
+
+   :raises ValueError: If the string cannot be cast to bool.
+
+
+.. py:class:: EnvVariable
+
+   Encapsulates all environment variable fetching, ensuring proper defaults and types.
+
+
+   .. py:method:: _get_env_variable(var_name: str, default: Optional[str] = None, allow_empty: bool = False) -> str
+      :staticmethod:
+
+
+      Read a string environment variable, with settings to allow defaults, empty values.
+      To read a boolean use _get_bool_env_variable.
+
+      For public use please use EnvVariable.
+
+      :param var_name: The name of the environment variable to retrieve.
+      :type var_name: str
+      :param default: Default return value if the environment variable is empty or does not exist.
+      :type default: Optional[str] = None
+      :param allow_empty: If False then a KeyError will be raised if the environment variable is empty.
+      :type allow_empty: bool
+
+      :returns: The environment variable, or default if it is empty or does not exist.
+      :rtype: str
+
+      :raises KeyError: If allow_empty is False and the environment variable is empty string or None
+
+
+
+   .. py:method:: _get_bool_env_variable(var_name: str, default: Optional[bool] = None) -> bool
+      :staticmethod:
+
+
+      Read an environment variable and attempts to cast to bool, with settings to allow defaults.
+      For bool casting we have the problem where bool("False") == True
+      but this function fixes that so get_bool_env_variable("False") == False
+
+      For public use please use EnvVariable.
+
+      :param var_name: The name of the environment variable to retrieve.
+      :type var_name: str
+      :param default: Default return value if the environment variable does not exist.
+      :type default: Optional[bool] = None
+
+      :returns: The environment variable, or default if it does not exist
+      :rtype: bool
+
+      :raises ValueError: If allow_empty is False and the environment variable is empty string or None
+
+
+
+   .. py:attribute:: STATSNZ_API_KEY
+
+
+   .. py:attribute:: LINZ_API_KEY
+
+
+   .. py:attribute:: MFE_API_KEY
+
+
+   .. py:attribute:: DATA_DIR_GEOSERVER
+
+
+   .. py:attribute:: POSTGRES_HOST
+
+
+   .. py:attribute:: POSTGRES_PORT
+
+
+   .. py:attribute:: POSTGRES_INTERNAL_HOST
+      :value: 'db_postgres'
+
+
+
+   .. py:attribute:: POSTGRES_INTERNAL_PORT
+
+
+   .. py:attribute:: POSTGRES_DB
+
+
+   .. py:attribute:: POSTGRES_USER
+
+
+   .. py:attribute:: POSTGRES_PASSWORD
+
+
+   .. py:attribute:: MESSAGE_BROKER_HOST
+
+
+   .. py:attribute:: GEOSERVER_HOST
+
+
+   .. py:attribute:: GEOSERVER_PORT
+
+
+   .. py:attribute:: GEOSERVER_INTERNAL_HOST
+
+
+   .. py:attribute:: GEOSERVER_INTERNAL_PORT
+
+
+   .. py:attribute:: GEOSERVER_ADMIN_NAME
+
+
+   .. py:attribute:: GEOSERVER_ADMIN_PASSWORD
+
+
+   .. py:attribute:: IS_ON_GITHUB_ACTIONS
+      :value: True
+
+
+

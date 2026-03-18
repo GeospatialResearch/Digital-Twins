@@ -1,0 +1,197 @@
+src.eddie.digitaltwin.utils
+===========================
+
+.. py:module:: src.eddie.digitaltwin.utils
+
+.. autoapi-nested-parse::
+
+   This script provides utility functions for logging configuration and geospatial data manipulation.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.digitaltwin.utils.log
+   src.eddie.digitaltwin.utils.FuncArgsT
+   src.eddie.digitaltwin.utils.FuncKwargsT
+   src.eddie.digitaltwin.utils.FuncReturnT
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.eddie.digitaltwin.utils.LogLevel
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.digitaltwin.utils.log_execution_info
+   src.eddie.digitaltwin.utils.setup_logging
+   src.eddie.digitaltwin.utils.get_catchment_area
+   src.eddie.digitaltwin.utils.get_nz_boundary
+   src.eddie.digitaltwin.utils.retry_function
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:class:: LogLevel
+
+   Bases: :py:obj:`enum.IntEnum`
+
+
+   Enum class representing different logging levels mapped to their corresponding numeric values from the
+   logging library.
+
+   .. attribute:: CRITICAL
+
+      The critical logging level. Corresponds to logging.CRITICAL (50).
+
+      :type: int
+
+   .. attribute:: ERROR
+
+      The error logging level. Corresponds to logging.ERROR (40).
+
+      :type: int
+
+   .. attribute:: WARNING
+
+      The warning logging level. Corresponds to logging.WARNING (30).
+
+      :type: int
+
+   .. attribute:: INFO
+
+      The info logging level. Corresponds to logging.INFO (20).
+
+      :type: int
+
+   .. attribute:: DEBUG
+
+      The debug logging level. Corresponds to logging.DEBUG (10).
+
+      :type: int
+
+   .. attribute:: NOTSET
+
+      The not-set logging level. Corresponds to logging.NOTSET (0).
+
+      :type: int
+
+
+   .. py:attribute:: CRITICAL
+      :value: 50
+
+
+
+   .. py:attribute:: ERROR
+      :value: 40
+
+
+
+   .. py:attribute:: WARNING
+      :value: 30
+
+
+
+   .. py:attribute:: INFO
+      :value: 20
+
+
+
+   .. py:attribute:: DEBUG
+      :value: 10
+
+
+
+   .. py:attribute:: NOTSET
+      :value: 0
+
+
+
+.. py:function:: log_execution_info() -> None
+
+   Log a debug message indicating the execution of the function in the script.
+
+
+.. py:function:: setup_logging(log_level: LogLevel = LogLevel.INFO) -> None
+
+   Configure the root logger with the specified log level and formats, capture warnings, and exclude specific
+   loggers from propagating their messages to the root logger. Additionally, log a debug message indicating the
+   execution of the function in the script.
+
+   :param log_level: The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+                     The available logging levels and their corresponding numeric values are:
+                     - LogLevel.CRITICAL (50)
+                     - LogLevel.ERROR (40)
+                     - LogLevel.WARNING (30)
+                     - LogLevel.INFO (20)
+                     - LogLevel.DEBUG (10)
+                     - LogLevel.NOTSET (0)
+   :type log_level: LogLevel = LogLevel.DEBUG
+
+
+.. py:function:: get_catchment_area(catchment_area: geopandas.GeoDataFrame, to_crs: int = 2193) -> geopandas.GeoDataFrame
+
+   Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.
+
+   :param catchment_area: A GeoDataFrame representing the catchment area.
+   :type catchment_area: gpd.GeoDataFrame
+   :param to_crs: Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
+   :type to_crs: int = 2193
+
+   :returns: A GeoDataFrame representing the catchment area with the transformed CRS.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:function:: get_nz_boundary(engine: sqlalchemy.engine.Engine, to_crs: int = 2193) -> geopandas.GeoDataFrame
+
+   Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).
+
+   :param engine: The engine used to connect to the database.
+   :type engine: Engine
+   :param to_crs: Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.
+   :type to_crs: int = 2193
+
+   :returns: A GeoDataFrame representing the boundary of New Zealand in the specified CRS.
+   :rtype: gpd.GeoDataFrame
+
+
+.. py:data:: FuncArgsT
+
+.. py:data:: FuncKwargsT
+
+.. py:data:: FuncReturnT
+
+.. py:function:: retry_function(func: Callable[[FuncArgsT, FuncKwargsT], FuncReturnT], max_retries: int, base_retry_delay: float, expected_exceptions: Type[Exception] | Tuple[Type[Exception]], *args: FuncArgsT, **kwargs: FuncKwargsT) -> FuncReturnT
+
+   Retry a function a number of times if an exception is raised.
+
+   :param func: The function to call and retry if it fails. Takes *args and **kwargs as arguments.
+   :type func: Callable[[FuncArgsT, FuncKwargsT], FuncReturnT]
+   :param max_retries: The maximum number of times to retry the function before allowing the exception to propagate
+   :type max_retries: int
+   :param base_retry_delay: The delay in seconds between retries. Each subsequent retry becomes extended by this amount.
+   :type base_retry_delay: float
+   :param expected_exceptions: The exceptions that are expected to be thrown, and so will be caught. Any others will be propagated.
+   :type expected_exceptions: Type[Exception] | Tuple[Type[Exception]]
+   :param \*args: The standard arguments for func.
+   :type \*args: FuncArgsT
+   :param \*\*kwargs: The keyword arguments for func.
+   :type \*\*kwargs: FuncKwargsT
+
+   :returns: The result of func(*args, **kwargs).
+   :rtype: FuncReturnT
+
+

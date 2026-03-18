@@ -1,0 +1,54 @@
+src.eddie.geoserver.geoserver_common
+====================================
+
+.. py:module:: src.eddie.geoserver.geoserver_common
+
+.. autoapi-nested-parse::
+
+   Core functions for serving data and working with workspaces in geoserver.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.geoserver.geoserver_common.log
+   src.eddie.geoserver.geoserver_common._xml_header
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.eddie.geoserver.geoserver_common.get_geoserver_url
+   src.eddie.geoserver.geoserver_common.create_workspace_if_not_exists
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:data:: _xml_header
+
+.. py:function:: get_geoserver_url() -> str
+
+   Retrieve full GeoServer URL from environment variables.
+
+   :returns: The full GeoServer URL
+   :rtype: str
+
+
+.. py:function:: create_workspace_if_not_exists(workspace_name: str) -> None
+
+   Create a GeoServer workspace if it does not currently exist.
+
+   :param workspace_name: The name of the workspace to create if it does not exists.
+   :type workspace_name: str
+
+   :raises HTTPError: If geoserver responds with an error, raises it as an exception since it is unexpected.
+
+

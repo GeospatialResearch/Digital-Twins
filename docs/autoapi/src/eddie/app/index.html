@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.eddie.app &mdash; Environmental Digital Data Intelligence Engine (EDDIE) 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="src.eddie.check_celery_alive" href="../check_celery_alive/index.html" />
+    <link rel="prev" title="src.eddie" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Environmental Digital Data Intelligence Engine (EDDIE)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">src</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">src.eddie</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">src.eddie.app</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../check_celery_alive/index.html">src.eddie.check_celery_alive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../config/index.html">src.eddie.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../digitaltwin/index.html">src.eddie.digitaltwin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../discover_plugins/index.html">src.eddie.discover_plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../geoserver/index.html">src.eddie.geoserver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../run_all/index.html">src.eddie.run_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tasks/index.html">src.eddie.tasks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Environmental Digital Data Intelligence Engine (EDDIE)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">src</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">src.eddie</a></li>
+      <li class="breadcrumb-item active">src.eddie.app</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/src/eddie/app/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.eddie.app">
+<span id="src-eddie-app"></span><h1>src.eddie.app<a class="headerlink" href="#module-src.eddie.app" title="Link to this heading"></a></h1>
+<p>The main web application that serves the Digital Twin to the web through a Rest API.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.app.app" title="src.eddie.app.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.app.SWAGGER_URL" title="src.eddie.app.SWAGGER_URL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SWAGGER_URL</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.app.API_URL" title="src.eddie.app.API_URL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">API_URL</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.app.swagger_ui_blueprint" title="src.eddie.app.swagger_ui_blueprint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swagger_ui_blueprint</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.app.eddie_plugins" title="src.eddie.app.eddie_plugins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eddie_plugins</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.app.gunicorn_logger" title="src.eddie.app.gunicorn_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gunicorn_logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.app.index" title="src.eddie.app.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(→ flask.Response)</p></td>
+<td><p>Ping this endpoint to check that the flask app is running.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.app.health_check" title="src.eddie.app.health_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">health_check</span></code></a>(→ flask.Response)</p></td>
+<td><p>Ping this endpoint to check that the server is up and running.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.app.terria_catalog" title="src.eddie.app.terria_catalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">terria_catalog</span></code></a>(→ flask.Response)</p></td>
+<td><p>Return a terria catalog that includes entries for static files and input layers from geoserver.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.app.app">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">app</span></span><a class="headerlink" href="#src.eddie.app.app" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.app.SWAGGER_URL">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">SWAGGER_URL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/swagger'</span></span><a class="headerlink" href="#src.eddie.app.SWAGGER_URL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.app.API_URL">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">API_URL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/static/api_documentation.yml'</span></span><a class="headerlink" href="#src.eddie.app.API_URL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.app.swagger_ui_blueprint">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">swagger_ui_blueprint</span></span><a class="headerlink" href="#src.eddie.app.swagger_ui_blueprint" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.app.eddie_plugins">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">eddie_plugins</span></span><a class="headerlink" href="#src.eddie.app.eddie_plugins" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.app.index">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.eddie.app.index" title="Link to this definition"></a></dt>
+<dd><p>Ping this endpoint to check that the flask app is running.
+Supported methods: GET</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The HTTP Response. Expect OK if health check is successful</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.app.health_check">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">health_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.eddie.app.health_check" title="Link to this definition"></a></dt>
+<dd><p>Ping this endpoint to check that the server is up and running.
+Supported methods: GET</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The HTTP Response. Expect OK if health check is successful</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.eddie.app.terria_catalog">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">terria_catalog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.Response</span></span></span><a class="headerlink" href="#src.eddie.app.terria_catalog" title="Link to this definition"></a></dt>
+<dd><p>Return a terria catalog that includes entries for static files and input layers from geoserver.
+Supported methods: GET</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The HTTP Response. Expect OK if health check is successful</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.eddie.app.gunicorn_logger">
+<span class="sig-prename descclassname"><span class="pre">src.eddie.app.</span></span><span class="sig-name descname"><span class="pre">gunicorn_logger</span></span><a class="headerlink" href="#src.eddie.app.gunicorn_logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="src.eddie" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../check_celery_alive/index.html" class="btn btn-neutral float-right" title="src.eddie.check_celery_alive" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Geospatial Research Institute Toi Hangarau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

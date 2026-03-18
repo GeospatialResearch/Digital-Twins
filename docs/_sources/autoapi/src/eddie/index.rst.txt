@@ -1,0 +1,44 @@
+src.eddie
+=========
+
+.. py:module:: src.eddie
+
+.. autoapi-nested-parse::
+
+   The EDDIE library is a framework for building digital twins for environmental systems.
+   Scripts directly in this package deal with managing server and process configuration.
+   Subpackages each perform processing, data handling, or modelling.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/src/eddie/app/index
+   /autoapi/src/eddie/check_celery_alive/index
+   /autoapi/src/eddie/config/index
+   /autoapi/src/eddie/digitaltwin/index
+   /autoapi/src/eddie/discover_plugins/index
+   /autoapi/src/eddie/geoserver/index
+   /autoapi/src/eddie/run_all/index
+   /autoapi/src/eddie/tasks/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.eddie.__version__
+
+
+Package Contents
+----------------
+
+.. py:data:: __version__
+   :value: '3.0.0'
+
+
