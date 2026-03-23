@@ -65,12 +65,13 @@ def main(
     engine = setup_environment.get_database()
     # Get catchment area.
     catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
-    # Store records from instruction json in the 'geospatial_layers' table in the database.
-    instructions_records_to_db.store_instructions_records_to_db(engine, instruction_json_path)
-    # Store geospatial layers data in the database
-    data_to_db.store_geospatial_layers_data_to_db(engine, catchment_area)
-    # Store user log information in the database
-    data_to_db.user_log_info_to_db(engine, catchment_area)
+    with engine.connect() as conn:
+        # Store records from instruction json in the 'geospatial_layers' table in the database.
+        instructions_records_to_db.store_instructions_records_to_db(conn, instruction_json_path)
+        # Store geospatial layers data in the database
+        data_to_db.store_geospatial_layers_data_to_db(conn, catchment_area)
+        # Store user log information in the database
+        data_to_db.user_log_info_to_db(conn, catchment_area)
 
 
 if __name__ == "__main__":

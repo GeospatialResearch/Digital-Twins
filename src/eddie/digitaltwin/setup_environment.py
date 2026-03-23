@@ -49,7 +49,11 @@ def get_database() -> Engine:
         If the connection to the database fails.
     """
     try:
-        engine = get_connection_from_profile()
+        engine = get_engine(EnvVariable.POSTGRES_HOST,
+                            EnvVariable.POSTGRES_PORT,
+                            EnvVariable.POSTGRES_DB,
+                            EnvVariable.POSTGRES_USER,
+                            EnvVariable.POSTGRES_PASSWORD)
         log.debug("Connected to PostgreSQL database successfully!")
         return engine
     except OperationalError as e:
@@ -57,23 +61,6 @@ def get_database() -> Engine:
                                params="",
                                orig=e,
                                hide_parameters=True) from e
-
-
-def get_connection_from_profile() -> Engine:
-    """
-    Set up database connection from configuration.
-
-    Returns
-    -------
-    Engine
-        The engine used to connect to the database.
-    """
-    # Create and return the database engine
-    return get_engine(EnvVariable.POSTGRES_HOST,
-                      EnvVariable.POSTGRES_PORT,
-                      EnvVariable.POSTGRES_DB,
-                      EnvVariable.POSTGRES_USER,
-                      EnvVariable.POSTGRES_PASSWORD)
 
 
 def get_engine(host: str, port: str, db: str, username: str, password: str) -> Engine:
@@ -95,10 +82,11 @@ def get_engine(host: str, port: str, db: str, username: str, password: str) -> E
 
     Returns
     -------
-    Engine
-        The engine used to connect to the database.
+    Connection
+        The connection used to connect to the database.
     """
     url = f'postgresql://{username}:{password}@{host}:{port}/{db}'
     engine = create_engine(url)
-    Base.metadata.create_all(engine)
+    with engine.connect() as conn:
+        Base.metadata.create_all(conn)
     return engine

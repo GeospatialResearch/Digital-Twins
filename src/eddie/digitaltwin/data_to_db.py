@@ -26,11 +26,11 @@ from typing import Set, Tuple
 
 import geopandas as gpd
 import pandas as pd
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Connection
 from sqlalchemy.sql import text
 
 from eddie.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
-from eddie.digitaltwin.tables import GeospatialLayers, UserLogInfo, check_table_exists, create_table, execute_query
+from eddie.digitaltwin.tables import GeospatialLayers, UserLogInfo, check_table_exists, create_table
 import eddie.geoserver as gs
 
 log = logging.getLogger(__name__)
@@ -40,14 +40,14 @@ class NoNonIntersectionError(Exception):
     """Exception raised when no non-intersecting area is found."""
 
 
-def get_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
+def get_nz_geospatial_layers(conn: Connection) -> pd.DataFrame:
     """
     Retrieve geospatial layers from the database that have a coverage area of New Zealand.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
 
     Returns
     -------
@@ -61,20 +61,20 @@ def get_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
     WHERE coverage_area = 'New Zealand' AND unique_column_name IS NULL;
     """
     # Retrieve geospatial layers using the provided SQL query
-    nz_geo_layers = pd.read_sql(nz_geo_query, engine)
+    nz_geo_layers = pd.read_sql(nz_geo_query, conn)
     # Drop the 'unique_id' column from the DataFrame
     nz_geo_layers = nz_geo_layers.drop(columns=['unique_id'])
     return nz_geo_layers
 
 
-def get_non_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
+def get_non_nz_geospatial_layers(conn: Connection) -> pd.DataFrame:
     """
     Retrieve geospatial layers from the database that do not have a coverage area of New Zealand.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
 
     Returns
     -------
@@ -88,7 +88,7 @@ def get_non_nz_geospatial_layers(engine: Engine) -> pd.DataFrame:
     WHERE unique_column_name IS NOT NULL AND (coverage_area != 'New Zealand' OR coverage_area IS NULL);
     """
     # Retrieve geospatial layers using the provided SQL query
-    non_nz_geo_layers = pd.read_sql(non_nz_query, engine)
+    non_nz_geo_layers = pd.read_sql(non_nz_query, conn)
     # Drop the 'unique_id' column from the DataFrame
     non_nz_geo_layers = non_nz_geo_layers.drop(columns=['unique_id'])
     return non_nz_geo_layers
@@ -117,7 +117,7 @@ def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, int, str, str]
 
 
 def get_vector_data_id_not_in_db(
-    engine: Engine,
+    conn: Connection,
     vector_data: gpd.GeoDataFrame,
     table_name: str,
     unique_column_name: str,
@@ -129,8 +129,8 @@ def get_vector_data_id_not_in_db(
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     vector_data : gpd.GeoDataFrame
         A GeoDataFrame containing the fetched vector data.
     table_name : str
@@ -158,14 +158,14 @@ def get_vector_data_id_not_in_db(
         aoi_polygon=str(aoi_polygon)
     )
     # Execute the query and retrieve the IDs present in the database
-    ids_in_db = set(pd.read_sql(query, engine)[unique_column_name])
+    ids_in_db = set(pd.read_sql(query, conn)[unique_column_name])
     # Find the IDs from vector_data that are not present in the database
     ids_not_in_db = vector_data_ids - ids_in_db
     return ids_not_in_db
 
 
 def nz_geospatial_layers_data_to_db(
-    engine: Engine,
+    conn: Connection,
     crs: int = 2193,
     verbose: bool = False
 ) -> None:
@@ -174,15 +174,15 @@ def nz_geospatial_layers_data_to_db(
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     crs : int = 2193
         The coordinate reference system (CRS) code to use. Default is 2193.
     verbose : bool = False
         Whether to print messages. Default is False.
     """
     # Get New Zealand geospatial layers
-    nz_geo_layers = get_nz_geospatial_layers(engine)
+    nz_geo_layers = get_nz_geospatial_layers(conn)
 
     workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
     data_store = gs.create_main_db_store(workspace_name)
@@ -192,7 +192,7 @@ def nz_geospatial_layers_data_to_db(
         data_provider, layer_id, table_name, _ = get_geospatial_layer_info(layer_row)
 
         # Check if the table already exists in the database
-        if check_table_exists(engine, table_name):
+        if check_table_exists(conn, table_name):
             log.info(f"'{table_name}' data already exists in the database.")
         else:
             # Fetch vector data using geoapis
@@ -200,12 +200,12 @@ def nz_geospatial_layers_data_to_db(
             vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose)
             # Insert vector data into the database
             log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
-            vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
-            gs.create_datastore_layer(workspace_name, data_store, table_name)
+            vector_data.to_postgis(table_name, conn, index=False, if_exists="replace")
+            gs.create_datastore_layer(conn, workspace_name, data_store, table_name)
 
 
 def get_non_intersection_area_from_db(
-    engine: Engine,
+    conn: Connection,
     catchment_area: gpd.GeoDataFrame,
     table_name: str
 ) -> gpd.GeoDataFrame:
@@ -215,8 +215,8 @@ def get_non_intersection_area_from_db(
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     table_name : str
@@ -233,7 +233,7 @@ def get_non_intersection_area_from_db(
         If the non-intersecting area is empty, it suggests that the catchment area is already fully covered.
     """
     # Create the 'user_log_information' table if it doesn't exist
-    create_table(engine, UserLogInfo)
+    create_table(conn, UserLogInfo)
     # Extract the geometry of the catchment area
     catchment_wkt = catchment_area.geometry[0].wkt
     # Build the SQL query to find intersections between the user log information and the catchment area
@@ -248,7 +248,7 @@ def get_non_intersection_area_from_db(
         catchment_polygon=catchment_wkt
     )
     # Execute the SQL query and retrieve the intersections as a GeoDataFrame
-    user_log_intersections = gpd.GeoDataFrame.from_postgis(query, engine, geom_col="geometry")
+    user_log_intersections = gpd.GeoDataFrame.from_postgis(query, conn, geom_col="geometry")
     # Check if there are no intersections
     if user_log_intersections.empty:
         return catchment_area
@@ -262,7 +262,7 @@ def get_non_intersection_area_from_db(
 
 
 def process_new_non_nz_geospatial_layers(
-    engine: Engine,
+    conn: Connection,
     data_provider: str,
     layer_id: int,
     table_name: str,
@@ -275,8 +275,8 @@ def process_new_non_nz_geospatial_layers(
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     data_provider : str
         The data provider of the geospatial layer.
     layer_id : int
@@ -299,15 +299,15 @@ def process_new_non_nz_geospatial_layers(
     else:
         # Insert vector data into the database
         log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
-        vector_data.to_postgis(table_name, engine, index=False, if_exists="replace")
+        vector_data.to_postgis(table_name, conn, index=False, if_exists="replace")
         # Serve data with geoserver
         workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
         data_store = gs.create_main_db_store(workspace_name)
-        gs.create_datastore_layer(workspace_name, data_store, table_name)
+        gs.create_datastore_layer(conn, workspace_name, data_store, table_name)
 
 
 def process_existing_non_nz_geospatial_layers(
-    engine: Engine,
+    conn: Connection,
     data_provider: str,
     layer_id: int,
     table_name: str,
@@ -321,8 +321,8 @@ def process_existing_non_nz_geospatial_layers(
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     data_provider : str
         The data provider of the geospatial layer.
     layer_id : int
@@ -347,7 +347,7 @@ def process_existing_non_nz_geospatial_layers(
     else:
         # Get IDs from the vector data that are not in the database
         ids_not_in_db = get_vector_data_id_not_in_db(
-            engine, vector_data, table_name, unique_column_name, area_of_interest)
+            conn, vector_data, table_name, unique_column_name, area_of_interest)
         # Check if there are IDs not in the database
         if ids_not_in_db:
             # Get vector data that contains only the IDs not present in the database
@@ -355,13 +355,13 @@ def process_existing_non_nz_geospatial_layers(
             # Insert vector data into the database
             log.info(
                 f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
-            vector_data_not_in_db.to_postgis(table_name, engine, index=False, if_exists="append")
+            vector_data_not_in_db.to_postgis(table_name, conn, index=False, if_exists="append")
         else:
             log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
 
 
 def non_nz_geospatial_layers_data_to_db(
-    engine: Engine,
+    conn: Connection,
     catchment_area: gpd.GeoDataFrame,
     crs: int = 2193,
     verbose: bool = False
@@ -371,8 +371,8 @@ def non_nz_geospatial_layers_data_to_db(
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     crs : int = 2193
@@ -381,7 +381,7 @@ def non_nz_geospatial_layers_data_to_db(
         Whether to print messages. Default is False.
     """
     # Get non-NZ geospatial layers from the database
-    non_nz_geo_layers = get_non_nz_geospatial_layers(engine)
+    non_nz_geo_layers = get_non_nz_geospatial_layers(conn)
 
     # Iterate over each non-NZ geospatial layer
     for _, layer_row in non_nz_geo_layers.iterrows():
@@ -389,25 +389,25 @@ def non_nz_geospatial_layers_data_to_db(
         data_provider, layer_id, table_name, unique_column_name = get_geospatial_layer_info(layer_row)
         try:
             # Get the non-intersection area of the catchment area
-            non_intersection_area = get_non_intersection_area_from_db(engine, catchment_area, table_name)
+            non_intersection_area = get_non_intersection_area_from_db(conn, catchment_area, table_name)
         except NoNonIntersectionError as error:
             # Log the error and continue to the next layer
             log.info(error)
             continue
 
         # Check if the table already exists in the database
-        if check_table_exists(engine, table_name):
+        if check_table_exists(conn, table_name):
             # Process existing non-NZ geospatial layers
             process_existing_non_nz_geospatial_layers(
-                engine, data_provider, layer_id, table_name, unique_column_name, non_intersection_area, crs, verbose)
+                conn, data_provider, layer_id, table_name, unique_column_name, non_intersection_area, crs, verbose)
         else:
             # Process new non-NZ geospatial layers
             process_new_non_nz_geospatial_layers(
-                engine, data_provider, layer_id, table_name, non_intersection_area, crs, verbose)
+                conn, data_provider, layer_id, table_name, non_intersection_area, crs, verbose)
 
 
 def store_geospatial_layers_data_to_db(
-    engine: Engine,
+    conn: Connection,
     catchment_area: gpd.GeoDataFrame,
     crs: int = 2193,
     verbose: bool = False
@@ -417,8 +417,8 @@ def store_geospatial_layers_data_to_db(
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     crs : int = 2193
@@ -427,44 +427,44 @@ def store_geospatial_layers_data_to_db(
         Whether to print messages. Default is False.
     """
     # Store New Zealand geospatial layers data to the database
-    nz_geospatial_layers_data_to_db(engine, crs, verbose)
+    nz_geospatial_layers_data_to_db(conn, crs, verbose)
     # Store non-NZ geospatial layers data to the database
-    non_nz_geospatial_layers_data_to_db(engine, catchment_area, crs, verbose)
-    serve_static_files(engine, pathlib.Path("./src/static/geo"))
+    non_nz_geospatial_layers_data_to_db(conn, catchment_area, crs, verbose)
+    serve_static_files(conn, pathlib.Path("./src/static/geo"))
 
 
-def user_log_info_to_db(engine: Engine, catchment_area: gpd.GeoDataFrame) -> None:
+def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> None:
     """
     Store user log information to the database.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
     """
     # Create the 'user_log_information' table if it doesn't exist
-    create_table(engine, UserLogInfo)
+    create_table(conn, UserLogInfo)
     # Get the list of table names for non-NZ geospatial layers
-    non_nz_geo_layers = get_non_nz_geospatial_layers(engine)
+    non_nz_geo_layers = get_non_nz_geospatial_layers(conn)
     table_list = non_nz_geo_layers["table_name"].tolist()
     # Get the catchment geometry
     catchment_geom = catchment_area.geometry[0].wkt
     # Create the query object
     query = UserLogInfo(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query
-    execute_query(engine, query)
+    conn.execute(query)
 
 
-def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str:
+def add_vector_file_to_db(conn: Connection, vector_file_path: pathlib.Path) -> str:
     """
     Add a vector file to the database.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     vector_file_path : pathlib.Path
         The Path to the vector file.
 
@@ -485,18 +485,18 @@ def add_vector_file_to_db(engine: Engine, vector_file_path: pathlib.Path) -> str
     gdf = gpd.read_file(vector_file_path)
     if gdf.crs.to_epsg() is None:
         raise KeyError(f"CRS is not defined in EPSG# form in vector file {vector_file_path}.")
-    gdf.to_postgis(file_name, engine, if_exists="replace")
+    gdf.to_postgis(file_name, conn, if_exists="replace")
     return file_name
 
 
-def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> None:
+def serve_static_files(conn: Connection, vector_file_directory: pathlib.Path) -> None:
     """
     Add all vector files (.geojson, .shp, .geodb) in directory to db and serve them.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     vector_file_directory : pathlib.Path
         The Path to the directory containing the vector files.
     """
@@ -521,8 +521,8 @@ def serve_static_files(engine: Engine, vector_file_directory: pathlib.Path) -> N
             # Serve each file according to its data type
             match file.suffix:
                 case ".geojson" | ".shp" | ".geodb":
-                    table_name = add_vector_file_to_db(engine, file)
-                    gs.create_datastore_layer(workspace_name, data_store, table_name)
+                    table_name = add_vector_file_to_db(conn, file)
+                    gs.create_datastore_layer(conn, workspace_name, data_store, table_name)
                 case ".tif" | ".tiff" | ".geotiff":
                     gs.add_gtiff_to_geoserver(file, workspace_name, file.stem)
                 case ".sld":

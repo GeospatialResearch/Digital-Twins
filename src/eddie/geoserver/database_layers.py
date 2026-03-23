@@ -22,9 +22,9 @@ import logging
 
 import geopandas as gpd
 import requests
+from sqlalchemy.engine import Connection
 
 from eddie.config import EnvVariable
-from eddie.digitaltwin.setup_environment import get_database
 from eddie.digitaltwin.tables import check_table_exists
 from eddie.geoserver.geoserver_common import create_workspace_if_not_exists, get_geoserver_url
 
@@ -69,13 +69,21 @@ def get_workspace_vector_layers(workspace_name: str, data_store_name: str = MAIN
     return layer_names
 
 
-def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name: str, metadata_elem: str = "") -> None:
+def create_datastore_layer(
+    conn: Connection,
+    workspace_name: str,
+    data_store_name: str,
+    layer_name: str,
+    metadata_elem: str = ""
+) -> None:
     """
     Create a GeoServer layer for a given data store if it does not currently exist.
     Can be used to create layers for a database table, or to create a database view for a custom dynamic query.
 
     Parameters
     ----------
+    conn : Connection
+        The connection used to connect to the database.
     workspace_name : str
         The name of the workspace the data store is associated to
     data_store_name : str
@@ -100,10 +108,9 @@ def create_datastore_layer(workspace_name: str, data_store_name: str, layer_name
         log.debug(f"Datastore layer '{layer_full_name}' already exists.")
         return
     # Find SRS/CRS information
-    engine = get_database()
-    if check_table_exists(engine, layer_name):
+    if check_table_exists(conn, layer_name):
         try:
-            gdf = gpd.read_postgis(f'SELECT * FROM "{layer_name}"', engine, "geometry")
+            gdf = gpd.read_postgis(f'SELECT * FROM "{layer_name}"', conn, "geometry")
         except ValueError:
             gdf = gpd.read_file("selected_polygon.geojson")
     else:

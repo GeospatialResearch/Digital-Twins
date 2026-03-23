@@ -61,13 +61,17 @@ def main(
     setup_logging(log_level)
     # Connect to the database
     engine = setup_environment.get_database()
-    create_table(engine, CacheResults)
-    geometry = selected_polygon_gdf.geometry[0].wkt
+    with engine.connect() as conn:
+        create_table(conn, CacheResults)
+        geometry = selected_polygon_gdf.geometry[0].wkt
 
-    # Cache the results attached to the scenario input parameters
-    log.info("Caching model results.")
-    query = insert(CacheResults).values(flood_model_id=model_id, geometry=geometry, scenario_options=scenario_options)
-    with engine.begin() as conn:
+        # Cache the results attached to the scenario input parameters
+        log.info("Caching model results.")
+        query = insert(CacheResults).values(
+            flood_model_id=model_id,
+            geometry=geometry,
+            scenario_options=scenario_options
+        )
         conn.execute(query)
     # return the model_id to allow method chaining
     return model_id

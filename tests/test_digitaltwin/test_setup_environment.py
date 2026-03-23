@@ -34,14 +34,14 @@ class SetupEnvironmentTest(unittest.TestCase):
         cls.DATABASE_SKIP_REASON = """This test does not run on GitHub Actions, so the test is skipped."""
 
     def test_connection(self):
-        """Check a connection to the database can be made with the default parameters of get_connection_from_profile"""
+        """Check a connection to the database can be made with the default parameters of get_database"""
         # Skip this if database tests are not intended to be run in this environment
         if not self.run_database_integration_tests:
             pytest.skip(self.DATABASE_SKIP_REASON)
-        engine = setup_environment.get_connection_from_profile()
-        connection = engine.connect()
-        self.assertFalse(connection.closed,
-                         msg="The connection to the database failed and is needed for these tests.")
+        engine = setup_environment.get_database()
+        with engine.connect() as conn:
+            self.assertFalse(conn.closed,
+                             msg="The connection to the database failed and is needed for these tests.")
 
     def test_incorrect_password(self):
         """Ensure that when a bad password is given to the database, the connection fails and an exception is raised"""
@@ -50,11 +50,11 @@ class SetupEnvironmentTest(unittest.TestCase):
             pytest.skip(self.DATABASE_SKIP_REASON)
         self.test_connection()  # This test case requires an active connection to trust the result.
         # Override the variables supplied by the .env file with an incorrect password
-        os.environ["POSTGRES_PASSWORD"] = "incorrect_password"
+        config.EnvVariable.POSTGRES_PASSWORD = "incorrect_password"
         with self.assertRaises(OperationalError,
-                               msg="get_connection_from_profile should raise an OperationalError"
+                               msg="get_database should raise an OperationalError"
                                    " if the password supplied is incorrect"):
-            setup_environment.get_connection_from_profile()
+            setup_environment.get_database()
 
 
 if __name__ == '__main__':
