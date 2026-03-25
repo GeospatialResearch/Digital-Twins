@@ -127,7 +127,7 @@ class CacheResults(Base):
 
 def create_table(conn: Connection, table: Base) -> None:
     """
-    Create a table in the database if it doesn't already exist, using the provided engine.
+    Create a table in the database if it doesn't already exist, using the provided conn.
 
     Parameters
     ----------

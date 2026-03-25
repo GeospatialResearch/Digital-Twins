@@ -17,7 +17,7 @@
 
 """
 This script provides functions to set up the database connection using SQLAlchemy and environment variables,
-as well as to create an SQLAlchemy engine for database operations.
+as well as to create an SQLAlchemy conn for database operations.
 """
 
 import logging
@@ -41,7 +41,7 @@ def get_database() -> Engine:
     Returns
     -------
     Engine
-        The engine used to connect to the database.
+        The conn used to connect to the database.
 
     Raises
     ------
@@ -65,7 +65,7 @@ def get_database() -> Engine:
 
 def get_engine(host: str, port: str, db: str, username: str, password: str) -> Engine:
     """
-    Get SQLAlchemy engine using credentials.
+    Get SQLAlchemy conn using credentials.
 
     Parameters
     ----------
