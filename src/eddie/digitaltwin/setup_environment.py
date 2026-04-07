@@ -86,7 +86,7 @@ def get_engine(host: str, port: str, db: str, username: str, password: str) -> E
         The connection used to connect to the database.
     """
     url = f'postgresql://{username}:{password}@{host}:{port}/{db}'
-    engine = create_engine(url)
+    engine = create_engine(url, isolation_level="AUTOCOMMIT")
     with engine.connect() as conn:
         Base.metadata.create_all(conn)
     return engine

@@ -26,6 +26,7 @@ from typing import Set, Tuple
 
 import geopandas as gpd
 import pandas as pd
+from sqlalchemy import insert
 from sqlalchemy.engine import Connection
 from sqlalchemy.sql import text
 
@@ -452,7 +453,7 @@ def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> N
     # Get the catchment geometry
     catchment_geom = catchment_area.geometry[0].wkt
     # Create the query object
-    query = UserLogInfo(source_table_list=table_list, geometry=catchment_geom)
+    query = insert(UserLogInfo).values(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query
     conn.execute(query)
 
