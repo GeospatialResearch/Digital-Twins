@@ -59,23 +59,23 @@ Module Contents
    Exception raised when no non-intersecting area is found.
 
 
-.. py:function:: get_nz_geospatial_layers(engine: sqlalchemy.engine.Engine) -> pandas.DataFrame
+.. py:function:: get_nz_geospatial_layers(conn: sqlalchemy.engine.Connection) -> pandas.DataFrame
 
    Retrieve geospatial layers from the database that have a coverage area of New Zealand.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
 
    :returns: Data frame containing geospatial layers that have a coverage area of New Zealand.
    :rtype: pd.DataFrame
 
 
-.. py:function:: get_non_nz_geospatial_layers(engine: sqlalchemy.engine.Engine) -> pandas.DataFrame
+.. py:function:: get_non_nz_geospatial_layers(conn: sqlalchemy.engine.Connection) -> pandas.DataFrame
 
    Retrieve geospatial layers from the database that do not have a coverage area of New Zealand.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
 
    :returns: Data frame containing geospatial layers that do not have a coverage area of New Zealand.
    :rtype: pd.DataFrame
@@ -92,13 +92,13 @@ Module Contents
    :rtype: Tuple[str, int, str, str]
 
 
-.. py:function:: get_vector_data_id_not_in_db(engine: sqlalchemy.engine.Engine, vector_data: geopandas.GeoDataFrame, table_name: str, unique_column_name: str, area_of_interest: geopandas.GeoDataFrame) -> Set[int]
+.. py:function:: get_vector_data_id_not_in_db(conn: sqlalchemy.engine.Connection, vector_data: geopandas.GeoDataFrame, table_name: str, unique_column_name: str, area_of_interest: geopandas.GeoDataFrame) -> Set[int]
 
    Get the IDs from the fetched vector_data that are not present in the specified database table
    for the area of interest.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param vector_data: A GeoDataFrame containing the fetched vector data.
    :type vector_data: gpd.GeoDataFrame
    :param table_name: The name of the table in the database.
@@ -112,25 +112,25 @@ Module Contents
    :rtype: Set[int]
 
 
-.. py:function:: nz_geospatial_layers_data_to_db(engine: sqlalchemy.engine.Engine, crs: int = 2193, verbose: bool = False) -> None
+.. py:function:: nz_geospatial_layers_data_to_db(conn: sqlalchemy.engine.Connection, crs: int = 2193, verbose: bool = False) -> None
 
    Fetch New Zealand geospatial layers data using 'geoapis' and store it into the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
    :type crs: int = 2193
    :param verbose: Whether to print messages. Default is False.
    :type verbose: bool = False
 
 
-.. py:function:: get_non_intersection_area_from_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, table_name: str) -> geopandas.GeoDataFrame
+.. py:function:: get_non_intersection_area_from_db(conn: sqlalchemy.engine.Connection, catchment_area: geopandas.GeoDataFrame, table_name: str) -> geopandas.GeoDataFrame
 
    Get the non-intersecting area from the catchment area and user log information table in the database
    for the specified table.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
    :param table_name: The name of the table in the database.
@@ -142,12 +142,12 @@ Module Contents
    :raises NoNonIntersectionError: If the non-intersecting area is empty, it suggests that the catchment area is already fully covered.
 
 
-.. py:function:: process_new_non_nz_geospatial_layers(engine: sqlalchemy.engine.Engine, data_provider: str, layer_id: int, table_name: str, area_of_interest: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
+.. py:function:: process_new_non_nz_geospatial_layers(conn: sqlalchemy.engine.Connection, data_provider: str, layer_id: int, table_name: str, area_of_interest: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
 
    Fetch new non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param data_provider: The data provider of the geospatial layer.
    :type data_provider: str
    :param layer_id: The ID of the geospatial layer.
@@ -162,12 +162,12 @@ Module Contents
    :type verbose: bool = False
 
 
-.. py:function:: process_existing_non_nz_geospatial_layers(engine: sqlalchemy.engine.Engine, data_provider: str, layer_id: int, table_name: str, unique_column_name: str, area_of_interest: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
+.. py:function:: process_existing_non_nz_geospatial_layers(conn: sqlalchemy.engine.Connection, data_provider: str, layer_id: int, table_name: str, unique_column_name: str, area_of_interest: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
 
    Fetch existing non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param data_provider: The data provider of the geospatial layer.
    :type data_provider: str
    :param layer_id: The ID of the geospatial layer.
@@ -184,12 +184,12 @@ Module Contents
    :type verbose: bool = False
 
 
-.. py:function:: non_nz_geospatial_layers_data_to_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
+.. py:function:: non_nz_geospatial_layers_data_to_db(conn: sqlalchemy.engine.Connection, catchment_area: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
 
    Fetch non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
@@ -198,12 +198,12 @@ Module Contents
    :type verbose: bool = False
 
 
-.. py:function:: store_geospatial_layers_data_to_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
+.. py:function:: store_geospatial_layers_data_to_db(conn: sqlalchemy.engine.Connection, catchment_area: geopandas.GeoDataFrame, crs: int = 2193, verbose: bool = False) -> None
 
    Fetch geospatial layers data using 'geoapis' and store it into the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
    :param crs: The coordinate reference system (CRS) code to use. Default is 2193.
@@ -212,22 +212,22 @@ Module Contents
    :type verbose: bool = False
 
 
-.. py:function:: user_log_info_to_db(engine: sqlalchemy.engine.Engine, catchment_area: geopandas.GeoDataFrame) -> None
+.. py:function:: user_log_info_to_db(conn: sqlalchemy.engine.Connection, catchment_area: geopandas.GeoDataFrame) -> None
 
    Store user log information to the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param catchment_area: A GeoDataFrame representing the catchment area.
    :type catchment_area: gpd.GeoDataFrame
 
 
-.. py:function:: add_vector_file_to_db(engine: sqlalchemy.engine.Engine, vector_file_path: pathlib.Path) -> str
+.. py:function:: add_vector_file_to_db(conn: sqlalchemy.engine.Connection, vector_file_path: pathlib.Path) -> str
 
    Add a vector file to the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param vector_file_path: The Path to the vector file.
    :type vector_file_path: pathlib.Path
 
@@ -237,12 +237,12 @@ Module Contents
    :rtype: str
 
 
-.. py:function:: serve_static_files(engine: sqlalchemy.engine.Engine, vector_file_directory: pathlib.Path) -> None
+.. py:function:: serve_static_files(conn: sqlalchemy.engine.Connection, vector_file_directory: pathlib.Path) -> None
 
    Add all vector files (.geojson, .shp, .geodb) in directory to db and serve them.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param vector_file_directory: The Path to the directory containing the vector files.
    :type vector_file_directory: pathlib.Path
 

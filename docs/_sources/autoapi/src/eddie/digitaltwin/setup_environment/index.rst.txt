@@ -6,7 +6,7 @@ src.eddie.digitaltwin.setup_environment
 .. autoapi-nested-parse::
 
    This script provides functions to set up the database connection using SQLAlchemy and environment variables,
-   as well as to create an SQLAlchemy engine for database operations.
+   as well as to create an SQLAlchemy conn for database operations.
 
 
 
@@ -25,7 +25,6 @@ Functions
 .. autoapisummary::
 
    src.eddie.digitaltwin.setup_environment.get_database
-   src.eddie.digitaltwin.setup_environment.get_connection_from_profile
    src.eddie.digitaltwin.setup_environment.get_engine
 
 
@@ -40,23 +39,15 @@ Module Contents
 
    Set up the database connection. Exit the program if connection fails.
 
-   :returns: The engine used to connect to the database.
+   :returns: The conn used to connect to the database.
    :rtype: Engine
 
    :raises OperationalError: If the connection to the database fails.
 
 
-.. py:function:: get_connection_from_profile() -> sqlalchemy.engine.Engine
-
-   Set up database connection from configuration.
-
-   :returns: The engine used to connect to the database.
-   :rtype: Engine
-
-
 .. py:function:: get_engine(host: str, port: str, db: str, username: str, password: str) -> sqlalchemy.engine.Engine
 
-   Get SQLAlchemy engine using credentials.
+   Get SQLAlchemy conn using credentials.
 
    :param host: Hostname of the database server.
    :type host: str
@@ -69,7 +60,7 @@ Module Contents
    :param password: Password for the database.
    :type password: str
 
-   :returns: The engine used to connect to the database.
-   :rtype: Engine
+   :returns: The connection used to connect to the database.
+   :rtype: Connection
 
 

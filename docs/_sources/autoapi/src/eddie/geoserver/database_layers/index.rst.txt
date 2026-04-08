@@ -54,11 +54,13 @@ Module Contents
    :raises HTTPError: If geoserver responds with anything but OK, raises it as an exception since it is unexpected.
 
 
-.. py:function:: create_datastore_layer(workspace_name: str, data_store_name: str, layer_name: str, metadata_elem: str = '') -> None
+.. py:function:: create_datastore_layer(conn: sqlalchemy.engine.Connection, workspace_name: str, data_store_name: str, layer_name: str, metadata_elem: str = '') -> None
 
    Create a GeoServer layer for a given data store if it does not currently exist.
    Can be used to create layers for a database table, or to create a database view for a custom dynamic query.
 
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param workspace_name: The name of the workspace the data store is associated to
    :type workspace_name: str
    :param data_store_name: The name of the data store the layer is being created from.

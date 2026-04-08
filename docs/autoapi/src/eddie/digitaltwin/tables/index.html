@@ -126,13 +126,10 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.tables.create_table" title="src.eddie.digitaltwin.tables.create_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_table</span></code></a>(→ None)</p></td>
-<td><p>Create a table in the database if it doesn't already exist, using the provided engine.</p></td>
+<td><p>Create a table in the database if it doesn't already exist, using the provided conn.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.tables.check_table_exists" title="src.eddie.digitaltwin.tables.check_table_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_table_exists</span></code></a>(→ bool)</p></td>
 <td><p>Check if a table exists in the database.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.tables.execute_query" title="src.eddie.digitaltwin.tables.execute_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_query</span></code></a>(→ None)</p></td>
-<td><p>Execute the given query on the provided engine using a session.</p></td>
 </tr>
 </tbody>
 </table>
@@ -477,12 +474,12 @@ Used to store variables used for a model run and find matching cached outputs.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.eddie.digitaltwin.tables.create_table">
-<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">create_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.eddie.digitaltwin.tables.Base" title="src.eddie.digitaltwin.tables.Base"><span class="pre">Base</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.tables.create_table" title="Link to this definition"></a></dt>
-<dd><p>Create a table in the database if it doesn’t already exist, using the provided engine.</p>
+<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">create_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.eddie.digitaltwin.tables.Base" title="src.eddie.digitaltwin.tables.Base"><span class="pre">Base</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.tables.create_table" title="Link to this definition"></a></dt>
+<dd><p>Create a table in the database if it doesn’t already exist, using the provided conn.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>conn</strong> (<em>Connection</em>) – The connection used to connect to the database.</p></li>
 <li><p><strong>table</strong> (<a class="reference internal" href="#src.eddie.digitaltwin.tables.Base" title="src.eddie.digitaltwin.tables.Base"><em>Base</em></a>) – Class representing the table to create.</p></li>
 </ul>
 </dd>
@@ -491,12 +488,12 @@ Used to store variables used for a model run and find matching cached outputs.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.eddie.digitaltwin.tables.check_table_exists">
-<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">check_table_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'public'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.tables.check_table_exists" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">check_table_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'public'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.tables.check_table_exists" title="Link to this definition"></a></dt>
 <dd><p>Check if a table exists in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>conn</strong> (<em>Connection</em>) – The connection used to connect to the database.</p></li>
 <li><p><strong>table_name</strong> (<em>str</em>) – The name of the table to check for existence.</p></li>
 <li><p><strong>schema</strong> (<em>str = &quot;public&quot;</em>) – The name of the schema where the table resides. Defaults to “public”.</p></li>
 </ul>
@@ -506,23 +503,6 @@ Used to store variables used for a model run and find matching cached outputs.</
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.eddie.digitaltwin.tables.execute_query">
-<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.tables.</span></span><span class="sig-name descname"><span class="pre">execute_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.orm.Query</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.tables.execute_query" title="Link to this definition"></a></dt>
-<dd><p>Execute the given query on the provided engine using a session.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
-<li><p><strong>query</strong> (<em>Query</em>) – The query to be executed.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>Exception</strong> – If an error occurs during the execution of the query.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -34,7 +34,6 @@ Functions
 
    src.eddie.digitaltwin.tables.create_table
    src.eddie.digitaltwin.tables.check_table_exists
-   src.eddie.digitaltwin.tables.execute_query
 
 
 Module Contents
@@ -247,22 +246,22 @@ Module Contents
    .. py:attribute:: geometry
 
 
-.. py:function:: create_table(engine: sqlalchemy.engine.Engine, table: Base) -> None
+.. py:function:: create_table(conn: sqlalchemy.engine.Connection, table: Base) -> None
 
-   Create a table in the database if it doesn't already exist, using the provided engine.
+   Create a table in the database if it doesn't already exist, using the provided conn.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param table: Class representing the table to create.
    :type table: Base
 
 
-.. py:function:: check_table_exists(engine: sqlalchemy.engine.Engine, table_name: str, schema: str = 'public') -> bool
+.. py:function:: check_table_exists(conn: sqlalchemy.engine.Connection, table_name: str, schema: str = 'public') -> bool
 
    Check if a table exists in the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param table_name: The name of the table to check for existence.
    :type table_name: str
    :param schema: The name of the schema where the table resides. Defaults to "public".
@@ -270,17 +269,5 @@ Module Contents
 
    :returns: True if the table exists, False otherwise.
    :rtype: bool
-
-
-.. py:function:: execute_query(engine: sqlalchemy.engine.Engine, query: sqlalchemy.orm.Query) -> None
-
-   Execute the given query on the provided engine using a session.
-
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
-   :param query: The query to be executed.
-   :type query: Query
-
-   :raises Exception: If an error occurs during the execution of the query.
 
 

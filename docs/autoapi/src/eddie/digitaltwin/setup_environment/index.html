@@ -95,7 +95,7 @@
   <section id="module-src.eddie.digitaltwin.setup_environment">
 <span id="src-eddie-digitaltwin-setup-environment"></span><h1>src.eddie.digitaltwin.setup_environment<a class="headerlink" href="#module-src.eddie.digitaltwin.setup_environment" title="Link to this heading"></a></h1>
 <p>This script provides functions to set up the database connection using SQLAlchemy and environment variables,
-as well as to create an SQLAlchemy engine for database operations.</p>
+as well as to create an SQLAlchemy conn for database operations.</p>
 <section id="attributes">
 <h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
@@ -116,11 +116,8 @@ as well as to create an SQLAlchemy engine for database operations.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.setup_environment.get_database" title="src.eddie.digitaltwin.setup_environment.get_database"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_database</span></code></a>(→ sqlalchemy.engine.Engine)</p></td>
 <td><p>Set up the database connection. Exit the program if connection fails.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.setup_environment.get_connection_from_profile" title="src.eddie.digitaltwin.setup_environment.get_connection_from_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_connection_from_profile</span></code></a>(→ sqlalchemy.engine.Engine)</p></td>
-<td><p>Set up database connection from configuration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.setup_environment.get_engine" title="src.eddie.digitaltwin.setup_environment.get_engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_engine</span></code></a>(→ sqlalchemy.engine.Engine)</p></td>
-<td><p>Get SQLAlchemy engine using credentials.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.setup_environment.get_engine" title="src.eddie.digitaltwin.setup_environment.get_engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_engine</span></code></a>(→ sqlalchemy.engine.Engine)</p></td>
+<td><p>Get SQLAlchemy conn using credentials.</p></td>
 </tr>
 </tbody>
 </table>
@@ -143,7 +140,7 @@ as well as to create an SQLAlchemy engine for database operations.</p>
 <dd><p>Set up the database connection. Exit the program if connection fails.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The engine used to connect to the database.</p>
+<dd class="field-odd"><p>The conn used to connect to the database.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Engine</p>
@@ -155,23 +152,9 @@ as well as to create an SQLAlchemy engine for database operations.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="src.eddie.digitaltwin.setup_environment.get_connection_from_profile">
-<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.setup_environment.</span></span><span class="sig-name descname"><span class="pre">get_connection_from_profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">sqlalchemy.engine.Engine</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.setup_environment.get_connection_from_profile" title="Link to this definition"></a></dt>
-<dd><p>Set up database connection from configuration.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The engine used to connect to the database.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Engine</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="src.eddie.digitaltwin.setup_environment.get_engine">
 <span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.setup_environment.</span></span><span class="sig-name descname"><span class="pre">get_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">sqlalchemy.engine.Engine</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.setup_environment.get_engine" title="Link to this definition"></a></dt>
-<dd><p>Get SQLAlchemy engine using credentials.</p>
+<dd><p>Get SQLAlchemy conn using credentials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -183,10 +166,10 @@ as well as to create an SQLAlchemy engine for database operations.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The engine used to connect to the database.</p>
+<dd class="field-even"><p>The connection used to connect to the database.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Engine</p>
+<dd class="field-odd"><p>Connection</p>
 </dd>
 </dl>
 </dd></dl>

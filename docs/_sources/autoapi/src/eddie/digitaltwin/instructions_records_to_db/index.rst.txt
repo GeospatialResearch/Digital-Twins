@@ -38,15 +38,14 @@ Module Contents
 
 .. py:function:: validate_url_reachability(section: str, url: str) -> None
 
-   Validate the URL by checking its format and reachability.
+   Validate the URL by checking its eachability.
 
    :param section: The section identifier of the instruction.
    :type section: str
    :param url: The URL to validate.
    :type url: str
 
-   :raises ValueError: - If the URL is invalid.
-       - If the URL is unreachable.
+   :raises ValueError: - If the URL is unreachable.
 
 
 .. py:function:: validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None
@@ -74,12 +73,12 @@ Module Contents
    :rtype: pd.DataFrame
 
 
-.. py:function:: get_existing_geospatial_layers(engine: sqlalchemy.engine.Engine) -> pandas.DataFrame
+.. py:function:: get_existing_geospatial_layers(conn: sqlalchemy.engine.Connection) -> pandas.DataFrame
 
    Retrieve existing geospatial layers from the 'geospatial_layers' table.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
 
    :returns: Data frame containing the existing geospatial layers.
    :rtype: pd.DataFrame
@@ -98,12 +97,12 @@ Module Contents
    :rtype: pd.DataFrame
 
 
-.. py:function:: store_instructions_records_to_db(engine: sqlalchemy.engine.Engine, instruction_json_path: pathlib.Path | None) -> None
+.. py:function:: store_instructions_records_to_db(conn: sqlalchemy.engine.Connection, instruction_json_path: pathlib.Path | None) -> None
 
    Store instruction json file records in the 'geospatial_layers' table in the database.
 
-   :param engine: The engine used to connect to the database.
-   :type engine: Engine
+   :param conn: The connection used to connect to the database.
+   :type conn: Connection
    :param instruction_json_path: The path to the instruction json file to store records for.
                                  If this is None, no records are stored but the tables are initialized.
    :type instruction_json_path: pathlib.Path | None

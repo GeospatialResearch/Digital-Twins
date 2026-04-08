@@ -111,7 +111,7 @@ the ‘geospatial_layers’ table of the database.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.instructions_records_to_db.validate_url_reachability" title="src.eddie.digitaltwin.instructions_records_to_db.validate_url_reachability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_url_reachability</span></code></a>(→ None)</p></td>
-<td><p>Validate the URL by checking its format and reachability.</p></td>
+<td><p>Validate the URL by checking its eachability.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#src.eddie.digitaltwin.instructions_records_to_db.validate_instruction_fields" title="src.eddie.digitaltwin.instructions_records_to_db.validate_instruction_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_instruction_fields</span></code></a>(→ None)</p></td>
 <td><p>Validate the fields of an instruction.</p></td>
@@ -141,7 +141,7 @@ the ‘geospatial_layers’ table of the database.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.eddie.digitaltwin.instructions_records_to_db.validate_url_reachability">
 <span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">validate_url_reachability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.instructions_records_to_db.validate_url_reachability" title="Link to this definition"></a></dt>
-<dd><p>Validate the URL by checking its format and reachability.</p>
+<dd><p>Validate the URL by checking its eachability.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -151,7 +151,6 @@ the ‘geospatial_layers’ table of the database.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – <ul class="simple">
-<li><p>If the URL is invalid.</p></li>
 <li><p>If the URL is unreachable.</p></li>
 </ul>
 </p>
@@ -200,11 +199,11 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.eddie.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers">
-<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">get_existing_geospatial_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">get_existing_geospatial_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Connection</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.instructions_records_to_db.get_existing_geospatial_layers" title="Link to this definition"></a></dt>
 <dd><p>Retrieve existing geospatial layers from the ‘geospatial_layers’ table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p>
+<dd class="field-odd"><p><strong>conn</strong> (<em>Connection</em>) – The connection used to connect to the database.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Data frame containing the existing geospatial layers.</p>
@@ -237,12 +236,12 @@ Each instruction should provide either ‘coverage_area’ or ‘unique_column_n
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.eddie.digitaltwin.instructions_records_to_db.store_instructions_records_to_db">
-<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">store_instructions_records_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction_json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.instructions_records_to_db.store_instructions_records_to_db" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.eddie.digitaltwin.instructions_records_to_db.</span></span><span class="sig-name descname"><span class="pre">store_instructions_records_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sqlalchemy.engine.Connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction_json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.eddie.digitaltwin.instructions_records_to_db.store_instructions_records_to_db" title="Link to this definition"></a></dt>
 <dd><p>Store instruction json file records in the ‘geospatial_layers’ table in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>engine</strong> (<em>Engine</em>) – The engine used to connect to the database.</p></li>
+<li><p><strong>conn</strong> (<em>Connection</em>) – The connection used to connect to the database.</p></li>
 <li><p><strong>instruction_json_path</strong> (<em>pathlib.Path</em><em> | </em><em>None</em>) – The path to the instruction json file to store records for.
 If this is None, no records are stored but the tables are initialized.</p></li>
 </ul>
