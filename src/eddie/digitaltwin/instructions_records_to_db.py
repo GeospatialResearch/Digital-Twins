@@ -27,8 +27,7 @@ from typing import Dict, Union
 
 import pandas as pd
 import requests
-from sqlalchemy.engine import Engine
-import validators
+from sqlalchemy.engine import Connection
 
 from eddie.digitaltwin.tables import GeospatialLayers, create_table
 
@@ -37,7 +36,7 @@ log = logging.getLogger(__name__)
 
 def validate_url_reachability(section: str, url: str) -> None:
     """
-    Validate the URL by checking its format and reachability.
+    Validate the URL by checking its eachability.
 
     Parameters
     ----------
@@ -49,12 +48,8 @@ def validate_url_reachability(section: str, url: str) -> None:
     Raises
     ------
     ValueError
-        - If the URL is invalid.
         - If the URL is unreachable.
     """
-    # Check if the URL is valid
-    if not validators.url(url):
-        raise ValueError(f"Invalid URL provided for {section}: '{url}'")
     # Check if the URL is reachable
     try:
         # Send a GET request to the URL
@@ -133,14 +128,14 @@ def read_and_check_instructions_file(instruction_json_path: pathlib.Path | None)
     return instructions_df
 
 
-def get_existing_geospatial_layers(engine: Engine) -> pd.DataFrame:
+def get_existing_geospatial_layers(conn: Connection) -> pd.DataFrame:
     """
     Retrieve existing geospatial layers from the 'geospatial_layers' table.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
 
     Returns
     -------
@@ -153,7 +148,7 @@ def get_existing_geospatial_layers(engine: Engine) -> pd.DataFrame:
     FROM {GeospatialLayers.__tablename__};
     """
     # Execute the query and read the results into a DataFrame
-    existing_layers_df = pd.read_sql(existing_layer_query, engine)
+    existing_layers_df = pd.read_sql(existing_layer_query, conn)
     return existing_layers_df
 
 
@@ -183,22 +178,22 @@ def get_non_existing_records(instructions_df: pd.DataFrame, existing_layers_df: 
     return non_existing_records
 
 
-def store_instructions_records_to_db(engine: Engine, instruction_json_path: pathlib.Path | None) -> None:
+def store_instructions_records_to_db(conn: Connection, instruction_json_path: pathlib.Path | None) -> None:
     """
     Store instruction json file records in the 'geospatial_layers' table in the database.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     instruction_json_path : pathlib.Path | None
         The path to the instruction json file to store records for.
         If this is None, no records are stored but the tables are initialized.
     """
     # Create the 'geospatial_layers' table if it doesn't exist
-    create_table(engine, GeospatialLayers)
+    create_table(conn, GeospatialLayers)
     # Retrieve existing layers from the 'geospatial_layers' table
-    existing_layers_df = get_existing_geospatial_layers(engine)
+    existing_layers_df = get_existing_geospatial_layers(conn)
     # Read and check the instructions file
     instructions_df = read_and_check_instructions_file(instruction_json_path)
     # Get 'static_boundary_instructions' records that are not available in the database.
@@ -209,4 +204,4 @@ def store_instructions_records_to_db(engine: Engine, instruction_json_path: path
     else:
         # Store the non-existing records to the 'geospatial_layers' table
         log.info("Adding new 'static_boundary_instructions' records to the database.")
-        non_existing_records.to_sql(GeospatialLayers.__tablename__, engine, index=False, if_exists="append")
+        non_existing_records.to_sql(GeospatialLayers.__tablename__, conn, index=False, if_exists="append")

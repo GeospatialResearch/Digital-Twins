@@ -53,19 +53,22 @@ def main(selected_polygon: gpd.GeoDataFrame, scenario_options: dict) -> int | No
     setup_logging(log_level=LogLevel.DEBUG)
 
     engine = setup_environment.get_database()
-    # Check table exists before querying
-    if not check_table_exists(engine, "cache_results"):
-        return None
+    with engine.connect() as conn:
+        # Check table exists before querying
+        if not check_table_exists(conn, "cache_results"):
+            return None
 
-    log.info("Checking cache for matching model parameters")
-    # Query for the matching cache
-    query = text("""
-        SELECT *
-        FROM cache_results
-        WHERE scenario_options::jsonb = cast(:scenario_options as jsonb)
-        AND st_contains(geometry, st_geomfromtext(:aoi_polygon, 2193))
-     """).bindparams(scenario_options=json.dumps(scenario_options), aoi_polygon=selected_polygon.geometry.iloc[0].wkt)
-    row = engine.execute(query).fetchone()
+        log.info("Checking cache for matching model parameters")
+        # Query for the matching cache
+        query = text(
+            """
+            SELECT *
+            FROM cache_results
+            WHERE scenario_options::jsonb = cast(:scenario_options as jsonb)
+            AND st_contains(geometry, st_geomfromtext(:aoi_polygon, 2193))
+         """
+        ).bindparams(scenario_options=json.dumps(scenario_options), aoi_polygon=selected_polygon.geometry.iloc[0].wkt)
+        row = conn.execute(query).fetchone()
 
     if row is None:  # If the row is empty then we could not find the model output
         log.info("No matching model parameters found")

@@ -22,9 +22,8 @@ from datetime import datetime, timezone
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, DateTime, inspect, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY, JSON
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Connection
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, Query
 from sqlalchemy.schema import CheckConstraint
 
 Base = declarative_base()
@@ -126,28 +125,28 @@ class CacheResults(Base):
     geometry = Column(Geometry("POLYGON", srid=2193))
 
 
-def create_table(engine: Engine, table: Base) -> None:
+def create_table(conn: Connection, table: Base) -> None:
     """
-    Create a table in the database if it doesn't already exist, using the provided engine.
+    Create a table in the database if it doesn't already exist, using the provided conn.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     table : Base
         Class representing the table to create.
     """
-    table.__table__.create(bind=engine, checkfirst=True)
+    table.__table__.create(bind=conn, checkfirst=True)
 
 
-def check_table_exists(engine: Engine, table_name: str, schema: str = "public") -> bool:
+def check_table_exists(conn: Connection, table_name: str, schema: str = "public") -> bool:
     """
     Check if a table exists in the database.
 
     Parameters
     ----------
-    engine : Engine
-        The engine used to connect to the database.
+    conn : Connection
+        The connection used to connect to the database.
     table_name : str
         The name of the table to check for existence.
     schema : str = "public"
@@ -158,31 +157,5 @@ def check_table_exists(engine: Engine, table_name: str, schema: str = "public") 
     bool
         True if the table exists, False otherwise.
     """
-    inspector = inspect(engine)
+    inspector = inspect(conn)
     return inspector.has_table(table_name, schema=schema)
-
-
-def execute_query(engine: Engine, query: Query) -> None:
-    """
-    Execute the given query on the provided engine using a session.
-
-    Parameters
-    ----------
-    engine : Engine
-        The engine used to connect to the database.
-    query : Query
-        The query to be executed.
-
-    Raises
-    ------
-    Exception
-        If an error occurs during the execution of the query.
-    """
-    with Session(engine) as session:
-        session.begin()
-        try:
-            session.add(query)
-            session.commit()
-        except Exception as error:
-            session.rollback()
-            raise error

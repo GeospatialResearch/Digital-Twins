@@ -29,7 +29,6 @@ dependencies = [
     "dotenv",
     "pywps",
     "sqlalchemy",
-    "validators",
 ]
 requires-python = ">=3.11"
 
