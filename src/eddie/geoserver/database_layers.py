@@ -26,7 +26,9 @@ from sqlalchemy.engine import Connection
 
 from eddie.config import EnvVariable
 from eddie.digitaltwin.tables import check_table_exists
-from eddie.geoserver.geoserver_common import create_workspace_if_not_exists, get_geoserver_url
+from eddie.geoserver.geoserver_common import (
+    create_workspace_if_not_exists, doesResourceExist, get_data_store_url, get_geoserver_url
+)
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}
@@ -183,22 +185,12 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
         If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Create request to check if database store already exists
-    data_store_full_name = f"{new_data_store_name}:{workspace_name}"
+    data_store_full_name = f"{workspace_name}:{new_data_store_name}"
     log.info(f"Creating datastore '{data_store_full_name}' if it does not already exist.")
-    db_exists_response = requests.get(
-        f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores',
-        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
-    )
-    response_data = db_exists_response.json()
 
-    # Parse JSON structure to get list of data store names
-    top_data_store_node = response_data["dataStores"]
-    # defaults to empty list if no data stores exist
-    data_stores = top_data_store_node["dataStore"] if top_data_store_node else []
-    data_store_names = [data_store["name"] for data_store in data_stores]
-
-    if new_data_store_name in data_store_names:
-        # If the data store already exists we don't have to do anything
+    data_store_url = get_data_store_url(workspace_name, new_data_store_name)
+    if doesResourceExist(data_store_url):
+        # If the data store exists then we don't need to do anything
         log.debug(f"Datastore '{data_store_full_name}' already exists.")
         return
 

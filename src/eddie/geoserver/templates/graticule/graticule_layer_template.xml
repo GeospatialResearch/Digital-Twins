@@ -1,0 +1,14 @@
+<layer>
+    <resource class="featureType">
+        <name>{workspace_name}:{layer_name}</name>
+    </resource>
+    <type>VECTOR</type>
+    <defaultStyle>
+        <name>line</name>
+    </defaultStyle>
+    <attribution>
+        <logoWidth>0</logoWidth>
+        <logoHeight>0</logoHeight>
+    </attribution>
+    <enabled>true</enabled>
+</layer>

@@ -532,3 +532,4 @@ def serve_static_files(conn: Connection, vector_file_directory: pathlib.Path) ->
     for workspace_name in non_statics:
         # These stores also should be initialised.
         gs.create_main_db_store(workspace_name)
+    gs.create_graticules_layer(gs.Workspaces.STATIC_FILES_WORKSPACE)

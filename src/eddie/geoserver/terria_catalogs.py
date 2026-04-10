@@ -21,6 +21,7 @@ from typing import Literal, TypeAlias
 
 from eddie.config import EnvVariable
 from .database_layers import get_workspace_vector_layers
+from .graticules import DEFAULT_GRATICULE_NAME
 from .raster_layers import get_workspace_raster_layers
 
 CatalogItem: TypeAlias = dict[str, str | int]
@@ -131,7 +132,11 @@ def get_layers_as_terria_group(workspace_name: str) -> CatalogGroup:
     """
     catalog_group = []
     workspace_url = f"{EnvVariable.GEOSERVER_HOST}:{EnvVariable.GEOSERVER_PORT}/geoserver/{workspace_name}"
-    for vector_layer in get_workspace_vector_layers(workspace_name):
+    vector_layers = get_workspace_vector_layers(workspace_name)
+    if workspace_name == Workspaces.STATIC_FILES_WORKSPACE:
+        # Add the Graticules (lat/lon gridline display) datastore, which is separate from the database datastore
+        vector_layers += get_workspace_vector_layers(workspace_name, DEFAULT_GRATICULE_NAME)
+    for vector_layer in vector_layers:
         catalog_item = create_vector_layer_catalog_item(workspace_name, workspace_url, vector_layer)
         catalog_group.append(catalog_item)
     for raster_layer in get_workspace_raster_layers(workspace_name):

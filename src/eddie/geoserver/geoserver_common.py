@@ -41,6 +41,14 @@ def get_geoserver_url() -> str:
     return f"{EnvVariable.GEOSERVER_INTERNAL_HOST}:{EnvVariable.GEOSERVER_INTERNAL_PORT}/geoserver/rest"
 
 
+def get_workspace_url(workspace_name: str) -> str:
+    return f"{get_geoserver_url()}/workspaces/{workspace_name}"
+
+
+def get_data_store_url(workspace_name: str, data_store_name: str) -> str:
+    return f"{get_workspace_url(workspace_name)}/datastores/{data_store_name}"
+
+
 def create_workspace_if_not_exists(workspace_name: str) -> None:
     """
     Create a GeoServer workspace if it does not currently exist.
@@ -79,3 +87,26 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
+
+def doesResourceExist(resource_url: str) -> bool:
+    resource_exists_response = requests.get(
+        resource_url,
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    match resource_exists_response.status_code:
+        case HTTPStatus.OK:
+            return True
+        case HTTPStatus.NOT_FOUND:
+            return False
+        case _:
+            raise requests.HTTPError(response.text, response=resource_exists_response)
+
+def forceConfigRefresh():
+    log.info(f"Forcing refresh of GeoServer...")
+    reload_response = requests.post(
+        f"{get_geoserver_url()}/reload",
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    if not reload_response.ok:
+        raise requests.HTTPError(reload_response.text, response=reload_response)
+    log.info(f"Geoserver refresh complete.")
