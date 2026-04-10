@@ -19,7 +19,6 @@ dependencies = [
     "flask",
     "flask-cors",
     "flask_swagger_ui",
-    "geoalchemy",
     "geoapis",
     "geopandas",
     "gevent",
