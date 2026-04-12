@@ -1,6 +1,6 @@
 Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
 
-# Environmental Digital Data Intelligence Connection (EDDIE)
+# Environmental Digital Data Intelligence Engine (EDDIE)
 
 ![image](paper/Capture2024.PNG)
 
