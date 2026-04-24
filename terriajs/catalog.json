@@ -15,12 +15,12 @@
     },
     {
       "type": "group",
-      "name": "Pre-Human Land Cover",
+      "name": "Reforestation Scenario",
       "isOpen": true,
       "members": [
         {
           "type": "wms",
-          "name": "Pre-Human Land Cover",
+          "name": "Reforestation Scenario",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "valley_landuse_forest",
           "styles": "landcover",
@@ -29,7 +29,7 @@
         },
         {
           "type": "wms",
-          "name": "1999 Flood Event - Pre-Human Land Cover",
+          "name": "1999 Flood Event - Reforestation Scenario",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "flood_max_depth_forest_3857",
           "styles": "plasma_0_5m",
@@ -37,7 +37,7 @@
         },
         {
           "type": "wfs",
-          "name": "Building Flood Status - Pre-Human Land Cover",
+          "name": "Building Flood Status - Reforestation Scenario",
           "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
           "typeNames": "db-buildings:building_flood_status",
           "parameters": {
@@ -110,7 +110,7 @@
         },
         {
           "type": "wfs",
-          "name": "Building Flood Status - Pre-Human Land Cover",
+          "name": "Building Flood Status - Reforestation Scenario",
           "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
           "typeNames": "db-buildings:building_flood_status",
           "parameters": {
@@ -161,12 +161,12 @@
     },
     {
       "type": "group",
-      "name": "All Pasture Land Cover",
+      "name": "All Pasture Land Cover Scenario",
       "isOpen": true,
       "members": [
         {
           "type": "wms",
-          "name": "All Pasture Land Cover",
+          "name": "All Pasture Land Cover Scenario",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "valley_landuse_pasture",
           "styles": "landcover",
@@ -175,7 +175,7 @@
         },
         {
           "type": "wms",
-          "name": "1999 Flood Event - All Pasture Land Cover",
+          "name": "1999 Flood Event - All Pasture Land Cover Scenario",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "flood_max_depth_pasture_3857",
           "styles": "plasma_0_5m",
@@ -183,7 +183,7 @@
         },
         {
           "type": "wfs",
-          "name": "Building Flood Status - Pre-Human Land Cover",
+          "name": "Building Flood Status - Reforestation Scenario",
           "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
           "typeNames": "db-buildings:building_flood_status",
           "parameters": {
