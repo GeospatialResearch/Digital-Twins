@@ -14,86 +14,26 @@
       "identifier": "fredt"
     },
     {
-      "type": "group",
-      "name": "Reforestation Scenario",
-      "isOpen": true,
-      "members": [
-        {
-          "type": "wms",
-          "name": "Reforestation Scenario",
-          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
-          "layers": "valley_landuse_forest",
-          "styles": "landcover",
-          "opacity": 0.66,
-          "isOpenInWorkbench": true
-        },
-        {
-          "type": "wms",
-          "name": "1999 Flood Event - Reforestation Scenario",
-          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
-          "layers": "flood_max_depth_forest_3857",
-          "styles": "plasma_0_5m",
-          "isOpenInWorkbench": true
-        },
-        {
-          "type": "wfs",
-          "name": "Building Flood Status - Reforestation Scenario",
-          "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
-          "typeNames": "db-buildings:building_flood_status",
-          "parameters": {
-            "viewparams": "scenario:-2"
-          },
-          "maxFeatures": 300000,
-          "styles": [
-            {
-              "id": "is_flooded",
-              "title": "Building Flood Status",
-              "color": {
-                "mapType": "enum",
-                "colorColumn": "is_flooded_int",
-                "legend": {
-                  "title": "Building Flood Status",
-                  "items": [
-                    {
-                      "title": "Non-Flooded",
-                      "color": "darkgreen"
-                    },
-                    {
-                      "title": "Flooded",
-                      "color": "darkred"
-                    }
-                  ]
-                },
-                "enumColors": [
-                  {
-                    "value": "0",
-                    "color": "darkgreen"
-                  },
-                  {
-                    "value": "1",
-                    "color": "darkred"
-                  }
-                ]
-              },
-              "outline": {
-                "null": {
-                  "width": 0
-                }
-              }
-            }
-          ],
-          "activeStyle": "is_flooded"
-        }
-      ]
+      "type": "wms",
+      "name": "Pātaka Whenua - Māori Land Court Online Blocks",
+      "url": "https://api.service.maorilandcourt.govt.nz/geoserver/wms",
+      "layers": "mlgis:mv_block_summary_view",
+      "isOpenInWorkbench": true,
+      "rectangle": {
+        "west": 173.4,
+        "north": -35.4,
+        "east": 173.6,
+        "south": -35.6
+      }
     },
     {
       "type": "group",
-      "name": "Current Land Cover",
+      "name": "Current Scenario",
       "isOpen": true,
       "members": [
         {
           "type": "wms",
-          "name": "Current Land Cover",
+          "name": "Current Scenario Land Cover",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "valley_landuse_present_day",
           "styles": "landcover",
@@ -161,24 +101,32 @@
     },
     {
       "type": "group",
-      "name": "All Pasture Land Cover Scenario",
+      "name": "Reforestation Scenario",
       "isOpen": true,
       "members": [
         {
           "type": "wms",
-          "name": "All Pasture Land Cover Scenario",
+          "name": "Reforestation Scenario Land Cover",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
-          "layers": "valley_landuse_pasture",
+          "layers": "valley_landuse_forest",
           "styles": "landcover",
           "opacity": 0.66,
           "isOpenInWorkbench": true
         },
         {
           "type": "wms",
-          "name": "1999 Flood Event - All Pasture Land Cover Scenario",
+          "name": "1999 Flood Event - Reforestation Scenario",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
-          "layers": "flood_max_depth_pasture_3857",
+          "layers": "flood_max_depth_forest_3857",
           "styles": "plasma_0_5m",
+          "isOpenInWorkbench": true
+        },
+        {
+          "type": "wms",
+          "name": "1999 Flood Event - Difference - Reforestation Scenario",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "forest_difference_clipped",
+          "styles": "difference_r_b_0_2",
           "isOpenInWorkbench": true
         },
         {
@@ -233,25 +181,85 @@
       ]
     },
     {
-      "type": "wms",
-      "name": "1999 Flood Event - Difference",
-      "url": "$GEOSERVER_URL/geoserver/static_files/wms",
-      "layers": "difference_in_max_depth_pyramided",
-      "styles": "Difference_0_2_magma",
-      "isOpenInWorkbench": true
-    },
-    {
-      "type": "wms",
-      "name": "Pātaka Whenua - Māori Land Court Online Blocks",
-      "url": "https://api.service.maorilandcourt.govt.nz/geoserver/wms",
-      "layers": "mlgis:mv_block_summary_view",
-      "isOpenInWorkbench": true,
-      "rectangle": {
-        "west": 173.4,
-        "north": -35.4,
-        "east": 173.6,
-        "south": -35.6
-      }
+      "type": "group",
+      "name": "All Pasture Scenario",
+      "isOpen": true,
+      "members": [
+        {
+          "type": "wms",
+          "name": "All Pasture Scenario Land Cover",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "valley_landuse_pasture",
+          "styles": "landcover",
+          "opacity": 0.66,
+          "isOpenInWorkbench": true
+        },
+        {
+          "type": "wms",
+          "name": "1999 Flood Event - All Pasture Scenario",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "flood_max_depth_pasture_3857",
+          "styles": "plasma_0_5m",
+          "isOpenInWorkbench": true
+        },
+        {
+          "type": "wms",
+          "name": "1999 Flood Event - Difference - Pasture Scenario",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "pasture_difference_clipped",
+          "styles": "difference_r_b_0_2",
+          "isOpenInWorkbench": true
+        },
+        {
+          "type": "wfs",
+          "name": "Building Flood Status - Reforestation Scenario",
+          "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
+          "typeNames": "db-buildings:building_flood_status",
+          "parameters": {
+            "viewparams": "scenario:-2"
+          },
+          "maxFeatures": 300000,
+          "styles": [
+            {
+              "id": "is_flooded",
+              "title": "Building Flood Status",
+              "color": {
+                "mapType": "enum",
+                "colorColumn": "is_flooded_int",
+                "legend": {
+                  "title": "Building Flood Status",
+                  "items": [
+                    {
+                      "title": "Non-Flooded",
+                      "color": "darkgreen"
+                    },
+                    {
+                      "title": "Flooded",
+                      "color": "darkred"
+                    }
+                  ]
+                },
+                "enumColors": [
+                  {
+                    "value": "0",
+                    "color": "darkgreen"
+                  },
+                  {
+                    "value": "1",
+                    "color": "darkred"
+                  }
+                ]
+              },
+              "outline": {
+                "null": {
+                  "width": 0
+                }
+              }
+            }
+          ],
+          "activeStyle": "is_flooded"
+        }
+      ]
     },
     {
       "type": "wfs",
