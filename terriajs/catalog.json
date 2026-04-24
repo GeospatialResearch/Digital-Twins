@@ -45,7 +45,7 @@
           "name": "1999 Flood Event - Current Land Cover",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "flood_max_depth_origin_3857",
-          "styles": "plasma_0_5m",
+          "styles": "plasma_0_3m",
           "isOpenInWorkbench": true
         },
         {
@@ -118,7 +118,7 @@
           "name": "1999 Flood Event - Reforestation Scenario",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "flood_max_depth_forest_3857",
-          "styles": "plasma_0_5m",
+          "styles": "plasma_0_3m",
           "isOpenInWorkbench": true
         },
         {
@@ -199,7 +199,7 @@
           "name": "1999 Flood Event - All Pasture Scenario",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "flood_max_depth_pasture_3857",
-          "styles": "plasma_0_5m",
+          "styles": "plasma_0_3m",
           "isOpenInWorkbench": true
         },
         {
@@ -260,18 +260,6 @@
           "activeStyle": "is_flooded"
         }
       ]
-    },
-    {
-      "type": "wfs",
-      "name": "New Zealand Roads",
-      "rectangle": {
-        "west": 173.4,
-        "north": -35.4,
-        "east": 173.6,
-        "south": -35.6
-      },
-      "url": "https://data.linz.govt.nz/services;key=905bc513c2f040c793d076292d8e2438/wfs",
-      "typeNames": "data.linz.govt.nz:layer-123109"
     }
   ],
   "baseMaps": {
