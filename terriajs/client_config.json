@@ -13,6 +13,14 @@
     "brandBarSmallElements": [
       "<div style=\"display: flex; align-items: center;\">\n  <h3 style=\"color: white;\">Flood Resilience Digital Twin (FReDT)</h3>\n</div>"
     ],
-    "relatedMaps": []
+    "relatedMaps": [],
+    "extraCreditLinks": [
+      {
+        "text": "Dashboard created by the Geospatial Research Institute Toi Hangarau",
+        "url": "https://geospatial.ac.nz"
+      }
+    ],
+    "keepCatalogOpen": true,
+    "aboutButtonHrefUrl": null
   }
 }
