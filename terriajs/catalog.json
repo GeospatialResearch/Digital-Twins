@@ -28,6 +28,58 @@
     },
     {
       "type": "group",
+      "name": "March 2026 Flood Survey - Northland Regional Council",
+      "isOpen": true,
+      "members": [
+        {
+          "type": "wfs",
+          "name": "Flood Survey Points",
+          "url": "$GEOSERVER_URL/geoserver/static_files/ows",
+          "typeNames": "static_files:2026_flood_survey_heights",
+          "maxFeatures": 300000,
+          "styles": [
+            {
+              "id": "depth",
+              "color": {
+                "mapType": "continuous",
+                "maximumValue": 3,
+                "numberOfBins": 5,
+                "binMaximums": [
+                  0.6,
+                  1.2,
+                  1.8,
+                  2.4,
+                  3
+                ],
+                "colorPalette": "Plasma"
+              },
+              "point": {
+                "null": {
+                  "marker": "square",
+                  "rotation": 45
+                }
+              },
+              "pointSize": {
+                "nullSize": 25,
+                "sizeFactor": 0,
+                "sizeOffset": 30
+              }
+            }
+          ]
+        },
+        {
+          "type": "wms",
+          "name": "Interpolated Flood Depth",
+          "url": "$GEOSERVER_URL/geoserver/static_files/wms",
+          "layers": "2026_march_interpolated_depth",
+          "styles": "plasma_0_3m",
+          "opacity": 0.66,
+          "isOpenInWorkbench": true
+        }
+      ]
+    },
+    {
+      "type": "group",
       "name": "Current Scenario",
       "isOpen": true,
       "members": [
@@ -42,7 +94,7 @@
         },
         {
           "type": "wms",
-          "name": "1999 Flood Event - Current Land Cover",
+          "name": "1999 Flood Event - Current Scenario",
           "url": "$GEOSERVER_URL/geoserver/static_files/wms",
           "layers": "flood_max_depth_origin_3857",
           "styles": "plasma_0_3m",
@@ -50,11 +102,11 @@
         },
         {
           "type": "wfs",
-          "name": "Building Flood Status - Reforestation Scenario",
+          "name": "Building Flood Status - Current Scenario",
           "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
           "typeNames": "db-buildings:building_flood_status",
           "parameters": {
-            "viewparams": "scenario:-2"
+            "viewparams": "scenario:-1"
           },
           "maxFeatures": 300000,
           "styles": [
@@ -212,11 +264,11 @@
         },
         {
           "type": "wfs",
-          "name": "Building Flood Status - Reforestation Scenario",
+          "name": "Building Flood Status - Pasture Scenario",
           "url": "$GEOSERVER_URL/geoserver/db-buildings/ows",
           "typeNames": "db-buildings:building_flood_status",
           "parameters": {
-            "viewparams": "scenario:-2"
+            "viewparams": "scenario:-3"
           },
           "maxFeatures": 300000,
           "styles": [
