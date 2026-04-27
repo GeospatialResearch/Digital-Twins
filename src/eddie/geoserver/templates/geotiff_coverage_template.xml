@@ -3,27 +3,27 @@
     <name>{layer_name}</name>
     <title>{layer_name}</title>
     <nativeCRS class="projected">
-        PROJCS[&quot;NZGD2000 / New Zealand Transverse Mercator 2000&quot;,
-        GEOGCS[&quot;NZGD2000&quot;,
-        DATUM[&quot;New Zealand Geodetic Datum 2000&quot;,
-        SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]],
-        TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        AUTHORITY[&quot;EPSG&quot;,&quot;6167&quot;]],
+        PROJCS[&quot;WGS 84 / Pseudo-Mercator&quot;,
+        GEOGCS[&quot;WGS 84&quot;,
+        DATUM[&quot;World Geodetic System 1984&quot;,
+        SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]],
+        AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]],
         PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],
         UNIT[&quot;degree&quot;, 0.017453292519943295],
         AXIS[&quot;Geodetic longitude&quot;, EAST],
         AXIS[&quot;Geodetic latitude&quot;, NORTH],
-        AUTHORITY[&quot;EPSG&quot;,&quot;4167&quot;]],
-        PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]],
-        PARAMETER[&quot;central_meridian&quot;, 173.0],
+        AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]],
+        PROJECTION[&quot;Popular Visualisation Pseudo Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;1024&quot;]],
+        PARAMETER[&quot;semi_minor&quot;, 6378137.0],
         PARAMETER[&quot;latitude_of_origin&quot;, 0.0],
-        PARAMETER[&quot;scale_factor&quot;, 0.9996],
-        PARAMETER[&quot;false_easting&quot;, 1600000.0],
-        PARAMETER[&quot;false_northing&quot;, 10000000.0],
+        PARAMETER[&quot;central_meridian&quot;, 0.0],
+        PARAMETER[&quot;scale_factor&quot;, 1.0],
+        PARAMETER[&quot;false_easting&quot;, 0.0],
+        PARAMETER[&quot;false_northing&quot;, 0.0],
         UNIT[&quot;m&quot;, 1.0],
         AXIS[&quot;Easting&quot;, EAST],
         AXIS[&quot;Northing&quot;, NORTH],
-        AUTHORITY[&quot;EPSG&quot;,&quot;2193&quot;]]
+        AUTHORITY[&quot;EPSG&quot;,&quot;3857&quot;]]
     </nativeCRS>
     <supportedFormats>
         <string>GEOTIFF</string>
@@ -34,10 +34,10 @@
         {coverage_dimensions_xml}
     </dimensions>
     <requestSRS>
-        <string>EPSG:2193</string>
+        <string>EPSG:3857</string>
     </requestSRS>
     <responseSRS>
-        <string>EPSG:2193</string>
+        <string>EPSG:3857</string>
     </responseSRS>
-    <srs>EPSG:2193</srs>
+    <srs>EPSG:3857</srs>
 </coverage>

@@ -288,8 +288,8 @@ def add_gtiff_to_geoserver(
     # Ensure the coverage_dimensions exist
     if coverage_dimensions is None or len(coverage_dimensions) == 0:
         # If they don't exist, assume that the raster is single band and its units are 'm'
-        coverage_dimensions = [CoverageDimension(layer_name, "m", "REAL_32BITS")]
-        # Create a GIS layer from the raster file to be served from geoserver
+        coverage_dimensions = [CoverageDimension(layer_name, "m", "REAL_64BITS")]
+    # Create a GIS layer from the raster file to be served from geoserver
     create_layer_from_gtiff_store(gs_url, layer_name, workspace_name, coverage_dimensions)
 
 
