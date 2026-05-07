@@ -32,9 +32,12 @@ RUN <<EOF
     adduser --system --group nonroot
     chgrp -R nonroot "$GEOSERVER_DATA_DIR"
     chmod -R g+rwx "$GEOSERVER_DATA_DIR"
+    cd "$GEOSERVER_DATA_DIR"
 
-    chgrp -R nonroot "$GEOSERVER_DATA_DIR"/workspaces
-    chmod -R g+rwx "$GEOSERVER_DATA_DIR"/workspaces
+    GRATICULE_DIR="workspaces/static_files/Graticule_15"
+    mkdir -p $GRATICULE_DIR
+    chgrp -R nonroot $GRATICULE_DIR
+    chmod -R g+rwx $GRATICULE_DIR
 EOF
 
 SHELL ["/bin/sh", "-c"]
