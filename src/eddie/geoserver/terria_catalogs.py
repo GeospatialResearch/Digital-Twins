@@ -159,4 +159,4 @@ def get_terria_catalog() -> Catalog:
     HTTPError
         If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
-    return {"catalog": [get_layers_as_terria_group(workspace) for workspace in Workspaces]}
+    return {"catalog": []}
