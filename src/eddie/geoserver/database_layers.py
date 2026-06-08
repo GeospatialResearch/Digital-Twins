@@ -107,10 +107,17 @@ def create_datastore_layer(
         # If the layer already exists, we don't have to add it again, and can instead return
         log.debug(f"Datastore layer '{layer_full_name}' already exists.")
         return
+
     # Find SRS/CRS information
-    if check_table_exists(conn, layer_name):
+    db_table_name = layer_name
+    if not check_table_exists(conn, db_table_name):
+        # Try another common database table
+        db_table_name = "nz_building_outlines"
+
+    # Read dataframe for AOI, with selected_polygon.geojson as backup
+    if check_table_exists(conn, db_table_name):
         try:
-            gdf = gpd.read_postgis(f'SELECT * FROM "{layer_name}"', conn, "geometry")
+            gdf = gpd.read_postgis(f'SELECT * FROM "{db_table_name}"', conn, "geometry")
         except ValueError:
             gdf = gpd.read_file("selected_polygon.geojson")
     else:
