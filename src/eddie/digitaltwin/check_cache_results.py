@@ -33,15 +33,12 @@ from eddie.digitaltwin.tables import check_table_exists
 log = logging.getLogger(__name__)
 
 
-def main(selected_polygon: gpd.GeoDataFrame, scenario_options: dict) -> int | None:
+def main(scenario_options: dict) -> int | None:
     """
-    Search the cache for model input generated with identical scenario_options and a selected polygon which contains
-    this function's selected_polygon.
+    Search the cache for model input generated with identical scenario_options.
 
     Parameters
     ----------
-    selected_polygon : gpd.GeoDataFrame
-        The area of interest to search the cache for. Positive results if the cached polygon contains this polygon.
     scenario_options : dict
         The model input parameters, which must match exactly with the cached results for a positive match.
 
@@ -65,9 +62,8 @@ def main(selected_polygon: gpd.GeoDataFrame, scenario_options: dict) -> int | No
             SELECT *
             FROM cache_results
             WHERE scenario_options::jsonb = cast(:scenario_options as jsonb)
-            AND st_contains(geometry, st_geomfromtext(:aoi_polygon, 2193))
-         """
-        ).bindparams(scenario_options=json.dumps(scenario_options), aoi_polygon=selected_polygon.geometry.iloc[0].wkt)
+            """
+        ).bindparams(scenario_options=json.dumps(scenario_options))
         row = conn.execute(query).fetchone()
 
     if row is None:  # If the row is empty then we could not find the model output
@@ -75,6 +71,6 @@ def main(selected_polygon: gpd.GeoDataFrame, scenario_options: dict) -> int | No
         log.debug(query)
         return None
     # Return the matching model_id if a cache is found
-    model_id = row["flood_model_id"]
+    model_id = row.flood_model_id
     log.info(f"Matching model parameters found, output id {model_id}")
     return model_id

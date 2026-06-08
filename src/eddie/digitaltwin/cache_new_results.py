@@ -32,7 +32,6 @@ log = logging.getLogger(__name__)
 
 
 def main(
-    selected_polygon_gdf: gpd.GeoDataFrame,
     model_id: int,
     scenario_options: dict,
     log_level: LogLevel = LogLevel.DEBUG,
@@ -42,9 +41,6 @@ def main(
 
     Parameters
     ----------
-    selected_polygon_gdf: gpd.GeoDataFrame
-        The selected area of interest to cache, any area fully intersecting this one can be retrieved later if the other
-        parameters match.
     model_id : int
         The database id of the existing model output to attach the cached parameters to.
     scenario_options : dict
@@ -59,17 +55,15 @@ def main(
     """
     # Set up logging with the specified log level
     setup_logging(log_level)
+    log.info("Caching model results.")
     # Connect to the database
     engine = setup_environment.get_database()
     with engine.connect() as conn:
         create_table(conn, CacheResults)
-        geometry = selected_polygon_gdf.geometry[0].wkt
 
         # Cache the results attached to the scenario input parameters
-        log.info("Caching model results.")
         query = insert(CacheResults).values(
             flood_model_id=model_id,
-            geometry=geometry,
             scenario_options=scenario_options
         )
         conn.execute(query)

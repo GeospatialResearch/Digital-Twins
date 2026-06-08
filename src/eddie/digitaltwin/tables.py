@@ -113,8 +113,6 @@ class CacheResults(Base):
         Scenario options associated with the cache entry.
     created_at : datetime
         Timestamp indicating when the cache entry was created.
-    geometry : Polygon
-        Geometric representation of the catchment area coverage.
     """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "cache_results"
@@ -122,7 +120,6 @@ class CacheResults(Base):
     flood_model_id = Column(Integer)
     scenario_options = Column(JSON)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
-    geometry = Column(Geometry("POLYGON", srid=2193))
 
 
 def create_table(conn: Connection, table: Base) -> None:
