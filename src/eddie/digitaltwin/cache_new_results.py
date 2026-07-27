@@ -34,7 +34,7 @@ log = logging.getLogger(__name__)
 def main(
     model_id: int,
     scenario_options: dict,
-    log_level: LogLevel = LogLevel.DEBUG,
+    log_level: LogLevel = LogLevel.INFO,
 ) -> int:
     """
     Cache the scenario options used to generate the existing model with the given model id, for faster retrieval later.
