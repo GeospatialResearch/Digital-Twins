@@ -1,0 +1,21 @@
+<metadata>
+    <entry key="JDBC_VIRTUAL_TABLE">
+        <virtualTable>
+            <name>{layer_name}</name>
+            <sql>
+                {xml_escaped_sql}
+            </sql>
+            <escapeSql>false</escapeSql>
+            <geometry>
+                <name>geometry</name>
+                <type>Polygon</type>
+                <srid>2193</srid>
+            </geometry>
+            <parameter>
+                <name>scenario</name>
+                <defaultValue>-1</defaultValue>
+                <regexpValidator>^(-)?[\d]+$</regexpValidator>
+            </parameter>
+        </virtualTable>
+    </entry>
+</metadata>
