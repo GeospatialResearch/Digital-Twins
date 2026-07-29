@@ -170,6 +170,32 @@ def create_datastore_layer(
         raise requests.HTTPError(response.text, response=response)
 
 
+def generate_metadata_elem(layer_name: str, sql_query: str) -> str:
+    """
+    Helper to create a metadata element for a given dynamic SQL query, to be used in create_datastore_layer.
+
+    Parameters
+    ----------
+    layer_name: str
+        The name of the new SQL view, and the GeoServer layer.
+    sql_query: str
+        SQL query defining the complex query being created.
+
+    Returns
+    -------
+    str
+        An XML str for the <metadata> element of a GeoServer <featureType> post.
+    """
+    # Escape some characters in XML as required by GeoServer
+    xml_escaped_sql = saxutils.escape(sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
+
+    # Read and fill the template
+    sql_view_query_template = resources.read_text("eddie.geoserver.templates", "scenario_sql_view_element_template.xml")
+    metadata_element = sql_view_query_template.format(layer_name=layer_name, xml_escaped_sql=xml_escaped_sql)
+
+    return metadata_element
+
+
 def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_store_name: str) -> None:
     """
     Create PostGIS database store in a GeoServer workspace for a given database.
