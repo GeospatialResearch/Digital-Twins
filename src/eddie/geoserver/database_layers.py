@@ -18,6 +18,8 @@
 """Functions to handle serving database layers and views via geoserver."""
 
 from http import HTTPStatus
+from importlib import resources
+from xml.sax import saxutils
 import logging
 
 import geopandas as gpd
