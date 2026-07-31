@@ -47,8 +47,6 @@ def main(scenario_options: dict) -> int | None:
     int | None
         Returns the matching model_id if a match is found. Otherwise, None.
     """
-    setup_logging(log_level=LogLevel.DEBUG)
-
     engine = setup_environment.get_database()
     with engine.connect() as conn:
         # Check table exists before querying
