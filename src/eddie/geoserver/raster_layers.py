@@ -19,6 +19,7 @@
 
 from http import HTTPStatus
 from importlib import resources
+import rasterio
 import logging
 import pathlib
 import shutil
@@ -87,7 +88,22 @@ def upload_gtiff_to_store(
     log.info(f"Uploaded {gtiff_filepath.name} to Geoserver workspace {workspace_name}.")
 
 
-def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace_name: str) -> None:
+def get_gtiff_native_crs(gtiff_filepath: pathlib.Path) -> str:
+    """
+    Read a GeoTIFF's embedded CRS as an EPSG code string, e.g. "EPSG:3857".
+
+    Raises
+    ------
+    ValueError
+        If the file has no embedded CRS, or the CRS has no EPSG code.
+    """
+    with rasterio.open(gtiff_filepath) as dataset:
+        crs = dataset.crs
+    if crs is None or crs.to_epsg() is None:
+        raise ValueError(f"{gtiff_filepath.name} has no EPSG-identifiable CRS.")
+    return f"EPSG:{crs.to_epsg()}"
+
+def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace_name: str, native_crs: str) -> None:
     """
     Create a GeoServer Layer from a GeoServer store, making it ready to serve.
 
@@ -99,7 +115,8 @@ def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace
         Defines the name of the layer in GeoServer.
     workspace_name : str
         The name of the existing GeoServer workspace that the store is to be added to.
-
+    native_crs : str
+        The crs of the tif file
     Raises
     ----------
     HTTPError
@@ -108,9 +125,19 @@ def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace
     # Read the template xml file in a way that works for downstream users of the eddie library.
     gtiff_coverage_template = resources.read_text("eddie.geoserver.templates", "geotiff_coverage_template.xml")
     # Fill template to get payload
-    gtiff_coverage_payload = gtiff_coverage_template.format(layer_name=layer_name)
+    gtiff_coverage_payload = gtiff_coverage_template.format(layer_name=layer_name, native_crs=native_crs)
     # Send request to create layer
     send_create_layer_request(geoserver_url, layer_name, workspace_name, gtiff_coverage_payload)
+
+
+    response = requests.put(
+        f"{geoserver_url}/workspaces/{workspace_name}/coveragestores/{layer_name}/coverages/{layer_name}",
+        params={"recalculate": "nativebbox,latlonbbox"},
+        headers=_xml_header,
+        data="<coverage><enabled>true</enabled></coverage>",
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD),
+    )
+    response.raise_for_status()
 
 
 def send_create_layer_request(geoserver_url: str, layer_name: str, workspace_name: str, coverage_payload: str) -> None:
@@ -165,8 +192,10 @@ def add_gtiff_to_geoserver(gtiff_filepath: pathlib.Path, workspace_name: str, la
         delete_store(layer_name, workspace_name)
     # Upload the raster into geoserver
     upload_gtiff_to_store(gs_url, gtiff_filepath, layer_name, workspace_name)
+
+    native_crs = get_gtiff_native_crs(gtiff_filepath)
     # Create a GIS layer from the raster file to be served from geoserver
-    create_layer_from_gtiff_store(gs_url, layer_name, workspace_name)
+    create_layer_from_gtiff_store(gs_url, layer_name, workspace_name, native_crs)
 
 
 def style_exists(style_name: str) -> bool:

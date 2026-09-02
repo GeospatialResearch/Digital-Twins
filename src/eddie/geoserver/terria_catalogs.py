@@ -105,6 +105,7 @@ def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> Cat
         "url": f"{workspace_url}/wms",
         "layers": layer_name,
         "styles": layer_name,
+        "crs": "EPSG:4326"
     }
     return catalog_item
 
