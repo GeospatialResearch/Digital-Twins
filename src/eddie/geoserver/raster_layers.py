@@ -163,7 +163,7 @@ def send_create_layer_request(geoserver_url: str, layer_name: str, workspace_nam
     # Send request to create layer
     response = requests.post(
         f"{geoserver_url}/workspaces/{workspace_name}/coveragestores/{layer_name}/coverages",
-        params={"configure": "all"},
+        params={"configure": "all", },
         headers=_xml_header,
         data=coverage_payload,
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)

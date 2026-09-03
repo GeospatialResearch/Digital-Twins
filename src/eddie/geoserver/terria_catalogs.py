@@ -83,7 +83,7 @@ def create_vector_layer_catalog_item(
     return catalog_item
 
 
-def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> CatalogItem:
+def create_raster_layer_catalog_item(workspace_url: str, layer_name: str, crs: int = 3857) -> CatalogItem:
     """
     Create a JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
 
@@ -93,6 +93,8 @@ def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> Cat
         The URL to the GeoServer workspace.
     layer_name : str
         The name of the layer in Geoserver.
+    crs :int
+        The CRS of the layer in Geoserver.
 
     Returns
     -------
@@ -105,7 +107,7 @@ def create_raster_layer_catalog_item(workspace_url: str, layer_name: str) -> Cat
         "url": f"{workspace_url}/wms",
         "layers": layer_name,
         "styles": layer_name,
-        "crs": "EPSG:4326"
+        "crs": f"EPSG:{crs}"
     }
     return catalog_item
 
