@@ -130,16 +130,6 @@ def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace
     send_create_layer_request(geoserver_url, layer_name, workspace_name, gtiff_coverage_payload)
 
 
-    response = requests.put(
-        f"{geoserver_url}/workspaces/{workspace_name}/coveragestores/{layer_name}/coverages/{layer_name}",
-        params={"recalculate": "nativebbox,latlonbbox"},
-        headers=_xml_header,
-        data="<coverage><enabled>true</enabled></coverage>",
-        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD),
-    )
-    response.raise_for_status()
-
-
 def send_create_layer_request(geoserver_url: str, layer_name: str, workspace_name: str, coverage_payload: str) -> None:
     """
     Create a GeoServer Layer from a GeoServer store, making it ready to serve.
@@ -163,13 +153,12 @@ def send_create_layer_request(geoserver_url: str, layer_name: str, workspace_nam
     # Send request to create layer
     response = requests.post(
         f"{geoserver_url}/workspaces/{workspace_name}/coveragestores/{layer_name}/coverages",
-        params={"configure": "all", },
+        params={"configure": "all", "recalculate": "nativebbox,latlonbbox"},
         headers=_xml_header,
         data=coverage_payload,
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if not response.ok:
-        # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
 
 
