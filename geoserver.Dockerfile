@@ -21,7 +21,7 @@ FROM docker.osgeo.org/geoserver:2.28.x AS geoserver
 
 # Install extensions for serving NetCDF data
 ENV INSTALL_EXTENSIONS="true"
-ENV STABLE_EXTENSIONS="netcdf"
+ENV STABLE_EXTENSIONS="netcdf,wps"
 ENV COMMUNITY_EXTENSIONS="ncwms"
 RUN /opt/install-extensions.sh
 
