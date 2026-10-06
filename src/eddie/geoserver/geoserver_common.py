@@ -79,3 +79,28 @@ def create_workspace_if_not_exists(workspace_name: str) -> None:
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
+
+
+def restrict_wps_service() -> None:
+    """
+    Restrict the GeoServer WPS Execute operation to administrators.
+
+    SLD rendering transformations used by WMS styles are unaffected, because they do not go through the WPS service.
+    Safe to repeat: GeoServer refuses to add a rule that already exists, so the rule is then overwritten instead.
+
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
+    """
+    acl_url = f"{get_geoserver_url()}/security/acl/services"
+    auth = (EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    rule = {"wps.Execute": "ROLE_ADMINISTRATOR"}
+    response = requests.post(acl_url, json=rule, auth=auth)
+    if response.status_code == HTTPStatus.CONFLICT:
+        # The rule already exists, possibly with another role
+        response = requests.put(acl_url, json=rule, auth=auth)
+    if not response.ok:
+        # Raise error manually so we can configure the text
+        raise requests.HTTPError(response.text, response=response)
+    log.info("Restricted GeoServer WPS Execute to administrators.")
