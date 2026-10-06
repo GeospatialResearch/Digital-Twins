@@ -45,7 +45,6 @@ class Workspaces(StrEnum):
     EXTRUDED_LAYERS_WORKSPACE = "extruded_layers"
 
 
-
 def create_vector_layer_catalog_item(
     workspace_name: str,
     workspace_url: str,

@@ -501,6 +501,8 @@ def serve_static_files(conn: Connection, vector_file_directory: pathlib.Path) ->
     vector_file_directory : pathlib.Path
         The Path to the directory containing the vector files.
     """
+    # Only administrators may run WPS processes directly. Safe to repeat on every run.
+    gs.restrict_wps_service()
     # Find the set of all served workspaces that deal with static files
     statics = {gs.Workspaces.STATIC_FILES_WORKSPACE, gs.Workspaces.EXTRUDED_LAYERS_WORKSPACE}
     # Find the served workspaces that are not the static ones

@@ -342,6 +342,7 @@ def get_workspace_raster_layers(workspace_name: str) -> list[str]:
 
     return layer_names
 
+
 def get_raster_layer_crs(workspace_name: str, layer_name: str) -> str:
     """
     Retrieve the CRS that GeoServer serves a raster layer in.
