@@ -19,7 +19,9 @@ FROM docker.osgeo.org/geoserver:2.28.x AS geoserver
 
 # Dockerfile for the geoserver instance of the digital twin, serves geospatial data from files and db.
 
-# Install extensions for serving NetCDF data
+# netcdf/ncwms serve the NetCDF datasets. wps is installed for the SLD rendering transformations
+# Cost: rendering transformations run on every GetMap request for styles that use them, so those tiles are
+# CPU-bound and are not cached by default.
 ENV INSTALL_EXTENSIONS="true"
 ENV STABLE_EXTENSIONS="netcdf,wps"
 ENV COMMUNITY_EXTENSIONS="ncwms"
