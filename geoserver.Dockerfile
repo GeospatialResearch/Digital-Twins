@@ -29,17 +29,10 @@ RUN /opt/install-extensions.sh
 
 # Allows nonroot users in other containers to write to shared GEOSERVER_DATA_DIR volume
 RUN <<EOF
-    set -ex
     addgroup --system nonroot
     adduser --system --group nonroot
     chgrp -R nonroot "$GEOSERVER_DATA_DIR"
     chmod -R g+rwx "$GEOSERVER_DATA_DIR"
-    cd "$GEOSERVER_DATA_DIR"
-
-    GRATICULE_DIR="workspaces/static_files/Graticule_15"
-    mkdir -p "$GRATICULE_DIR"
-    chgrp -R nonroot "$GRATICULE_DIR"
-    chmod -R g+rwx "$GRATICULE_DIR"
 EOF
 
 SHELL ["/bin/sh", "-c"]

@@ -27,10 +27,7 @@ import logging
 import requests
 
 from eddie.config import EnvVariable
-from eddie.geoserver.geoserver_common import (
-    create_workspace_if_not_exists, does_resource_exist, force_config_refresh, get_data_store_url,
-    get_workspace_url
-)
+from eddie.geoserver.geoserver_common import does_resource_exist, get_data_store_url, get_workspace_url
 
 log = logging.getLogger(__name__)
 _xml_header = {"Content-type": "text/xml"}
@@ -65,19 +62,20 @@ def create_graticules_layer(
     steps : list[int | float] | tuple[int | float]
         The graticule line spacings, in degrees, that the data store will generate (e.g. [15] for lines every
         15 degrees). Defaults to DEFAULT_GRATICULE_STEPS.
+
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
     """
     # Ensure the data store this layer will be served from exists before configuring the layer itself.
     create_data_store_for_graticules_layer_if_not_exists(workspace_name, data_store_name, steps)
     log.info(f"Creating graticules layer '{layer_name}'.")
-    layer_url = f"{get_data_store_url(workspace_name, data_store_name)}/featuretypes/{layer_name}"
+    data_store_url = get_data_store_url(workspace_name, data_store_name)
+    layer_url = f"{data_store_url}/featuretypes/{layer_name}"
     if does_resource_exist(layer_url):
         log.debug(f"Layer '{layer_name}' already exists.")
         return
-
-    # GeoServer's data-directory layout expects each layer's configuration files to live in their own directory,
-    # nested under the workspace and data store. Create it manually so later writes have somewhere to go.
-    layer_directory = EnvVariable.DATA_DIR_GEOSERVER / "workspaces" / workspace_name / data_store_name / layer_name
-    layer_directory.mkdir(parents=True, exist_ok=True)
 
     # Construct the feature type payload from its template.
     featuretype_template = resources.read_text(
@@ -95,13 +93,24 @@ def create_graticules_layer(
     featuretype_payload = featuretype_template.format(
         workspace_name=workspace_name, data_store_name=data_store_name, layer_name=layer_name, steps_range=steps_range
     )
-    # Write directly to GeoServer's data directory rather than posting to the REST API, because the Graticule
-    # store type is configured as static files on disk rather than through the usual featuretypes REST endpoint.
-    encoding = "utf-8"
-    with open(layer_directory / "featuretype.xml", "w", encoding=encoding) as f:
-        f.write(featuretype_payload)
 
-    # Construct the layer payload from its template, in the same way as the feature type above.
+    # Create the feature type through GeoServer's REST API, the same way as for any other vector store.
+    # GeoServer auto-creates the default layer for a feature type as part of this call, so no separate
+    # "create the layer" request is needed for the layer to appear and be servable over WMS/WFS.
+    create_featuretype_response = requests.post(
+        f"{data_store_url}/featuretypes",
+        headers=_xml_header,
+        data=featuretype_payload,
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    if create_featuretype_response.status_code != HTTPStatus.CREATED:
+        # Raise error manually so we can configure the text
+        raise requests.HTTPError(create_featuretype_response.text, response=create_featuretype_response)
+    log.info(f"Created feature type and layer '{layer_name}'.")
+
+    # Construct the layer payload from its template, in the same way as the feature type above. This is a
+    # follow-up PUT rather than a creation call, because the featuretype POST above already auto-created the
+    # layer: this step only overwrites layer-level settings (e.g. default style) that the template specifies.
     layer_template = resources.read_text(
         GRATICULE_TEMPLATES_RESOURCE_MODULE,
         "graticule_layer_template.xml"
@@ -109,11 +118,15 @@ def create_graticules_layer(
     layer_payload = layer_template.format(
         workspace_name=workspace_name, layer_name=layer_name
     )
-    with open(layer_directory / "layer.xml", "w", encoding=encoding) as f:
-        f.write(layer_payload)
-    # The feature type and layer were written directly to disk rather than via the REST API, so GeoServer will
-    # not know about them until its configuration is reloaded.
-    force_config_refresh()
+    update_layer_response = requests.put(
+        f"{get_workspace_url(workspace_name)}/layers/{layer_name}",
+        headers=_xml_header,
+        data=layer_payload,
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    if not update_layer_response.ok:
+        # Raise error manually so we can configure the text
+        raise requests.HTTPError(update_layer_response.text, response=update_layer_response)
 
 
 def create_data_store_for_graticules_layer_if_not_exists(
@@ -150,10 +163,6 @@ def create_data_store_for_graticules_layer_if_not_exists(
         log.debug(f"Datastore '{data_store_full_name}' already exists.")
         return
 
-    # Manually create the directory to ensure its permissions allow us to write to it later.
-    data_store_directory = EnvVariable.DATA_DIR_GEOSERVER / "workspaces" / workspace_name / data_store_name
-    data_store_directory.mkdir(parents=True, exist_ok=True)
-
     # Read the template xml file in a way that works for downstream users of the eddie library.
     graticule_data_store_template = resources.read_text(
         GRATICULE_TEMPLATES_RESOURCE_MODULE,
@@ -180,15 +189,3 @@ def create_data_store_for_graticules_layer_if_not_exists(
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
         raise requests.HTTPError(create_ds_response.text, response=create_ds_response)
-
-
-if __name__ == '__main__':
-    the_ds = "graticules_15_t1"
-    the_ws = "static_files"
-    the_layer = "graticules_15_t1_layer"
-    the_steps = [15]
-    from eddie.digitaltwin.utils import LogLevel, setup_logging
-
-    setup_logging(LogLevel.DEBUG)
-    create_workspace_if_not_exists(the_ws)
-    create_graticules_layer(the_ws, the_ds, the_layer, the_steps)

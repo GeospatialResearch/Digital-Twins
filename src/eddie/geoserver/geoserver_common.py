@@ -182,26 +182,3 @@ def does_resource_exist(resource_url: str) -> bool:
         case _:
             # Raise error manually so we can configure the text
             raise requests.HTTPError(resource_exists_response.text, response=resource_exists_response)
-
-
-def force_config_refresh() -> None:
-    """
-    Force GeoServer to reload its configuration and catalogue from disk.
-
-    Useful after configuration files have been changed outside of the REST API (e.g. directly on disk),
-    so that GeoServer picks up the changes without requiring a full restart.
-
-    Raises
-    ----------
-    HTTPError
-        If geoserver responds with an error, raises it as an exception since it is unexpected.
-    """
-    log.info("Forcing refresh of GeoServer...")
-    reload_response = requests.post(
-        f"{get_geoserver_url()}/reload",
-        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
-    )
-    if not reload_response.ok:
-        # Raise error manually so we can configure the text
-        raise requests.HTTPError(reload_response.text, response=reload_response)
-    log.info("Geoserver refresh complete.")
