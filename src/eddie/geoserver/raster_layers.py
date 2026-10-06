@@ -341,3 +341,33 @@ def get_workspace_raster_layers(workspace_name: str) -> list[str]:
     layer_names = [layer["name"] for layer in layers]
 
     return layer_names
+
+def get_raster_layer_crs(workspace_name: str, layer_name: str) -> str:
+    """
+    Retrieve the CRS that GeoServer serves a raster layer in.
+
+    Assumes the coverage store and coverage share the layer's name, as add_gtiff_to_geoserver creates them.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the geoserver workspace containing the layer.
+    layer_name : str
+        The name of the raster layer, not including the workspace name.
+
+    Returns
+    -------
+    str
+        The CRS the layer is served in, as an EPSG code string, e.g. "EPSG:3031".
+
+    Raises
+    -------
+    HTTPError
+        If geoserver responds with anything but OK, raises it as an exception since it is unexpected.
+    """
+    coverage_request = requests.get(
+        f'{get_geoserver_url()}/workspaces/{workspace_name}/coveragestores/{layer_name}/coverages/{layer_name}.json',
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    coverage_request.raise_for_status()
+    return coverage_request.json()["coverage"]["srs"]

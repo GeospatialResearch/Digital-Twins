@@ -21,7 +21,7 @@ from typing import Literal, TypeAlias
 
 from eddie.config import EnvVariable
 from .database_layers import get_workspace_vector_layers
-from .raster_layers import get_workspace_raster_layers
+from .raster_layers import get_raster_layer_crs, get_workspace_raster_layers
 
 CatalogItem: TypeAlias = dict[str, str | int]
 CatalogGroup: TypeAlias = dict[str, str | bool | list[CatalogItem]]
@@ -43,6 +43,7 @@ class Workspaces(StrEnum):
     STATIC_FILES_WORKSPACE = "static_files"
     INPUT_LAYERS_WORKSPACE = "input_layers"
     EXTRUDED_LAYERS_WORKSPACE = "extruded_layers"
+
 
 
 def create_vector_layer_catalog_item(
@@ -83,7 +84,7 @@ def create_vector_layer_catalog_item(
     return catalog_item
 
 
-def create_raster_layer_catalog_item(workspace_url: str, layer_name: str, crs: int = 3857) -> CatalogItem:
+def create_raster_layer_catalog_item(workspace_url: str, layer_name: str, served_crs: str) -> CatalogItem:
     """
     Create a JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
 
@@ -93,22 +94,22 @@ def create_raster_layer_catalog_item(workspace_url: str, layer_name: str, crs: i
         The URL to the GeoServer workspace.
     layer_name : str
         The name of the layer in Geoserver.
-    crs :int
-        The CRS of the layer in Geoserver.
+    served_crs : str
+        The CRS GeoServer serves the layer in, e.g. "EPSG:3031".
 
     Returns
     -------
     CatalogItem
         JSON TerriaJS catalog item for a single GeoServer raster WMS layer.
     """
+    crs = "EPSG:3857" if served_crs == "EPSG:3857" else "EPSG:4326"
     catalog_item = {
         "type": "wms",
         "name": layer_name,
         "url": f"{workspace_url}/wms",
         "layers": layer_name,
         "styles": layer_name,
-        "crs": f"EPSG:{crs}",
-        "parameters": {"interpolations": "bilinear"}
+        "crs": crs,
     }
     return catalog_item
 
@@ -139,7 +140,8 @@ def get_layers_as_terria_group(workspace_name: str) -> CatalogGroup:
         catalog_item = create_vector_layer_catalog_item(workspace_name, workspace_url, vector_layer)
         catalog_group.append(catalog_item)
     for raster_layer in get_workspace_raster_layers(workspace_name):
-        catalog_item = create_raster_layer_catalog_item(workspace_url, raster_layer, 4326)
+        served_crs = get_raster_layer_crs(workspace_name, raster_layer)
+        catalog_item = create_raster_layer_catalog_item(workspace_url, raster_layer, served_crs)
         catalog_group.append(catalog_item)
     return {
         "type": "group",
