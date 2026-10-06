@@ -29,7 +29,7 @@ from sqlalchemy.engine import Connection
 from eddie.config import EnvVariable
 from eddie.digitaltwin.tables import check_table_exists
 from eddie.geoserver.geoserver_common import (
-    create_workspace_if_not_exists, doesResourceExist, get_data_store_url, get_geoserver_url
+    create_workspace_if_not_exists, does_resource_exist, get_data_store_url, get_geoserver_url
 )
 
 log = logging.getLogger(__name__)
@@ -221,7 +221,7 @@ def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_st
     log.info(f"Creating datastore '{data_store_full_name}' if it does not already exist.")
 
     data_store_url = get_data_store_url(workspace_name, new_data_store_name)
-    if doesResourceExist(data_store_url):
+    if does_resource_exist(data_store_url):
         # If the data store exists then we don't need to do anything
         log.debug(f"Datastore '{data_store_full_name}' already exists.")
         return

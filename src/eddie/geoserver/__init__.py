@@ -30,7 +30,7 @@ __all__ = [
     "add_style",
     "create_datastore_layer",
     "create_db_store_if_not_exists",
-    "create_graticules_layer"
+    "create_graticules_layer",
     "create_main_db_store",
     "create_workspace_if_not_exists",
     "get_geoserver_url",

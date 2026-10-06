@@ -37,9 +37,9 @@ RUN <<EOF
     cd "$GEOSERVER_DATA_DIR"
 
     GRATICULE_DIR="workspaces/static_files/Graticule_15"
-    mkdir -p $GRATICULE_DIR
-    chgrp -R nonroot $GRATICULE_DIR
-    chmod -R g+rwx $GRATICULE_DIR
+    mkdir -p "$GRATICULE_DIR"
+    chgrp -R nonroot "$GRATICULE_DIR"
+    chmod -R g+rwx "$GRATICULE_DIR"
 EOF
 
 SHELL ["/bin/sh", "-c"]
