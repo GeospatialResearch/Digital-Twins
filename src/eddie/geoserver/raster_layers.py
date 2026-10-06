@@ -92,6 +92,16 @@ def get_gtiff_native_crs(gtiff_filepath: pathlib.Path) -> str:
     """
     Read a GeoTIFF's embedded CRS as an EPSG code string, e.g. "EPSG:3857".
 
+    Parameters
+    ----------
+    gtiff_filepath : pathlib.Path
+        The filepath to the GeoTiff file to read the CRS from.
+
+    Returns
+    -------
+    str
+        The GeoTiff's CRS as an EPSG code string, e.g. "EPSG:3857".
+
     Raises
     ------
     ValueError
