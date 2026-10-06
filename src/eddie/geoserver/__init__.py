@@ -20,7 +20,7 @@ Functions and utilities for loading and serving data with geoserver.
 Imports here are accessible directly by `from eddie import geoserver`.
 """
 from .database_layers import create_datastore_layer, create_db_store_if_not_exists, create_main_db_store
-from .geoserver_common import create_workspace_if_not_exists, get_geoserver_url
+from .geoserver_common import create_workspace_if_not_exists, get_geoserver_url, restrict_wps_service
 from .raster_layers import add_gtiff_to_geoserver, add_style, style_exists
 from .terria_catalogs import Workspaces, get_terria_catalog
 
@@ -33,6 +33,7 @@ __all__ = [
     "create_workspace_if_not_exists",
     "get_geoserver_url",
     "get_terria_catalog",
+    "restrict_wps_service",
     "Workspaces",
     "style_exists"
 ]
