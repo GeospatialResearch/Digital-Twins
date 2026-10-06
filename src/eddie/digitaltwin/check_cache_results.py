@@ -27,7 +27,6 @@ import geopandas as gpd
 from sqlalchemy.sql import text
 
 from eddie.digitaltwin import setup_environment
-from eddie.digitaltwin.utils import LogLevel, setup_logging
 from eddie.digitaltwin.tables import check_table_exists
 
 log = logging.getLogger(__name__)
@@ -50,7 +49,6 @@ def main(selected_polygon: gpd.GeoDataFrame, scenario_options: dict) -> int | No
     int | None
         Returns the matching model_id if a match is found. Otherwise, None.
     """
-    setup_logging(log_level=LogLevel.DEBUG)
 
     engine = setup_environment.get_database()
     with engine.connect() as conn:
@@ -75,6 +73,6 @@ def main(selected_polygon: gpd.GeoDataFrame, scenario_options: dict) -> int | No
         log.debug(query)
         return None
     # Return the matching model_id if a cache is found
-    model_id = row["flood_model_id"]
+    model_id = row.flood_model_id
     log.info(f"Matching model parameters found, output id {model_id}")
     return model_id
