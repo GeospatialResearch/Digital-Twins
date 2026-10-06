@@ -139,7 +139,7 @@ def get_layers_as_terria_group(workspace_name: str) -> CatalogGroup:
         catalog_item = create_vector_layer_catalog_item(workspace_name, workspace_url, vector_layer)
         catalog_group.append(catalog_item)
     for raster_layer in get_workspace_raster_layers(workspace_name):
-        catalog_item = create_raster_layer_catalog_item(workspace_url, raster_layer,4326)
+        catalog_item = create_raster_layer_catalog_item(workspace_url, raster_layer, 4326)
         catalog_group.append(catalog_item)
     return {
         "type": "group",

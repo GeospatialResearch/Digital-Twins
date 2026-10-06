@@ -19,11 +19,11 @@
 
 from http import HTTPStatus
 from importlib import resources
-import rasterio
 import logging
 import pathlib
 import shutil
 
+import rasterio
 import requests
 
 from eddie.config import EnvVariable
@@ -102,6 +102,7 @@ def get_gtiff_native_crs(gtiff_filepath: pathlib.Path) -> str:
     if crs is None or crs.to_epsg() is None:
         raise ValueError(f"{gtiff_filepath.name} has no EPSG-identifiable CRS.")
     return f"EPSG:{crs.to_epsg()}"
+
 
 def create_layer_from_gtiff_store(geoserver_url: str, layer_name: str, workspace_name: str, native_crs: str) -> None:
     """
