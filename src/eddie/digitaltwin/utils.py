@@ -82,7 +82,7 @@ class CeleryTaskIdFilter(logging.Filter):
         Always True, so the record is never dropped.
         """
         try:
-            from celery._state import get_current_task
+            from celery._state import get_current_task # pylint: disable=import-outside-toplevel
             task = get_current_task()
         except ImportError:
             task = None
@@ -127,8 +127,10 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
         - LogLevel.NOTSET (0)
     """
     # Define the logging format and date format
-    logging_format = \
-        "%(asctime)s | %(levelname)-8s | %(lineno)4d %(name)-30s | [task_id=%(task_id)s] | %(funcName)-50s | %(message)s"
+    logging_format = (
+        "%(asctime)s | %(levelname)-8s | %(lineno)4d %(name)-30s | [task_id=%(task_id)s] | "
+        "%(funcName)-50s | %(message)s"
+    )
     date_format = "%Y-%m-%d %H:%M:%S"
     # Create and configure the root logger with the specified log level and formats
     logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format, force=True)

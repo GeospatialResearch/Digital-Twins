@@ -49,7 +49,6 @@ def main(selected_polygon: gpd.GeoDataFrame, scenario_options: dict) -> int | No
     int | None
         Returns the matching model_id if a match is found. Otherwise, None.
     """
-
     engine = setup_environment.get_database()
     with engine.connect() as conn:
         # Check table exists before querying
