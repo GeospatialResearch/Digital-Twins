@@ -18,7 +18,9 @@
 """Functions to handle serving database layers and views via geoserver."""
 
 from http import HTTPStatus
+from importlib import resources
 import logging
+from xml.sax import saxutils
 
 import geopandas as gpd
 import requests
@@ -74,7 +76,8 @@ def create_datastore_layer(
     workspace_name: str,
     data_store_name: str,
     layer_name: str,
-    metadata_elem: str = ""
+    metadata_elem: str = "",
+    source_table: str | None = None
 ) -> None:
     """
     Create a GeoServer layer for a given data store if it does not currently exist.
@@ -93,6 +96,8 @@ def create_datastore_layer(
         This is the same as the name of the database table if creating a layer from a table.
     metadata_elem : str = ""
         An optional XML str that contains the metadata element used to configure custom SQL queries.
+    source_table : str | None = None
+        The database table whose SRS and extent are read for the layer. Defaults to layer_name.
 
     Raises
     ----------
@@ -107,10 +112,11 @@ def create_datastore_layer(
         # If the layer already exists, we don't have to add it again, and can instead return
         log.debug(f"Datastore layer '{layer_full_name}' already exists.")
         return
-    # Find SRS/CRS information
-    if check_table_exists(conn, layer_name):
+    # Find SRS/CRS information, with selected_polygon.geojson as backup
+    table_name = source_table or layer_name
+    if check_table_exists(conn, table_name):
         try:
-            gdf = gpd.read_postgis(f'SELECT * FROM "{layer_name}"', conn, "geometry")
+            gdf = gpd.read_postgis(f'SELECT * FROM "{table_name}"', conn, "geometry")
         except ValueError:
             gdf = gpd.read_file("selected_polygon.geojson")
     else:
@@ -161,6 +167,32 @@ def create_datastore_layer(
         # If it does not meet the expected results then raise an error
         # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
+
+
+def generate_metadata_elem(layer_name: str, sql_query: str) -> str:
+    """
+    Helper to create a metadata element for a given dynamic SQL query, to be used in create_datastore_layer.
+
+    Parameters
+    ----------
+    layer_name: str
+        The name of the new SQL view, and the GeoServer layer.
+    sql_query: str
+        SQL query defining the complex query being created.
+
+    Returns
+    -------
+    str
+        An XML str for the <metadata> element of a GeoServer <featureType> post.
+    """
+    # Escape some characters in XML as required by GeoServer
+    xml_escaped_sql = saxutils.escape(sql_query, entities={r"'": "&apos;", "\n": "&#xd;"})
+
+    # Read and fill the template
+    sql_view_query_template = resources.read_text("eddie.geoserver.templates", "scenario_sql_view_element_template.xml")
+    metadata_element = sql_view_query_template.format(layer_name=layer_name, xml_escaped_sql=xml_escaped_sql)
+
+    return metadata_element
 
 
 def create_db_store_if_not_exists(db_name: str, workspace_name: str, new_data_store_name: str) -> None:
