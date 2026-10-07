@@ -1,0 +1,108 @@
+<featureType>
+    <name>{layer_name}</name>
+    <nativeName>Graticule_{steps_range}</nativeName>
+    <title>{layer_name}</title>
+    <namespace>
+        <name>{workspace_name}</name>
+        <atom:link
+                xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
+                href="http://localhost:8088/geoserver/rest/namespaces/{workspace_name}.xml" type="application/xml"/>
+    </namespace>
+    <nativeCRS>
+        GEOGCS[&quot;WGS 84&quot;,
+        DATUM[&quot;World Geodetic System 1984&quot;,
+        SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]],
+        AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]],
+        PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],
+        UNIT[&quot;degree&quot;, 0.017453292519943295],
+        AXIS[&quot;Geodetic longitude&quot;, EAST],
+        AXIS[&quot;Geodetic latitude&quot;, NORTH],
+        AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]
+    </nativeCRS>
+    <srs>EPSG:4326</srs>
+    <nativeBoundingBox>
+        <minx>-180.0</minx>
+        <maxx>180.0</maxx>
+        <miny>-90.0</miny>
+        <maxy>90.0</maxy>
+        <crs>EPSG:4326</crs>
+    </nativeBoundingBox>
+    <latLonBoundingBox>
+        <minx>-180.0</minx>
+        <maxx>180.0</maxx>
+        <miny>-90.0</miny>
+        <maxy>90.0</maxy>
+        <crs>EPSG:4326</crs>
+    </latLonBoundingBox>
+    <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+    <enabled>true</enabled>
+    <store class="dataStore">
+        <name>{workspace_name}:{data_store_name}</name>
+        <atom:link
+                xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
+                href="http://localhost:8088/geoserver/rest/workspaces/{workspace_name}/datastores/{data_store_name}.xml"
+                type="application/xml"/>
+    </store>
+    <serviceConfiguration>false</serviceConfiguration>
+    <simpleConversionEnabled>false</simpleConversionEnabled>
+    <internationalTitle/>
+    <internationalAbstract/>
+    <maxFeatures>0</maxFeatures>
+    <numDecimals>0</numDecimals>
+    <padWithZeros>false</padWithZeros>
+    <forcedDecimal>false</forcedDecimal>
+    <overridingServiceSRS>false</overridingServiceSRS>
+    <skipNumberMatched>false</skipNumberMatched>
+    <circularArcPresent>false</circularArcPresent>
+    <attributes>
+        <attribute>
+            <name>id</name>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+            <nillable>true</nillable>
+            <binding>java.lang.Integer</binding>
+        </attribute>
+        <attribute>
+            <name>element</name>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+            <nillable>true</nillable>
+            <binding>org.locationtech.jts.geom.LineString</binding>
+        </attribute>
+        <attribute>
+            <name>level</name>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+            <nillable>true</nillable>
+            <binding>java.lang.Integer</binding>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+            <nillable>true</nillable>
+            <binding>java.lang.String</binding>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+            <nillable>true</nillable>
+            <binding>java.lang.Double</binding>
+        </attribute>
+        <attribute>
+            <name>horizontal</name>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+            <nillable>true</nillable>
+            <binding>java.lang.Boolean</binding>
+        </attribute>
+        <attribute>
+            <name>sequence</name>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+            <nillable>true</nillable>
+            <binding>java.lang.String</binding>
+        </attribute>
+    </attributes>
+</featureType>
