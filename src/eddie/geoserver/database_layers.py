@@ -171,7 +171,7 @@ def create_datastore_layer(
 
 def generate_metadata_elem(layer_name: str, sql_query: str) -> str:
     """
-    Helper to create a metadata element for a given dynamic SQL query, to be used in create_datastore_layer.
+    Create a metadata element for a given dynamic SQL query, to be used in create_datastore_layer.
 
     Parameters
     ----------

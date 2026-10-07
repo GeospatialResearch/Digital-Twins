@@ -14,6 +14,7 @@ USER node
 # Copy Terria.js config
 COPY --chown=node:node --chmod=644 client_config.json wwwroot/config.json
 COPY --chown=node:node --chmod=644 catalog.json wwwroot/init/catalog.json
+COPY --chown=node:node --chmod=644 server_config.json serverconfig.json
 
 COPY --chown=root:root --chmod=755 entrypoint.sh .
 SHELL ["/bin/bash", "-c"]

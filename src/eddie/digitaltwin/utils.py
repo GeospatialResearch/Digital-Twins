@@ -79,10 +79,10 @@ class CeleryTaskIdFilter(logging.Filter):
         Returns
         -------
         bool
-        Always True, so the record is never dropped.
+            Always True, so the record is never dropped.
         """
         try:
-            from celery._state import get_current_task # pylint: disable=import-outside-toplevel
+            from celery._state import get_current_task  # pylint: disable=import-outside-toplevel
             task = get_current_task()
         except ImportError:
             task = None
