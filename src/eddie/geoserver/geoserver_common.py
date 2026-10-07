@@ -41,6 +41,44 @@ def get_geoserver_url() -> str:
     return f"{EnvVariable.GEOSERVER_INTERNAL_HOST}:{EnvVariable.GEOSERVER_INTERNAL_PORT}/geoserver/rest"
 
 
+def get_workspace_url(workspace_name: str) -> str:
+    """
+    Format the URL for a GeoServer workspace from its name.
+    Simple helper function.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the workspace the data store resides in.
+
+    Returns
+    -------
+    str
+        A formatted URL for the base-endpoint of the workspace.
+    """
+    return f"{get_geoserver_url()}/workspaces/{workspace_name}"
+
+
+def get_data_store_url(workspace_name: str, data_store_name: str) -> str:
+    """
+    Format the URL for a GeoServer data store from its parameters.
+    Simple helper function.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the workspace the data store resides in.
+    data_store_name : str
+        The name of the data store.
+
+    Returns
+    -------
+    str
+        A formatted URL for the base-endpoint of the data store.
+    """
+    return f"{get_workspace_url(workspace_name)}/datastores/{data_store_name}"
+
+
 def create_workspace_if_not_exists(workspace_name: str) -> None:
     """
     Create a GeoServer workspace if it does not currently exist.
@@ -104,3 +142,43 @@ def restrict_wps_service() -> None:
         # Raise error manually so we can configure the text
         raise requests.HTTPError(response.text, response=response)
     log.info("Restricted GeoServer WPS Execute to administrators.")
+
+
+def does_resource_exist(resource_url: str) -> bool:
+    """
+    Check whether a GeoServer resource (e.g. a workspace, store, or layer) exists at the given REST URL.
+
+    Sends an authenticated GET request to the resource URL and interprets the response status code:
+    a 200 OK means the resource exists, a 404 Not Found means it does not, and any other status is
+    treated as an unexpected error.
+
+    Parameters
+    ----------
+    resource_url : str
+        The full GeoServer REST API URL of the resource to check, e.g.
+        "{geoserver_url}/workspaces/{workspace_name}".
+
+    Returns
+    ----------
+    bool
+        True if the resource exists (GeoServer returns 200 OK), False if it does not exist
+        (GeoServer returns 404 Not Found).
+
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with any status code other than 200 or 404, raises it as an exception
+        since it is unexpected.
+    """
+    resource_exists_response = requests.get(
+        resource_url,
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    match resource_exists_response.status_code:
+        case HTTPStatus.OK:
+            return True
+        case HTTPStatus.NOT_FOUND:
+            return False
+        case _:
+            # Raise error manually so we can configure the text
+            raise requests.HTTPError(resource_exists_response.text, response=resource_exists_response)
