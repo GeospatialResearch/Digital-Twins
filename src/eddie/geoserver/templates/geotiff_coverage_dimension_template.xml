@@ -1,0 +1,7 @@
+<coverageDimension>
+    <name>{band_name}</name>
+    <unit>{unit}</unit>
+    <dimensionType>
+        <name>{dimension_type}</name>
+    </dimensionType>
+</coverageDimension>
