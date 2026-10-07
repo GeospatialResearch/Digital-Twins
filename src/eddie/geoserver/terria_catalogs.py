@@ -153,6 +153,7 @@ def get_layers_as_terria_group(workspace_name: str) -> CatalogGroup:
 def get_terria_catalog() -> Catalog:
     """
     Query geoserver for available layers from key workspaces, and return a terria catalog to serve the data.
+    Returns an empty catalog if the EDDIE_AUTOSERVE_CATALOG environment variable is false.
 
     Returns
     -------
@@ -164,4 +165,6 @@ def get_terria_catalog() -> Catalog:
     HTTPError
         If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
+    if not EnvVariable.EDDIE_AUTOSERVE_CATALOG:
+        return {"catalog": []}
     return {"catalog": [get_layers_as_terria_group(workspace) for workspace in Workspaces]}

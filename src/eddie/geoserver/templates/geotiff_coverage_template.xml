@@ -1,4 +1,5 @@
 <coverage>
+    <!-- Template for a Geoserver Coverage file for a GeoTIFF layer. The CRS is read from the GeoTIFF itself. -->
     <name>{layer_name}</name>
     <nativeName>{layer_name}</nativeName>
     <title>{layer_name}</title>
@@ -9,4 +10,7 @@
         <string>TIFF</string>
         <string>PNG</string>
     </supportedFormats>
+    <dimensions>
+        {coverage_dimensions_xml}
+    </dimensions>
 </coverage>

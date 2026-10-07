@@ -60,6 +60,43 @@ class LogLevel(IntEnum):
     NOTSET = logging.NOTSET
 
 
+class CeleryTaskIdFilter(logging.Filter):
+    """
+    Logging filter that attaches the current Celery task's id and name to every LogRecord.
+    Outside a task (e.g. normal script execution) it falls back to placeholder values so the format string never
+    breaks.
+    """  # pylint: disable=too-few-public-methods
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """
+        Set record.task_id and record.task_name, using "-" when not running inside a Celery task.
+
+        Parameters
+        ----------
+        record : logging.LogRecord
+            The record to annotate.
+
+        Returns
+        -------
+        bool
+            Always True, so the record is never dropped.
+        """
+        try:
+            from celery._state import get_current_task  # pylint: disable=import-outside-toplevel
+            task = get_current_task()
+        except ImportError:
+            task = None
+
+        if task and task.request:
+            record.task_id = task.request.id
+            record.task_name = task.name
+        else:
+            record.task_id = "-"
+            record.task_name = "-"
+
+        return True
+
+
 def log_execution_info() -> None:
     """Log a debug message indicating the execution of the function in the script."""
     # Obtain the stack frame of the calling function (two frames up in the call stack)
@@ -80,37 +117,48 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
 
     Parameters
     ----------
-    log_level : LogLevel = LogLevel.DEBUG
-        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+    log_level : LogLevel = LogLevel.INFO
+        The log level to set for the root logger. Defaults to LogLevel.INFO.
         The available logging levels and their corresponding numeric values are:
         - LogLevel.CRITICAL (50)
         - LogLevel.ERROR (40)
         - LogLevel.WARNING (30)
         - LogLevel.INFO (20)
-        - LogLevel.DEBUG (10)
         - LogLevel.NOTSET (0)
     """
     # Define the logging format and date format
-    logging_format = "%(asctime)s | %(levelname)-8s | %(name)-30s %(lineno)4d | %(funcName)-50s | %(message)s"
+    logging_format = (
+        "%(asctime)s | %(levelname)-8s | %(lineno)4d %(name)-30s | [task_id=%(task_id)s] | "
+        "%(funcName)-50s | %(message)s"
+    )
     date_format = "%Y-%m-%d %H:%M:%S"
     # Create and configure the root logger with the specified log level and formats
-    logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format)
+    logging.basicConfig(level=log_level, format=logging_format, datefmt=date_format, force=True)
     # Enable capturing Python warnings and redirect them to the logging system
     logging.captureWarnings(True)
     # Suppress (ignore) Python warnings from appearing in the console
     warnings.simplefilter("ignore")
+
+    # Attach the filter to every handler basicConfig created on the root logger
+    task_id_filter = CeleryTaskIdFilter()
+    for handler in logging.root.handlers:
+        handler.addFilter(task_id_filter)
+
     # List of loggers to prevent messages from reaching the root logger
     loggers_to_exclude = [
-        "urllib3",
-        "fiona",
-        "botocore",
-        "pyproj",
         "asyncio",
-        "rasterio",
-        "scrapy",
+        "botocore",
+        "charset_normalizer",
+        "celery",
         "distributed",
+        "fiona",
+        "kombu",
+        "pyproj",
+        "numba",
+        "rasterio",
         "s3transfer",
-        "charset_normalizer"
+        "scrapy",
+        "urllib3",
     ]
     # Iterate through the loggers to exclude
     for logger_name in loggers_to_exclude:

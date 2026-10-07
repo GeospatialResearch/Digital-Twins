@@ -35,7 +35,7 @@ def main(
     selected_polygon_gdf: gpd.GeoDataFrame,
     model_id: int,
     scenario_options: dict,
-    log_level: LogLevel = LogLevel.DEBUG,
+    log_level: LogLevel = LogLevel.INFO,
 ) -> int:
     """
     Cache the scenario options used to generate the existing model with the given model id, for faster retrieval later.
@@ -50,7 +50,7 @@ def main(
     scenario_options : dict
         The input parameters to the model to cache, which must match for later retrieval.
     log_level : LogLevel = LogLevel.DEBUG
-        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
+        The log level to set for the root logger. Defaults to LogLevel.INFO.
 
     Returns
     -------

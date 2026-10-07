@@ -212,4 +212,10 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     GEOSERVER_ADMIN_NAME = _get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
     GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
 
+    # Set to "EPSG:3857" to reproject uploaded GeoTIFFs to web mercator for display. Unset: copied as is.
+    DISPLAY_CRS = _get_env_variable("DISPLAY_CRS", allow_empty=True)
+
+    # If False, get_terria_catalog returns an empty catalog instead of listing every GeoServer workspace
+    EDDIE_AUTOSERVE_CATALOG = _get_bool_env_variable("EDDIE_AUTOSERVE_CATALOG", default=True)
+
     IS_ON_GITHUB_ACTIONS = _get_bool_env_variable("GITHUB_ACTIONS", default=False)
