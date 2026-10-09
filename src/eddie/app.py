@@ -25,6 +25,7 @@ from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 
 from eddie.check_celery_alive import check_celery_alive
+from eddie.config import EnvVariable
 from eddie.discover_plugins import discover_plugins
 from eddie.geoserver import get_terria_catalog
 
@@ -38,7 +39,7 @@ API_URL = "/static/api_documentation.yml"
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
-    config={"app_name": "Flood Resilience Digital Twin (FReDT)"}
+    config={"app_name": EnvVariable.EDDIE_INSTANCE_TITLE}
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 

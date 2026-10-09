@@ -68,7 +68,7 @@ def main(
         # Cache the results attached to the scenario input parameters
         log.info("Caching model results.")
         query = insert(CacheResults).values(
-            flood_model_id=model_id,
+            output_id=model_id,
             geometry=geometry,
             scenario_options=scenario_options
         )

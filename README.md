@@ -11,13 +11,22 @@ automatically. This project started as the Flood Resilience Digital Twin (FReDT)
 [its own project](http://github.com/GeospatialResearch/eddie_floodresilience) while this contains the framework that
 FReDT is built upon.
 
-EDDIE is used as the core framework for multiple environmental Digital Twins and data visualisation applications,
-including:
+### EDDIE modules
+
+The following digital twins are built as EDDIE plugin modules:
+
+| Module | Description | Repository | EDDIE version |
+|---|---|---|---|
+| [Flood Resilience Digital Twin](https://fredt.geospatial.ac.nz) (FReDT) | On-demand flood modelling | [eddie_floodresilience](https://github.com/GeospatialResearch/eddie_floodresilience) | v5.0.0 |
+| FReDT Smart Ideas | Catchment-scale hydrological and flood scenarios built on FReDT | [FReDT-Smart-Ideas](https://github.com/GeospatialResearch/FReDT-Smart-Ideas) | v5.0.0 |
+| EDDIE Antarctica | Polar environmental data in EPSG:3031 | [eddie_antarctica](https://github.com/GeospatialResearch/eddie_antarctica) | v5.0.0 |
+| [Ōtākaro Digital Twin](https://geospatial.ac.nz/research/projects/otakaro-digital-twin/) | Pollutant runoff modelling (MEDUSA 2.0) | [eddie_otakaro](https://github.com/GeospatialResearch/eddie_otakaro) | v5.0.0 |
+
+### Related applications
+
+These earlier applications were built with EDDIE components but are not EDDIE modules:
 
 - [Te Awarua Kai Ora](https://teawaruakaiora.co.nz)
-- [Flood Resilience Digital Twin](https://fredt.geospatial.ac.nz) (FReDT) -
-  [GitHub](https://github.com/GeospatialResearch/eddie_floodresilience)
-- [Ōtākaro Digital Twin](https:?/geospatial.ac.nz/research/projects/otakaro-digital-twin/)
 - [Carbon Neutral Neighbourhoods Dashboard](carbon-neutral.app.geospatial.ac.nz)
 
 <!-- See our [draft paper for Journal of Open Source Software](paper/paper.pdf) for more details. -->
@@ -42,7 +51,7 @@ If you are interested in contributing to this project, please see [our contribut
 If you run into an issue, bug, or need help with the software, please consider opening an issue or discussion, this will
 be the best way to reach us.
 
-## Setup for FReDT project software developers
+## Setup for software developers
 
 [Visit our wiki](https://github.com/GeospatialResearch/Digital-Twins/wiki/) for some instructions on how to set up your
-development machine to work with on the FReDT project.
+development machine to work on EDDIE.
