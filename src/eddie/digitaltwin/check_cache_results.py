@@ -72,6 +72,6 @@ def main(selected_polygon: gpd.GeoDataFrame, scenario_options: dict) -> int | No
         log.debug(query)
         return None
     # Return the matching model_id if a cache is found
-    model_id = row.flood_model_id
+    model_id = row.output_id
     log.info(f"Matching model parameters found, output id {model_id}")
     return model_id

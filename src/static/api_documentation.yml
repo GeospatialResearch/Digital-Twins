@@ -17,7 +17,7 @@
 ---
 openapi: 3.0.0
 info:
-  title: Flood Resilience Digital Twin (FReDT)
+  title: Environmental Digital Data Intelligence Engine (EDDIE)
   version: 1.0.0
 paths:
   "/":
