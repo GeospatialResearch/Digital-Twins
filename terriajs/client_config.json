@@ -4,8 +4,8 @@
     "$BACKEND_URL/terria-catalog.json"
   ],
   "parameters": {
-    "appName": "Flood Resilience Digital Twin (FReDT)",
-    "supportEmail": "gri-enquiries+fredt@canterbury.ac.nz",
+    "appName": "Environmental Digital Data Intelligence Engine (EDDIE) Core",
+    "supportEmail": "gri-enquiries@canterbury.ac.nz",
     "cesiumIonAccessToken": "$CESIUM_ACCESS_TOKEN",
     "brandBarElements": [
       "<div style=\"display: flex; align-items: center;\">\n  <h1 style=\"color: white;\">Flood Resilience Digital Twin (FReDT)</h1>\n</div>"
