@@ -19,17 +19,16 @@
 
 from enum import Enum
 from types import ModuleType
-from typing import Dict, Union
 
 import geopandas as gpd
 import shapely
 
-from eddie.digitaltwin import cache_new_results
+from eddie.digitaltwin.caching import store_cached_result
 
 
 def main(
     selected_polygon_gdf: gpd.GeoDataFrame,
-    modules_to_parameters: Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]
+    modules_to_parameters: dict[ModuleType, dict[str, str | int | float | bool | None | Enum]]
 ) -> None:
     """
     Run each module in modules_to_parameters using the selected polygon and the defined parameters for each module's
@@ -39,7 +38,7 @@ def main(
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the catchment area.
-    modules_to_parameters : Dict[ModuleType, Dict[str, Union[str, int, float, bool, None, Enum]]]
+    modules_to_parameters : dict[ModuleType, dict[str, str | int | float | bool | None | Enum]]
         A dictionary that associates each module with the parameters necessary for its main function, including the
         option to set the log level for each module's root logger.
         The available logging levels and their corresponding numeric values are:
@@ -52,7 +51,7 @@ def main(
     """
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
-        if module == cache_new_results:
+        if module == store_cached_result:
             # We currently do not cache when directly running run_all, due to complexity in tracing the scenario options
             continue
         # Call the main function of each module with the selected polygon and specified parameters
