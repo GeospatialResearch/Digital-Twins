@@ -12,7 +12,7 @@ Notes on each approach are below.
 4. Fill in the form with the service type and URL. I recommend WFS for vector data and WMS for raster.
 
 - ## By Downloading to backend:
-1. Open `Digital-Twins/floodresilience/static_boundary_instructions.json`.
+1. Open the `static_boundary_instructions.json` file of the plugin that uses the layer.
 2. Add a new layer to this file as an instruction.
 
 

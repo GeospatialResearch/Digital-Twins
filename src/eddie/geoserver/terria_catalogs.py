@@ -74,7 +74,7 @@ def create_vector_layer_catalog_item(
     catalog_item = {
         "type": "wfs",
         "name": layer_name,
-        "description": "Geospatial layers fetched through the Flood Resilience Digital Twin backend.",
+        "description": "Geospatial layers fetched through the digital twin backend.",
         "url": f"{workspace_url}/ows",
         "typeNames": f"{workspace_name}:{layer_name}",
         "maxFeatures": max_features,

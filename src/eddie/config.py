@@ -212,6 +212,10 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     GEOSERVER_ADMIN_NAME = _get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
     GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
 
+    EDDIE_INSTANCE_TITLE = _get_env_variable(
+        "EDDIE_INSTANCE_TITLE", default="Environmental Digital Data Intelligence Engine (EDDIE) Core"
+    )
+
     # Set to "EPSG:3857" to reproject uploaded GeoTIFFs to web mercator for display. Unset: copied as is.
     DISPLAY_CRS = _get_env_variable("DISPLAY_CRS", allow_empty=True)
 
