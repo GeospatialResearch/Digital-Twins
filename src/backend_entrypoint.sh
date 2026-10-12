@@ -4,8 +4,11 @@
 # Used by docker to import environment variables into a docker container without baking them into the image.
 # Used when runtime environment variables are not enough, for example, when a config file needs to be written.
 
+# Default matches EnvVariable.EDDIE_INSTANCE_TITLE in src/eddie/config.py
+export EDDIE_INSTANCE_TITLE="${EDDIE_INSTANCE_TITLE:-Environmental Digital Data Intelligence Engine (EDDIE) Core}"
+
 # List of variables to substitute
-ENV_VARS_TO_FILL='$BACKEND_HOST,$BACKEND_PORT'
+ENV_VARS_TO_FILL='$BACKEND_HOST,$BACKEND_PORT,$EDDIE_INSTANCE_TITLE'
 
 # Substitute variables and save whole file to variable, sponge is not available to buffer.
 SUBBED=`envsubst "$ENV_VARS_TO_FILL" < src/pywps.cfg`

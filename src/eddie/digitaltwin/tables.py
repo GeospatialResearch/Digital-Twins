@@ -107,8 +107,8 @@ class CacheResults(Base):
         Name of the database table.
     unique_id : int
         Unique identifier for each cache entry (primary key).
-    flood_model_id : int
-        Foreign key to the flood model associated with the cache entry.
+    output_id : int
+        Id of the model output associated with the cache entry.
     scenario_options : dict
         Scenario options associated with the cache entry.
     created_at : datetime
@@ -119,7 +119,7 @@ class CacheResults(Base):
 
     __tablename__ = "cache_results"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    flood_model_id = Column(Integer)
+    output_id = Column(Integer)
     scenario_options = Column(JSON)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=2193))

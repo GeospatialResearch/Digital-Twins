@@ -17,7 +17,7 @@
 ---
 openapi: 3.0.0
 info:
-  title: Flood Resilience Digital Twin (FReDT)
+  title: Environmental Digital Data Intelligence Engine (EDDIE)
   version: 1.0.0
 paths:
   "/":
@@ -34,6 +34,7 @@ paths:
                   Backend is receiving requests.
                   GET /health-check to check if celery workers active.
                   GET /swagger to get API documentation.
+
   "/health-check":
     get:
       summary: Checks that the API service can access the celery workers
@@ -57,7 +58,6 @@ paths:
         '202 - Accepted':
           $ref: '#/components/responses/TaskStarted'
 
-
 components:
   responses:
     NoCeleryWorkers:
@@ -77,30 +77,6 @@ components:
             properties:
               taskId:
                 $ref: '#/components/schemas/TaskId'
-
-    BuildingFloodStatus:
-      description: The building polygons in GeoJson format with a boolean attribute "is_flooded".
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/BuildingFloodStatus'
-
-    ScenarioNotFound:
-      description: The scenario with that scenarioId could not be found
-      content:
-        text/plain:
-          schema:
-            type: string
-            example: Could not find flood model output 17
-
-    ModelOutput:
-      description: The BG-Flood model output NetCDF file for the given scenario.
-      content:
-        application/x-netcdf:
-          schema:
-            type: file
-            format: binary
-            example: output_2024-03-06-20-56-11.nc
 
     BadRequest:
       description: The parameters sent were incomplete or invalid in some way. The response details what is wrong.
@@ -126,16 +102,6 @@ components:
               lng:
                 $ref: '#/components/schemas/Lng'
 
-    ScenarioId:
-      in: path
-      name: scenarioId
-      schema:
-        type: integer
-      required: true
-      description: ID of the flood scenario to retrieve.
-      example: 17
-
-
     TaskId:
       in: path
       name: taskId
@@ -144,60 +110,6 @@ components:
         example: 5b8fb106-dcac-45a6-4ff3-24a527a7445ff
       description: The id of the celery task you are requesting.
       required: true
-
-    GenerateScenarioParameters:
-      in: query
-      description: The parameters to be fed into the flood model
-      name: ScenarioParameters
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              lat1:
-                $ref: '#/components/schemas/Lat'
-              lng1:
-                $ref: '#/components/schemas/Lng'
-              lat2:
-                $ref: '#/components/schemas/Lat'
-              lng2:
-                $ref: '#/components/schemas/Lng'
-              scenarioOptions:
-                type: object
-                properties:
-                  "projectedYear":
-                    type: number
-                    minimum: 2025
-                    maximum: 2300
-                    example: 2025
-                  "sspScenario":
-                    type: string
-                    example: SSP1-1.9
-                    enum:
-                      - 'SSP1-1.9'
-                      - 'SSP1-2.6'
-                      - 'SSP2-4.5'
-                      - 'SSP3-7.0'
-                      - 'SSP5-8.5'
-                  "confidenceLevel":
-                    type: string
-                    example: medium
-                    enum:
-                      - low
-                      - medium
-                  "addVerticalLandMovement":
-                    type: boolean
-                    example: true
-                  "percentile":
-                    type: number
-                    example: 50
-                    enum:
-                      - 17
-                      - 50
-                      - 83
-
-
 
   schemas:
     Task:
@@ -228,62 +140,6 @@ components:
           example: |-
             sqlalchemy.exc.OperationalError (psycopg2.OperationalError) connection to server at localhost (1), port 1234 failed Connection refused
 
-    ValidSlrParameters:
-      type: object
-      properties:
-        low:
-          type: object
-          properties:
-            min_year:
-              type: number
-              example: 2025
-            max_year:
-              type: number
-              example: 2300
-            ssp_scenarios:
-              type: array
-              items:
-                type: string
-              example: ["SSP1-2.6", "SSP5-8.5"]
-            percentile:
-              type: array
-              items:
-                type: number
-              example: [17, 50, 83]
-        medium:
-          type: object
-          properties:
-            min_year:
-              type: number
-              example: 2025
-            max_year:
-              type: number
-              example: 2150
-            ssp_scenarios:
-              type: array
-              items:
-                type: string
-              example: ["SSP1-1.9", "SSP1-2.6", "SSP2-4.5", "SSP3-7", "SSP5-8.5"]
-            percentile:
-              type: array
-              items:
-                type: number
-              example: [17, 50, 83]
-
-    PointDepths:
-      type: object
-      properties:
-        depths:
-          type: array
-          items:
-            type: number
-          example: [ 0, 0.1, 0.15, 0.2, 0.3, 0.4, 0.3, 0.2, 0.1, 0.0 ]
-        times:
-          type: array
-          items:
-            type: number
-          example: [ 0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ]
-
     TaskId:
       type: string
       description: The assigned celery task id to track status.
@@ -299,96 +155,3 @@ components:
       example: 172.6644084
       minimum: -180
       maximum: 180
-
-    BuildingFloodStatus:
-      type: object
-      properties:
-        type:
-          type: string
-          example: FeatureCollection
-        features:
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-                example: Feature
-              id:
-                type: string
-                example: building_flood_status.fid-30e8de35_18e117d7e39_-330c
-              geometry:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    example: Polygon
-                  coordinates:
-                    type: array
-                    example: [ [ [ 172.6644084, -43.37660781 ], [ 172.66427505, -43.37659527 ], [ 172.66427906, -43.37657259 ], [ 172.66441241, -43.37658513 ], [ 172.6644084, -43.37660781 ] ] ]
-                    items:
-                      type: array
-                      items:
-                        type: array
-                        items:
-                          type: number
-                  properties:
-                    type: object
-                    properties:
-                      building_outline_id:
-                        type: number
-                        example: 5765335,
-                      building_id:
-                        type: number
-                        example: 5016864
-                      name:
-                        type: string
-                        example: Kaiapoi North School
-                      use:
-                        type: string
-                        example: School
-                      suburb_locality:
-                        type: string
-                        example: Kaiapoi
-                      town_city:
-                        type: string
-                        example: Kaiapoi
-                      territorial_authority:
-                        type: string
-                        example: "Waimakariri District"
-                      capture_method:
-                        type: string
-                        example: "Feature Extraction"
-                      capture_source_group:
-                        type: string
-                        example: "NZ Aerial Imagery"
-                      capture_source_id:
-                        type: number
-                        example: 1218
-                      capture_source_name:
-                        type: string
-                        example: "Canterbury 0.3m Rural Aerial Photos (2020)"
-                      capture_source_from:
-                        type: string
-                        example: "2020-10-24Z"
-                      capture_source_to:
-                        type: string
-                        example: "2020-11-13Z"
-                      building_outline_lifecycle:
-                        type: string
-                        example: "Current"
-                      begin_lifespan:
-                        type: string
-                        example: "2022-10-31Z"
-                      end_lifespan:
-                        type: string
-                        example: null
-                      last_modified:
-                        type: string
-                        example: "2022-10-31Z"
-                      is_flooded:
-                        type: boolean
-                        example: true
-                      flood_model_id:
-                        type: number
-                        example: 17
