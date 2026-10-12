@@ -24,7 +24,7 @@ from typing import Dict, Union
 import geopandas as gpd
 import shapely
 
-from eddie.digitaltwin.caching import cache_new_results
+from eddie.digitaltwin.caching import store_cached_result
 
 
 def main(
@@ -52,7 +52,7 @@ def main(
     """
     # Iterate through the dictionary containing modules and their parameters
     for module, parameters in modules_to_parameters.items():
-        if module == cache_new_results:
+        if module == store_cached_result:
             # We currently do not cache when directly running run_all, due to complexity in tracing the scenario options
             continue
         # Call the main function of each module with the selected polygon and specified parameters
