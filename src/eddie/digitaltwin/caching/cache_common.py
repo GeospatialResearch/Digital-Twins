@@ -23,7 +23,8 @@ from ..tables import Base
 # valid for that process.
 SPATIAL_CONTAINMENT_OPT_IN: frozenset[str] = frozenset(
     {
-        # "fredt.flood_model", # todo how does this get imported in? Add a new issue?
+        # This is explicitly empty, the modules and processes themselves should provide this functionality.
+        # See issue https://github.com/GeospatialResearch/Digital-Twins/issues/412
     }
 )
 
