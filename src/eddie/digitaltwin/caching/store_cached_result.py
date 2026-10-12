@@ -26,7 +26,7 @@ import geopandas as gpd
 from sqlalchemy import insert
 
 from eddie.digitaltwin import setup_environment
-from eddie.digitaltwin.cache_common import ProcessCache, compute_params_hash
+from eddie.digitaltwin.caching.cache_common import ProcessCache, compute_params_hash
 from eddie.digitaltwin.tables import create_table
 from eddie.digitaltwin.utils import LogLevel, setup_logging
 

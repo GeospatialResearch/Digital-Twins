@@ -1,3 +1,20 @@
+# -*- coding: utf-8 -*-
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
+# LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """
 Generic process-result cache: table definition shared by `check_cache_results` and
 `cache_new_results`, plus the canonicalisation/hashing helper used to key cache lookups.
@@ -5,7 +22,6 @@ Generic process-result cache: table definition shared by `check_cache_results` a
 
 import hashlib
 import json
-from typing import Any
 
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, DateTime, Integer, String, func
@@ -48,14 +64,14 @@ def supports_spatial_containment(process_id: str) -> bool:
     return process_id in SPATIAL_CONTAINMENT_OPT_IN
 
 
-def canonicalise_parameters(value: Any) -> str:
+def canonicalise_parameters(value: dict) -> str:
     """
     Produce a stable, canonical JSON string for `value` so that semantically identical
     parameter dicts (regardless of key order) hash to the same value.
 
     Parameters
     ----------
-    value : Any
+    value : dict
         A JSON-serialisable value (typically a dict of scenario/process parameters).
 
     Returns
@@ -138,4 +154,5 @@ class ProcessCache(Base):
 
     output_id = Column(String, nullable=False)
 
+    # pylint: disable=not-callable # False-positive due to dynamic typing.
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, DateTime, inspect, Integer, String
-from sqlalchemy.dialects.postgresql import ARRAY, JSON
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import CheckConstraint
