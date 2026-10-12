@@ -24,7 +24,7 @@ from typing import Dict, Union
 import geopandas as gpd
 import shapely
 
-from eddie.digitaltwin import cache_new_results
+from eddie.digitaltwin.caching import cache_new_results
 
 
 def main(

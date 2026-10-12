@@ -96,35 +96,6 @@ class UserLogInfo(Base):
     geometry = Column(Geometry("POLYGON", srid=2193))
 
 
-class CacheResults(Base):
-    """
-    Class representing the 'cache_results' table.
-    Used to store variables used for a model run and find matching cached outputs.
-
-    Attributes
-    ----------
-    __tablename__ : str
-        Name of the database table.
-    unique_id : int
-        Unique identifier for each cache entry (primary key).
-    output_id : int
-        Id of the model output associated with the cache entry.
-    scenario_options : dict
-        Scenario options associated with the cache entry.
-    created_at : datetime
-        Timestamp indicating when the cache entry was created.
-    geometry : Polygon
-        Geometric representation of the catchment area coverage.
-    """  # pylint: disable=too-few-public-methods
-
-    __tablename__ = "cache_results"
-    unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    output_id = Column(Integer)
-    scenario_options = Column(JSON)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
-    geometry = Column(Geometry("POLYGON", srid=2193))
-
-
 def create_table(conn: Connection, table: Base) -> None:
     """
     Create a table in the database if it doesn't already exist, using the provided conn.
