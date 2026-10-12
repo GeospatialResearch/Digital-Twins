@@ -73,7 +73,7 @@ def find_cached_result(
     str | None
         The matching `output_id` if a cache hit is found, otherwise None.
     """
-    setup_logging(log_level=LogLevel.DEBUG)
+    setup_logging(log_level=LogLevel.INFO)
 
     params_hash = compute_params_hash(process_parameters)
 
