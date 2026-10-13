@@ -45,7 +45,7 @@ def main(
     instruction_json_path : pathlib.Path | str | None
         The path to the instruction json file that specifies the geospatial data to be retrieved.
         Can be a string to allow crossing over interfaces that only allow more primitive types.
-        If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still\
+        If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still
         be initialised.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.

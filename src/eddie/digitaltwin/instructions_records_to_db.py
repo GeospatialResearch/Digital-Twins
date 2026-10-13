@@ -61,7 +61,7 @@ def validate_url_reachability(section: str, url: str) -> None:
 
 
 def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None:
-    """
+    """ # todo unsure if this is important anymore
     Validate the fields of an instruction.
     Each instruction should provide either 'coverage_area' or 'unique_column_name', but not both.
 
@@ -129,7 +129,7 @@ def read_and_check_instructions_file(instruction_json_path: pathlib.Path | None)
 
 
 def get_existing_geospatial_layers(conn: Connection) -> pd.DataFrame:
-    """
+    """ # todo this needs a cache check
     Retrieve existing geospatial layers from the 'geospatial_layers' table.
 
     Parameters
@@ -153,7 +153,7 @@ def get_existing_geospatial_layers(conn: Connection) -> pd.DataFrame:
 
 
 def get_non_existing_records(instructions_df: pd.DataFrame, existing_layers_df: pd.DataFrame) -> pd.DataFrame:
-    """
+    """ # todo this needs a cache expiry time check -- ACTUALLY maybe its only needed before now
     Get 'static_boundary_instructions' records that are not available in the database.
 
     Parameters

@@ -177,7 +177,7 @@ def nz_geospatial_layers_data_to_db(
     crs: int,
     verbose: bool = False
 ) -> None:
-    """
+    """ # todo change this to full-coverage
     Fetch New Zealand geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
@@ -406,7 +406,7 @@ def non_nz_geospatial_layers_data_to_db(
     crs: int,
     verbose: bool = False
 ) -> None:
-    """
+    """ # todo - change this to AOI based
     Fetch non-NZ geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
@@ -470,7 +470,7 @@ def store_geospatial_layers_data_to_db(
     nz_geospatial_layers_data_to_db(conn, crs, verbose)
     # Store non-NZ geospatial layers data to the database
     non_nz_geospatial_layers_data_to_db(conn, catchment_area, crs, verbose)
-    serve_static_files(conn, pathlib.Path("./src/static/geo"))
+    # serve_static_files(conn, pathlib.Path("./src/static/geo")) # todo uncomment this!!!!!!!!!
 
 
 def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> None:
