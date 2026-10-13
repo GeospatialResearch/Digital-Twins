@@ -222,4 +222,7 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     # If False, get_terria_catalog returns an empty catalog instead of listing every GeoServer workspace
     EDDIE_AUTOSERVE_CATALOG = _get_bool_env_variable("EDDIE_AUTOSERVE_CATALOG", default=True)
 
+    # CRS core processing runs in, e.g. "EPSG:32759". Unset: derived from the area of interest, else EPSG:4326.
+    WORKING_CRS = _get_env_variable("EDDIE_WORKING_CRS", allow_empty=True)
+
     IS_ON_GITHUB_ACTIONS = _get_bool_env_variable("GITHUB_ACTIONS", default=False)

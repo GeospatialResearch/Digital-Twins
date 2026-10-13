@@ -150,13 +150,20 @@ def get_vector_data_id_not_in_db(
     vector_data_ids = set(vector_data[unique_column_name])
     # Fetch the unique IDs from the specified table that intersect with the area of interest
     aoi_polygon = area_of_interest["geometry"][0]
+    # The AOI is in the CRS it came with, else EPSG:4326. It is transformed into the stored table's CRS.
+    aoi_srid = (area_of_interest.crs.to_epsg() if area_of_interest.crs is not None else None) or 4326
     command_text = f"""
     SELECT DISTINCT {unique_column_name}
     FROM {table_name} AS ids
-    WHERE ST_Intersects(ids.geometry, ST_GeomFromText(:aoi_polygon, 2193));
+    WHERE ST_Intersects(
+        ids.geometry,
+        ST_Transform(ST_GeomFromText(:aoi_polygon, :aoi_srid), Find_SRID('public', :table_name, 'geometry'))
+    );
     """
     query = text(command_text).bindparams(
-        aoi_polygon=str(aoi_polygon)
+        aoi_polygon=str(aoi_polygon),
+        aoi_srid=aoi_srid,
+        table_name=table_name
     )
     # Execute the query and retrieve the IDs present in the database
     ids_in_db = set(pd.read_sql(query, conn)[unique_column_name])
@@ -167,7 +174,7 @@ def get_vector_data_id_not_in_db(
 
 def nz_geospatial_layers_data_to_db(
     conn: Connection,
-    crs: int = 2193,
+    crs: int,
     verbose: bool = False
 ) -> None:
     """
@@ -177,8 +184,8 @@ def nz_geospatial_layers_data_to_db(
     ----------
     conn : Connection
         The connection used to connect to the database.
-    crs : int = 2193
-        The coordinate reference system (CRS) code to use. Default is 2193.
+    crs : int
+        The coordinate reference system (CRS) code to use.
     verbose : bool = False
         Whether to print messages. Default is False.
     """
@@ -203,6 +210,25 @@ def nz_geospatial_layers_data_to_db(
             log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
             vector_data.to_postgis(table_name, conn, index=False, if_exists="replace")
             gs.create_datastore_layer(conn, workspace_name, data_store, table_name)
+
+
+def create_user_log_table(conn: Connection) -> None:
+    """
+    Create the 'user_log_information' table if it doesn't exist.
+    A table left over from an older version that stores another SRID is discarded first. It only records which areas
+    have been fetched, so the cost is fetching each layer once more.
+
+    Parameters
+    ----------
+    conn : Connection
+        The connection used to connect to the database.
+    """
+    srid_query = text("SELECT srid FROM geometry_columns WHERE f_table_name = :table_name")
+    stored_srid = conn.execute(srid_query, {"table_name": UserLogInfo.__tablename__}).scalar()
+    if stored_srid not in (None, UserLogInfo.geometry.type.srid):
+        log.info(f"Discarding '{UserLogInfo.__tablename__}' stored in SRID {stored_srid}.")
+        UserLogInfo.__table__.drop(bind=conn)
+    create_table(conn, UserLogInfo)
 
 
 def get_non_intersection_area_from_db(
@@ -234,25 +260,29 @@ def get_non_intersection_area_from_db(
         If the non-intersecting area is empty, it suggests that the catchment area is already fully covered.
     """
     # Create the 'user_log_information' table if it doesn't exist
-    create_table(conn, UserLogInfo)
-    # Extract the geometry of the catchment area
-    catchment_wkt = catchment_area.geometry[0].wkt
+    create_user_log_table(conn)
+    # Extract the geometry of the catchment area, in the CRS of the user log table
+    user_log_srid = UserLogInfo.geometry.type.srid
+    catchment_wkt = catchment_area.to_crs(user_log_srid).geometry[0].wkt
     # Build the SQL query to find intersections between the user log information and the catchment area
     command_text = f"""
     SELECT *
     FROM {UserLogInfo.__tablename__}
     WHERE :table_name = ANY(source_table_list)
-    AND ST_Intersects(geometry, ST_GeomFromText(:catchment_polygon, 2193));
+    AND ST_Intersects(geometry, ST_GeomFromText(:catchment_polygon, :user_log_srid));
     """
     query = text(command_text).bindparams(
         table_name=table_name,
-        catchment_polygon=catchment_wkt
+        catchment_polygon=catchment_wkt,
+        user_log_srid=user_log_srid
     )
     # Execute the SQL query and retrieve the intersections as a GeoDataFrame
     user_log_intersections = gpd.GeoDataFrame.from_postgis(query, conn, geom_col="geometry")
     # Check if there are no intersections
     if user_log_intersections.empty:
         return catchment_area
+    # Bring the intersections into the CRS of the catchment area before overlaying them
+    user_log_intersections = user_log_intersections.to_crs(catchment_area.crs)
     # Compute the non-intersecting area by overlaying the catchment area with the intersections
     non_intersection_area = catchment_area.overlay(user_log_intersections, how='difference')
     # Check if the non-intersecting area is empty
@@ -268,7 +298,7 @@ def process_new_non_nz_geospatial_layers(
     layer_id: int,
     table_name: str,
     area_of_interest: gpd.GeoDataFrame,
-    crs: int = 2193,
+    crs: int,
     verbose: bool = False
 ) -> None:
     """
@@ -286,8 +316,8 @@ def process_new_non_nz_geospatial_layers(
         The database table name of the geospatial layer.
     area_of_interest : gpd.GeoDataFrame
         A GeoDataFrame representing the area of interest.
-    crs : int = 2193
-        The coordinate reference system (CRS) code to use. Default is 2193.
+    crs : int
+        The coordinate reference system (CRS) code to use.
     verbose : bool = False
         Whether to print messages. Default is False.
     """
@@ -314,7 +344,7 @@ def process_existing_non_nz_geospatial_layers(
     table_name: str,
     unique_column_name: str,
     area_of_interest: gpd.GeoDataFrame,
-    crs: int = 2193,
+    crs: int,
     verbose: bool = False
 ) -> None:
     """
@@ -334,8 +364,8 @@ def process_existing_non_nz_geospatial_layers(
         The unique column name used for record identification in the database table.
     area_of_interest : gpd.GeoDataFrame
         A GeoDataFrame representing the area of interest.
-    crs : int = 2193
-        The coordinate reference system (CRS) code to use. Default is 2193.
+    crs : int
+        The coordinate reference system (CRS) code to use.
     verbose : bool = False
         Whether to print messages. Default is False.
     """
@@ -353,6 +383,10 @@ def process_existing_non_nz_geospatial_layers(
         if ids_not_in_db:
             # Get vector data that contains only the IDs not present in the database
             vector_data_not_in_db = vector_data[vector_data[unique_column_name].isin(ids_not_in_db)]
+            # A table keeps the CRS it was created in, so data fetched in another working CRS is reprojected to it
+            srid_query = text("SELECT Find_SRID('public', :table_name, 'geometry')")
+            table_srid = conn.execute(srid_query, {"table_name": table_name}).scalar()
+            vector_data_not_in_db = vector_data_not_in_db.to_crs(table_srid)
             # Insert vector data into the database
             log.info(
                 f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
@@ -364,7 +398,7 @@ def process_existing_non_nz_geospatial_layers(
 def non_nz_geospatial_layers_data_to_db(
     conn: Connection,
     catchment_area: gpd.GeoDataFrame,
-    crs: int = 2193,
+    crs: int,
     verbose: bool = False
 ) -> None:
     """
@@ -376,8 +410,8 @@ def non_nz_geospatial_layers_data_to_db(
         The connection used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    crs : int = 2193
-        The coordinate reference system (CRS) code to use. Default is 2193.
+    crs : int
+        The coordinate reference system (CRS) code to use.
     verbose : bool = False
         Whether to print messages. Default is False.
     """
@@ -410,7 +444,7 @@ def non_nz_geospatial_layers_data_to_db(
 def store_geospatial_layers_data_to_db(
     conn: Connection,
     catchment_area: gpd.GeoDataFrame,
-    crs: int = 2193,
+    crs: int,
     verbose: bool = False
 ) -> None:
     """
@@ -422,8 +456,8 @@ def store_geospatial_layers_data_to_db(
         The connection used to connect to the database.
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    crs : int = 2193
-        The coordinate reference system (CRS) code to use. Default is 2193.
+    crs : int
+        The coordinate reference system (CRS) code to use.
     verbose : bool = False
         Whether to print messages. Default is False.
     """
@@ -446,12 +480,12 @@ def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> N
         A GeoDataFrame representing the catchment area.
     """
     # Create the 'user_log_information' table if it doesn't exist
-    create_table(conn, UserLogInfo)
+    create_user_log_table(conn)
     # Get the list of table names for non-NZ geospatial layers
     non_nz_geo_layers = get_non_nz_geospatial_layers(conn)
     table_list = non_nz_geo_layers["table_name"].tolist()
-    # Get the catchment geometry
-    catchment_geom = catchment_area.geometry[0].wkt
+    # Get the catchment geometry, in the CRS of the user log table
+    catchment_geom = catchment_area.to_crs(UserLogInfo.geometry.type.srid).geometry[0].wkt
     # Create the query object
     query = insert(UserLogInfo).values(source_table_list=table_list, geometry=catchment_geom)
     # Execute the query

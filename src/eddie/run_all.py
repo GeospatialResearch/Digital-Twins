@@ -21,9 +21,9 @@ from enum import Enum
 from types import ModuleType
 
 import geopandas as gpd
-import shapely
 
 from eddie.digitaltwin.caching import store_cached_result
+from eddie.digitaltwin.working_crs import to_working_crs_rectangle
 
 
 def main(
@@ -67,16 +67,12 @@ def create_sample_polygon() -> gpd.GeoDataFrame:
     Returns
     ----------
     gpd.GeoDataFrame
-        A GeoDataFrame containing a single rectangular polygon for the area of interest.
+       A GeoDataFrame containing a single rectangular polygon for the area of interest, in the working CRS.
     """
     # Read the area of interest file in
-    aoi = gpd.read_file("selected_polygon.geojson")
+    aoi = gpd.read_file("examples/selected_polygon.geojson")
     # Convert to WGS84 to deliberately introduce rounding errors. Ensures our development acts like production.
     # These rounding errors occur in production when serialising WGS84 polygons
     aoi = aoi.to_crs(4326)
-
-    # Convert the polygon back to 2193 crs, and recalculate the bounds to ensure it is a rectangle.
-    bbox_2193 = aoi.to_crs(2193).bounds.rename(columns={"minx": "xmin", "maxx": "xmax", "miny": "ymin", "maxy": "ymax"})
-    # Create sample polygon from bounding box
-    sample_polygon = gpd.GeoDataFrame(index=[0], crs="epsg:2193", geometry=[shapely.box(**bbox_2193.iloc[0])])
-    return sample_polygon
+    # Convert the polygon to the working crs, and recalculate the bounds to ensure it is a rectangle.
+    return to_working_crs_rectangle(aoi)

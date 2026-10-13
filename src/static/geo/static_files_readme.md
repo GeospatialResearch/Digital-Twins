@@ -40,7 +40,7 @@ Each polygon should have an attribute `Ext_height` with the height in metres for
 ### Raster
 Raster files should be placed directly in `Digital-Twins/src/static/geo`.
 
-Raster data must use CRS `epsg:2193`. 
+Raster data must have a CRS with an EPSG code. It is served in that CRS, or in `DISPLAY_CRS` if that is set.
 
 Only GeoTiff files are supported. 
 

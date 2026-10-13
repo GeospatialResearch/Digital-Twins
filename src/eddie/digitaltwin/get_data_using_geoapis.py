@@ -67,7 +67,7 @@ def clean_fetched_vector_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
 def fetch_vector_data_using_geoapis(
         data_provider: str,
         layer_id: int,
-        crs: int = 2193,
+        crs: int,
         verbose: bool = False,
         bounding_polygon: Optional[gpd.GeoDataFrame] = None) -> gpd.GeoDataFrame:
     """
@@ -79,8 +79,8 @@ def fetch_vector_data_using_geoapis(
         The data provider to use. Supported values: "StatsNZ", "LINZ", "MFE".
     layer_id : int
         The ID of the layer to fetch.
-    crs : int = 2193
-        The coordinate reference system (CRS) code to use. Default is 2193.
+    crs : int
+        The coordinate reference system (CRS) code to use.
     verbose : bool = False
         Whether to print messages. Default is False.
     bounding_polygon : Optional[gpd.GeoDataFrame] = None

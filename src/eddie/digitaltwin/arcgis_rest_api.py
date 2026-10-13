@@ -113,9 +113,9 @@ def gen_query_param_list(
     ValueError
         If `output_sr` is provided when `area_of_interest` is given.
     """
-    # If no area_of_interest is provided and output_sr is not specified, default output_sr to 2193
+    # If no area_of_interest is provided and output_sr is not specified, default output_sr to WGS84
     if area_of_interest is None and output_sr is None:
-        output_sr = 2193
+        output_sr = 4326
     # Raise an error if output_sr is provided when area_of_interest is already given
     if area_of_interest is not None and output_sr is not None:
         raise ValueError("`output_sr` should not be provided when `area_of_interest` is given.")
