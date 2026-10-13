@@ -23,7 +23,7 @@ class AppendToExistingLayerTest(unittest.TestCase):
         conn.execute.return_value.scalar.return_value = 32759
         aoi = gpd.GeoDataFrame(index=[0], crs=32760, geometry=[fetched.buffer(100).geometry[0]])
         with mock.patch.object(gpd.GeoDataFrame, "to_postgis", autospec=True) as to_postgis:
-            data_to_db.process_existing_non_nz_geospatial_layers(conn, "LINZ", 1, "layer", "id", aoi, 32760)
+            data_to_db.process_existing_aoi_geospatial_layers(conn, "LINZ", 1, "layer", "id", aoi, 32760)
         appended = to_postgis.call_args.args[0]
         self.assertEqual(appended.crs.to_epsg(), 32759)
         self.assertTrue(appended.geometry[0].equals_exact(fetched.to_crs(32759).geometry[0], 1e-6))
