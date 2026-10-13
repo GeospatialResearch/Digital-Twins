@@ -89,7 +89,7 @@ def get_feature_layer_record_counts(url: str) -> RecordCounts:
 def gen_query_param_list(
         url: str,
         area_of_interest: gpd.GeoDataFrame = None,
-        output_sr: int = None) -> List[Dict[str, str, int]]:
+        output_sr: int = None) -> List[Dict[str, str | int]]:
     """
     Generate a list of API query parameters used to retrieve ArcGIS REST API data.
 
