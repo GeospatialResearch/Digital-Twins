@@ -26,12 +26,13 @@ from typing import Set, Tuple
 
 import geopandas as gpd
 import pandas as pd
-from sqlalchemy import insert
+from sqlalchemy import Column, Integer, String, insert
 from sqlalchemy.engine import Connection
+from sqlalchemy.schema import CheckConstraint
 from sqlalchemy.sql import text
 
 from eddie.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
-from eddie.digitaltwin.tables import GeospatialLayers, UserLogInfo, check_table_exists, create_table
+from eddie.digitaltwin.tables import Base, UserLogInfo, check_table_exists, create_table
 import eddie.geoserver as gs
 
 log = logging.getLogger(__name__)
@@ -39,6 +40,48 @@ log = logging.getLogger(__name__)
 
 class NoNonIntersectionError(Exception):
     """Exception raised when no non-intersecting area is found."""
+
+
+class GeospatialLayers(Base):
+    """
+    Class representing the 'geospatial_layers' table.
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each geospatial layer entry (primary key).
+    data_provider : str
+        Name of the data provider.
+    layer_id : int
+        Identifier for the layer.
+    table_name : str
+        Name of the table containing the data.
+    unique_column_name : Optional[str]
+        Name of the unique column in the table.
+    fetch_mode : FetchMode
+        Coverage area of the geospatial data, e.g. AOI or Full data download
+    url : str
+        URL pointing to the geospatial layer.
+    """  # pylint: disable=too-few-public-methods
+
+    __tablename__ = "geospatial_layers"
+    unique_id = Column(Integer, primary_key=True, autoincrement=True)
+    data_provider = Column(String, nullable=False)
+    layer_id = Column(Integer, nullable=False)
+    table_name = Column(String, nullable=False)
+    fetch_mode = Column(String, nullable=False)
+    unique_column_name = Column(String, nullable=True)
+    url = Column(String, nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "((unique_column_name IS NOT NULL AND fetch_mode = 'aoi') OR "
+            "(unique_column_name IS NULL AND fetch_mode = 'full'))",
+            name="unique_column_name_compatible_with_fetch_mode"
+        ),
+    )
 
 
 def get_nz_geospatial_layers(conn: Connection) -> pd.DataFrame:
