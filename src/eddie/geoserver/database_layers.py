@@ -114,16 +114,16 @@ def create_datastore_layer(
         # If the layer already exists, we don't have to add it again, and can instead return
         log.debug(f"Datastore layer '{layer_full_name}' already exists.")
         return
-    # Find SRS/CRS information, with selected_polygon.geojson as backup
+    # Find SRS/CRS information, with examples/selected_polygon.geojson as backup
     table_name = source_table or layer_name
     if check_table_exists(conn, table_name):
         try:
             gdf = gpd.read_postgis(f'SELECT * FROM "{table_name}"', conn, "geometry")
         except ValueError:
-            gdf = gpd.read_file("selected_polygon.geojson")
+            gdf = gpd.read_file("examples/selected_polygon.geojson")
     else:
         # Default values if nothing else is available
-        gdf = gpd.read_file("selected_polygon.geojson")
+        gdf = gpd.read_file("examples/selected_polygon.geojson")
     minx, miny, maxx, maxy = gdf.total_bounds
     minx4326, miny4326, maxx4326, maxy4326 = gdf.to_crs(4326).total_bounds
     crs = gdf.crs.to_epsg()

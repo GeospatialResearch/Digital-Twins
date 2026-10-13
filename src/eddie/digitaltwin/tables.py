@@ -93,7 +93,7 @@ class UserLogInfo(Base):
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
-    geometry = Column(Geometry("POLYGON", srid=2193))
+    geometry = Column(Geometry("POLYGON", srid=4326))
 
 
 def create_table(conn: Connection, table: Base) -> None:

@@ -25,6 +25,7 @@ import geopandas as gpd
 
 from eddie.digitaltwin import data_to_db, instructions_records_to_db, setup_environment
 from eddie.digitaltwin.utils import LogLevel, get_catchment_area, setup_logging
+from eddie.digitaltwin.working_crs import resolve_working_crs
 
 
 def main(
@@ -63,19 +64,20 @@ def main(
         instruction_json_path = pathlib.Path(instruction_json_path)
     # Connect to the database
     engine = setup_environment.get_database()
-    # Get catchment area.
-    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=2193)
+    # Get catchment area in the working CRS.
+    working_crs = resolve_working_crs(selected_polygon_gdf)
+    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=working_crs)
     with engine.connect() as conn:
         # Store records from instruction json in the 'geospatial_layers' table in the database.
         instructions_records_to_db.store_instructions_records_to_db(conn, instruction_json_path)
         # Store geospatial layers data in the database
-        data_to_db.store_geospatial_layers_data_to_db(conn, catchment_area)
+        data_to_db.store_geospatial_layers_data_to_db(conn, catchment_area, working_crs)
         # Store user log information in the database
         data_to_db.user_log_info_to_db(conn, catchment_area)
 
 
 if __name__ == "__main__":
-    sample_polygon = gpd.GeoDataFrame.from_file("selected_polygon.geojson")
+    sample_polygon = gpd.GeoDataFrame.from_file("examples/selected_polygon.geojson")
     sample_instruction_path = pathlib.Path("static_boundary_instructions.json")
     main(
         selected_polygon_gdf=sample_polygon,
