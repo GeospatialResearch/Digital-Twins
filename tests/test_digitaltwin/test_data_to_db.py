@@ -50,9 +50,10 @@ class NonIntersectionAreaTest(unittest.TestCase):
         catchment = gpd.GeoDataFrame(geometry=[shapely.box(174.76, -36.86, 174.78, -36.84)], crs=4326).to_crs(32760)
         # What user_log_info_to_db stored for the same request, read back from the database
         logged = gpd.GeoDataFrame(geometry=[shapely.from_wkt(catchment.to_crs(4326).geometry[0].wkt)], crs=4326)
+        conn = mock.MagicMock()
         with mock.patch.object(gpd.GeoDataFrame, "from_postgis", return_value=logged):
             with self.assertRaises(data_to_db.NoNonIntersectionError):
-                data_to_db.get_non_intersection_area_from_db(mock.MagicMock(), catchment, "layer")
+                data_to_db.get_non_intersection_area_from_db(conn, catchment, "layer")
 
 
 if __name__ == "__main__":
