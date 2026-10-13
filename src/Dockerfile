@@ -91,7 +91,7 @@ EOF
 COPY --chown=root:root --chmod=555 --from=build /venv /venv
 
 # Copy source files and essential runtime files
-COPY --chown=root:root --chmod=444 selected_polygon.geojson .
+COPY --chown=root:root --chmod=444 examples/selected_polygon.geojson examples/
 COPY --chown=root:root --chmod=555 src src/
 COPY --chown=nonroot:nonroot --chmod=644 src/pywps.cfg src/
 

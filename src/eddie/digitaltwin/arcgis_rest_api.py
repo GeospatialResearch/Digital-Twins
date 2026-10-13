@@ -22,7 +22,7 @@ retrieve geographic data for a specified area of interest.
 
 import asyncio
 import logging
-from typing import List, Dict, Union, NamedTuple
+from typing import List, Dict, NamedTuple
 
 import aiohttp
 import geopandas as gpd
@@ -89,7 +89,7 @@ def get_feature_layer_record_counts(url: str) -> RecordCounts:
 def gen_query_param_list(
         url: str,
         area_of_interest: gpd.GeoDataFrame = None,
-        output_sr: int = None) -> List[Dict[str, Union[str, int]]]:
+        output_sr: int = None) -> List[Dict[str, str | int]]:
     """
     Generate a list of API query parameters used to retrieve ArcGIS REST API data.
 
@@ -105,7 +105,7 @@ def gen_query_param_list(
 
     Returns
     -------
-    List[Dict[str, Union[str, int]]]
+    List[Dict[str, str, int]]
         A list of API query parameters used to retrieve ArcGIS REST API data.
 
     Raises
@@ -113,9 +113,9 @@ def gen_query_param_list(
     ValueError
         If `output_sr` is provided when `area_of_interest` is given.
     """
-    # If no area_of_interest is provided and output_sr is not specified, default output_sr to 2193
+    # If no area_of_interest is provided and output_sr is not specified, default output_sr to WGS84
     if area_of_interest is None and output_sr is None:
-        output_sr = 2193
+        output_sr = 4326
     # Raise an error if output_sr is provided when area_of_interest is already given
     if area_of_interest is not None and output_sr is not None:
         raise ValueError("`output_sr` should not be provided when `area_of_interest` is given.")
@@ -163,7 +163,7 @@ def gen_query_param_list(
 async def _fetch_geo_data(
         session: aiohttp.ClientSession,
         url: str,
-        query_param: Dict[str, Union[str, int]]) -> gpd.GeoDataFrame:
+        query_param: Dict[str, str, int]) -> gpd.GeoDataFrame:
     """
     Fetch geographic data using the provided query parameters within a single API call.
 
@@ -173,7 +173,7 @@ async def _fetch_geo_data(
         An instance of `aiohttp.ClientSession` used for making HTTP requests.
     url : str
         The URL of the feature layer.
-    query_param : Dict[str, Union[str, int]]
+    query_param : Dict[str, str, int]
         The query parameters used to retrieve geographic data.
 
     Returns

@@ -170,7 +170,7 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
     log_execution_info()
 
 
-def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> gpd.GeoDataFrame:
+def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int) -> gpd.GeoDataFrame:
     """
     Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.
 
@@ -178,8 +178,8 @@ def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> 
     ----------
     catchment_area : gpd.GeoDataFrame
         A GeoDataFrame representing the catchment area.
-    to_crs : int = 2193
-        Coordinate Reference System (CRS) code to convert the catchment area to. Default is 2193.
+    to_crs : int
+        Coordinate Reference System (CRS) code to convert the catchment area to.
 
     Returns
     -------
@@ -189,7 +189,7 @@ def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int = 2193) -> 
     return catchment_area.to_crs(to_crs)
 
 
-def get_nz_boundary(conn: Connection, to_crs: int = 2193) -> gpd.GeoDataFrame:
+def get_nz_boundary(conn: Connection, to_crs: int) -> gpd.GeoDataFrame:
     """
     Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).
 
@@ -197,8 +197,8 @@ def get_nz_boundary(conn: Connection, to_crs: int = 2193) -> gpd.GeoDataFrame:
     ----------
     conn : Connection
         The connection used to connect to the database.
-    to_crs : int = 2193
-        Coordinate Reference System (CRS) code to which the boundary will be converted. Default is 2193.
+    to_crs : int
+        Coordinate Reference System (CRS) code to which the boundary will be converted.
 
     Returns
     -------
