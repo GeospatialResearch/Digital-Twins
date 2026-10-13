@@ -23,15 +23,32 @@ the 'geospatial_layers' table of the database.
 import json
 import logging
 import pathlib
+from enum import StrEnum
 from typing import Dict, Union
 
 import pandas as pd
 import requests
 from sqlalchemy.engine import Connection
 
-from eddie.digitaltwin.tables import GeospatialLayers, create_table
+from eddie.digitaltwin.data_to_db import GeospatialLayers
+from eddie.digitaltwin.tables import create_table
 
 log = logging.getLogger(__name__)
+
+
+class FetchMode(StrEnum):
+    """
+    Enum for valid fetch_mode types for downloading data through instructions records.
+
+    Attributes
+    ----------
+    FULL : str = "full"
+        This fetch_mode will download the entire geospatial layer.
+    AOI : str = "aoi"
+        This fetch_mode will download only the area of interest.
+    """
+    FULL = "full"
+    AOI = "aoi"
 
 
 def validate_url_reachability(section: str, url: str) -> None:
@@ -61,9 +78,10 @@ def validate_url_reachability(section: str, url: str) -> None:
 
 
 def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None:
-    """ # todo unsure if this is important anymore
+    """
     Validate the fields of an instruction.
-    Each instruction should provide either 'coverage_area' or 'unique_column_name', but not both.
+    'fetch_mode' must always be provided. 'unique_column_name' is required
+    when 'fetch_mode' is AOI, and must not be provided when 'fetch_mode' is FULL.
 
     Parameters
     ----------
@@ -75,20 +93,35 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
     Raises
     ------
     ValueError
-        - If both 'coverage_area' and 'unique_column_name' are provided.
-        - If both 'coverage_area' and 'unique_column_name' are not provided.
+        - If 'fetch_mode' is missing.
+        - If 'fetch_mode' is not a valid FetchMode value.
+        - If 'fetch_mode' is AOI and 'unique_column_name' is missing.
+        - If 'fetch_mode' is FULL and 'unique_column_name' is provided.
     """
-    # Retrieve the values of 'coverage_area' and 'unique_column_name' from the instruction dictionary
-    coverage_area = instruction.get("coverage_area")
+    # Retrieve the values of 'fetch_mode' and 'unique_column_name' from the instruction dictionary
+    fetch_mode = instruction.get("fetch_mode")
     unique_column_name = instruction.get("unique_column_name")
-    # Check if both 'coverage_area' and 'unique_column_name' are provided
-    if coverage_area and unique_column_name:
+
+    # Check fetch modes
+    valid_fetch_modes = [fm.value for fm in FetchMode]
+    if not fetch_mode:
+        raise ValueError(f"Fetch mode is missing for {section}, must be one of {valid_fetch_modes}")
+    if fetch_mode.lower() not in valid_fetch_modes:
         raise ValueError(
-            f"Both 'coverage_area' and 'unique_column_name' provided for {section}. Only one should be provided.")
-    # Check if both 'coverage_area' and 'unique_column_name' are not provided
-    if not coverage_area and not unique_column_name:
+            f'Invalid value for fetch_mode: "{fetch_mode}" in {section}.'
+        )
+
+    # Check if both 'fetch_mode' is AOI and 'unique_column_name' is missing
+    if fetch_mode == FetchMode.AOI and not unique_column_name:
         raise ValueError(
-            f"Neither 'coverage_area' nor 'unique_column_name' provided for {section}. One must be provided.")
+            f"Fetch mode '{fetch_mode}' missing required 'unique_column_name' for {section}."
+        )
+    # Check if 'fetch_mode' is full and 'unique_column_name' is provided
+    if fetch_mode == FetchMode.FULL and unique_column_name:
+        raise ValueError(
+            f"Fetch mode '{fetch_mode}' incompatible with 'unique_column_name' provided for {section}."
+        )
+
 
 
 def read_and_check_instructions_file(instruction_json_path: pathlib.Path | None) -> pd.DataFrame:
@@ -106,7 +139,7 @@ def read_and_check_instructions_file(instruction_json_path: pathlib.Path | None)
     """
     if instruction_json_path is None or not instruction_json_path.is_file():
         # If the file does not exist, return a dataframe of the correct shape with no rows.
-        columns = ["section", "data_provider", "layer_id", "table_name", "unique_column_name", "url"]
+        columns = ["section", "data_provider", "layer_id", "table_name", "fetch_mode", "unique_column_name", "url"]
         return pd.DataFrame({col_name: pd.Series(dtype='object') for col_name in columns})
 
     # Read the instructions json file
