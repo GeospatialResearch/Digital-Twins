@@ -21,12 +21,15 @@ using the 'geoapis' library. To access data from each provider, you'll need to s
 API key in the environment variables.
 """
 
+import logging
 from typing import Optional
 
 from geoapis.vector import Linz, StatsNz, WfsQueryBase
 import geopandas as gpd
 
 from eddie import config
+
+log = logging.getLogger(__name__)
 
 
 class MFE(WfsQueryBase):
@@ -58,10 +61,10 @@ def clean_fetched_vector_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
         A GeoDataFrame containing the cleaned vector data.
     """
     # Ensure consistent column naming convention by converting all column names to lowercase
-    fetched_data.columns = fetched_data.columns.str.lower()
-    # Move the 'geometry' column to the end, ensuring spatial columns are located at the end of database tables
-    fetched_data['geometry'] = fetched_data.pop('geometry')
-    return fetched_data
+    fetched_data = fetched_data.rename(columns=str.lower)
+    # Move the 'geometry' column to the end, ensuring spatial columns are located at the end of database tables.
+    # Selecting columns keeps it a GeoDataFrame with its CRS, which pop() and re-assigning does not.
+    return fetched_data[[column for column in fetched_data.columns if column != "geometry"] + ["geometry"]]
 
 
 def fetch_vector_data_using_geoapis(
@@ -95,26 +98,35 @@ def fetch_vector_data_using_geoapis(
     -------
     ValueError
         If an unsupported 'data_provider' value is provided.
+    OSError
+        If the provider request fails for any reason other than an unsupported CRS (requests.HTTPError).
     """
+    # The providers do not serve every CRS (e.g. UTM zones), so fetch in WGS84 and reproject locally
+    wgs84 = 4326
+    if bounding_polygon is not None:
+        bounding_polygon = bounding_polygon.to_crs(wgs84)
     # Determine the appropriate vector fetcher based on the data provider
-    if data_provider == "StatsNZ":
-        stats_nz_api_key = config.EnvVariable.STATSNZ_API_KEY
-        vector_fetcher = StatsNz(key=stats_nz_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
-    elif data_provider == "LINZ":
-        linz_api_key = config.EnvVariable.LINZ_API_KEY
-        vector_fetcher = Linz(key=linz_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
-    elif data_provider == "MFE":
-        mfe_api_key = config.EnvVariable.MFE_API_KEY
-        vector_fetcher = MFE(key=mfe_api_key, crs=crs, bounding_polygon=bounding_polygon, verbose=verbose)
-    else:
+    providers = {
+        "StatsNZ": (StatsNz, config.EnvVariable.STATSNZ_API_KEY),
+        "LINZ": (Linz, config.EnvVariable.LINZ_API_KEY),
+        "MFE": (MFE, config.EnvVariable.MFE_API_KEY),
+    }
+    if data_provider not in providers:
         raise ValueError(f"Unsupported data_provider: {data_provider}")
+    fetcher_class, api_key = providers[data_provider]
 
-    # Fetch the vector data using the determined vector fetcher
-    vector_data = vector_fetcher.run(layer_id)
+    # geoapis writes the bounding box as (north, east), which is only right for CRSs with that axis order (e.g. 2193,
+    # 4326). Fetch other CRSs (e.g. UTM zones, polar stereographic) in EPSG:4326 and reproject locally.
+    axes = tuple(axis.direction for axis in gpd.GeoSeries(crs=crs).crs.axis_info)
+    fetch_crs = crs if axes == ("north", "east") else 4326
+    if bounding_polygon is not None:
+        bounding_polygon = bounding_polygon.to_crs(fetch_crs)
+    vector_data = fetcher_class(key=api_key, crs=fetch_crs, bounding_polygon=bounding_polygon, verbose=verbose).run(
+        layer_id)
     # Check if vector_data is not None and is an instance of gpd.GeoDataFrame
     if vector_data is not None and isinstance(vector_data, gpd.GeoDataFrame):
-        # Clean the fetched vector data
-        vector_data = clean_fetched_vector_data(vector_data)
+        # Clean the fetched vector data and bring it into the requested CRS
+        vector_data = clean_fetched_vector_data(vector_data).to_crs(crs)
     else:
         # Create an empty GeoDataFrame to indicate no returned vector data
         vector_data = gpd.GeoDataFrame()

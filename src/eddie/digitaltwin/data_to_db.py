@@ -263,7 +263,8 @@ def get_non_intersection_area_from_db(
     create_user_log_table(conn)
     # Extract the geometry of the catchment area, in the CRS of the user log table
     user_log_srid = UserLogInfo.geometry.type.srid
-    catchment_wkt = catchment_area.to_crs(user_log_srid).geometry[0].wkt
+    catchment_in_log_crs = catchment_area.to_crs(user_log_srid)
+    catchment_wkt = catchment_in_log_crs.geometry[0].wkt
     # Build the SQL query to find intersections between the user log information and the catchment area
     command_text = f"""
     SELECT *
@@ -281,15 +282,14 @@ def get_non_intersection_area_from_db(
     # Check if there are no intersections
     if user_log_intersections.empty:
         return catchment_area
-    # Bring the intersections into the CRS of the catchment area before overlaying them
-    user_log_intersections = user_log_intersections.to_crs(catchment_area.crs)
-    # Compute the non-intersecting area by overlaying the catchment area with the intersections
-    non_intersection_area = catchment_area.overlay(user_log_intersections, how='difference')
+    # Compute the non-intersecting area in the CRS the user log is stored in, so that an area logged before matches
+    # exactly; reprojecting the log into the catchment CRS instead leaves slivers from rounding
+    non_intersection_area = catchment_in_log_crs.overlay(user_log_intersections, how='difference')
     # Check if the non-intersecting area is empty
     if non_intersection_area.empty:
         raise NoNonIntersectionError(
             f"'{table_name}' data for the requested catchment area is already in the database.")
-    return non_intersection_area
+    return non_intersection_area.to_crs(catchment_area.crs)
 
 
 def process_new_non_nz_geospatial_layers(
