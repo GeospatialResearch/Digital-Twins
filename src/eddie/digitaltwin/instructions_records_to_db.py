@@ -28,10 +28,11 @@ from typing import Dict, Union
 
 import pandas as pd
 import requests
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.engine import Connection
+from sqlalchemy.schema import CheckConstraint
 
-from eddie.digitaltwin.data_to_db import GeospatialLayers
-from eddie.digitaltwin.tables import create_table
+from eddie.digitaltwin.tables import Base, create_table
 
 log = logging.getLogger(__name__)
 
@@ -49,6 +50,48 @@ class FetchMode(StrEnum):
     """
     FULL = "full"
     AOI = "aoi"
+
+
+class GeospatialLayers(Base):
+    """
+    Class representing the 'geospatial_layers' table.
+
+    Attributes
+    ----------
+    __tablename__ : str
+        Name of the database table.
+    unique_id : int
+        Unique identifier for each geospatial layer entry (primary key).
+    data_provider : str
+        Name of the data provider.
+    layer_id : int
+        Identifier for the layer.
+    table_name : str
+        Name of the table containing the data.
+    unique_column_name : Optional[str]
+        Name of the unique column in the table.
+    fetch_mode : FetchMode
+        Coverage area of the geospatial data, e.g. AOI or Full data download
+    url : str
+        URL pointing to the geospatial layer.
+    """  # pylint: disable=too-few-public-methods
+
+    __tablename__ = "geospatial_layers"
+    unique_id = Column(Integer, primary_key=True, autoincrement=True)
+    data_provider = Column(String, nullable=False)
+    layer_id = Column(Integer, nullable=False)
+    table_name = Column(String, nullable=False)
+    fetch_mode = Column(String, nullable=False)
+    unique_column_name = Column(String, nullable=True)
+    url = Column(String, nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "((unique_column_name IS NOT NULL AND fetch_mode = 'aoi') OR "
+            "(unique_column_name IS NULL AND fetch_mode = 'full'))",
+            name="unique_column_name_compatible_with_fetch_mode"
+        ),
+    )
 
 
 def validate_url_reachability(section: str, url: str) -> None:
@@ -121,7 +164,6 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
         raise ValueError(
             f"Fetch mode '{fetch_mode}' incompatible with 'unique_column_name' provided for {section}."
         )
-
 
 
 def read_and_check_instructions_file(instruction_json_path: pathlib.Path | None) -> pd.DataFrame:

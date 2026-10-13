@@ -26,13 +26,13 @@ from typing import Set, Tuple
 
 import geopandas as gpd
 import pandas as pd
-from sqlalchemy import Column, Integer, String, insert
+from sqlalchemy import insert
 from sqlalchemy.engine import Connection
-from sqlalchemy.schema import CheckConstraint
 from sqlalchemy.sql import text
 
 from eddie.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
-from eddie.digitaltwin.tables import Base, UserLogInfo, check_table_exists, create_table
+from eddie.digitaltwin.instructions_records_to_db import FetchMode, GeospatialLayers
+from eddie.digitaltwin.tables import UserLogInfo, check_table_exists, create_table
 import eddie.geoserver as gs
 
 log = logging.getLogger(__name__)
@@ -42,51 +42,9 @@ class NoNonIntersectionError(Exception):
     """Exception raised when no non-intersecting area is found."""
 
 
-class GeospatialLayers(Base):
+def get_full_geospatial_layers(conn: Connection) -> pd.DataFrame:
     """
-    Class representing the 'geospatial_layers' table.
-
-    Attributes
-    ----------
-    __tablename__ : str
-        Name of the database table.
-    unique_id : int
-        Unique identifier for each geospatial layer entry (primary key).
-    data_provider : str
-        Name of the data provider.
-    layer_id : int
-        Identifier for the layer.
-    table_name : str
-        Name of the table containing the data.
-    unique_column_name : Optional[str]
-        Name of the unique column in the table.
-    fetch_mode : FetchMode
-        Coverage area of the geospatial data, e.g. AOI or Full data download
-    url : str
-        URL pointing to the geospatial layer.
-    """  # pylint: disable=too-few-public-methods
-
-    __tablename__ = "geospatial_layers"
-    unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    data_provider = Column(String, nullable=False)
-    layer_id = Column(Integer, nullable=False)
-    table_name = Column(String, nullable=False)
-    fetch_mode = Column(String, nullable=False)
-    unique_column_name = Column(String, nullable=True)
-    url = Column(String, nullable=False)
-
-    __table_args__ = (
-        CheckConstraint(
-            "((unique_column_name IS NOT NULL AND fetch_mode = 'aoi') OR "
-            "(unique_column_name IS NULL AND fetch_mode = 'full'))",
-            name="unique_column_name_compatible_with_fetch_mode"
-        ),
-    )
-
-
-def get_nz_geospatial_layers(conn: Connection) -> pd.DataFrame:
-    """
-    Retrieve geospatial layers from the database that have a coverage area of New Zealand.
+    Retrieve geospatial layers from the database that have fetch_mode full.
 
     Parameters
     ----------
@@ -96,24 +54,24 @@ def get_nz_geospatial_layers(conn: Connection) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        Data frame containing geospatial layers that have a coverage area of New Zealand.
+        Data frame containing geospatial layers that have a fetch_mode full.
     """
-    # SQL query to retrieve geospatial layers that have a coverage area of New Zealand
-    nz_geo_query = f"""
+    # SQL query to retrieve geospatial layers that have fetch_mode full
+    full_geo_query = f"""
     SELECT *
     FROM {GeospatialLayers.__tablename__}
-    WHERE coverage_area = 'New Zealand' AND unique_column_name IS NULL;
+    WHERE fetch_mode = '{FetchMode.FULL}' AND unique_column_name IS NULL;
     """
     # Retrieve geospatial layers using the provided SQL query
-    nz_geo_layers = pd.read_sql(nz_geo_query, conn)
+    full_geo_layers = pd.read_sql(full_geo_query, conn)
     # Drop the 'unique_id' column from the DataFrame
-    nz_geo_layers = nz_geo_layers.drop(columns=['unique_id'])
-    return nz_geo_layers
+    full_geo_layers = full_geo_layers.drop(columns=['unique_id'])
+    return full_geo_layers
 
 
-def get_non_nz_geospatial_layers(conn: Connection) -> pd.DataFrame:
+def get_aoi_geospatial_layers(conn: Connection) -> pd.DataFrame:
     """
-    Retrieve geospatial layers from the database that do not have a coverage area of New Zealand.
+    Retrieve geospatial layers from the database that have fetch_mode aoi.
 
     Parameters
     ----------
@@ -123,19 +81,19 @@ def get_non_nz_geospatial_layers(conn: Connection) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        Data frame containing geospatial layers that do not have a coverage area of New Zealand.
+        Data frame containing geospatial layers that have fetch_mode aoi.
     """
-    # SQL query to retrieve geospatial layers that do not have coverage area of New Zealand
-    non_nz_query = f"""
+    # SQL query to retrieve geospatial layers that have fetch_mode aoi
+    aoi_query = f"""
     SELECT *
     FROM {GeospatialLayers.__tablename__}
-    WHERE unique_column_name IS NOT NULL AND (coverage_area != 'New Zealand' OR coverage_area IS NULL);
+    WHERE unique_column_name IS NOT NULL AND fetch_mode = '{FetchMode.AOI}';
     """
     # Retrieve geospatial layers using the provided SQL query
-    non_nz_geo_layers = pd.read_sql(non_nz_query, conn)
+    aoi_geo_layers = pd.read_sql(aoi_query, conn)
     # Drop the 'unique_id' column from the DataFrame
-    non_nz_geo_layers = non_nz_geo_layers.drop(columns=['unique_id'])
-    return non_nz_geo_layers
+    aoi_geo_layers = aoi_geo_layers.drop(columns=['unique_id'])
+    return aoi_geo_layers
 
 
 def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, int, str, str]:
@@ -215,13 +173,13 @@ def get_vector_data_id_not_in_db(
     return ids_not_in_db
 
 
-def nz_geospatial_layers_data_to_db(
+def full_geospatial_layers_data_to_db(
     conn: Connection,
     crs: int,
     verbose: bool = False
 ) -> None:
-    """ # todo change this to full-coverage
-    Fetch New Zealand geospatial layers data using 'geoapis' and store it into the database.
+    """
+    Fetch full geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -232,13 +190,13 @@ def nz_geospatial_layers_data_to_db(
     verbose : bool = False
         Whether to print messages. Default is False.
     """
-    # Get New Zealand geospatial layers
-    nz_geo_layers = get_nz_geospatial_layers(conn)
+    # Get full fetch mode geospatial layers
+    full_geo_layers = get_full_geospatial_layers(conn)
 
     workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
     data_store = gs.create_main_db_store(workspace_name)
-    # Iterate over each NZ geospatial layer
-    for _, layer_row in nz_geo_layers.iterrows():
+    # Iterate over each full geospatial layer
+    for _, layer_row in full_geo_layers.iterrows():
         # Extract geospatial layer information
         data_provider, layer_id, table_name, _ = get_geospatial_layer_info(layer_row)
 
@@ -335,7 +293,7 @@ def get_non_intersection_area_from_db(
     return non_intersection_area.to_crs(catchment_area.crs)
 
 
-def process_new_non_nz_geospatial_layers(
+def process_new_aoi_geospatial_layers(
     conn: Connection,
     data_provider: str,
     layer_id: int,
@@ -345,7 +303,7 @@ def process_new_non_nz_geospatial_layers(
     verbose: bool = False
 ) -> None:
     """
-    Fetch new non-NZ geospatial layers data using 'geoapis' and store it into the database.
+    Fetch new aoi geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -380,7 +338,7 @@ def process_new_non_nz_geospatial_layers(
         gs.create_datastore_layer(workspace_name, data_store, table_name)
 
 
-def process_existing_non_nz_geospatial_layers(
+def process_existing_aoi_geospatial_layers(
     conn: Connection,
     data_provider: str,
     layer_id: int,
@@ -390,8 +348,9 @@ def process_existing_non_nz_geospatial_layers(
     crs: int,
     verbose: bool = False
 ) -> None:
+    # todo I imagine a cache check here
     """
-    Fetch existing non-NZ geospatial layers data using 'geoapis' and store it into the database.
+    Fetch existing AOI geospatial layers data using 'geoapis' and store the missing values within AOI into the database.
 
     Parameters
     ----------
@@ -443,14 +402,14 @@ def process_existing_non_nz_geospatial_layers(
             log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
 
 
-def non_nz_geospatial_layers_data_to_db(
+def aoi_geospatial_layers_data_to_db(
     conn: Connection,
     catchment_area: gpd.GeoDataFrame,
     crs: int,
     verbose: bool = False
 ) -> None:
-    """ # todo - change this to AOI based
-    Fetch non-NZ geospatial layers data using 'geoapis' and store it into the database.
+    """
+    Fetch AOI based geospatial layers data using 'geoapis' and store it into the database.
 
     Parameters
     ----------
@@ -463,11 +422,11 @@ def non_nz_geospatial_layers_data_to_db(
     verbose : bool = False
         Whether to print messages. Default is False.
     """
-    # Get non-NZ geospatial layers from the database
-    non_nz_geo_layers = get_non_nz_geospatial_layers(conn)
+    # Get aoi geospatial layers from the database
+    aoi_geo_layers = get_aoi_geospatial_layers(conn)
 
-    # Iterate over each non-NZ geospatial layer
-    for _, layer_row in non_nz_geo_layers.iterrows():
+    # Iterate over each aoi geospatial layer
+    for _, layer_row in aoi_geo_layers.iterrows():
         # Extract geospatial layer information
         data_provider, layer_id, table_name, unique_column_name = get_geospatial_layer_info(layer_row)
         try:
@@ -480,12 +439,12 @@ def non_nz_geospatial_layers_data_to_db(
 
         # Check if the table already exists in the database
         if check_table_exists(conn, table_name):
-            # Process existing non-NZ geospatial layers
-            process_existing_non_nz_geospatial_layers(
+            # Process existing AOI geospatial layers
+            process_existing_aoi_geospatial_layers(
                 conn, data_provider, layer_id, table_name, unique_column_name, non_intersection_area, crs, verbose)
         else:
-            # Process new non-NZ geospatial layers
-            process_new_non_nz_geospatial_layers(
+            # Process new AOI geospatial layers
+            process_new_aoi_geospatial_layers(
                 conn, data_provider, layer_id, table_name, non_intersection_area, crs, verbose)
 
 
@@ -509,10 +468,10 @@ def store_geospatial_layers_data_to_db(
     verbose : bool = False
         Whether to print messages. Default is False.
     """
-    # Store New Zealand geospatial layers data to the database
-    nz_geospatial_layers_data_to_db(conn, crs, verbose)
-    # Store non-NZ geospatial layers data to the database
-    non_nz_geospatial_layers_data_to_db(conn, catchment_area, crs, verbose)
+    # Store full fetch mode geospatial layers data to the database
+    full_geospatial_layers_data_to_db(conn, crs, verbose)
+    # Store aoi fetch mode geospatial layers data to the database
+    aoi_geospatial_layers_data_to_db(conn, catchment_area, crs, verbose)
     # serve_static_files(conn, pathlib.Path("./src/static/geo")) # todo uncomment this!!!!!!!!!
 
 
@@ -529,9 +488,9 @@ def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> N
     """
     # Create the 'user_log_information' table if it doesn't exist
     create_user_log_table(conn)
-    # Get the list of table names for non-NZ geospatial layers
-    non_nz_geo_layers = get_non_nz_geospatial_layers(conn)
-    table_list = non_nz_geo_layers["table_name"].tolist()
+    # Get the list of table names for aoi geospatial layers
+    aoi_geo_layers = get_aoi_geospatial_layers(conn)
+    table_list = aoi_geo_layers["table_name"].tolist()
     # Get the catchment geometry, in the CRS of the user log table
     catchment_geom = catchment_area.to_crs(UserLogInfo.geometry.type.srid).geometry[0].wkt
     # Create the query object
