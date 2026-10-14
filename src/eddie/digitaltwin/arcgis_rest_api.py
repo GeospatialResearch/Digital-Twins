@@ -163,7 +163,7 @@ def gen_query_param_list(
 async def _fetch_geo_data(
         session: aiohttp.ClientSession,
         url: str,
-        query_param: Dict[str, str, int]) -> gpd.GeoDataFrame:
+        query_param: Dict[str, str | int]) -> gpd.GeoDataFrame:
     """
     Fetch geographic data using the provided query parameters within a single API call.
 
