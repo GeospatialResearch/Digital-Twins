@@ -478,11 +478,13 @@ def add_style(style_file: pathlib.Path, replace: bool = False) -> None:
     style_name = style_file.stem
     log.info(f"Creating or updating style '{style_file.name}'.")
     style_currently_exists = style_exists(style_name)
-    # Only the SLD definition is overwritten when an existing style is kept
-    outcome = ("replaced" if replace else "updated") if style_currently_exists else "created"
+    outcome = "created"
     if style_currently_exists:
         log.debug(f"Style '{style_name}.sld' already exists.")
+        # Only the SLD definition is overwritten when an existing style is kept
+        outcome = "updated"
         if replace:
+            outcome = "replaced"
             log.debug(f"Deleting '{style_name}.sld'.")
             delete_style(style_name)
             style_currently_exists = False
