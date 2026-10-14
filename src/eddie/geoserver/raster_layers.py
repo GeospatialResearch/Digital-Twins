@@ -17,17 +17,16 @@
 
 """Functions for serving raster layers via geoserver."""
 
-from http import HTTPStatus
-from importlib import resources
 import logging
 import pathlib
 import shutil
+from http import HTTPStatus
+from importlib import resources
 from typing import NamedTuple
-
 import rasterio as rio
+import requests
 from rasterio import warp
 from rasterio.crs import CRS  # pylint: disable=no-name-in-module  # C extension
-import requests
 
 from eddie.config import EnvVariable
 from eddie.geoserver.geoserver_common import get_geoserver_url
@@ -38,11 +37,11 @@ _xml_header = {"Content-type": "text/xml"}
 
 
 def upload_gtiff_to_store(
-    geoserver_url: str,
-    gtiff_filepath: pathlib.Path,
-    store_name: str,
-    workspace_name: str,
-    display_crs: str | None = None
+        geoserver_url: str,
+        gtiff_filepath: pathlib.Path,
+        store_name: str,
+        workspace_name: str,
+        display_crs: str | None = None
 ) -> pathlib.Path:
     """
     Upload a GeoTiff file to a new GeoServer store, to enable serving.
@@ -265,11 +264,11 @@ def read_coverage_dimensions(gtiff_filepath: pathlib.Path, layer_name: str) -> l
 
 
 def create_layer_from_gtiff_store(
-    geoserver_url: str,
-    layer_name: str,
-    workspace_name: str,
-    native_crs: str,
-    coverage_dimensions: list[CoverageDimension]
+        geoserver_url: str,
+        layer_name: str,
+        workspace_name: str,
+        native_crs: str,
+        coverage_dimensions: list[CoverageDimension]
 ) -> None:
     """
     Create a GeoServer Layer from a GeoServer store, making it ready to serve.
@@ -365,11 +364,11 @@ def send_create_layer_request(geoserver_url: str, layer_name: str, workspace_nam
 
 
 def add_gtiff_to_geoserver(
-    gtiff_filepath: pathlib.Path,
-    workspace_name: str,
-    layer_name: str,
-    coverage_dimensions: list[CoverageDimension] | None = None,
-    display_crs: str | None = None
+        gtiff_filepath: pathlib.Path,
+        workspace_name: str,
+        layer_name: str,
+        coverage_dimensions: list[CoverageDimension] | None = None,
+        display_crs: str | None = None
 ) -> None:
     """
     Upload a GeoTiff file to GeoServer, ready for serving to clients.
@@ -473,11 +472,14 @@ def add_style(style_file: pathlib.Path, replace: bool = False) -> None:
     style_file : pathlib.Path
         The path to the style definition (SLD) file to upload.
     replace : bool = False
-        True if you want to replace the existing style, False to skip adding the style if one already exists.
+        True to delete and recreate an existing style, False to keep it.
+        Either way, the style's SLD definition is uploaded from style_file.
     """
     style_name = style_file.stem
-    log.info(f"Creating style '{style_file.name}' if it does not exist.")
+    log.info(f"Creating or updating style '{style_file.name}'.")
     style_currently_exists = style_exists(style_name)
+    # Only the SLD definition is overwritten when an existing style is kept
+    outcome = ("replaced" if replace else "updated") if style_currently_exists else "created"
     if style_currently_exists:
         log.debug(f"Style '{style_name}.sld' already exists.")
         if replace:
@@ -508,7 +510,7 @@ def add_style(style_file: pathlib.Path, replace: bool = False) -> None:
             auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
         )
     sld_response.raise_for_status()
-    log.info(f"Style '{style_name}.sld' created.")
+    log.info(f"Style '{style_name}.sld' {outcome}.")
 
 
 def delete_store(store_name: str, workspace_name: str) -> None:
@@ -548,16 +550,20 @@ def get_workspace_raster_layers(workspace_name: str) -> list[str]:
     -------
     list[str]
         The names of each layer, not including the workspace name.
+        Empty if the workspace does not exist yet.
 
     Raises
     -------
     HTTPError
-        If geoserver responds with anything but OK, raises it as an exception since it is unexpected.
+        If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
     raster_stores_request = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/coveragestores.json',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
+    if raster_stores_request.status_code == HTTPStatus.NOT_FOUND:
+        log.warning(f"Workspace '{workspace_name}' not found, so has no raster layers.")
+        return []
     raster_stores_request.raise_for_status()
     response_data = raster_stores_request.json()
     # Parse JSON structure to get list of feature names

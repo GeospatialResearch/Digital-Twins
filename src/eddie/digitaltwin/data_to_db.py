@@ -209,7 +209,7 @@ def nz_geospatial_layers_data_to_db(
             # Insert vector data into the database
             log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
             vector_data.to_postgis(table_name, conn, index=False, if_exists="replace")
-            gs.create_datastore_layer(conn, workspace_name, data_store, table_name)
+            gs.create_datastore_layer(workspace_name, data_store, table_name)
 
 
 def create_user_log_table(conn: Connection) -> None:
@@ -334,7 +334,7 @@ def process_new_non_nz_geospatial_layers(
         # Serve data with geoserver
         workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
         data_store = gs.create_main_db_store(workspace_name)
-        gs.create_datastore_layer(conn, workspace_name, data_store, table_name)
+        gs.create_datastore_layer(workspace_name, data_store, table_name)
 
 
 def process_existing_non_nz_geospatial_layers(
@@ -391,6 +391,11 @@ def process_existing_non_nz_geospatial_layers(
             log.info(
                 f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
             vector_data_not_in_db.to_postgis(table_name, conn, index=False, if_exists="append")
+            # Refresh the served layer so its bounds include the appended data.
+            # ANALYZE first, since GeoServer estimates PostGIS table bounds from the planner statistics.
+            conn.execute(text(f'ANALYZE "{table_name}"'))
+            workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
+            gs.create_datastore_layer(workspace_name, gs.create_main_db_store(workspace_name), table_name)
         else:
             log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
 
@@ -559,7 +564,7 @@ def serve_static_files(conn: Connection, vector_file_directory: pathlib.Path) ->
             match file.suffix:
                 case ".geojson" | ".shp" | ".geodb":
                     table_name = add_vector_file_to_db(conn, file)
-                    gs.create_datastore_layer(conn, workspace_name, data_store, table_name)
+                    gs.create_datastore_layer(workspace_name, data_store, table_name)
                 case ".tif" | ".tiff" | ".geotiff":
                     gs.add_gtiff_to_geoserver(file, workspace_name, file.stem)
                 case ".sld":

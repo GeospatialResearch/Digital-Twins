@@ -22,12 +22,9 @@ from importlib import resources
 import logging
 from xml.sax import saxutils
 
-import geopandas as gpd
 import requests
-from sqlalchemy.engine import Connection
 
 from eddie.config import EnvVariable
-from eddie.digitaltwin.tables import check_table_exists
 from eddie.geoserver.geoserver_common import (
     create_workspace_if_not_exists, does_resource_exist, get_data_store_url, get_geoserver_url
 )
@@ -53,16 +50,20 @@ def get_workspace_vector_layers(workspace_name: str, data_store_name: str = MAIN
     -------
     list[str]
         The names of each layer, not including the workspace name.
+        Empty if the workspace or data store does not exist yet.
 
     Raises
     -------
     HTTPError
-        If geoserver responds with anything but OK, raises it as an exception since it is unexpected.
+        If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
     vector_layers_response = requests.get(
         f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes.json',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
+    if vector_layers_response.status_code == HTTPStatus.NOT_FOUND:
+        log.warning(f"Workspace '{workspace_name}' or data store '{data_store_name}' not found, so has no layers.")
+        return []
     vector_layers_response.raise_for_status()
     response_data = vector_layers_response.json()
     # Parse JSON structure to get list of feature names
@@ -74,21 +75,20 @@ def get_workspace_vector_layers(workspace_name: str, data_store_name: str = MAIN
 
 
 def create_datastore_layer(
-    conn: Connection,
     workspace_name: str,
     data_store_name: str,
     layer_name: str,
-    metadata_elem: str = "",
-    source_table: str | None = None
+    *,
+    metadata_elem: str = ""
 ) -> None:
     """
-    Create a GeoServer layer for a given data store if it does not currently exist.
+    Create a GeoServer layer for a given data store, or recalculate its bounds if it already exists.
     Can be used to create layers for a database table, or to create a database view for a custom dynamic query.
+    Recalculating means a layer whose table has grown, or which was created with stale bounds,
+    gets the extent of its current data. Empty bounds are logged as a warning.
 
     Parameters
     ----------
-    conn : Connection
-        The connection used to connect to the database.
     workspace_name : str
         The name of the workspace the data store is associated to
     data_store_name : str
@@ -98,8 +98,7 @@ def create_datastore_layer(
         This is the same as the name of the database table if creating a layer from a table.
     metadata_elem : str = ""
         An optional XML str that contains the metadata element used to configure custom SQL queries.
-    source_table : str | None = None
-        The database table whose SRS and extent are read for the layer. Defaults to layer_name.
+        The bounds of a SQL view are calculated from the rows it returns with its default parameter values.
 
     Raises
     ----------
@@ -111,67 +110,96 @@ def create_datastore_layer(
     log.info(f"Creating datastore layer '{layer_full_name}' if it does not already exist.")
 
     if layer_name in get_workspace_vector_layers(workspace_name):
-        # If the layer already exists, we don't have to add it again, and can instead return
-        log.debug(f"Datastore layer '{layer_full_name}' already exists.")
-        return
-    # Find SRS/CRS information, with examples/selected_polygon.geojson as backup
-    table_name = source_table or layer_name
-    if check_table_exists(conn, table_name):
-        try:
-            gdf = gpd.read_postgis(f'SELECT * FROM "{table_name}"', conn, "geometry")
-        except ValueError:
-            gdf = gpd.read_file("examples/selected_polygon.geojson")
+        log.debug(f"Datastore layer '{layer_full_name}' already exists, recalculating its bounds.")
+        recalculate_layer_bounds(workspace_name, data_store_name, layer_name)
     else:
-        # Default values if nothing else is available
-        gdf = gpd.read_file("examples/selected_polygon.geojson")
-    minx, miny, maxx, maxy = gdf.total_bounds
-    minx4326, miny4326, maxx4326, maxy4326 = gdf.to_crs(4326).total_bounds
-    crs = gdf.crs.to_epsg()
-    # Construct new layer request
-    data = f"""
-        <featureType>
-            <name>{layer_name}</name>
-            <title>{layer_name}</title>
-            <srs>EPSG:{crs}</srs>
-            <nativeBoundingBox>
-                <minx>{minx}</minx>
-                <maxx>{maxx}</maxx>
-                <miny>{miny}</miny>
-                <maxy>{maxy}</maxy>
-                <crs class="projected">EPSG:{crs}</crs>
-            </nativeBoundingBox>
-            <latLonBoundingBox>
-                <minx>{minx4326}</minx>
-                <maxx>{maxx4326}</maxx>
-                <miny>{miny4326}</miny>
-                <maxy>{maxy4326}</maxy>
-                <crs>EPSG:4326</crs>
-            </latLonBoundingBox>
-            <store>
-                <class>dataStore</class>
-                <name>{data_store_name}</name>
-            </store>
-            <numDecimals>8</numDecimals>
-            {metadata_elem}
-        </featureType>
-        """
+        # SRS and bounding boxes are omitted, so GeoServer derives them from the source.
+        data = f"""
+            <featureType>
+                <name>{layer_name}</name>
+                <title>{layer_name}</title>
+                <store>
+                    <class>dataStore</class>
+                    <name>{data_store_name}</name>
+                </store>
+                <numDecimals>8</numDecimals>
+                {metadata_elem}
+            </featureType>
+            """
+        response = requests.post(
+            f"{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes",
+            params={"configure": "all"},
+            headers=_xml_header,
+            data=data,
+            auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+        )
+        if response.status_code != HTTPStatus.CREATED:
+            # Raise error manually so we can configure the text
+            raise requests.HTTPError(response.text, response=response)
+        log.info(f"Created new datastore layer '{layer_full_name}'.")
+    _warn_if_empty_bounds(workspace_name, data_store_name, layer_name)
 
-    response = requests.post(
-        f"{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes",
-        params={"configure": "all"},
+
+def recalculate_layer_bounds(workspace_name: str, data_store_name: str, layer_name: str) -> None:
+    """
+    Ask GeoServer to recalculate a layer's native and lat/lon bounding boxes from its data.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the workspace the data store is associated to.
+    data_store_name : str
+        The name of the data store the layer belongs to.
+    layer_name : str
+        The name of the layer.
+
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
+    """
+    # An empty body changes nothing else: GeoServer applies it on top of the stored layer, then recalculates.
+    response = requests.put(
+        f"{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes/{layer_name}",
+        params={"recalculate": "nativebbox,latlonbbox"},
         headers=_xml_header,
-        data=data,
+        data="<featureType/>",
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
-    if response.status_code == HTTPStatus.CREATED:
-        log.info(f"Created new datastore layer '{layer_full_name}'.")
-    else:
-        # If it does not meet the expected results then raise an error
-        # Raise error manually so we can configure the text
-        raise requests.HTTPError(response.text, response=response)
+    response.raise_for_status()
 
 
-def generate_metadata_elem(layer_name: str, sql_query: str) -> str:
+def _warn_if_empty_bounds(workspace_name: str, data_store_name: str, layer_name: str) -> None:
+    """
+    Log a warning if a layer's lat/lon bounding box is missing or empty, e.g. a table or SQL view with no rows.
+
+    Parameters
+    ----------
+    workspace_name : str
+        The name of the workspace the data store is associated to.
+    data_store_name : str
+        The name of the data store the layer belongs to.
+    layer_name : str
+        The name of the layer.
+
+    Raises
+    ----------
+    HTTPError
+        If geoserver responds with an error, raises it as an exception since it is unexpected.
+    """
+    response = requests.get(
+        f"{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}"
+        f"/featuretypes/{layer_name}.json",
+        auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
+    )
+    response.raise_for_status()
+    bbox = response.json()["featureType"].get("latLonBoundingBox")
+    # An empty envelope has max < min
+    if not bbox or float(bbox["maxx"]) < float(bbox["minx"]) or float(bbox["maxy"]) < float(bbox["miny"]):
+        log.warning(f"Datastore layer '{workspace_name}:{layer_name}' has empty bounds, it may have no data.")
+
+
+def generate_metadata_elem(layer_name: str, sql_query: str, srid: int) -> str:
     """
     Create a metadata element for a given dynamic SQL query, to be used in create_datastore_layer.
 
@@ -181,6 +209,8 @@ def generate_metadata_elem(layer_name: str, sql_query: str) -> str:
         The name of the new SQL view, and the GeoServer layer.
     sql_query: str
         SQL query defining the complex query being created.
+    srid: int
+        EPSG code of the view's geometry column.
 
     Returns
     -------
@@ -192,7 +222,9 @@ def generate_metadata_elem(layer_name: str, sql_query: str) -> str:
 
     # Read and fill the template
     sql_view_query_template = resources.read_text("eddie.geoserver.templates", "scenario_sql_view_element_template.xml")
-    metadata_element = sql_view_query_template.format(layer_name=layer_name, xml_escaped_sql=xml_escaped_sql)
+    metadata_element = sql_view_query_template.format(
+        layer_name=layer_name, xml_escaped_sql=xml_escaped_sql, srid=srid
+    )
 
     return metadata_element
 

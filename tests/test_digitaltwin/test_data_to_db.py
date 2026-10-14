@@ -11,10 +11,11 @@ from eddie.digitaltwin import data_to_db
 
 class AppendToExistingLayerTest(unittest.TestCase):
     """Tests that data fetched in one working CRS is appended in the CRS the layer table was created in."""
-
+    @mock.patch.object(data_to_db.gs, "create_main_db_store", return_value="store")
+    @mock.patch.object(data_to_db.gs, "create_datastore_layer")
     @mock.patch.object(data_to_db, "get_vector_data_id_not_in_db", return_value={1})
     @mock.patch.object(data_to_db, "fetch_vector_data_using_geoapis")
-    def test_reprojects_to_table_crs(self, fetch, _):
+    def test_reprojects_to_table_crs(self, fetch, _, create_layer, _store):
         # Fetched in UTM zone 60 (an Auckland request) for a table created in UTM zone 59 (a Christchurch request)
         fetched = gpd.GeoDataFrame({"id": [1]}, crs=4326, geometry=[shapely.Point(174.76, -36.85)]).to_crs(32760)
         fetch.return_value = fetched
@@ -26,6 +27,9 @@ class AppendToExistingLayerTest(unittest.TestCase):
         appended = to_postgis.call_args.args[0]
         self.assertEqual(appended.crs.to_epsg(), 32759)
         self.assertTrue(appended.geometry[0].equals_exact(fetched.to_crs(32759).geometry[0], 1e-6))
+        # The served layer is refreshed so its bounds include the appended data
+        self.assertIn('ANALYZE "layer"', [str(call.args[0]) for call in conn.execute.call_args_list])
+        create_layer.assert_called_once_with(data_to_db.gs.Workspaces.INPUT_LAYERS_WORKSPACE, "store", "layer")
 
 
 class AoiSridTest(unittest.TestCase):
