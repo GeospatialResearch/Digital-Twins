@@ -185,8 +185,9 @@ class CheckDisplayCrsTest(_TmpDirTestCase):
 
     def test_3857_refused_beyond_max_lat(self) -> None:
         """Web mercator is refused for rasters beyond its maximum latitude."""
+        gtiff = self._gtiff((0, 80, 10, 86))
         with self.assertRaises(ValueError):
-            raster_layers.check_display_crs(self._gtiff((0, 80, 10, 86)), "EPSG:3857")
+            raster_layers.check_display_crs(gtiff, "EPSG:3857")
 
     def test_3857_allowed_within_max_lat(self) -> None:
         """Web mercator is allowed for rasters within its maximum latitude."""
@@ -195,13 +196,15 @@ class CheckDisplayCrsTest(_TmpDirTestCase):
     def test_3857_refused_polar_stereographic_enclosing_pole(self) -> None:
         """A polar raster whose corners are all inside the limit is still refused, as its edges reach the pole."""
         for crs in ("EPSG:3031", "EPSG:3413"):
+            gtiff = self._gtiff((-500000, -500000, 500000, 500000), crs)
             with self.subTest(crs=crs), self.assertRaisesRegex(ValueError, "EPSG:3857"):
-                raster_layers.check_display_crs(self._gtiff((-500000, -500000, 500000, 500000), crs), "EPSG:3857")
+                raster_layers.check_display_crs(gtiff, "EPSG:3857")
 
     def test_unsupported_display_crs_refused(self) -> None:
         """Only web mercator is supported as a display CRS."""
+        gtiff = self._gtiff((0, 80, 10, 85))
         with self.assertRaises(ValueError):
-            raster_layers.check_display_crs(self._gtiff((0, 80, 10, 85)), "EPSG:2193")
+            raster_layers.check_display_crs(gtiff, "EPSG:2193")
 
 
 class ReprojectRasterTest(_TmpDirTestCase):
