@@ -4,7 +4,7 @@
 This small webpack project creates the webpages for our API documentation.
 It is linked to GitHub Actions to merge with out Python docs.
 
-The source for this documentation is the API spec defined at `src/static/api_documentation.yml`
+The source for this documentation is the API spec defined at `src/eddie/static/api_documentation.yml`
 
 #### Usage
     npm ci

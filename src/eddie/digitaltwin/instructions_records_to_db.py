@@ -36,7 +36,7 @@ log = logging.getLogger(__name__)
 
 def validate_url_reachability(section: str, url: str) -> None:
     """
-    Validate the URL by checking its eachability.
+    Validate the URL by checking its reachability.
 
     Parameters
     ----------
@@ -53,7 +53,7 @@ def validate_url_reachability(section: str, url: str) -> None:
     # Check if the URL is reachable
     try:
         # Send a GET request to the URL
-        response = requests.get(url)
+        response = requests.get(url, timeout=30)
         # Raise an exception if the response status code indicates an error
         response.raise_for_status()
     except requests.exceptions.RequestException as e:

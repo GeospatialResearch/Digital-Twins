@@ -15,20 +15,22 @@ authors = [{ name = "Luke Parkinson", email = "luke.parkinson@canterbury.ac.nz" 
 license = { file = "LICENSE" }
 keywords = ["EDDIE", "Digital Twin", "Geospatial", "Spatial", "Framework"]
 dependencies = [
+    "aiohttp",
     "celery",
     "flask",
     "flask-cors",
     "flask_swagger_ui",
-    "geoalchemy",
+    "geoalchemy2",
     "geoapis",
     "geopandas",
     "gevent",
     "gunicorn",
     "pandas",
-    "pytest",
-    "dotenv",
+    "python-dotenv",
     "pywps",
     "rasterio",
+    "requests",
+    "shapely",
     "sqlalchemy",
 ]
 requires-python = ">=3.11"
@@ -40,4 +42,4 @@ dev = ["pip-tools", "pytest"]
 Homepage = "https://github.com/GeospatialResearch/Digital-Twins"
 
 [tool.setuptools.package-data]
-"eddie" = ["**/*.xml"]
+"eddie" = ["**/*.xml", "static/*.yml"]

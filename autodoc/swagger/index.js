@@ -4,7 +4,7 @@ import SwaggerUI from 'swagger-ui'
 import 'swagger-ui/dist/swagger-ui.css';
 
 // Load API specification into webpage UI
-const spec = require('../../src/static/api_documentation.yml');
+const spec = require('../../src/eddie/static/api_documentation.yml')
 
 const ui = SwaggerUI({
   spec,
