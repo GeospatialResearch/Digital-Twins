@@ -42,6 +42,10 @@ class UserLogInfo(Base):
         A list of tables (geospatial layers) associated with the log entry.
     created_at : datetime
         Timestamp indicating when the log entry was created.
+    refresh_after : Optional[datetime]
+        Expiry date after which the area covered by this log entry is considered stale for its 'aoi' fetch_mode
+        source tables, and should be re-fetched rather than treated as already covered. Computed from the minimum
+        'cache_length' of the source tables logged, at the time this entry was created. None means it never expires.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """  # pylint: disable=too-few-public-methods
@@ -50,6 +54,7 @@ class UserLogInfo(Base):
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
+    refresh_after = Column(DateTime(timezone=True), nullable=True, comment="Expiry date for this logged area's data")
     geometry = Column(Geometry("POLYGON", srid=4326))
 
 

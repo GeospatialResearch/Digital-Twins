@@ -22,16 +22,17 @@ It also saves user log information in the database.
 
 import logging
 import pathlib
+from datetime import datetime, timezone
 from typing import Set, Tuple
 
 import geopandas as gpd
 import pandas as pd
-from sqlalchemy import insert
+from sqlalchemy import insert, update
 from sqlalchemy.engine import Connection
 from sqlalchemy.sql import text
 
 from eddie.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
-from eddie.digitaltwin.instructions_records_to_db import FetchMode, GeospatialLayers
+from eddie.digitaltwin.instructions_records_to_db import FetchMode, GeospatialLayers, parse_cache_length
 from eddie.digitaltwin.tables import UserLogInfo, check_table_exists, create_table
 import eddie.geoserver as gs
 
@@ -54,7 +55,8 @@ def get_full_geospatial_layers(conn: Connection) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        Data frame containing geospatial layers that have a fetch_mode full.
+        Data frame containing geospatial layers that have a fetch_mode full, including 'cache_length',
+        'refresh_after' and 'fetched_at' so callers can determine whether a layer's cached data has expired.
     """
     # SQL query to retrieve geospatial layers that have fetch_mode full
     full_geo_query = f"""
@@ -81,7 +83,8 @@ def get_aoi_geospatial_layers(conn: Connection) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        Data frame containing geospatial layers that have fetch_mode aoi.
+        Data frame containing geospatial layers that have fetch_mode aoi, including 'cache_length' so callers can
+        determine the expiry to record against newly logged catchment areas in 'user_log_information'.
     """
     # SQL query to retrieve geospatial layers that have fetch_mode aoi
     aoi_query = f"""
@@ -173,6 +176,76 @@ def get_vector_data_id_not_in_db(
     return ids_not_in_db
 
 
+def is_refresh_expired(refresh_after: pd.Timestamp | None) -> bool:
+    """
+    Determine whether a 'refresh_after' expiry date has passed, meaning the cached data it covers is stale and
+    should be re-fetched. Data without a 'refresh_after' never expires.
+
+    Parameters
+    ----------
+    refresh_after : pd.Timestamp | None
+        The expiry date, or None/NaT if the data never expires.
+
+    Returns
+    -------
+    bool
+        True if 'refresh_after' is set and has passed, False otherwise.
+    """
+    if pd.isna(refresh_after):
+        return False
+    return datetime.now(timezone.utc) >= refresh_after
+
+
+def update_fetched_at(conn: Connection, data_provider: str, layer_id: int) -> None:
+    """
+    Record the current time as the 'fetched_at' timestamp for a geospatial layer, after its data has been fetched.
+    Used for both 'full' and 'aoi' fetch_mode layers.
+
+    Parameters
+    ----------
+    conn : Connection
+        The connection used to connect to the database.
+    data_provider : str
+        The data provider of the geospatial layer.
+    layer_id : int
+        The ID of the geospatial layer.
+    """
+    conn.execute(
+        update(GeospatialLayers)
+        .where(GeospatialLayers.data_provider == data_provider, GeospatialLayers.layer_id == layer_id)
+        .values(fetched_at=datetime.now(timezone.utc))
+    )
+
+
+def update_full_layer_cache_expiry(
+    conn: Connection, data_provider: str, layer_id: int, cache_length: str | None
+) -> None:
+    """
+    Record the current time as 'fetched_at' and recompute 'refresh_after' from 'cache_length', for a 'full'
+    fetch_mode geospatial layer, after its data has been fetched. Only valid for 'full' fetch_mode layers, since
+    'refresh_after' on 'geospatial_layers' is constrained to those; 'aoi' fetch_mode layers instead have their
+    expiry recorded per logged catchment area on 'user_log_information.refresh_after' (see 'user_log_info_to_db').
+
+    Parameters
+    ----------
+    conn : Connection
+        The connection used to connect to the database.
+    data_provider : str
+        The data provider of the geospatial layer.
+    layer_id : int
+        The ID of the geospatial layer.
+    cache_length : str | None
+        The duration offset (e.g. "1y", "2w3d", "15d") configured for the layer, or None if it never expires.
+    """
+    fetched_at = datetime.now(timezone.utc)
+    refresh_after = fetched_at + parse_cache_length(cache_length) if cache_length else None
+    conn.execute(
+        update(GeospatialLayers)
+        .where(GeospatialLayers.data_provider == data_provider, GeospatialLayers.layer_id == layer_id)
+        .values(fetched_at=fetched_at, refresh_after=refresh_after)
+    )
+
+
 def full_geospatial_layers_data_to_db(
     conn: Connection,
     crs: int,
@@ -180,6 +253,7 @@ def full_geospatial_layers_data_to_db(
 ) -> None:
     """
     Fetch full geospatial layers data using 'geoapis' and store it into the database.
+    A layer already present in the database is only re-fetched if its 'refresh_after' expiry date has passed.
 
     Parameters
     ----------
@@ -200,17 +274,24 @@ def full_geospatial_layers_data_to_db(
         # Extract geospatial layer information
         data_provider, layer_id, table_name, _ = get_geospatial_layer_info(layer_row)
 
-        # Check if the table already exists in the database
-        if check_table_exists(conn, table_name):
+        # Check if the table already exists in the database, and whether it has expired and needs re-fetching
+        table_exists = check_table_exists(conn, table_name)
+        expired = is_refresh_expired(layer_row.get('refresh_after'))
+        if table_exists and not expired:
             log.info(f"'{table_name}' data already exists in the database.")
-        else:
-            # Fetch vector data using geoapis
-            log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}).")
-            vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose)
-            # Insert vector data into the database
-            log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
-            vector_data.to_postgis(table_name, conn, index=False, if_exists="replace")
-            gs.create_datastore_layer(workspace_name, data_store, table_name)
+            continue
+        if table_exists and expired:
+            log.info(f"'{table_name}' data has passed its 'refresh_after' expiry date. Re-fetching.")
+
+        # Fetch vector data using geoapis
+        log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}).")
+        vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose)
+        # Insert vector data into the database, replacing any existing (expired) table of the same name
+        log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
+        vector_data.to_postgis(table_name, conn, index=False, if_exists="replace")
+        gs.create_datastore_layer(workspace_name, data_store, table_name)
+        # Record when this layer's data was fetched, and recompute its 'refresh_after' expiry from 'cache_length'
+        update_full_layer_cache_expiry(conn, data_provider, layer_id, layer_row.get('cache_length'))
 
 
 def create_user_log_table(conn: Connection) -> None:
@@ -239,7 +320,8 @@ def get_non_intersection_area_from_db(
 ) -> gpd.GeoDataFrame:
     """
     Get the non-intersecting area from the catchment area and user log information table in the database
-    for the specified table.
+    for the specified table. A previously logged area whose 'refresh_after' expiry date has passed is not
+    counted as covered, so its area is included in the non-intersecting area and its data is re-fetched.
 
     Parameters
     ----------
@@ -266,11 +348,14 @@ def get_non_intersection_area_from_db(
     user_log_srid = UserLogInfo.geometry.type.srid
     catchment_in_log_crs = catchment_area.to_crs(user_log_srid)
     catchment_wkt = catchment_in_log_crs.geometry[0].wkt
-    # Build the SQL query to find intersections between the user log information and the catchment area
+    # Build the SQL query to find intersections between the user log information and the catchment area.
+    # Only unexpired log entries count as already covering their area; an expired entry's area is excluded here,
+    # so it is folded back into the non-intersecting area and its data gets re-fetched.
     command_text = f"""
     SELECT *
     FROM {UserLogInfo.__tablename__}
     WHERE :table_name = ANY(source_table_list)
+    AND (refresh_after IS NULL OR refresh_after > now())
     AND ST_Intersects(geometry, ST_GeomFromText(:catchment_polygon, :user_log_srid));
     """
     query = text(command_text).bindparams(
@@ -336,6 +421,8 @@ def process_new_aoi_geospatial_layers(
         workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
         data_store = gs.create_main_db_store(workspace_name)
         gs.create_datastore_layer(workspace_name, data_store, table_name)
+        # Record when this layer's data was fetched
+        update_fetched_at(conn, data_provider, layer_id)
 
 
 def process_existing_aoi_geospatial_layers(
@@ -348,9 +435,11 @@ def process_existing_aoi_geospatial_layers(
     crs: int,
     verbose: bool = False
 ) -> None:
-    # todo I imagine a cache check here
     """
     Fetch existing AOI geospatial layers data using 'geoapis' and store the missing values within AOI into the database.
+    The 'area_of_interest' passed in is the non-intersecting area from 'get_non_intersection_area_from_db', which
+    already excludes any previously logged area that is still within its 'refresh_after' expiry (see
+    'user_log_information'); so any area reaching this function is treated as new data to append.
 
     Parameters
     ----------
@@ -398,6 +487,7 @@ def process_existing_aoi_geospatial_layers(
             conn.execute(text(f'ANALYZE "{table_name}"'))
             workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
             gs.create_datastore_layer(workspace_name, gs.create_main_db_store(workspace_name), table_name)
+            update_fetched_at(conn, data_provider, layer_id)
         else:
             log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
 
@@ -477,7 +567,9 @@ def store_geospatial_layers_data_to_db(
 
 def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> None:
     """
-    Store user log information to the database.
+    Store user log information to the database. The entry's 'refresh_after' is set to the soonest expiry among the
+    aoi layers' 'cache_length' values (i.e. the first layer in 'source_table_list' to need re-fetching), measured
+    from now. If none of the layers has a 'cache_length' configured, 'refresh_after' is left as None (never expires).
 
     Parameters
     ----------
@@ -491,10 +583,17 @@ def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> N
     # Get the list of table names for aoi geospatial layers
     aoi_geo_layers = get_aoi_geospatial_layers(conn)
     table_list = aoi_geo_layers["table_name"].tolist()
+    # Compute the soonest expiry among the aoi layers' configured 'cache_length' values, if any
+    cache_lengths = aoi_geo_layers["cache_length"].dropna()
+    refresh_after = (
+        datetime.now(timezone.utc) + min(parse_cache_length(cl) for cl in cache_lengths)
+        if not cache_lengths.empty else None
+    )
     # Get the catchment geometry, in the CRS of the user log table
     catchment_geom = catchment_area.to_crs(UserLogInfo.geometry.type.srid).geometry[0].wkt
     # Create the query object
-    query = insert(UserLogInfo).values(source_table_list=table_list, geometry=catchment_geom)
+    query = insert(UserLogInfo).values(
+        source_table_list=table_list, refresh_after=refresh_after, geometry=catchment_geom)
     # Execute the query
     conn.execute(query)
 
