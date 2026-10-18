@@ -22,7 +22,7 @@ retrieve geographic data for a specified area of interest.
 
 import asyncio
 import logging
-from typing import List, Dict, NamedTuple
+from typing import List, Dict, NamedTuple, Optional
 
 import aiohttp
 import geopandas as gpd
@@ -87,9 +87,9 @@ def get_feature_layer_record_counts(url: str) -> RecordCounts:
 
 
 def gen_query_param_list(
-        url: str,
-        area_of_interest: gpd.GeoDataFrame = None,
-        output_sr: int = None) -> List[Dict[str, str | int]]:
+    url: str,
+    area_of_interest: gpd.GeoDataFrame = None,
+    output_sr: int = None) -> List[Dict[str, str | int]]:
     """
     Generate a list of API query parameters used to retrieve ArcGIS REST API data.
 
@@ -193,9 +193,9 @@ async def _fetch_geo_data(
 
 
 async def fetch_geo_data_for_aoi(
-        url: str,
-        area_of_interest: gpd.GeoDataFrame = None,
-        output_sr: int = None) -> gpd.GeoDataFrame:
+    url: str,
+    area_of_interest: gpd.GeoDataFrame = None,
+    output_sr: int = None) -> gpd.GeoDataFrame:
     """
     Retrieve geographic data for the area of interest using the ArcGIS REST API.
 
@@ -235,9 +235,9 @@ async def fetch_geo_data_for_aoi(
 
 
 def fetch_arcgis_rest_api_data(
-        url: str,
-        area_of_interest: gpd.GeoDataFrame = None,
-        output_sr: int = None) -> gpd.GeoDataFrame:
+    url: str,
+    area_of_interest: gpd.GeoDataFrame = None,
+    output_sr: int = None) -> gpd.GeoDataFrame:
     """
     Retrieve geographic data for the area of interest using the ArcGIS REST API.
 
@@ -272,3 +272,33 @@ def fetch_arcgis_rest_api_data(
     except TypeError as e:
         # Raise a RuntimeError to indicate the failure
         raise RuntimeError(f"Failed to fetch geographic data from {url} using the ArcGIS REST API.") from e
+
+
+def fetch_arcgis_rest_data(
+    layer_id: str,
+    bbox: gpd.GeoDataFrame | None,
+    crs: int
+) -> gpd.GeoDataFrame: # todo read/why?
+    """
+    Fetch vector data from an ArcGIS REST API feature layer, matching the provider registry's
+    (layer_id, bbox, crs) -> GeoDataFrame signature. Thin wrapper around 'fetch_arcgis_rest_api_data'.
+
+    Parameters
+    ----------
+    layer_id : str
+        The URL of the ArcGIS REST API feature layer.
+    bbox : gpd.GeoDataFrame | Nonw
+        A GeoDataFrame representing the area of interest to restrict the request to. None fetches all data,
+        reprojected to 'crs'.
+    crs : int
+        The EPSG code of the coordinate reference system the returned data should be in, used only when 'bbox'
+        is None; when 'bbox' is given the data is returned in its CRS instead (see 'fetch_arcgis_rest_api_data').
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the fetched vector data.
+    """
+    if bbox is None:
+        return fetch_arcgis_rest_api_data(layer_id, output_sr=crs)
+    return fetch_arcgis_rest_api_data(layer_id, area_of_interest=bbox)

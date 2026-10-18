@@ -26,7 +26,6 @@ from typing import Callable, Tuple, Type, TypeVar
 import warnings
 
 import geopandas as gpd
-from sqlalchemy.engine import Connection
 
 log = logging.getLogger(__name__)
 
@@ -187,35 +186,6 @@ def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int) -> gpd.Geo
         A GeoDataFrame representing the catchment area with the transformed CRS.
     """
     return catchment_area.to_crs(to_crs)
-
-
-def get_nz_boundary(conn: Connection, to_crs: int) -> gpd.GeoDataFrame:
-    """
-    Get the boundary of New Zealand in the specified Coordinate Reference System (CRS).
-
-    Parameters
-    ----------
-    conn : Connection
-        The connection used to connect to the database.
-    to_crs : int
-        Coordinate Reference System (CRS) code to which the boundary will be converted.
-
-    Returns
-    -------
-    gpd.GeoDataFrame
-        A GeoDataFrame representing the boundary of New Zealand in the specified CRS.
-    """
-    # Query the 'region_geometry' table from the database
-    query = "SELECT * FROM region_geometry;"
-    region_geometry = gpd.GeoDataFrame.from_postgis(query, conn, geom_col="geometry")
-    # Dissolve and explode the geometries to get the boundary of New Zealand
-    nz_boundary = region_geometry.dissolve(aggfunc="sum").explode(index_parts=True).reset_index(level=0, drop=True)
-    # Calculate the area of each geometry and sort them in descending order
-    nz_boundary["geometry_area"] = nz_boundary["geometry"].area
-    nz_boundary = nz_boundary.sort_values(by="geometry_area", ascending=False).head(1)
-    # Convert to the desired coordinate reference system (CRS)
-    nz_boundary = nz_boundary.to_crs(to_crs)
-    return nz_boundary
 
 
 # Generic type definitions to allow any function to be passed to retry_function

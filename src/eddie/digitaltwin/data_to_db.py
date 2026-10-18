@@ -16,8 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This script fetches geospatial data from various providers using the 'geoapis' library and stores it in the database.
-It also saves user log information in the database.
+This script fetches geospatial data from the data providers registered in 'eddie.digitaltwin.provider_registry'
+(e.g. the core 'ogc_wfs'/'arcgis_rest' providers, or the 'geoapis'-based NZ providers registered by the optional
+'eddie[nz]' extra, i.e. 'eddie.digitaltwin.nz_providers') and stores it in the database. It also saves user log
+information in the database. #todo if move to nz package, then edit
 """
 
 import logging
@@ -31,8 +33,8 @@ from sqlalchemy import insert, update
 from sqlalchemy.engine import Connection
 from sqlalchemy.sql import text
 
-from eddie.digitaltwin.get_data_using_geoapis import fetch_vector_data_using_geoapis
 from eddie.digitaltwin.instructions_records_to_db import FetchMode, GeospatialLayers, parse_cache_length
+from eddie.digitaltwin.provider_registry import get_provider
 from eddie.digitaltwin.tables import UserLogInfo, check_table_exists, create_table
 import eddie.geoserver as gs
 
@@ -99,7 +101,7 @@ def get_aoi_geospatial_layers(conn: Connection) -> pd.DataFrame:
     return aoi_geo_layers
 
 
-def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, int, str, str]:
+def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, str, str, str]: # todo ugly type, make container
     """
     Extract geospatial layer information from a single layer entry.
 
@@ -110,7 +112,7 @@ def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, int, str, str]
 
     Returns
     -------
-    Tuple[str, int, str, str]
+    Tuple[str, str, str, str]
         A tuple containing the values for data_provider, layer_id, table_name, and unique_column_name.
     """
     # Extract information from the single layer entry
@@ -196,7 +198,7 @@ def is_refresh_expired(refresh_after: pd.Timestamp | None) -> bool:
     return datetime.now(timezone.utc) >= refresh_after
 
 
-def update_fetched_at(conn: Connection, data_provider: str, layer_id: int) -> None:
+def update_fetched_at(conn: Connection, data_provider: str, layer_id: str) -> None:
     """
     Record the current time as the 'fetched_at' timestamp for a geospatial layer, after its data has been fetched.
     Used for both 'full' and 'aoi' fetch_mode layers.
@@ -207,7 +209,7 @@ def update_fetched_at(conn: Connection, data_provider: str, layer_id: int) -> No
         The connection used to connect to the database.
     data_provider : str
         The data provider of the geospatial layer.
-    layer_id : int
+    layer_id : str
         The ID of the geospatial layer.
     """
     conn.execute(
@@ -218,7 +220,7 @@ def update_fetched_at(conn: Connection, data_provider: str, layer_id: int) -> No
 
 
 def update_full_layer_cache_expiry(
-    conn: Connection, data_provider: str, layer_id: int, cache_length: str | None
+    conn: Connection, data_provider: str, layer_id: str, cache_length: str | None
 ) -> None:
     """
     Record the current time as 'fetched_at' and recompute 'refresh_after' from 'cache_length', for a 'full'
@@ -232,7 +234,7 @@ def update_full_layer_cache_expiry(
         The connection used to connect to the database.
     data_provider : str
         The data provider of the geospatial layer.
-    layer_id : int
+    layer_id : str
         The ID of the geospatial layer.
     cache_length : str | None
         The duration offset (e.g. "1y", "2w3d", "15d") configured for the layer, or None if it never expires.
@@ -252,8 +254,9 @@ def full_geospatial_layers_data_to_db(
     verbose: bool = False
 ) -> None:
     """
-    Fetch full geospatial layers data using 'geoapis' and store it into the database.
-    A layer already present in the database is only re-fetched if its 'refresh_after' expiry date has passed.
+    Fetch full geospatial layers data using the registered 'data_provider' for each layer and store it into the
+    database. A layer already present in the database is only re-fetched if its 'refresh_after' expiry date has
+    passed.
 
     Parameters
     ----------
@@ -283,9 +286,9 @@ def full_geospatial_layers_data_to_db(
         if table_exists and expired:
             log.info(f"'{table_name}' data has passed its 'refresh_after' expiry date. Re-fetching.")
 
-        # Fetch vector data using geoapis
+        # Fetch vector data using the registered provider for this layer's 'data_provider'
         log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}).")
-        vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose)
+        vector_data = get_provider(data_provider)(layer_id, None, crs)
         # Insert vector data into the database, replacing any existing (expired) table of the same name
         log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) to the database.")
         vector_data.to_postgis(table_name, conn, index=False, if_exists="replace")
@@ -381,14 +384,14 @@ def get_non_intersection_area_from_db(
 def process_new_aoi_geospatial_layers(
     conn: Connection,
     data_provider: str,
-    layer_id: int,
+    layer_id: str,
     table_name: str,
     area_of_interest: gpd.GeoDataFrame,
     crs: int,
     verbose: bool = False
 ) -> None:
     """
-    Fetch new aoi geospatial layers data using 'geoapis' and store it into the database.
+    Fetch new aoi geospatial layers data using the registered 'data_provider' and store it into the database.
 
     Parameters
     ----------
@@ -396,7 +399,7 @@ def process_new_aoi_geospatial_layers(
         The connection used to connect to the database.
     data_provider : str
         The data provider of the geospatial layer.
-    layer_id : int
+    layer_id : str
         The ID of the geospatial layer.
     table_name : str
         The database table name of the geospatial layer.
@@ -407,9 +410,9 @@ def process_new_aoi_geospatial_layers(
     verbose : bool = False
         Whether to print messages. Default is False.
     """
-    # Fetch vector data using geoapis
+    # Fetch vector data using the registered provider for this layer's 'data_provider'
     log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
-    vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, area_of_interest)
+    vector_data = get_provider(data_provider)(layer_id, area_of_interest, crs)
     # Check if the fetched vector data is empty
     if vector_data.empty:
         log.info(f"The requested catchment area does not contain any '{table_name}' data ({data_provider} {layer_id}).")
@@ -428,7 +431,7 @@ def process_new_aoi_geospatial_layers(
 def process_existing_aoi_geospatial_layers(
     conn: Connection,
     data_provider: str,
-    layer_id: int,
+    layer_id: str,
     table_name: str,
     unique_column_name: str,
     area_of_interest: gpd.GeoDataFrame,
@@ -436,7 +439,8 @@ def process_existing_aoi_geospatial_layers(
     verbose: bool = False
 ) -> None:
     """
-    Fetch existing AOI geospatial layers data using 'geoapis' and store the missing values within AOI into the database.
+    Fetch existing AOI geospatial layers data using the registered 'data_provider' and store the missing values
+    within AOI into the database.
     The 'area_of_interest' passed in is the non-intersecting area from 'get_non_intersection_area_from_db', which
     already excludes any previously logged area that is still within its 'refresh_after' expiry (see
     'user_log_information'); so any area reaching this function is treated as new data to append.
@@ -447,7 +451,7 @@ def process_existing_aoi_geospatial_layers(
         The connection used to connect to the database.
     data_provider : str
         The data provider of the geospatial layer.
-    layer_id : int
+    layer_id : str
         The ID of the geospatial layer.
     table_name : str
         The database table name of the geospatial layer.
@@ -460,9 +464,9 @@ def process_existing_aoi_geospatial_layers(
     verbose : bool = False
         Whether to print messages. Default is False.
     """
-    # Fetch vector data using geoapis
+    # Fetch vector data using the registered provider for this layer's 'data_provider'
     log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
-    vector_data = fetch_vector_data_using_geoapis(data_provider, layer_id, crs, verbose, area_of_interest)
+    vector_data = get_provider(data_provider)(layer_id, area_of_interest, crs)
     # Check if the fetched vector data is empty
     if vector_data.empty:
         log.info(f"The requested catchment area does not contain any '{table_name}' data ({data_provider} {layer_id}).")
@@ -499,7 +503,8 @@ def aoi_geospatial_layers_data_to_db(
     verbose: bool = False
 ) -> None:
     """
-    Fetch AOI based geospatial layers data using 'geoapis' and store it into the database.
+    Fetch AOI based geospatial layers data using the registered 'data_provider' for each layer and store it into
+    the database.
 
     Parameters
     ----------
@@ -545,7 +550,8 @@ def store_geospatial_layers_data_to_db(
     verbose: bool = False
 ) -> None:
     """
-    Fetch geospatial layers data using 'geoapis' and store it into the database.
+    Fetch geospatial layers data using the registered 'data_provider' for each layer and store it into the
+    database.
 
     Parameters
     ----------

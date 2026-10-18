@@ -32,7 +32,7 @@ from eddie import config
 log = logging.getLogger(__name__)
 
 
-class MFE(WfsQueryBase):
+class MFE(WfsQueryBase): # todo this should be in nz package
     """A class to manage fetching Vector data from MFE.
 
     General details at: https://data.mfe.govt.nz/
