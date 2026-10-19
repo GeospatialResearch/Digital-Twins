@@ -278,7 +278,7 @@ def fetch_arcgis_rest_data(
     layer_id: str,
     bbox: gpd.GeoDataFrame | None,
     crs: int
-) -> gpd.GeoDataFrame: # todo read/why?
+) -> gpd.GeoDataFrame:
     """
     Fetch vector data from an ArcGIS REST API feature layer, matching the provider registry's
     (layer_id, bbox, crs) -> GeoDataFrame signature. Thin wrapper around 'fetch_arcgis_rest_api_data'.

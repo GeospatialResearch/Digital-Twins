@@ -17,9 +17,9 @@
 
 """
 This script fetches geospatial data from the data providers registered in 'eddie.digitaltwin.provider_registry'
-(e.g. the core 'ogc_wfs'/'arcgis_rest' providers, or the 'geoapis'-based NZ providers registered by the optional
-'eddie[nz]' extra, i.e. 'eddie.digitaltwin.nz_providers') and stores it in the database. It also saves user log
-information in the database. #todo if move to nz package, then edit
+(e.g. the core 'ogc_wfs'/'arcgis_rest' providers, or the 'geoapis'-based providers registered by the optional
+modules, i.e. 'eddie.digitaltwin.nz_providers') and stores it in the database. It also saves user log
+information in the database.
 """
 
 import logging
@@ -101,7 +101,7 @@ def get_aoi_geospatial_layers(conn: Connection) -> pd.DataFrame:
     return aoi_geo_layers
 
 
-def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, str, str, str]: # todo ugly type, make container
+def get_geospatial_layer_info(layer_row: pd.Series) -> Tuple[str, str, str, str]:
     """
     Extract geospatial layer information from a single layer entry.
 

@@ -109,7 +109,7 @@ def fetch_vector_data_using_geoapis(
 
 
 def fetch_generic_wfs_data(
-        layer_id: str, # todo CHANGE THIS TO url
+        layer_id: str,
         bbox: Optional[gpd.GeoDataFrame],
         crs: int) -> gpd.GeoDataFrame:
     """

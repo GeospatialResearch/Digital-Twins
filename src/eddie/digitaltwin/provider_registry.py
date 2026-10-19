@@ -21,9 +21,9 @@ Each provider is a callable of the form (layer_id, bbox, crs) -> GeoDataFrame. C
 providers ('ogc_wfs' and 'arcgis_rest'), which work against any standards-compliant OGC WFS / ArcGIS REST
 service and require no provider-specific account or API key (the generic 'ogc_wfs' provider is itself built on
 the 'geoapis' library's 'WfsQuery' class - see 'get_data_using_geoapis.py'). Provider-specific extras (e.g. the
-optional 'eddie[nz]' extra, i.e. the 'eddie.digitaltwin.nz_providers' module, which adds the StatsNZ/LINZ/MFE
+optional 'eddie.digitaltwin.nz_providers' module, which adds the StatsNZ/LINZ/MFE
 'geoapis' based providers) register themselves into this same registry on import, without requiring any change
-to this file or to core fetch code - this is the generic design the registry enables. #todo check eddie[nz] docstring still makes sense
+to this file or to core fetch code - this is the generic design the registry enables.
 """
 
 import logging
@@ -83,14 +83,14 @@ def get_provider(name: str) -> ProviderFunc:
     ------
     KeyError
         If no provider is registered under 'name'. NZ-specific providers (StatsNZ, LINZ, MFE) require the optional
-        'eddie_nz' package to be installed and imported before they are available here.
+        'nz_providers' module to be imported before they are available here.
     """
     try:
         return _PROVIDERS[name]
     except KeyError:
         raise KeyError(
             f"Unknown data provider '{name}'. Registered providers: {sorted(_PROVIDERS)}. "
-            "Provider-specific extras (e.g. 'eddie[nz]' for StatsNZ/LINZ/MFE, via "
+            "Provider-specific extras (e.g. for StatsNZ/LINZ/MFE, via "
             "'eddie.digitaltwin.nz_providers') must be installed and imported before their providers are "
             "available."
         ) from None

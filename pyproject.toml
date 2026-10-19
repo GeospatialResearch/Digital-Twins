@@ -34,13 +34,6 @@ dependencies = [
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-# New Zealand data providers (StatsNZ, LINZ, MFE), via 'eddie.digitaltwin.nz_providers'. This is kept as a
-# logical extras group of the single 'eddie' package, rather than a separate distributable package, since these
-# providers still live in this repo and a fully separate package would add packaging/versioning overhead
-# disproportionate to the current need (see issue #388, Q3). It installs no additional pip packages beyond core
-# (the core 'ogc_wfs' provider already depends on 'geoapis' for its generic WfsQuery support); what makes the NZ
-# providers optional is that they are never imported by core and require NZ-specific API keys to function.
-nz = [] # todo I think I can just remove this
 dev = ["pip-tools", "pytest"]
 
 [project.urls]
