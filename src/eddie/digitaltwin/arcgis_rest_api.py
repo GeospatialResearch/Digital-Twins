@@ -291,7 +291,7 @@ def fetch_arcgis_rest_data(
     ----------
     layer_id : str
         The URL of the ArcGIS REST API feature layer.
-    bbox : gpd.GeoDataFrame | Nonw
+    bbox : gpd.GeoDataFrame | None
         A GeoDataFrame representing the area of interest to restrict the request to. None fetches all data,
         reprojected to 'crs'.
     crs : int
