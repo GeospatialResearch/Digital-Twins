@@ -38,7 +38,7 @@ from eddie.digitaltwin.tables import Base, create_table
 log = logging.getLogger(__name__)
 
 # Matches one or more "<number><unit>" groups, e.g. "1y", "2w3d", "15d". Units: y = year, w = week, d = day.
-_CACHE_LENGTH_PATTERN = re.compile(r"^(\d{1,9})([ywd])$")
+_CACHE_LENGTH_PATTERN = re.compile(r"(\d{1,9})([ywd])")
 _CACHE_LENGTH_FULL_PATTERN = re.compile(r"(?:\d+[ywd])+")
 _CACHE_LENGTH_UNIT_TO_DAYS = {"y": 365, "w": 7, "d": 1}
 
