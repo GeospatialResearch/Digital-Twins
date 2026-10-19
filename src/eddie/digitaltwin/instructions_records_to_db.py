@@ -23,7 +23,6 @@ the 'geospatial_layers' table of the database.
 import json
 import logging
 import pathlib
-from typing import Dict, Union
 
 import pandas as pd
 import requests
@@ -60,7 +59,7 @@ def validate_url_reachability(section: str, url: str) -> None:
         raise ValueError(f"Unreachable URL provided for {section}: '{url}'\n{e}") from e
 
 
-def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None:
+def validate_instruction_fields(section: str, instruction: dict[str, str | int]) -> None:
     """
     Validate the fields of an instruction.
     Each instruction should provide either 'coverage_area' or 'unique_column_name', but not both.
@@ -69,7 +68,7 @@ def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, 
     ----------
     section : str
         The section identifier of the instruction.
-    instruction : Dict[str, Union[str, int]]
+    instruction : Dict[str, str | int]
         The instruction details.
 
     Raises
