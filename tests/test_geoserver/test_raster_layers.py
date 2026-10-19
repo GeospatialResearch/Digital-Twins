@@ -25,6 +25,7 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import rasterio as rio
 import requests
+from rasterio.coords import BoundingBox
 from rasterio.transform import from_bounds
 
 from eddie.config import EnvVariable
@@ -267,7 +268,9 @@ class AddGtiffToGeoserverTest(_TmpDirTestCase):
                                              ) -> None:
         """The native CRS and bounds are returned, and the coverage is created with recalculated bounds."""
         published, coverage_post = self._publish(requests_mock)
-        self.assertEqual(raster_layers.PublishedRaster("lyr", "EPSG:4326", (170.0, -45.0, 175.0, -40.0)), published)
+        expected = raster_layers.PublishedRaster("lyr", "EPSG:4326", BoundingBox(170.0, -45.0, 175.0, -40.0))
+        self.assertEqual(expected, published)
+        self.assertIsInstance(published.bbox, BoundingBox)
         self.assertEqual("nativebbox,latlonbbox", coverage_post.kwargs["params"]["recalculate"])
         self.assertIn("<srs>EPSG:4326</srs>", coverage_post.kwargs["data"])
         self.assertIn("<name>depth</name>", coverage_post.kwargs["data"])
@@ -277,7 +280,7 @@ class AddGtiffToGeoserverTest(_TmpDirTestCase):
         """A reprojected copy is published in the display CRS, but keeps the source's band names."""
         published, coverage_post = self._publish(requests_mock, display_crs="EPSG:3857")
         with rio.open(self.tmp_dir / "data" / "ws" / "lyr.tif") as served:
-            self.assertEqual(raster_layers.PublishedRaster("lyr", "EPSG:3857", tuple(served.bounds)), published)
+            self.assertEqual(raster_layers.PublishedRaster("lyr", "EPSG:3857", served.bounds), published)
         self.assertIn("<name>depth</name>", coverage_post.kwargs["data"])
 
     def test_missing_crs_fails_before_geoserver(self, requests_mock: MagicMock, _url: MagicMock, layers: MagicMock

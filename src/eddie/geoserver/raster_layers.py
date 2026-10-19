@@ -26,6 +26,7 @@ from typing import NamedTuple
 import rasterio as rio
 import requests
 from rasterio import warp
+from rasterio.coords import BoundingBox
 from rasterio.crs import CRS  # pylint: disable=no-name-in-module  # C extension
 
 from eddie.config import EnvVariable
@@ -218,13 +219,13 @@ class PublishedRaster(NamedTuple):
     crs : str
         The CRS the layer is served in, as an EPSG code string, e.g. "EPSG:3857".
         This is what GeoServer stores as the coverage's srs, which the Terria catalogue reads back.
-    bbox : tuple[float, float, float, float]
-        The bounds of the served raster: minx, miny, maxx, maxy in units of crs.
+    bbox : BoundingBox
+        The bounds of the served raster (left, bottom, right, top) in units of crs.
     """
 
     layer_name: str
     crs: str
-    bbox: tuple[float, float, float, float]
+    bbox: BoundingBox
 
 
 class CoverageDimension(NamedTuple):
@@ -438,7 +439,7 @@ def add_gtiff_to_geoserver(
     # Create a GIS layer from the raster file to be served from geoserver
     create_layer_from_gtiff_store(gs_url, layer_name, workspace_name, native_crs, coverage_dimensions)
     with rio.open(served_filepath) as served:
-        bbox = tuple(served.bounds)
+        bbox = served.bounds
     return PublishedRaster(layer_name, native_crs, bbox)
 
 
