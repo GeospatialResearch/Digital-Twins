@@ -41,5 +41,28 @@ class TerriaCatalogTest(unittest.TestCase):
             self.assertEqual([], group["members"])
 
 
+class RasterCatalogItemTest(unittest.TestCase):
+    """Tests the served CRS of raster catalogue items."""
+
+    def test_uses_served_crs(self) -> None:
+        """Web mercator is requested as is, any other served CRS is requested as EPSG:4326."""
+        for served_crs, expected in (("EPSG:3857", "EPSG:3857"), ("EPSG:3031", "EPSG:4326")):
+            with self.subTest(served_crs=served_crs):
+                item = terria_catalogs.create_raster_layer_catalog_item("http://geoserver/ws", "lyr", served_crs)
+                self.assertEqual(expected, item["crs"])
+
+    @patch("eddie.geoserver.terria_catalogs.get_raster_layer_crs")
+    @patch("eddie.geoserver.terria_catalogs.get_workspace_raster_layers", return_value=["lyr"])
+    @patch("eddie.geoserver.terria_catalogs.get_workspace_vector_layers", return_value=[])
+    def test_group_uses_crs_read_back_from_geoserver(
+            self, _vector: MagicMock, _raster: MagicMock, mock_crs: MagicMock) -> None:
+        """The catalogue member's CRS follows the CRS GeoServer reports for the layer."""
+        for served_crs, expected in (("EPSG:3031", "EPSG:4326"), ("EPSG:3857", "EPSG:3857")):
+            with self.subTest(served_crs=served_crs):
+                mock_crs.return_value = served_crs
+                group = terria_catalogs.get_layers_as_terria_group("ws")
+                self.assertEqual(expected, group["members"][0]["crs"])
+
+
 if __name__ == '__main__':
     unittest.main()

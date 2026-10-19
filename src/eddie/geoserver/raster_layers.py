@@ -26,6 +26,7 @@ from typing import NamedTuple
 import rasterio as rio
 import requests
 from rasterio import warp
+from rasterio.coords import BoundingBox
 from rasterio.crs import CRS  # pylint: disable=no-name-in-module  # C extension
 
 from eddie.config import EnvVariable
@@ -171,7 +172,7 @@ def check_display_crs(gtiff_filepath: pathlib.Path, display_crs: str | None) -> 
     if not display_crs:
         return
     if CRS.from_user_input(display_crs) != CRS.from_epsg(3857):
-        # ponytail: reprojection only targets web mercator, generalise reproject_raster_to_web_mercator if needed
+        # Only web mercator: Terria requests any other served CRS as EPSG:4326, which GeoServer reprojects on the fly
         raise ValueError(f"Display CRS {display_crs} is not supported, only EPSG:3857.")
     with rio.open(gtiff_filepath) as src:
         # transform_bounds densifies the edges, so a raster enclosing a pole reports +-90
@@ -205,6 +206,26 @@ def get_gtiff_native_crs(gtiff_filepath: pathlib.Path) -> str:
     if crs is None or crs.to_epsg() is None:
         raise ValueError(f"{gtiff_filepath.name} has no EPSG-identifiable CRS.")
     return f"EPSG:{crs.to_epsg()}"
+
+
+class PublishedRaster(NamedTuple):
+    """
+    Represents a raster layer published to GeoServer.
+
+    Attributes
+    ----------
+    layer_name : str
+        The name of the layer in GeoServer.
+    crs : str
+        The CRS the layer is served in, as an EPSG code string, e.g. "EPSG:3857".
+        This is what GeoServer stores as the coverage's srs, which the Terria catalogue reads back.
+    bbox : BoundingBox
+        The bounds of the served raster (left, bottom, right, top) in units of crs.
+    """
+
+    layer_name: str
+    crs: str
+    bbox: BoundingBox
 
 
 class CoverageDimension(NamedTuple):
@@ -369,7 +390,7 @@ def add_gtiff_to_geoserver(
         layer_name: str,
         coverage_dimensions: list[CoverageDimension] | None = None,
         display_crs: str | None = None
-) -> None:
+) -> PublishedRaster:
     """
     Upload a GeoTiff file to GeoServer, ready for serving to clients.
 
@@ -388,6 +409,11 @@ def add_gtiff_to_geoserver(
     display_crs : str | None = None
         "EPSG:3857" to serve the raster in web mercator. If None, EnvVariable.DISPLAY_CRS, and if that is unset the
         raster is served in its native CRS.
+
+    Returns
+    -------
+    PublishedRaster
+        The layer name, the CRS it is served in and the bounds of the served raster.
 
     Raises
     ------
@@ -408,9 +434,13 @@ def add_gtiff_to_geoserver(
     # Serve the raster in the CRS embedded in the copy GeoServer reads, which differs from the source if reprojected
     native_crs = get_gtiff_native_crs(served_filepath)
     if not coverage_dimensions:
-        coverage_dimensions = read_coverage_dimensions(served_filepath, layer_name)
+        # Read from the source: reprojection drops band descriptions and units
+        coverage_dimensions = read_coverage_dimensions(gtiff_filepath, layer_name)
     # Create a GIS layer from the raster file to be served from geoserver
     create_layer_from_gtiff_store(gs_url, layer_name, workspace_name, native_crs, coverage_dimensions)
+    with rio.open(served_filepath) as served:
+        bbox = served.bounds
+    return PublishedRaster(layer_name, native_crs, bbox)
 
 
 def style_exists(style_name: str) -> bool:
