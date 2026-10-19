@@ -92,7 +92,7 @@ class UserLogInfo(Base):
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
     # pylint: disable=not-callable # False-positive due to dynamic typing.
-    created_at = Column(DateTime(timezone=True), default=func.now(), comment="log created datetime")
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="log created datetime")
     geometry = Column(Geometry("POLYGON", srid=4326))
 
 
