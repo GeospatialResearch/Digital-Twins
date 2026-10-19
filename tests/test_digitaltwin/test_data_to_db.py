@@ -97,11 +97,11 @@ class NonIntersectionAreaExpiryFilterTest(unittest.TestCase):
 
     @mock.patch.object(data_to_db, "create_user_log_table")
     def test_query_filters_out_expired_entries(self, _):
-        catchment = gpd.GeoDataFrame(geometry=[shapely.box(0, 0, 1, 1)], crs=4326)
+        ao = gpd.GeoDataFrame(geometry=[shapely.box(0, 0, 1, 1)], crs=4326)
         conn = mock.MagicMock()
         empty = gpd.GeoDataFrame(geometry=[], crs=4326)
         with mock.patch.object(gpd.GeoDataFrame, "from_postgis", return_value=empty) as from_postgis:
-            data_to_db.get_non_intersection_area_from_db(conn, catchment, "layer")
+            data_to_db.get_non_intersection_area_from_db(conn, ao, "layer")
         query = from_postgis.call_args.args[0]
         self.assertIn("refresh_after", str(query))
 
@@ -178,13 +178,13 @@ class NonIntersectionAreaTest(unittest.TestCase):
 
     @mock.patch.object(data_to_db, "create_user_log_table")
     def test_same_area_is_covered(self, _):
-        catchment = gpd.GeoDataFrame(geometry=[shapely.box(174.76, -36.86, 174.78, -36.84)], crs=4326).to_crs(32760)
+        aoi = gpd.GeoDataFrame(geometry=[shapely.box(174.76, -36.86, 174.78, -36.84)], crs=4326).to_crs(32760)
         # What user_log_info_to_db stored for the same request, read back from the database
-        logged = gpd.GeoDataFrame(geometry=[shapely.from_wkt(catchment.to_crs(4326).geometry[0].wkt)], crs=4326)
+        logged = gpd.GeoDataFrame(geometry=[shapely.from_wkt(aoi.to_crs(4326).geometry[0].wkt)], crs=4326)
         conn = mock.MagicMock()
         with mock.patch.object(gpd.GeoDataFrame, "from_postgis", return_value=logged):
             with self.assertRaises(data_to_db.NoNonIntersectionError):
-                data_to_db.get_non_intersection_area_from_db(conn, catchment, "layer")
+                data_to_db.get_non_intersection_area_from_db(conn, aoi, "layer")
 
 
 if __name__ == "__main__":

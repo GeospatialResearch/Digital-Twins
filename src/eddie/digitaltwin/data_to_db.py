@@ -86,7 +86,7 @@ def get_aoi_geospatial_layers(conn: Connection) -> pd.DataFrame:
     -------
     pd.DataFrame
         Data frame containing geospatial layers that have fetch_mode aoi, including 'cache_length' so callers can
-        determine the expiry to record against newly logged catchment areas in 'user_log_information'.
+        determine the expiry to record against newly logged area of interests in 'user_log_information'.
     """
     # SQL query to retrieve geospatial layers that have fetch_mode aoi
     aoi_query = f"""
@@ -226,7 +226,7 @@ def update_full_layer_cache_expiry(
     Record the current time as 'fetched_at' and recompute 'refresh_after' from 'cache_length', for a 'full'
     fetch_mode geospatial layer, after its data has been fetched. Only valid for 'full' fetch_mode layers, since
     'refresh_after' on 'geospatial_layers' is constrained to those; 'aoi' fetch_mode layers instead have their
-    expiry recorded per logged catchment area on 'user_log_information.refresh_after' (see 'user_log_info_to_db').
+    expiry recorded per logged area of interest on 'user_log_information.refresh_after' (see 'user_log_info_to_db').
 
     Parameters
     ----------
@@ -315,11 +315,11 @@ def create_user_log_table(conn: Connection) -> None:
 
 def get_non_intersection_area_from_db(
     conn: Connection,
-    catchment_area: gpd.GeoDataFrame,
+    area_of_interest: gpd.GeoDataFrame,
     table_name: str
 ) -> gpd.GeoDataFrame:
     """
-    Get the non-intersecting area from the catchment area and user log information table in the database
+    Get the non-intersecting area from the area of interest and user log information table in the database
     for the specified table. A previously logged area whose 'refresh_after' expiry date has passed is not
     counted as covered, so its area is included in the non-intersecting area and its data is re-fetched.
 
@@ -327,28 +327,28 @@ def get_non_intersection_area_from_db(
     ----------
     conn : Connection
         The connection used to connect to the database.
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame representing the area of interest.
     table_name : str
         The name of the table in the database.
 
     Returns
     -------
     gpd.GeoDataFrame
-        The non-intersecting area, or the original catchment area if no intersections are found.
+        The non-intersecting area, or the original area of interest if no intersections are found.
 
     Raises
     ------
     NoNonIntersectionError
-        If the non-intersecting area is empty, it suggests that the catchment area is already fully covered.
+        If the non-intersecting area is empty, it suggests that the area of interest is already fully covered.
     """
     # Create the 'user_log_information' table if it doesn't exist
     create_user_log_table(conn)
-    # Extract the geometry of the catchment area, in the CRS of the user log table
+    # Extract the geometry of the area of interest, in the CRS of the user log table
     user_log_srid = UserLogInfo.geometry.type.srid
-    catchment_in_log_crs = catchment_area.to_crs(user_log_srid)
-    catchment_wkt = catchment_in_log_crs.geometry[0].wkt
-    # Build the SQL query to find intersections between the user log information and the catchment area.
+    aoi_in_log_crs = area_of_interest.to_crs(user_log_srid)
+    aoi_wkt = aoi_in_log_crs.geometry[0].wkt
+    # Build the SQL query to find intersections between the user log information and the area of interest.
     # Only unexpired log entries count as already covering their area; an expired entry's area is excluded here,
     # so it is folded back into the non-intersecting area and its data gets re-fetched.
     command_text = f"""
@@ -356,26 +356,26 @@ def get_non_intersection_area_from_db(
     FROM {UserLogInfo.__tablename__}
     WHERE :table_name = ANY(source_table_list)
     AND (refresh_after IS NULL OR refresh_after > now())
-    AND ST_Intersects(geometry, ST_GeomFromText(:catchment_polygon, :user_log_srid));
+    AND ST_Intersects(geometry, ST_GeomFromText(:aoi_polygon, :user_log_srid));
     """
     query = text(command_text).bindparams(
         table_name=table_name,
-        catchment_polygon=catchment_wkt,
+        aoi_polygon=aoi_wkt,
         user_log_srid=user_log_srid
     )
     # Execute the SQL query and retrieve the intersections as a GeoDataFrame
     user_log_intersections = gpd.GeoDataFrame.from_postgis(query, conn, geom_col="geometry")
     # Check if there are no intersections
     if user_log_intersections.empty:
-        return catchment_area
+        return area_of_interest
     # Compute the non-intersecting area in the CRS the user log is stored in, so that an area logged before matches
-    # exactly; reprojecting the log into the catchment CRS instead leaves slivers from rounding
-    non_intersection_area = catchment_in_log_crs.overlay(user_log_intersections, how='difference')
+    # exactly; reprojecting the log into the area of interest CRS instead leaves slivers from rounding
+    non_intersection_area = aoi_in_log_crs.overlay(user_log_intersections, how='difference')
     # Check if the non-intersecting area is empty
     if non_intersection_area.empty:
         raise NoNonIntersectionError(
-            f"'{table_name}' data for the requested catchment area is already in the database.")
-    return non_intersection_area.to_crs(catchment_area.crs)
+            f"'{table_name}' data for the requested area of interest is already in the database.")
+    return non_intersection_area.to_crs(area_of_interest.crs)
 
 
 def process_new_aoi_geospatial_layers(
@@ -405,14 +405,15 @@ def process_new_aoi_geospatial_layers(
         The coordinate reference system (CRS) code to use.
     """
     # Fetch vector data using the registered provider for this layer's 'data_provider'
-    log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
+    log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the area of interest.")
     vector_data = get_provider(data_provider)(layer_id, area_of_interest, crs)
     # Check if the fetched vector data is empty
     if vector_data.empty:
-        log.info(f"The requested catchment area does not contain any '{table_name}' data ({data_provider} {layer_id}).")
+        log.info(
+            f"The requested area of interest does not contain any '{table_name}' data ({data_provider} {layer_id}).")
     else:
         # Insert vector data into the database
-        log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
+        log.info(f"Adding '{table_name}' data ({data_provider} {layer_id}) for the area of interest to the database.")
         vector_data.to_postgis(table_name, conn, index=False, if_exists="replace")
         # Serve data with geoserver
         workspace_name = gs.Workspaces.INPUT_LAYERS_WORKSPACE
@@ -456,11 +457,12 @@ def process_existing_aoi_geospatial_layers(
         The coordinate reference system (CRS) code to use.
     """
     # Fetch vector data using the registered provider for this layer's 'data_provider'
-    log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
+    log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the area of interest.")
     vector_data = get_provider(data_provider)(layer_id, area_of_interest, crs)
     # Check if the fetched vector data is empty
     if vector_data.empty:
-        log.info(f"The requested catchment area does not contain any '{table_name}' data ({data_provider} {layer_id}).")
+        log.info(
+            f"The requested area of interest does not contain any '{table_name}' data ({data_provider} {layer_id}).")
     else:
         # Get IDs from the vector data that are not in the database
         ids_not_in_db = get_vector_data_id_not_in_db(
@@ -475,7 +477,8 @@ def process_existing_aoi_geospatial_layers(
             vector_data_not_in_db = vector_data_not_in_db.to_crs(table_srid)
             # Insert vector data into the database
             log.info(
-                f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the catchment area to the database.")
+                f"Adding new '{table_name}' data ({data_provider} {layer_id}) for the area of interest to the database."
+            )
             vector_data_not_in_db.to_postgis(table_name, conn, index=False, if_exists="append")
             # Refresh the served layer so its bounds include the appended data.
             # ANALYZE first, since GeoServer estimates PostGIS table bounds from the planner statistics.
@@ -484,12 +487,12 @@ def process_existing_aoi_geospatial_layers(
             gs.create_datastore_layer(workspace_name, gs.create_main_db_store(workspace_name), table_name)
             update_fetched_at(conn, data_provider, layer_id)
         else:
-            log.info(f"'{table_name}' data for the requested catchment area is already in the database.")
+            log.info(f"'{table_name}' data for the requested area of interest is already in the database.")
 
 
 def aoi_geospatial_layers_data_to_db(
     conn: Connection,
-    catchment_area: gpd.GeoDataFrame,
+    area_of_interest: gpd.GeoDataFrame,
     crs: int,
 ) -> None:
     """
@@ -500,8 +503,8 @@ def aoi_geospatial_layers_data_to_db(
     ----------
     conn : Connection
         The connection used to connect to the database.
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame representing the area of interest.
     crs : int
         The coordinate reference system (CRS) code to use.
     """
@@ -513,8 +516,8 @@ def aoi_geospatial_layers_data_to_db(
         # Extract geospatial layer information
         data_provider, layer_id, table_name, unique_column_name = get_geospatial_layer_info(layer_row)
         try:
-            # Get the non-intersection area of the catchment area
-            non_intersection_area = get_non_intersection_area_from_db(conn, catchment_area, table_name)
+            # Get the non-intersection area of the area of interest
+            non_intersection_area = get_non_intersection_area_from_db(conn, area_of_interest, table_name)
         except NoNonIntersectionError as error:
             # Log the error and continue to the next layer
             log.info(error)
@@ -533,7 +536,7 @@ def aoi_geospatial_layers_data_to_db(
 
 def store_geospatial_layers_data_to_db(
     conn: Connection,
-    catchment_area: gpd.GeoDataFrame,
+    area_of_interest: gpd.GeoDataFrame,
     crs: int,
 ) -> None:
     """
@@ -544,19 +547,19 @@ def store_geospatial_layers_data_to_db(
     ----------
     conn : Connection
         The connection used to connect to the database.
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame representing the area of interest.
     crs : int
         The coordinate reference system (CRS) code to use.
     """
     # Store full fetch mode geospatial layers data to the database
     full_geospatial_layers_data_to_db(conn, crs)
     # Store aoi fetch mode geospatial layers data to the database
-    aoi_geospatial_layers_data_to_db(conn, catchment_area, crs)
+    aoi_geospatial_layers_data_to_db(conn, area_of_interest, crs)
     serve_static_files(conn, pathlib.Path("./src/static/geo"))
 
 
-def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> None:
+def user_log_info_to_db(conn: Connection, area_of_interest: gpd.GeoDataFrame) -> None:
     """
     Store user log information to the database. The entry's 'refresh_after' is set to the soonest expiry among the
     aoi layers' 'cache_length' values (i.e. the first layer in 'source_table_list' to need re-fetching), measured
@@ -566,8 +569,8 @@ def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> N
     ----------
     conn : Connection
         The connection used to connect to the database.
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame representing the area of interest.
     """
     # Create the 'user_log_information' table if it doesn't exist
     create_user_log_table(conn)
@@ -580,11 +583,11 @@ def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> N
         datetime.now(timezone.utc) + min(parse_cache_length(cl) for cl in cache_lengths)
         if not cache_lengths.empty else None
     )
-    # Get the catchment geometry, in the CRS of the user log table
-    catchment_geom = catchment_area.to_crs(UserLogInfo.geometry.type.srid).geometry[0].wkt
+    # Get the aoi geometry, in the CRS of the user log table
+    aoi_geom = area_of_interest.to_crs(UserLogInfo.geometry.type.srid).geometry[0].wkt
     # Create the query object
     query = insert(UserLogInfo).values(
-        source_table_list=table_list, refresh_after=refresh_after, geometry=catchment_geom)
+        source_table_list=table_list, refresh_after=refresh_after, geometry=aoi_geom)
     # Execute the query
     conn.execute(query)
 

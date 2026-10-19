@@ -118,8 +118,8 @@ class GeospatialLayers(Base):
     refresh_after : Optional[datetime]
         Expiry date computed as fetched_at + cache_length at the time of the last fetch. Only meaningful for 'full'
         fetch_mode layers: a 'full' layer is re-fetched once this date has passed. 'aoi' fetch_mode layers instead
-        track expiry per logged catchment area in the 'user_log_information' table, since a single aoi layer's table
-        is built up incrementally across many separate catchment fetches.
+        track expiry per logged area of interest in the 'user_log_information' table, since a single aoi layer's table
+        is built up incrementally across many separate aoi fetches.
     fetched_at : Optional[datetime]
         Timestamp recording when the layer's data was last fetched.
     """  # pylint: disable=too-few-public-methods
@@ -146,7 +146,7 @@ class GeospatialLayers(Base):
             name="unique_column_name_compatible_with_fetch_mode"
         ),
         # 'refresh_after' on this table only applies to 'full' fetch_mode layers. 'aoi' fetch_mode layers instead
-        # have their expiry tracked per logged catchment area, on 'user_log_information.refresh_after'.
+        # have their expiry tracked per logged area of interest, on 'user_log_information.refresh_after'.
         CheckConstraint(
             "(refresh_after IS NULL OR fetch_mode = 'full')",
             name="refresh_after_only_for_full_fetch_mode"
@@ -230,7 +230,7 @@ def validate_instruction_fields(section: str, instruction: Dict[str, str | int])
         )
     # 'cache_length' is a duration offset (e.g. "1y", "2w3d", "15d"), valid for both FULL and AOI fetch modes.
     # For FULL layers it is used to compute a 'refresh_after' expiry date directly on the layer. For AOI layers
-    # it is instead used to compute a 'refresh_after' expiry recorded against logged catchment areas in the
+    # it is instead used to compute a 'refresh_after' expiry recorded against logged area of interests in the
     # 'user_log_information' table, since a single AOI layer's table is built up across many separate fetches.
     if cache_length:
         try:
