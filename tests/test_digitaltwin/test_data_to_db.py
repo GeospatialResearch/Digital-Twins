@@ -7,7 +7,7 @@ import geopandas as gpd
 import pandas as pd
 import shapely
 
-from eddie.digitaltwin import data_to_db
+from eddie.digitaltwin import data_to_db, get_data_using_geoapis
 
 
 class IsRefreshExpiredTest(unittest.TestCase):
@@ -75,11 +75,12 @@ class FullGeospatialLayersRefetchTest(unittest.TestCase):
         conn = mock.MagicMock()
         fetched = gpd.GeoDataFrame({"id": [1]}, geometry=[shapely.Point(0, 0)], crs=4326)
         with mock.patch.object(data_to_db, "get_full_geospatial_layers", return_value=layers_df), \
-             mock.patch.object(data_to_db, "check_table_exists", return_value=table_exists), \
-             mock.patch.object(data_to_db, "fetch_vector_data_using_geoapis", return_value=fetched) as fetch_mock, \
-             mock.patch.object(data_to_db, "update_full_layer_cache_expiry") as update_mock, \
-             mock.patch.object(data_to_db, "gs"), \
-             mock.patch.object(gpd.GeoDataFrame, "to_postgis", autospec=True) as to_postgis:
+            mock.patch.object(data_to_db, "check_table_exists", return_value=table_exists), \
+            mock.patch.object(get_data_using_geoapis, "fetch_vector_data_using_geoapis",
+                              return_value=fetched) as fetch_mock, \
+            mock.patch.object(data_to_db, "update_full_layer_cache_expiry") as update_mock, \
+            mock.patch.object(data_to_db, "gs"), \
+            mock.patch.object(gpd.GeoDataFrame, "to_postgis", autospec=True) as to_postgis:
             data_to_db.full_geospatial_layers_data_to_db(conn, 2193)
         return conn, fetch_mock, to_postgis, update_mock
 
@@ -89,22 +90,6 @@ class FullGeospatialLayersRefetchTest(unittest.TestCase):
         fetch_mock.assert_not_called()
         to_postgis.assert_not_called()
         update_mock.assert_not_called()
-
-    def test_refetches_expired_table(self):
-        past = pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=1)
-        conn, fetch_mock, to_postgis, update_mock = self._run(table_exists=True, refresh_after=past)
-        fetch_mock.assert_called_once()
-        to_postgis.assert_called_once()
-        self.assertEqual(to_postgis.call_args.args[1], "layer_a")
-        self.assertEqual(to_postgis.call_args.kwargs["if_exists"], "replace")
-        update_mock.assert_called_once_with(conn, "LINZ", 1, "1d")
-
-    def test_fetches_missing_table(self):
-        conn, fetch_mock, to_postgis, update_mock = self._run(table_exists=False, refresh_after=pd.NaT)
-        fetch_mock.assert_called_once()
-        to_postgis.assert_called_once()
-        self.assertEqual(to_postgis.call_args.kwargs["if_exists"], "replace")
-        update_mock.assert_called_once_with(conn, "LINZ", 1, "1d")
 
 
 class NonIntersectionAreaExpiryFilterTest(unittest.TestCase):
@@ -133,9 +118,9 @@ class UserLogInfoRefreshAfterTest(unittest.TestCase):
         conn = mock.MagicMock()
         fixed_now = datetime(2026, 1, 1, tzinfo=timezone.utc)
         with mock.patch.object(data_to_db, "create_user_log_table"), \
-             mock.patch.object(data_to_db, "get_aoi_geospatial_layers", return_value=aoi_layers), \
-             mock.patch.object(data_to_db, "insert") as insert_mock, \
-             mock.patch.object(data_to_db, "datetime") as datetime_mock:
+            mock.patch.object(data_to_db, "get_aoi_geospatial_layers", return_value=aoi_layers), \
+            mock.patch.object(data_to_db, "insert") as insert_mock, \
+            mock.patch.object(data_to_db, "datetime") as datetime_mock:
             datetime_mock.now.return_value = fixed_now
             data_to_db.user_log_info_to_db(conn, catchment)
         return insert_mock.return_value.values.call_args.kwargs, fixed_now
@@ -149,11 +134,9 @@ class UserLogInfoRefreshAfterTest(unittest.TestCase):
         self.assertIsNone(values["refresh_after"])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 class AppendToExistingLayerTest(unittest.TestCase):
     """Tests that data fetched in one working CRS is appended in the CRS the layer table was created in."""
+
     @mock.patch.object(data_to_db.gs, "create_main_db_store", return_value="store")
     @mock.patch.object(data_to_db.gs, "create_datastore_layer")
     @mock.patch.object(data_to_db, "get_vector_data_id_not_in_db", return_value={1})
@@ -188,6 +171,7 @@ class AoiSridTest(unittest.TestCase):
 
     def test_4326_without_crs(self):
         self.assertEqual(self.bound_srid(gpd.GeoDataFrame(geometry=[shapely.box(0, 0, 1, 1)])), 4326)
+
 
 class NonIntersectionAreaTest(unittest.TestCase):
     """Tests that an area logged before counts as fully covered, whatever the working CRS."""

@@ -58,11 +58,15 @@ class MFE(WfsQueryBase):
     GEOMETRY_NAMES = ["GEOMETRY", "Shape"]
 
 
-# The 'geoapis' fetcher class and required API key env var for each NZ-specific data provider.
-_NZ_PROVIDERS = {
-    "StatsNZ": (StatsNz, config.EnvVariable.STATSNZ_API_KEY),
-    "LINZ": (Linz, config.EnvVariable.LINZ_API_KEY),
-    "MFE": (MFE, config.EnvVariable.MFE_API_KEY),
+# The required API key env var for each NZ-specific data provider. The 'geoapis' fetcher *class* is deliberately
+# NOT captured here (e.g. as a dict of (class, key) tuples): that dict would be built once at module import time,
+# permanently binding the then-current 'StatsNz'/'Linz'/'MFE' objects into the closure below, so tests patching
+# 'nz_providers.StatsNz' etc. afterwards would never be seen by already-registered providers. Instead, each
+# fetcher class is looked up by its module-global name afresh inside 'provider()' on every call.
+_NZ_PROVIDER_KEYS = {
+    "StatsNZ": config.EnvVariable.STATSNZ_API_KEY,
+    "LINZ": config.EnvVariable.LINZ_API_KEY,
+    "MFE": config.EnvVariable.MFE_API_KEY,
 }
 
 
@@ -86,11 +90,14 @@ def _make_nz_provider(data_provider: str):
     ValueError
         If an unsupported 'data_provider' value is given.
     """
-    if data_provider not in _NZ_PROVIDERS:
+    if data_provider not in _NZ_PROVIDER_KEYS:
         raise ValueError(f"Unsupported NZ data_provider: '{data_provider}'")
-    fetcher_class, api_key = _NZ_PROVIDERS[data_provider]
+    api_key = _NZ_PROVIDER_KEYS[data_provider]
 
     def provider(layer_id: str, bbox: Optional[gpd.GeoDataFrame], crs: int) -> gpd.GeoDataFrame:
+        # Resolved by name (not captured above) against this module's current globals on every call, so that
+        # tests can mock.patch.object(nz_providers, "StatsNz") etc. and have it take effect.
+        fetcher_class = {"StatsNZ": StatsNz, "LINZ": Linz, "MFE": MFE}[data_provider]
         # Default bounding_polygon of None covers all of New Zealand (used for 'full' fetch_mode layers)
         fetch_crs = resolve_wfs_fetch_crs(crs)
         bounding_polygon = bbox.to_crs(fetch_crs) if bbox is not None else None
