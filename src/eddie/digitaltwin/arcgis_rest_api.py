@@ -89,7 +89,8 @@ def get_feature_layer_record_counts(url: str) -> RecordCounts:
 def gen_query_param_list(
     url: str,
     area_of_interest: gpd.GeoDataFrame = None,
-    output_sr: int = None) -> List[Dict[str, str | int]]:
+    output_sr: int = None
+) -> List[Dict[str, str | int]]:
     """
     Generate a list of API query parameters used to retrieve ArcGIS REST API data.
 
@@ -195,8 +196,9 @@ async def _fetch_geo_data(
 
 async def fetch_geo_data_for_aoi(
     url: str,
-    area_of_interest: gpd.GeoDataFrame = None,
-    output_sr: int = None) -> gpd.GeoDataFrame:
+    area_of_interest: gpd.GeoDataFrame | None = None,
+    output_sr: int | None = None
+) -> gpd.GeoDataFrame:
     """
     Retrieve geographic data for the area of interest using the ArcGIS REST API.
 
@@ -204,9 +206,9 @@ async def fetch_geo_data_for_aoi(
     ----------
     url : str
         The URL of the feature layer.
-    area_of_interest : gpd.GeoDataFrame = None
+    area_of_interest : gpd.GeoDataFrame | None = None
         A GeoDataFrame representing the area of interest for data retrieval. If not provided, all data will be fetched.
-    output_sr : int = None
+    output_sr : int | None = None
         The EPSG code of the spatial reference system in which the requested data should be returned if no area of
         interest is provided.
 
@@ -237,8 +239,9 @@ async def fetch_geo_data_for_aoi(
 
 def fetch_arcgis_rest_api_data(
     url: str,
-    area_of_interest: gpd.GeoDataFrame = None,
-    output_sr: int = None) -> gpd.GeoDataFrame:
+    area_of_interest: gpd.GeoDataFrame | None = None,
+    output_sr: int | None = None
+) -> gpd.GeoDataFrame:
     """
     Retrieve geographic data for the area of interest using the ArcGIS REST API.
 
@@ -246,9 +249,9 @@ def fetch_arcgis_rest_api_data(
     ----------
     url : str
         The URL of the feature layer.
-    area_of_interest : gpd.GeoDataFrame = None
+    area_of_interest : gpd.GeoDataFrame | None = None
         A GeoDataFrame representing the area of interest for data retrieval. If not provided, all data will be fetched.
-    output_sr : int = None
+    output_sr : int | None = None
         The EPSG code of the spatial reference system in which the requested data should be returned if no area of
         interest is provided.
 

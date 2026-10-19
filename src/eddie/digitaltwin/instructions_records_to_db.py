@@ -82,6 +82,7 @@ class FetchMode(StrEnum):
     AOI : str = "aoi"
         This fetch_mode will download only the area of interest.
     """
+
     FULL = "full"
     AOI = "aoi"
 

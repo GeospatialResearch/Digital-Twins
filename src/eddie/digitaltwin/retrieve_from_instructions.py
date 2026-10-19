@@ -79,6 +79,8 @@ def main(
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("examples/selected_polygon.geojson")
     sample_instruction_path = pathlib.Path("static_boundary_instructions.json")
+    from eddie.digitaltwin import nz_providers  # noqa: E402  pylint: disable=wrong-import-position
+
     main(
         selected_polygon_gdf=sample_polygon,
         instruction_json_path=sample_instruction_path,
