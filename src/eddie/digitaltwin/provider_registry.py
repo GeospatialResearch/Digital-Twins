@@ -18,11 +18,12 @@
 """
 A small, name-based registry of data providers used to fetch geospatial data for 'geospatial_layers' records.
 Each provider is a callable of the form (layer_id, bbox, crs) -> GeoDataFrame. Core ships only the generic
-providers ('ogc_wfs' and 'arcgis_rest'), which work against any OGC WFS / ArcGIS REST service and require no
-provider-specific account or API key. Provider-specific extras (e.g. the optional 'eddie[nz]' extra, i.e. the
-'eddie.digitaltwin.nz_providers' module, which adds the StatsNZ/LINZ/MFE 'geoapis' based providers) register
-themselves into this same registry on import, without requiring any change to this file or to core fetch code -
-this is the generic design the registry enables.
+providers ('ogc_wfs' and 'arcgis_rest'), which work against any standards-compliant OGC WFS / ArcGIS REST
+service and require no provider-specific account or API key (the generic 'ogc_wfs' provider is itself built on
+the 'geoapis' library's 'WfsQuery' class - see 'get_data_using_geoapis.py'). Provider-specific extras (e.g. the
+optional 'eddie[nz]' extra, i.e. the 'eddie.digitaltwin.nz_providers' module, which adds the StatsNZ/LINZ/MFE
+'geoapis' based providers) register themselves into this same registry on import, without requiring any change
+to this file or to core fetch code - this is the generic design the registry enables. #todo check eddie[nz] docstring still makes sense
 """
 
 import logging
@@ -107,10 +108,10 @@ def registered_providers() -> List[str]:
     return sorted(_PROVIDERS)
 
 
-# Register the generic, dependency-light core providers. Import is deferred to the bottom of the module to avoid
-# a circular import, since these modules do not depend on this registry module themselves.
+# Register the generic core providers. Import is deferred to the bottom of the module to avoid a circular
+# import, since these modules do not depend on this registry module themselves.
 from eddie.digitaltwin.arcgis_rest_api import fetch_arcgis_rest_data  # noqa: E402  pylint: disable=wrong-import-position
-from eddie.digitaltwin.ogc_wfs_api import fetch_ogc_wfs_data  # noqa: E402  pylint: disable=wrong-import-position
+from eddie.digitaltwin.get_data_using_geoapis import fetch_generic_wfs_data  # noqa: E402  pylint: disable=wrong-import-position
 
 register_provider("arcgis_rest", fetch_arcgis_rest_data)
-register_provider("ogc_wfs", fetch_ogc_wfs_data)
+register_provider("ogc_wfs", fetch_generic_wfs_data)
