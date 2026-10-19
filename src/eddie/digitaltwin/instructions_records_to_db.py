@@ -101,8 +101,8 @@ class GeospatialLayers(Base):
     layer_id : str
         Identifier for the layer, interpreted by the registered 'data_provider' callable (see
         'eddie.digitaltwin.provider_registry'). For the generic 'ogc_wfs'/'arcgis_rest' providers this is a
-        full endpoint URL; for 'geoapis'-based providers (e.g. in the optional 'eddie_nz' package) it is a
-        numeric layer ID given as a string. #todo review docstring and if needed ctrlshiftf for eddie_nz
+        full endpoint URL; for 'geoapis'-based providers (e.g. in the optional 'nz_providers' module) it is a
+        numeric layer ID given as a string.
     table_name : str
         Name of the table containing the data.
     unique_column_name : Optional[str]
@@ -129,7 +129,7 @@ class GeospatialLayers(Base):
     layer_id = Column(String, nullable=False, comment=(
         "Provider-specific layer identifier: a numeric ID (as a string) for 'geoapis' based providers, "
         "or a full endpoint URL for the generic 'ogc_wfs'/'arcgis_rest' providers."
-    )) #todo review the geoapis comment
+    ))
     table_name = Column(String, nullable=False)
     fetch_mode = Column(String, nullable=False)
     unique_column_name = Column(String, nullable=True)
