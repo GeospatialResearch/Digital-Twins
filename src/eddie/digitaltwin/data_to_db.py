@@ -251,7 +251,6 @@ def update_full_layer_cache_expiry(
 def full_geospatial_layers_data_to_db(
     conn: Connection,
     crs: int,
-    verbose: bool = False
 ) -> None:
     """
     Fetch full geospatial layers data using the registered 'data_provider' for each layer and store it into the
@@ -264,8 +263,6 @@ def full_geospatial_layers_data_to_db(
         The connection used to connect to the database.
     crs : int
         The coordinate reference system (CRS) code to use.
-    verbose : bool = False
-        Whether to print messages. Default is False.
     """
     # Get full fetch mode geospatial layers
     full_geo_layers = get_full_geospatial_layers(conn)
@@ -388,7 +385,6 @@ def process_new_aoi_geospatial_layers(
     table_name: str,
     area_of_interest: gpd.GeoDataFrame,
     crs: int,
-    verbose: bool = False
 ) -> None:
     """
     Fetch new aoi geospatial layers data using the registered 'data_provider' and store it into the database.
@@ -407,8 +403,6 @@ def process_new_aoi_geospatial_layers(
         A GeoDataFrame representing the area of interest.
     crs : int
         The coordinate reference system (CRS) code to use.
-    verbose : bool = False
-        Whether to print messages. Default is False.
     """
     # Fetch vector data using the registered provider for this layer's 'data_provider'
     log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
@@ -436,7 +430,6 @@ def process_existing_aoi_geospatial_layers(
     unique_column_name: str,
     area_of_interest: gpd.GeoDataFrame,
     crs: int,
-    verbose: bool = False
 ) -> None:
     """
     Fetch existing AOI geospatial layers data using the registered 'data_provider' and store the missing values
@@ -461,8 +454,6 @@ def process_existing_aoi_geospatial_layers(
         A GeoDataFrame representing the area of interest.
     crs : int
         The coordinate reference system (CRS) code to use.
-    verbose : bool = False
-        Whether to print messages. Default is False.
     """
     # Fetch vector data using the registered provider for this layer's 'data_provider'
     log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}) for the catchment area.")
@@ -500,7 +491,6 @@ def aoi_geospatial_layers_data_to_db(
     conn: Connection,
     catchment_area: gpd.GeoDataFrame,
     crs: int,
-    verbose: bool = False
 ) -> None:
     """
     Fetch AOI based geospatial layers data using the registered 'data_provider' for each layer and store it into
@@ -514,8 +504,6 @@ def aoi_geospatial_layers_data_to_db(
         A GeoDataFrame representing the catchment area.
     crs : int
         The coordinate reference system (CRS) code to use.
-    verbose : bool = False
-        Whether to print messages. Default is False.
     """
     # Get aoi geospatial layers from the database
     aoi_geo_layers = get_aoi_geospatial_layers(conn)
@@ -536,18 +524,17 @@ def aoi_geospatial_layers_data_to_db(
         if check_table_exists(conn, table_name):
             # Process existing AOI geospatial layers
             process_existing_aoi_geospatial_layers(
-                conn, data_provider, layer_id, table_name, unique_column_name, non_intersection_area, crs, verbose)
+                conn, data_provider, layer_id, table_name, unique_column_name, non_intersection_area, crs)
         else:
             # Process new AOI geospatial layers
             process_new_aoi_geospatial_layers(
-                conn, data_provider, layer_id, table_name, non_intersection_area, crs, verbose)
+                conn, data_provider, layer_id, table_name, non_intersection_area, crs)
 
 
 def store_geospatial_layers_data_to_db(
     conn: Connection,
     catchment_area: gpd.GeoDataFrame,
     crs: int,
-    verbose: bool = False
 ) -> None:
     """
     Fetch geospatial layers data using the registered 'data_provider' for each layer and store it into the
@@ -561,14 +548,12 @@ def store_geospatial_layers_data_to_db(
         A GeoDataFrame representing the catchment area.
     crs : int
         The coordinate reference system (CRS) code to use.
-    verbose : bool = False
-        Whether to print messages. Default is False.
     """
     # Store full fetch mode geospatial layers data to the database
-    full_geospatial_layers_data_to_db(conn, crs, verbose)
+    full_geospatial_layers_data_to_db(conn, crs)
     # Store aoi fetch mode geospatial layers data to the database
-    aoi_geospatial_layers_data_to_db(conn, catchment_area, crs, verbose)
-    # serve_static_files(conn, pathlib.Path("./src/static/geo")) # todo uncomment this!!!!!!!!!
+    aoi_geospatial_layers_data_to_db(conn, catchment_area, crs)
+    serve_static_files(conn, pathlib.Path("./src/static/geo"))
 
 
 def user_log_info_to_db(conn: Connection, catchment_area: gpd.GeoDataFrame) -> None:

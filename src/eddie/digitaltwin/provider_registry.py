@@ -110,8 +110,10 @@ def registered_providers() -> List[str]:
 
 # Register the generic core providers. Import is deferred to the bottom of the module to avoid a circular
 # import, since these modules do not depend on this registry module themselves.
-from eddie.digitaltwin.arcgis_rest_api import fetch_arcgis_rest_data  # noqa: E402  pylint: disable=wrong-import-position
-from eddie.digitaltwin.get_data_using_geoapis import fetch_generic_wfs_data  # noqa: E402  pylint: disable=wrong-import-position
+from eddie.digitaltwin.arcgis_rest_api import (  # noqa: E402  pylint: disable=wrong-import-position
+    fetch_arcgis_rest_data)
+from eddie.digitaltwin.get_data_using_geoapis import (  # noqa: E402  pylint: disable=wrong-import-position
+    fetch_generic_wfs_data)
 
 register_provider("arcgis_rest", fetch_arcgis_rest_data)
 register_provider("ogc_wfs", fetch_generic_wfs_data)

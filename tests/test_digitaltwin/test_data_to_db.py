@@ -7,7 +7,7 @@ import geopandas as gpd
 import pandas as pd
 import shapely
 
-from eddie.digitaltwin import data_to_db, get_data_using_geoapis
+from eddie.digitaltwin import data_to_db, get_data_using_geoapis, nz_providers
 
 
 class IsRefreshExpiredTest(unittest.TestCase):
@@ -140,7 +140,7 @@ class AppendToExistingLayerTest(unittest.TestCase):
     @mock.patch.object(data_to_db.gs, "create_main_db_store", return_value="store")
     @mock.patch.object(data_to_db.gs, "create_datastore_layer")
     @mock.patch.object(data_to_db, "get_vector_data_id_not_in_db", return_value={1})
-    @mock.patch.object(data_to_db, "fetch_vector_data_using_geoapis")
+    @mock.patch.object(nz_providers, "fetch_vector_data_using_geoapis")
     def test_reprojects_to_table_crs(self, fetch, _, create_layer, _store):
         # Fetched in UTM zone 60 (an Auckland request) for a table created in UTM zone 59 (a Christchurch request)
         fetched = gpd.GeoDataFrame({"id": [1]}, crs=4326, geometry=[shapely.Point(174.76, -36.85)]).to_crs(32760)

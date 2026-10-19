@@ -31,7 +31,7 @@ opts in with `import eddie.digitaltwin.nz_providers`.
 """
 
 import logging
-from typing import Optional
+from typing import Callable
 
 from geoapis.vector import Linz, StatsNz, WfsQueryBase
 import geopandas as gpd
@@ -70,7 +70,7 @@ _NZ_PROVIDER_KEYS = {
 }
 
 
-def _make_nz_provider(data_provider: str):
+def _make_nz_provider(data_provider: str) -> Callable[[str, gpd.GeoDataFrame | None, int], gpd.GeoDataFrame]:
     """
     Build a provider registry callable, matching the (layer_id, bbox, crs) -> GeoDataFrame signature, for a single
     NZ-specific 'geoapis'-backed data provider.
@@ -82,7 +82,7 @@ def _make_nz_provider(data_provider: str):
 
     Returns
     -------
-    Callable[[str, Optional[gpd.GeoDataFrame], int], gpd.GeoDataFrame]
+    Callable[[str, gpd.GeoDataFrame | None, int], gpd.GeoDataFrame]
         A provider callable for use with 'provider_registry.register_provider'.
 
     Raises
@@ -94,7 +94,25 @@ def _make_nz_provider(data_provider: str):
         raise ValueError(f"Unsupported NZ data_provider: '{data_provider}'")
     api_key = _NZ_PROVIDER_KEYS[data_provider]
 
-    def provider(layer_id: str, bbox: Optional[gpd.GeoDataFrame], crs: int) -> gpd.GeoDataFrame:
+    def provider(layer_id: str, bbox: gpd.GeoDataFrame | None, crs: int) -> gpd.GeoDataFrame:
+        """
+        Fetch a layer from this NZ data provider using geoapis, matching the provider registry signature.
+
+        Parameters
+        ----------
+        layer_id : str
+            The numeric geoapis layer ID, as a string.
+        bbox : gpd.GeoDataFrame | None
+            The bounding area to query within, in any CRS. If None, no bounding polygon is applied and the
+            fetch covers all of New Zealand (used for 'full' fetch_mode layers).
+        crs : int
+            The EPSG code the returned GeoDataFrame should be reprojected to.
+
+        Returns
+        -------
+        gpd.GeoDataFrame
+            The fetched, cleaned vector data, reprojected to the requested CRS.
+        """
         # Resolved by name (not captured above) against this module's current globals on every call, so that
         # tests can mock.patch.object(nz_providers, "StatsNz") etc. and have it take effect.
         fetcher_class = {"StatsNZ": StatsNz, "LINZ": Linz, "MFE": MFE}[data_provider]
@@ -103,6 +121,7 @@ def _make_nz_provider(data_provider: str):
         bounding_polygon = bbox.to_crs(fetch_crs) if bbox is not None else None
         fetcher = fetcher_class(key=api_key, crs=fetch_crs, bounding_polygon=bounding_polygon, verbose=False)
         return fetch_vector_data_using_geoapis(fetcher, int(layer_id), crs)
+
     return provider
 
 

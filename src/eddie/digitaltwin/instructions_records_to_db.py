@@ -25,7 +25,7 @@ import logging
 import pathlib
 import re
 from enum import StrEnum
-from typing import Dict, Union
+from typing import Dict
 
 import pandas as pd
 import requests
@@ -38,7 +38,7 @@ from eddie.digitaltwin.tables import Base, create_table
 log = logging.getLogger(__name__)
 
 # Matches one or more "<number><unit>" groups, e.g. "1y", "2w3d", "15d". Units: y = year, w = week, d = day.
-_CACHE_LENGTH_PATTERN = re.compile(r"(\d+)([ywd])")
+_CACHE_LENGTH_PATTERN = re.compile(r"^(\d{1,9})([ywd])$")
 _CACHE_LENGTH_FULL_PATTERN = re.compile(r"(?:\d+[ywd])+")
 _CACHE_LENGTH_UNIT_TO_DAYS = {"y": 365, "w": 7, "d": 1}
 
@@ -82,6 +82,7 @@ class FetchMode(StrEnum):
     AOI : str = "aoi"
         This fetch_mode will download only the area of interest.
     """
+
     FULL = "full"
     AOI = "aoi"
 
@@ -179,7 +180,7 @@ def validate_url_reachability(section: str, url: str) -> None:
         raise ValueError(f"Unreachable URL provided for {section}: '{url}'\n{e}") from e
 
 
-def validate_instruction_fields(section: str, instruction: Dict[str, Union[str, int]]) -> None:
+def validate_instruction_fields(section: str, instruction: Dict[str, str | int]) -> None:
     """
     Validate the fields of an instruction.
     'fetch_mode' must always be provided. 'unique_column_name' is required
