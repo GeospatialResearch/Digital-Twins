@@ -212,18 +212,19 @@ def validate_instruction_fields(section: str, instruction: Dict[str, str | int])
     valid_fetch_modes = [fm.value for fm in FetchMode]
     if not fetch_mode:
         raise ValueError(f"Fetch mode is missing for {section}, must be one of {valid_fetch_modes}")
-    if fetch_mode.lower() not in valid_fetch_modes:
+    try:
+        validated_fetch_mode = FetchMode(fetch_mode.lower())
+    except ValueError as e:
         raise ValueError(
-            f'Invalid value for fetch_mode: "{fetch_mode}" in {section}.'
-        )
+            f'Invalid value for fetch_mode: "{fetch_mode}" in {section}, must be one of {valid_fetch_modes}.') from e
 
     # Check if both 'fetch_mode' is AOI and 'unique_column_name' is missing
-    if fetch_mode == FetchMode.AOI and not unique_column_name:
+    if validated_fetch_mode == FetchMode.AOI and not unique_column_name:
         raise ValueError(
             f"Fetch mode '{fetch_mode}' missing required 'unique_column_name' for {section}."
         )
     # Check if 'fetch_mode' is full and 'unique_column_name' is provided
-    if fetch_mode == FetchMode.FULL and unique_column_name:
+    if validated_fetch_mode == FetchMode.FULL and unique_column_name:
         raise ValueError(
             f"Fetch mode '{fetch_mode}' incompatible with 'unique_column_name' provided for {section}."
         )
