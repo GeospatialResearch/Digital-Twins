@@ -38,7 +38,7 @@ docker save -o fredt.tar \
 
 echo "Saving docker build dependency images to build_dep.tar"
 docker save -o build_dep.tar \
-  lparkinson/bg_flood:v0.9 \
+  ubuntu:22.04 \
   continuumio/miniconda3:23.10.0-1 \
   docker.osgeo.org/geoserver:2.28.x \
   ghcr.io/terriajs/terriamap:0.4.1

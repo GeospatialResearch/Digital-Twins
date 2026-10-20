@@ -54,11 +54,11 @@ RUN <<EOF
     /venv/bin/conda-unpack
 EOF
 
-FROM lparkinson/bg_flood:v0.9 AS runtime
-# BG_Flood stage for running the digital twin. Reduces image size significantly if we use a multi-stage build
+FROM ubuntu:22.04 AS runtime
+# Runtime stage for running the digital twin. Reduces image size significantly if we use a multi-stage build
+SHELL ["/bin/bash", "-ec"]
+ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
-
-USER root
 
 # Install health-checker tool that allows us to run commands when checking root endpoint to check if service is available
 ADD --chmod=555 https://github.com/gruntwork-io/health-checker/releases/download/v0.0.8/health-checker_linux_amd64 \
@@ -69,13 +69,14 @@ RUN <<EOF
     apt-get update
     apt-get install -y --no-install-recommends \
       acl \
-      ca-certificates \
       curl \
       gettext-base
     # Cleanup image and remove junk
     rm -fr /var/lib/apt/lists/*
-    # Remove unused packages. Keep curl for health checking in docker-compose
-    apt-get purge -y ca-certificates
+
+    # Create unprivileged user to run the services
+    addgroup --system nonroot
+    adduser --system --group nonroot
 
     # Create stored data dir inside image, in case it does not get mounted (such as when deploying on AWS)
     mkdir /stored_data
