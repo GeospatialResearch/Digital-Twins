@@ -22,13 +22,13 @@ schedule (e.g. a cron job) to reclaim space, rather than leaving expired data to
 
 - 'full' fetch_mode layers: an expired layer's whole table is dropped, and its 'fetched_at'/'refresh_after' columns
   are cleared, so 'full_geospatial_layers_data_to_db' treats it as never-fetched and re-downloads it on next run.
-- 'aoi' fetch_mode layers: expiry is tracked per logged catchment area, not per layer. This script deletes expired
+- 'aoi' fetch_mode layers: expiry is tracked per logged area of interest, not per layer. This script deletes expired
   'user_log_information' rows, so those areas are no longer considered covered, and are re-fetched into the
-  existing table (via 'process_existing_aoi_geospatial_layers') next time a catchment covering them is run.
+  existing table (via 'process_existing_aoi_geospatial_layers') next time a area of interest covering them is run.
   It intentionally does NOT delete the underlying feature rows for an expired aoi area, since a single aoi table
-  can be shared by many overlapping catchment fetches with different expiries. Deleting features outright would
+  can be shared by many overlapping area of interest fetches with different expiries. Deleting features outright would
   require subtracting the expired log geometry from all other unexpired log geometries for the same table first,
-  to avoid deleting data that is still validly cached for another catchment; that is out of scope here.
+  to avoid deleting data that is still validly cached for another area of interest; that is out of scope here.
 """
 
 import logging
@@ -78,7 +78,7 @@ def delete_expired_user_log_entries(conn: Connection) -> int:
     """
     Delete rows from 'user_log_information' whose 'refresh_after' expiry date has passed. This does not delete any
     feature data; it only forgets that the area was previously fetched, so it is treated as uncovered and
-    re-fetched (appended to the existing 'aoi' fetch_mode table) next time a catchment covering it is processed.
+    re-fetched (appended to the existing 'aoi' fetch_mode table) next time a area of interest covering it is processed.
 
     Parameters
     ----------

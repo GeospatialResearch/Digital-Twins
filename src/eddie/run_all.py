@@ -37,7 +37,7 @@ def main(
     Parameters
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
-        A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+        A GeoDataFrame representing the selected polygon, i.e., the area of interest.
     modules_to_parameters : dict[ModuleType, dict[str, str | int | float | bool | None | Enum]]
         A dictionary that associates each module with the parameters necessary for its main function, including the
         option to set the log level for each module's root logger.

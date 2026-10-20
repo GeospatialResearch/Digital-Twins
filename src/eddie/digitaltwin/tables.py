@@ -47,7 +47,7 @@ class UserLogInfo(Base):
         source tables, and should be re-fetched rather than treated as already covered. Computed from the minimum
         'cache_length' of the source tables logged, at the time this entry was created. None means it never expires.
     geometry : Polygon
-        Geometric representation of the catchment area coverage.
+        Geometric representation of the area of interest coverage.
     """  # pylint: disable=too-few-public-methods
 
     __tablename__ = "user_log_information"
