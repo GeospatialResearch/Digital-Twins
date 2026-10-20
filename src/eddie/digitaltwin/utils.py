@@ -169,23 +169,23 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO) -> None:
     log_execution_info()
 
 
-def get_catchment_area(catchment_area: gpd.GeoDataFrame, to_crs: int) -> gpd.GeoDataFrame:
+def get_area_of_interest(area_of_interest: gpd.GeoDataFrame, to_crs: int) -> gpd.GeoDataFrame:
     """
-    Convert the coordinate reference system (CRS) of the catchment area GeoDataFrame to the specified CRS.
+    Convert the coordinate reference system (CRS) of the area of interest GeoDataFrame to the specified CRS.
 
     Parameters
     ----------
-    catchment_area : gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area.
+    area_of_interest : gpd.GeoDataFrame
+        A GeoDataFrame representing the area of interest.
     to_crs : int
-        Coordinate Reference System (CRS) code to convert the catchment area to.
+        Coordinate Reference System (CRS) code to convert the area of interest to.
 
     Returns
     -------
     gpd.GeoDataFrame
-        A GeoDataFrame representing the catchment area with the transformed CRS.
+        A GeoDataFrame representing the area of interest with the transformed CRS.
     """
-    return catchment_area.to_crs(to_crs)
+    return area_of_interest.to_crs(to_crs)
 
 
 # Generic type definitions to allow any function to be passed to retry_function
