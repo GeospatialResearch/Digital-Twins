@@ -12,6 +12,9 @@ disable = R0913, R0914, R1705, R1720, W1202, W1203, W3101
 
 extension-pkg-allow-list=rasterio
 
+# Ignore setuptools-scm generated files
+ignore=_version.py
+
 [tool.pylint.parameter_documentation]
 accept-no-param-doc = False
 accept-no-raise-doc = False

@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# setuptools_scm generated files
+src/eddie/_version.py
+
 # C extensions
 *.so
 
