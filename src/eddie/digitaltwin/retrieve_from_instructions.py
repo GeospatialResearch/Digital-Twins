@@ -45,7 +45,7 @@ def main(
     instruction_json_path : pathlib.Path | str | None
         The path to the instruction json file that specifies the geospatial data to be retrieved.
         Can be a string to allow crossing over interfaces that only allow more primitive types.
-        If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still\
+        If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still
         be initialised.
     log_level : LogLevel = LogLevel.DEBUG
         The log level to set for the root logger. Defaults to LogLevel.DEBUG.
@@ -79,6 +79,9 @@ def main(
 if __name__ == "__main__":
     sample_polygon = gpd.GeoDataFrame.from_file("examples/selected_polygon.geojson")
     sample_instruction_path = pathlib.Path("static_boundary_instructions.json")
+    # Importing nz_providers to load the providers into the registry as a side-effect of importing.
+    from eddie.digitaltwin import nz_providers  # noqa: E402,F401  # pylint: disable=unused-import,wrong-import-position
+
     main(
         selected_polygon_gdf=sample_polygon,
         instruction_json_path=sample_instruction_path,
