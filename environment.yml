@@ -43,6 +43,7 @@ dependencies:
   - python-dotenv==1.2.2
   - python=3.13
   - rasterio==1.5.2
+  - redis-py==5.0.3
   - redis==5.0.3
   - requests==2.32.5
   - scrapy==2.14.1
