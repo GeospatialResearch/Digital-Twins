@@ -17,12 +17,11 @@
 
 """This script contains SQLAlchemy models for various database tables and utility functions for database operations."""
 
-from datetime import datetime, timezone
-
 from geoalchemy2 import Geometry
-from sqlalchemy import Column, DateTime, inspect, Integer, String
+from sqlalchemy import Column, DateTime, func, inspect, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.engine import Connection
+from sqlalchemy.engine import Connection, Engine
+from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -53,7 +52,8 @@ class UserLogInfo(Base):
     __tablename__ = "user_log_information"
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
+    # pylint: disable=not-callable # False-positive due to dynamic typing.
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="log created datetime")
     refresh_after = Column(DateTime(timezone=True), nullable=True, comment="Expiry date for this logged area's data")
     geometry = Column(Geometry("POLYGON", srid=4326))
 
@@ -92,3 +92,19 @@ def check_table_exists(conn: Connection, table_name: str, schema: str = "public"
     """
     inspector = inspect(conn)
     return inspector.has_table(table_name, schema=schema)
+
+
+def execute_query(engine: Engine, query: Base) -> None:
+    """
+    Add the given ORM object (e.g. a new table row) to the database in its own session transaction.
+    The transaction is committed on success and rolled back if an error occurs.
+
+    Parameters
+    ----------
+    engine : Engine
+        The engine used to connect to the database.
+    query : Base
+        The ORM object to add, e.g. `UserLogInfo(source_table_list=[...], geometry=...)`.
+    """
+    with Session(engine) as session, session.begin():
+        session.add(query)

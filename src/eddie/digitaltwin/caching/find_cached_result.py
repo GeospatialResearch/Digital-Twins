@@ -34,7 +34,6 @@ from eddie.digitaltwin.caching.cache_common import (
     supports_spatial_containment
 )
 from eddie.digitaltwin.tables import check_table_exists
-from eddie.digitaltwin.utils import LogLevel, setup_logging
 
 log = logging.getLogger(__name__)
 
@@ -73,8 +72,6 @@ def find_cached_result(
     str | None
         The matching `output_id` if a cache hit is found, otherwise None.
     """
-    setup_logging(log_level=LogLevel.INFO)
-
     params_hash = compute_params_hash(process_parameters)
 
     engine = setup_environment.get_database()

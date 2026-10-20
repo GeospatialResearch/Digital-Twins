@@ -30,8 +30,7 @@ from eddie.digitaltwin.working_crs import resolve_working_crs
 
 def main(
     selected_polygon_gdf: gpd.GeoDataFrame,
-    instruction_json_path: pathlib.Path | str | None,
-    log_level: LogLevel = LogLevel.DEBUG
+    instruction_json_path: pathlib.Path | str | None
 ) -> None:
     """
     Connect to various data providers to fetch geospatial data for the selected polygon, i.e., the area of interest.
@@ -47,18 +46,7 @@ def main(
         Can be a string to allow crossing over interfaces that only allow more primitive types.
         If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still
         be initialised.
-    log_level : LogLevel = LogLevel.DEBUG
-        The log level to set for the root logger. Defaults to LogLevel.DEBUG.
-        The available logging levels and their corresponding numeric values are:
-        - LogLevel.CRITICAL (50)
-        - LogLevel.ERROR (40)
-        - LogLevel.WARNING (30)
-        - LogLevel.INFO (20)
-        - LogLevel.DEBUG (10)
-        - LogLevel.NOTSET (0)
     """
-    # Set up logging with the specified log level
-    setup_logging(log_level)
     # Cast str paths to pathlib.Path
     if isinstance(instruction_json_path, str):
         instruction_json_path = pathlib.Path(instruction_json_path)
@@ -77,6 +65,7 @@ def main(
 
 
 if __name__ == "__main__":
+    setup_logging(LogLevel.DEBUG)
     sample_polygon = gpd.GeoDataFrame.from_file("examples/selected_polygon.geojson")
     sample_instruction_path = pathlib.Path("static_boundary_instructions.json")
     # Importing nz_providers to load the providers into the registry as a side-effect of importing.
@@ -84,6 +73,5 @@ if __name__ == "__main__":
 
     main(
         selected_polygon_gdf=sample_polygon,
-        instruction_json_path=sample_instruction_path,
-        log_level=LogLevel.DEBUG
+        instruction_json_path=sample_instruction_path
     )

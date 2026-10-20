@@ -25,7 +25,6 @@ import logging
 import pathlib
 import re
 from enum import StrEnum
-from typing import Dict
 
 import pandas as pd
 import requests
@@ -156,7 +155,7 @@ class GeospatialLayers(Base):
 
 def validate_url_reachability(section: str, url: str) -> None:
     """
-    Validate the URL by checking its eachability.
+    Validate the URL by checking its reachability.
 
     Parameters
     ----------
@@ -173,14 +172,14 @@ def validate_url_reachability(section: str, url: str) -> None:
     # Check if the URL is reachable
     try:
         # Send a GET request to the URL
-        response = requests.get(url)
+        response = requests.get(url, timeout=30)
         # Raise an exception if the response status code indicates an error
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         raise ValueError(f"Unreachable URL provided for {section}: '{url}'\n{e}") from e
 
 
-def validate_instruction_fields(section: str, instruction: Dict[str, str | int]) -> None:
+def validate_instruction_fields(section: str, instruction: dict[str, str | int]) -> None:
     """
     Validate the fields of an instruction.
     'fetch_mode' must always be provided. 'unique_column_name' is required
@@ -191,7 +190,7 @@ def validate_instruction_fields(section: str, instruction: Dict[str, str | int])
     ----------
     section : str
         The section identifier of the instruction.
-    instruction : Dict[str, Union[str, int]]
+    instruction : Dict[str, str | int]
         The instruction details.
 
     Raises

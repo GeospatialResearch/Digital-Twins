@@ -28,7 +28,6 @@ from sqlalchemy import insert
 from eddie.digitaltwin import setup_environment
 from eddie.digitaltwin.caching.cache_common import ProcessCache, compute_params_hash
 from eddie.digitaltwin.tables import create_table
-from eddie.digitaltwin.utils import LogLevel, setup_logging
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +38,6 @@ def store_cached_result(
     output_id: str,
     aoi: gpd.GeoDataFrame | None = None,
     input_version: dict | None = None,
-    log_level: LogLevel = LogLevel.INFO,
 ) -> str:
     """
     Cache `output_id` against `process_id` + `process_parameters`
@@ -59,16 +57,12 @@ def store_cached_result(
     input_version : dict | None = None
         Invalidation hook for this entry, e.g. dataset ids, upstream result
         references, or a forecast reference time (see `cache_common.ProcessCache`).
-    log_level : LogLevel = LogLevel.INFO
-        The log level to set for the root logger. Defaults to LogLevel.INFO.
 
     Returns
     -------
     str
         `output_id` re-returned to allow method chaining.
     """
-    setup_logging(log_level)
-
     params_hash = compute_params_hash(process_parameters)
     aoi_ewkt = None
     if aoi is not None:

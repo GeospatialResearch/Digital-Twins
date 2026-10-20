@@ -39,8 +39,7 @@ def main(
     selected_polygon_gdf : gpd.GeoDataFrame
         A GeoDataFrame representing the selected polygon, i.e., the area of interest.
     modules_to_parameters : dict[ModuleType, dict[str, str | int | float | bool | None | Enum]]
-        A dictionary that associates each module with the parameters necessary for its main function, including the
-        option to set the log level for each module's root logger.
+        A dictionary that associates each module with the parameters necessary for its main function.
         The available logging levels and their corresponding numeric values are:
         - LogLevel.CRITICAL (50)
         - LogLevel.ERROR (40)
