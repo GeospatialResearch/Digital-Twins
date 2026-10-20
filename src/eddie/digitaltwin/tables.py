@@ -24,51 +24,8 @@ from sqlalchemy import Column, DateTime, inspect, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.schema import CheckConstraint
 
 Base = declarative_base()
-
-
-class GeospatialLayers(Base):
-    """
-    Class representing the 'geospatial_layers' table.
-
-    Attributes
-    ----------
-    __tablename__ : str
-        Name of the database table.
-    unique_id : int
-        Unique identifier for each geospatial layer entry (primary key).
-    data_provider : str
-        Name of the data provider.
-    layer_id : int
-        Identifier for the layer.
-    table_name : str
-        Name of the table containing the data.
-    unique_column_name : Optional[str]
-        Name of the unique column in the table.
-    coverage_area : Optional[str]
-        Coverage area of the geospatial data, e.g. 'New Zealand'.
-    url : str
-        URL pointing to the geospatial layer.
-    """  # pylint: disable=too-few-public-methods
-
-    __tablename__ = "geospatial_layers"
-    unique_id = Column(Integer, primary_key=True, autoincrement=True)
-    data_provider = Column(String, nullable=False)
-    layer_id = Column(Integer, nullable=False)
-    table_name = Column(String, nullable=False)
-    unique_column_name = Column(String, nullable=True)
-    coverage_area = Column(String, nullable=True)
-    url = Column(String, nullable=False)
-
-    __table_args__ = (
-        CheckConstraint(
-            "((unique_column_name IS NOT NULL AND coverage_area IS NULL) OR "
-            "(unique_column_name IS NULL AND coverage_area IS NOT NULL))",
-            name="unique_column_name_or_coverage_area_required"
-        ),
-    )
 
 
 class UserLogInfo(Base):
@@ -85,6 +42,10 @@ class UserLogInfo(Base):
         A list of tables (geospatial layers) associated with the log entry.
     created_at : datetime
         Timestamp indicating when the log entry was created.
+    refresh_after : Optional[datetime]
+        Expiry date after which the area covered by this log entry is considered stale for its 'aoi' fetch_mode
+        source tables, and should be re-fetched rather than treated as already covered. Computed from the minimum
+        'cache_length' of the source tables logged, at the time this entry was created. None means it never expires.
     geometry : Polygon
         Geometric representation of the catchment area coverage.
     """  # pylint: disable=too-few-public-methods
@@ -93,6 +54,7 @@ class UserLogInfo(Base):
     unique_id = Column(Integer, primary_key=True, autoincrement=True)
     source_table_list = Column(ARRAY(String), comment="associated tables (geospatial layers)")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="log created datetime")
+    refresh_after = Column(DateTime(timezone=True), nullable=True, comment="Expiry date for this logged area's data")
     geometry = Column(Geometry("POLYGON", srid=4326))
 
 
