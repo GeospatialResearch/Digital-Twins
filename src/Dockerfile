@@ -30,6 +30,10 @@ RUN mamba env create -f environment.yml
 # Make RUN commands use the new environment:
 SHELL ["conda", "run", "-n", "digitaltwin", "/bin/bash", "-c"]
 
+# Build ARG for CI, setting eddie.__version__ in the image
+ARG EDDIE_VERSION=0.0.0+unknown
+ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_EDDIE=${EDDIE_VERSION}
+
 # Install the eddie package into the environment so it is packed into /venv
 COPY pyproject.toml README.md LICENSE ./
 COPY src src/
