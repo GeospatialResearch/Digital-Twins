@@ -24,7 +24,7 @@ import pathlib
 import geopandas as gpd
 
 from eddie.digitaltwin import data_to_db, instructions_records_to_db, setup_environment
-from eddie.digitaltwin.utils import LogLevel, get_catchment_area, setup_logging
+from eddie.digitaltwin.utils import LogLevel, get_area_of_interest, setup_logging
 from eddie.digitaltwin.working_crs import resolve_working_crs
 
 
@@ -33,18 +33,18 @@ def main(
     instruction_json_path: pathlib.Path | str | None
 ) -> None:
     """
-    Connect to various data providers to fetch geospatial data for the selected polygon, i.e., the catchment area.
+    Connect to various data providers to fetch geospatial data for the selected polygon, i.e., the area of interest.
     Subsequently, populate the 'geospatial_layers' table in the database and store user log information for
     tracking and reference.
 
     Parameters
     ----------
     selected_polygon_gdf : gpd.GeoDataFrame
-        A GeoDataFrame representing the selected polygon, i.e., the catchment area.
+        A GeoDataFrame representing the selected polygon, i.e., the area of interest.
     instruction_json_path : pathlib.Path | str | None
         The path to the instruction json file that specifies the geospatial data to be retrieved.
         Can be a string to allow crossing over interfaces that only allow more primitive types.
-        If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still\
+        If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still
         be initialised.
     """
     # Cast str paths to pathlib.Path
@@ -52,22 +52,25 @@ def main(
         instruction_json_path = pathlib.Path(instruction_json_path)
     # Connect to the database
     engine = setup_environment.get_database()
-    # Get catchment area in the working CRS.
+    # Get area of interest in the working CRS.
     working_crs = resolve_working_crs(selected_polygon_gdf)
-    catchment_area = get_catchment_area(selected_polygon_gdf, to_crs=working_crs)
+    area_of_interest = get_area_of_interest(selected_polygon_gdf, to_crs=working_crs)
     with engine.connect() as conn:
         # Store records from instruction json in the 'geospatial_layers' table in the database.
         instructions_records_to_db.store_instructions_records_to_db(conn, instruction_json_path)
         # Store geospatial layers data in the database
-        data_to_db.store_geospatial_layers_data_to_db(conn, catchment_area, working_crs)
+        data_to_db.store_geospatial_layers_data_to_db(conn, area_of_interest, working_crs)
         # Store user log information in the database
-        data_to_db.user_log_info_to_db(conn, catchment_area)
+        data_to_db.user_log_info_to_db(conn, area_of_interest)
 
 
 if __name__ == "__main__":
     setup_logging(LogLevel.DEBUG)
     sample_polygon = gpd.GeoDataFrame.from_file("examples/selected_polygon.geojson")
     sample_instruction_path = pathlib.Path("static_boundary_instructions.json")
+    # Importing nz_providers to load the providers into the registry as a side-effect of importing.
+    from eddie.digitaltwin import nz_providers  # noqa: E402,F401  # pylint: disable=unused-import,wrong-import-position
+
     main(
         selected_polygon_gdf=sample_polygon,
         instruction_json_path=sample_instruction_path

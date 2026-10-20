@@ -16,34 +16,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This script provides functions to retrieve vector data from multiple providers, including StatsNZ, LINZ, and MFE,
-using the 'geoapis' library. To access data from each provider, you'll need to set an
-API key in the environment variables.
+This script provides the core, generic OGC WFS data provider, built on the 'geoapis' library's 'WfsQuery' class,
+usable against any standards-compliant WFS endpoint without requiring a provider-specific subclass or API key.
 """
 
 import logging
 from typing import Optional
+from urllib.parse import parse_qs, urlparse
 
-from geoapis.vector import Linz, StatsNz, WfsQueryBase
+from geoapis.vector import WfsQuery, WfsQueryBase
 import geopandas as gpd
-
-from eddie import config
 
 log = logging.getLogger(__name__)
 
-
-class MFE(WfsQueryBase):
-    """A class to manage fetching Vector data from MFE.
-
-    General details at: https://data.mfe.govt.nz/
-    API details at: https://help.koordinates.com/
-
-    Note that the 'GEOMETRY_NAMES' used when making WFS 'cql_filter' queries varies between layers.
-    The MFE generally follows the LINZ LDS but uses 'Shape' in place of 'shape'. It still uses 'GEOMETRY'.
-    """
-
-    NETLOC_API = "data.mfe.govt.nz"
-    GEOMETRY_NAMES = ["GEOMETRY", "Shape"]
+# Tried in turn by geoapis when querying a layer, since the attribute name for a feature's geometry column varies
+# between WFS services (see geoapis.vector.WfsQueryBase.GEOMETRY_NAMES for provider-specific values).
+DEFAULT_GEOMETRY_NAMES = ["GEOMETRY", "geometry", "Shape", "shape"]
 
 
 def clean_fetched_vector_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -67,62 +55,49 @@ def clean_fetched_vector_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
     return fetched_data[[column for column in fetched_data.columns if column != "geometry"] + ["geometry"]]
 
 
-def fetch_vector_data_using_geoapis(
-        data_provider: str,
-        layer_id: int,
-        crs: int,
-        verbose: bool = False,
-        bounding_polygon: Optional[gpd.GeoDataFrame] = None) -> gpd.GeoDataFrame:
+def resolve_wfs_fetch_crs(crs: int) -> int:
     """
-    Fetch vector data using 'geoapis' based on the specified data provider, layer ID, and other parameters.
+    Determine the CRS to request data in from a WFS service via geoapis. geoapis writes the bounding box as
+    (north, east), which is only correct for CRSs with that axis order (e.g. 2193, 4326). For other CRSs (e.g.
+    UTM zones, polar stereographic), fetch in EPSG:4326 instead and reproject locally afterwards.
 
     Parameters
-    -----------
-    data_provider : str
-        The data provider to use. Supported values: "StatsNZ", "LINZ", "MFE".
-    layer_id : int
-        The ID of the layer to fetch.
+    ----------
     crs : int
-        The coordinate reference system (CRS) code to use.
-    verbose : bool = False
-        Whether to print messages. Default is False.
-    bounding_polygon : Optional[gpd.GeoDataFrame] = None
-        Bounding polygon for data fetching. Default is all of New Zealand.
+        The desired output CRS code.
 
     Returns
-    --------
-    gpd.GeoDataFrame
-        A GeoDataFrame containing the fetched vector data.
-
-    Raises
     -------
-    ValueError
-        If an unsupported 'data_provider' value is provided.
-    OSError
-        If the provider request fails for any reason other than an unsupported CRS (requests.HTTPError).
+    int
+        'crs' itself if its axis order is (north, east), otherwise 4326.
     """
-    # The providers do not serve every CRS (e.g. UTM zones), so fetch in WGS84 and reproject locally
-    wgs84 = 4326
-    if bounding_polygon is not None:
-        bounding_polygon = bounding_polygon.to_crs(wgs84)
-    # Determine the appropriate vector fetcher based on the data provider
-    providers = {
-        "StatsNZ": (StatsNz, config.EnvVariable.STATSNZ_API_KEY),
-        "LINZ": (Linz, config.EnvVariable.LINZ_API_KEY),
-        "MFE": (MFE, config.EnvVariable.MFE_API_KEY),
-    }
-    if data_provider not in providers:
-        raise ValueError(f"Unsupported data_provider: {data_provider}")
-    fetcher_class, api_key = providers[data_provider]
-
-    # geoapis writes the bounding box as (north, east), which is only right for CRSs with that axis order (e.g. 2193,
-    # 4326). Fetch other CRSs (e.g. UTM zones, polar stereographic) in EPSG:4326 and reproject locally.
     axes = tuple(axis.direction for axis in gpd.GeoSeries(crs=crs).crs.axis_info)
-    fetch_crs = crs if axes == ("north", "east") else 4326
-    if bounding_polygon is not None:
-        bounding_polygon = bounding_polygon.to_crs(fetch_crs)
-    vector_data = fetcher_class(key=api_key, crs=fetch_crs, bounding_polygon=bounding_polygon, verbose=verbose).run(
-        layer_id)
+    return crs if axes == ("north", "east") else 4326
+
+
+def fetch_vector_data_using_geoapis(
+        fetcher: WfsQueryBase,
+        layer: str | int,
+        crs: int) -> gpd.GeoDataFrame:
+    """
+    Run an already-constructed 'geoapis' WFS fetcher for the given layer, and clean and reproject the result.
+
+    Parameters
+    ----------
+    fetcher : WfsQueryBase
+        An already-constructed geoapis fetcher (e.g. 'WfsQuery', or a provider-specific subclass such as
+        'geoapis.vector.Linz'), configured with the desired key, CRS and bounding polygon.
+    layer : str | int
+        The layer identifier/name to query on the fetcher's service.
+    crs : int
+        The coordinate reference system (CRS) code the returned data should be reprojected to.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the fetched vector data, or an empty GeoDataFrame if nothing was returned.
+    """
+    vector_data = fetcher.run(layer)
     # Check if vector_data is not None and is an instance of gpd.GeoDataFrame
     if vector_data is not None and isinstance(vector_data, gpd.GeoDataFrame):
         # Clean the fetched vector data and bring it into the requested CRS
@@ -130,4 +105,61 @@ def fetch_vector_data_using_geoapis(
     else:
         # Create an empty GeoDataFrame to indicate no returned vector data
         vector_data = gpd.GeoDataFrame()
+    return vector_data
+
+
+def fetch_generic_wfs_data(
+        layer_id: str,
+        bbox: Optional[gpd.GeoDataFrame],
+        crs: int) -> gpd.GeoDataFrame:
+    """
+    Fetch vector data from any standards-compliant OGC WFS endpoint using 'geoapis.vector.WfsQuery', matching the
+    provider registry's (layer_id, bbox, crs) -> GeoDataFrame signature. Requires no account or API key, unlike
+    the provider-specific 'geoapis' based providers in the optional 'eddie.digitaltwin.nz_providers' module.
+
+    Parameters
+    ----------
+    layer_id : str
+        The WFS GetFeature endpoint URL for the layer, including the server base URL and a 'typeNames' (or
+        'typeName') query parameter naming the layer, e.g. "https://example.com/geoserver/wfs?service=WFS&
+        request=GetFeature&typeNames=namespace:layer".
+    bbox : Optional[gpd.GeoDataFrame]
+        A GeoDataFrame whose total bounds are used to restrict the request to a bounding box. None fetches all
+        features in the layer.
+    crs : int
+        The EPSG code of the coordinate reference system the returned data should be in.
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        A GeoDataFrame containing the fetched vector data, reprojected to 'crs'.
+
+    Raises
+    ------
+    ValueError
+        If the WFS layer name cannot be determined from 'layer_id' (no 'typeNames'/'typeName' query parameter).
+    """
+    parsed_url = urlparse(layer_id)
+    query_params = parse_qs(parsed_url.query)
+    layer_name = next(
+        (query_params[key][0] for key in ("typeNames", "typeName", "TYPENAME") if key in query_params), None)
+    if not layer_name:
+        raise ValueError(
+            f"Could not determine the WFS layer name from URL: '{layer_id}'. "
+            "Expected a 'typeNames' (or 'typeName') query parameter."
+        )
+    # geoapis does not serve every CRS (e.g. UTM zones), so fetch in WGS84/2193 and reproject locally if needed
+    fetch_crs = resolve_wfs_fetch_crs(crs)
+    bounding_polygon = bbox.to_crs(fetch_crs) if bbox is not None else None
+    fetcher = WfsQuery(
+        key="",
+        netloc_url=parsed_url.netloc,
+        geometry_names=DEFAULT_GEOMETRY_NAMES,
+        crs=fetch_crs,
+        bounding_polygon=bounding_polygon,
+        verbose=False,
+    )
+    log.info(f"Fetching geographic data from {layer_id} using OGC WFS (via geoapis).")
+    vector_data = fetch_vector_data_using_geoapis(fetcher, layer_name, crs)
+    log.info(f"Successfully fetched geographic data from {layer_id} using OGC WFS (via geoapis).")
     return vector_data
