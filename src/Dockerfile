@@ -33,7 +33,7 @@ SHELL ["conda", "run", "-n", "digitaltwin", "/bin/bash", "-c"]
 # Install the eddie package into the environment so it is packed into /venv
 COPY pyproject.toml README.md LICENSE ./
 COPY src src/
-RUN pip install --no-deps
+RUN pip install --no-deps .
 
 RUN <<EOF
     # Export conda environment
