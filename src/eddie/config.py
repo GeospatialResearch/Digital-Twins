@@ -216,7 +216,7 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
         "EDDIE_INSTANCE_TITLE", default="Environmental Digital Data Intelligence Engine (EDDIE) Core"
     )
 
-    # Set to "EPSG:3857" to reproject uploaded GeoTIFFs to web mercator for display. Unset: copied as is.
+    # CRS to reproject uploaded GeoTIFFs to for display, e.g. "EPSG:3857" for web mercator. Unset: copied as is.
     DISPLAY_CRS = _get_env_variable("DISPLAY_CRS", allow_empty=True)
 
     # If False, get_terria_catalog returns an empty catalog instead of listing every GeoServer workspace
