@@ -26,7 +26,7 @@ import requests
 
 from eddie.config import EnvVariable
 from eddie.geoserver.geoserver_common import (
-    create_workspace_if_not_exists, does_resource_exist, get_data_store_url, get_geoserver_url
+    create_workspace_if_not_exists, does_resource_exist, get_data_store_url, get_geoserver_url, get_workspace_url
 )
 
 log = logging.getLogger(__name__)
@@ -57,13 +57,27 @@ def get_workspace_vector_layers(workspace_name: str, data_store_name: str = MAIN
     HTTPError
         If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
+    workspace_url = get_workspace_url(workspace_name)
+    if not does_resource_exist(workspace_url):
+        log.warning(f"Workspace '{workspace_name}' not found, so has no layers.")
+        return []
+
+    data_store_url = get_data_store_url(workspace_name, data_store_name)
+    if not does_resource_exist(data_store_url):
+        log.warning(f"Data store '{data_store_name}' not found, so has no layers.")
+        return []
+
     vector_layers_response = requests.get(
-        f'{get_geoserver_url()}/workspaces/{workspace_name}/datastores/{data_store_name}/featuretypes.json',
+        f'{data_store_url}/featuretypes.json',
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if vector_layers_response.status_code == HTTPStatus.NOT_FOUND:
-        log.warning(f"Workspace '{workspace_name}' or data store '{data_store_name}' not found, so has no layers.")
+        log.warning(f"Data store '{data_store_name}' has no layers.")
         return []
+    if vector_layers_response.status_code != HTTPStatus.OK:
+        # We have an unknown issue
+        raise requests.HTTPError(vector_layers_response.text, response=vector_layers_response)
+
     vector_layers_response.raise_for_status()
     response_data = vector_layers_response.json()
     # Parse JSON structure to get list of feature names
