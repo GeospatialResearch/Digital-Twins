@@ -77,8 +77,8 @@ def upload_gtiff_to_store(
     geoserver_data_dest = pathlib.Path("data") / workspace_name / gtiff_filepath.name
     served_filepath = geoserver_data_root / geoserver_data_dest
     if display_crs:
-        # Copy file to geoserver data folder, reprojected to web mercator for speedy visualisation
-        reproject_raster_to_web_mercator(gtiff_filepath, served_filepath)
+        # Copy file to geoserver data folder, reprojected to the display CRS for speedy visualisation
+        reproject_raster(gtiff_filepath, served_filepath, display_crs)
     else:
         # Copy file to geoserver data folder
         shutil.copyfile(gtiff_filepath, served_filepath)
@@ -106,9 +106,9 @@ def upload_gtiff_to_store(
     return served_filepath
 
 
-def reproject_raster_to_web_mercator(src_path: pathlib.Path, dst_path: pathlib.Path) -> None:
+def reproject_raster(src_path: pathlib.Path, dst_path: pathlib.Path, dst_crs: str) -> None:
     """
-    Create a copy of the raster at the dst_path with the data reprojected to web mercator.
+    Create a copy of the raster at the dst_path with the data reprojected to dst_crs.
     This allows for faster serving when web front-ends request data from GeoServer, by preprocessing the reprojection.
 
     Parameters
@@ -117,9 +117,9 @@ def reproject_raster_to_web_mercator(src_path: pathlib.Path, dst_path: pathlib.P
         The path to the source raster.
     dst_path : pathlib.Path
         The path to the new reprojected raster to be created.
+    dst_crs : str
+        The CRS to reproject to, e.g. "EPSG:3857".
     """
-    web_mercator_epsg = 3857
-    dst_crs = rio.crs.CRS.from_epsg(web_mercator_epsg)
     with rio.open(src_path, 'r') as src:
         # Calculate the destination transform, width, and height
         transform, width, height = warp.calculate_default_transform(
@@ -154,7 +154,8 @@ def reproject_raster_to_web_mercator(src_path: pathlib.Path, dst_path: pathlib.P
 def check_display_crs(gtiff_filepath: pathlib.Path, display_crs: str | None) -> None:
     """
     Check that a GeoTiff can be reprojected to display_crs.
-    Only EPSG:3857 is supported. Web Mercator cannot represent the poles, so it is refused for rasters reaching beyond
+    display_crs must have an EPSG code, since GeoServer stores the served CRS as one.
+    Web Mercator (EPSG:3857) cannot represent the poles, so it is refused for rasters reaching beyond
     +-85.0511 degrees latitude.
 
     Parameters
@@ -162,7 +163,7 @@ def check_display_crs(gtiff_filepath: pathlib.Path, display_crs: str | None) -> 
     gtiff_filepath : pathlib.Path
         The filepath to the GeoTiff file to be served.
     display_crs : str | None
-        The CRS the GeoTiff will be reprojected to, "EPSG:3857". None means no reprojection.
+        The CRS the GeoTiff will be reprojected to, e.g. "EPSG:3857". None means no reprojection.
 
     Raises
     ------
@@ -171,9 +172,11 @@ def check_display_crs(gtiff_filepath: pathlib.Path, display_crs: str | None) -> 
     """
     if not display_crs:
         return
-    if CRS.from_user_input(display_crs) != CRS.from_epsg(3857):
-        # Only web mercator: Terria requests any other served CRS as EPSG:4326, which GeoServer reprojects on the fly
-        raise ValueError(f"Display CRS {display_crs} is not supported, only EPSG:3857.")
+    crs = CRS.from_user_input(display_crs)
+    if crs.to_epsg() is None:
+        raise ValueError(f"Display CRS {display_crs} has no EPSG code.")
+    if crs.to_epsg() != 3857:
+        return
     with rio.open(gtiff_filepath) as src:
         # transform_bounds densifies the edges, so a raster enclosing a pole reports +-90
         _, south, _, north = warp.transform_bounds(src.crs, "EPSG:4326", *src.bounds)
@@ -407,8 +410,8 @@ def add_gtiff_to_geoserver(
         Information about the bands in the GeoTiff file to be served. If None, derived from the file's band
         descriptions, units and data types.
     display_crs : str | None = None
-        "EPSG:3857" to serve the raster in web mercator. If None, EnvVariable.DISPLAY_CRS, and if that is unset the
-        raster is served in its native CRS.
+        The CRS to reproject the served raster to, e.g. "EPSG:3857". If None, EnvVariable.DISPLAY_CRS, and if that is
+        unset the raster is served in its native CRS.
 
     Returns
     -------
@@ -418,8 +421,8 @@ def add_gtiff_to_geoserver(
     Raises
     ------
     ValueError
-        If the GeoTiff has no EPSG-identifiable CRS, display_crs is not EPSG:3857, or the raster extends beyond
-        +-85.0511 degrees latitude when it is.
+        If the GeoTiff has no EPSG-identifiable CRS, display_crs has no EPSG code, or display_crs is EPSG:3857 and
+        the raster extends beyond +-85.0511 degrees latitude.
     """
     display_crs = display_crs or EnvVariable.DISPLAY_CRS
     # Fail before the existing layer is deleted
