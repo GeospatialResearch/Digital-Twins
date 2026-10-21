@@ -72,7 +72,7 @@ def get_workspace_vector_layers(workspace_name: str, data_store_name: str = MAIN
         auth=(EnvVariable.GEOSERVER_ADMIN_NAME, EnvVariable.GEOSERVER_ADMIN_PASSWORD)
     )
     if vector_layers_response.status_code == HTTPStatus.NOT_FOUND:
-        log.warning(f"Data store '{data_store_name}' has no layers, so has no layers.")
+        log.warning(f"Data store '{data_store_name}' has no layers.")
         return []
     if vector_layers_response.status_code != HTTPStatus.OK:
         # We have an unknown issue
