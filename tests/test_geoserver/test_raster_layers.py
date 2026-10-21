@@ -201,23 +201,28 @@ class CheckDisplayCrsTest(_TmpDirTestCase):
             with self.subTest(crs=crs), self.assertRaisesRegex(ValueError, "EPSG:3857"):
                 raster_layers.check_display_crs(gtiff, "EPSG:3857")
 
-    def test_unsupported_display_crs_refused(self) -> None:
-        """Only web mercator is supported as a display CRS."""
+    def test_other_display_crs_allowed(self) -> None:
+        """Display CRSs other than web mercator are allowed, without the web mercator latitude limit."""
+        raster_layers.check_display_crs(self._gtiff((0, 80, 10, 89)), "EPSG:4326")
+
+    def test_display_crs_without_epsg_refused(self) -> None:
+        """A display CRS with no EPSG code is refused."""
         gtiff = self._gtiff((0, 80, 10, 85))
         with self.assertRaises(ValueError):
-            raster_layers.check_display_crs(gtiff, "EPSG:2193")
+            raster_layers.check_display_crs(gtiff, "+proj=merc +lon_0=100 +datum=WGS84")
 
 
 class ReprojectRasterTest(_TmpDirTestCase):
-    """Tests reproject_raster_to_web_mercator."""
+    """Tests reproject_raster."""
 
-    def test_output_in_web_mercator(self) -> None:
-        """The reprojected copy is in EPSG:3857."""
+    def test_output_in_dst_crs(self) -> None:
+        """The reprojected copy is in the requested CRS."""
         src = _write_gtiff(self.tmp_dir / "src.tif", "EPSG:2193", (1570000, 5180000, 1580000, 5190000))
-        dst = self.tmp_dir / "dst.tif"
-        raster_layers.reproject_raster_to_web_mercator(src, dst)
-        with rio.open(dst) as reprojected:
-            self.assertEqual(3857, reprojected.crs.to_epsg())
+        for epsg in (3857, 4326):
+            dst = self.tmp_dir / f"{epsg}.tif"
+            raster_layers.reproject_raster(src, dst, f"EPSG:{epsg}")
+            with self.subTest(epsg=epsg), rio.open(dst) as reprojected:
+                self.assertEqual(epsg, reprojected.crs.to_epsg())
 
 
 class ReadCoverageDimensionsTest(_TmpDirTestCase):
@@ -282,6 +287,15 @@ class AddGtiffToGeoserverTest(_TmpDirTestCase):
         with rio.open(self.tmp_dir / "data" / "ws" / "lyr.tif") as served:
             self.assertEqual(raster_layers.PublishedRaster("lyr", "EPSG:3857", served.bounds), published)
         self.assertIn("<name>depth</name>", coverage_post.kwargs["data"])
+
+    def test_reprojected_to_non_web_mercator(self, requests_mock: MagicMock, _url: MagicMock, _layers: MagicMock
+                                             ) -> None:
+        """A display CRS other than web mercator is used for the served copy and the coverage."""
+        published, coverage_post = self._publish(requests_mock, display_crs="EPSG:2193")
+        with rio.open(self.tmp_dir / "data" / "ws" / "lyr.tif") as served:
+            self.assertEqual(2193, served.crs.to_epsg())
+        self.assertEqual("EPSG:2193", published.crs)
+        self.assertIn("<srs>EPSG:2193</srs>", coverage_post.kwargs["data"])
 
     def test_missing_crs_fails_before_geoserver(self, requests_mock: MagicMock, _url: MagicMock, layers: MagicMock
                                                 ) -> None:
