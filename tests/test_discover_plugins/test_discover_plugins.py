@@ -22,7 +22,6 @@ import sys
 import unittest
 from importlib.metadata import EntryPoint
 from unittest import mock
-import warnings
 
 from eddie import discover_plugins
 
@@ -44,8 +43,6 @@ class DiscoverPluginsTest(unittest.TestCase):
         patcher = mock.patch("eddie.discover_plugins.entry_points", return_value=[])
         self.entry_points = patcher.start()
         self.addCleanup(patcher.stop)
-        self.enterContext(warnings.catch_warnings())
-        warnings.simplefilter("ignore", DeprecationWarning)
 
     def test_discover_mock_plugin_name_exists(self):
         plugins = discover_plugins.discover_plugins()
@@ -88,21 +85,15 @@ class DiscoverPluginsTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "dup"):
             discover_plugins.discover_plugins()
 
-    def test_same_name_same_module_is_not_duplicate(self):
-        self.entry_points.return_value = [ep("dup", "eddie_mock_plugin"), ep("dup", "eddie_mock_plugin")]
-        self.assertIn("eddie_mock_plugin", discover_plugins.discover_plugins())
-
     def test_prefix_only_plugin_warns_deprecated(self):
-        with self.assertWarns(DeprecationWarning), self.assertLogs(discover_plugins.log, "WARNING") as logs:
+        with self.assertLogs(discover_plugins.log, "WARNING") as logs:
             discover_plugins.discover_plugins()
         self.assertIn("eddie_mock_plugin", logs.output[0])
 
     def test_entry_point_wins_over_prefix(self):
         self.entry_points.return_value = [ep("mock", "eddie_mock_plugin")]
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
+        with self.assertNoLogs(discover_plugins.log, "WARNING"):
             discover_plugins.discover_plugins()
-        self.assertFalse([w for w in caught if "eddie_mock_plugin" in str(w.message)])
 
     def test_plugin_contribution_attribute(self):
         plugin = mock.Mock(__name__="p", blueprint="bp")

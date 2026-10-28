@@ -21,7 +21,6 @@ from importlib.metadata import entry_points
 import logging
 import pkgutil
 from types import ModuleType
-import warnings
 
 log = logging.getLogger(__name__)
 
@@ -56,7 +55,6 @@ def discover_plugins() -> dict[str, ModuleType]:
         if module_info.name.startswith("eddie_") and module_info.name not in found:
             message = (f"Plugin {module_info.name!r} was found only by its 'eddie_' prefix, which is deprecated. "
                        f"Declare it under [project.entry-points.\"{ENTRY_POINT_GROUP}\"] in its pyproject.toml.")
-            warnings.warn(message, DeprecationWarning, stacklevel=2)
             log.warning(message)
             found.add(module_info.name)
     plugins = {name: importlib.import_module(name) for name in sorted(found)}
