@@ -78,7 +78,7 @@ class DiscoverPluginsTest(unittest.TestCase):
     def test_co_installed_plugins_discovered_together(self):
         self.entry_points.return_value = [ep("a", "eddie_mock_plugin"), ep("b", "non_eddie_mock_plugin")]
         plugins = discover_plugins.discover_plugins()
-        self.assertLessEqual({"eddie_mock_plugin", "non_eddie_mock_plugin"} <= plugins.keys())
+        self.assertLessEqual({"eddie_mock_plugin", "non_eddie_mock_plugin"}, plugins.keys())
 
     def test_duplicate_plugin_name_raises(self):
         self.entry_points.return_value = [ep("dup", "eddie_mock_plugin"), ep("dup", "non_eddie_mock_plugin")]
