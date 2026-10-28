@@ -15,31 +15,83 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Methods used to find packages that are eddie plugins, and return information to help import them."""
+"""Find installed EDDIE plugins and their optional contributions, see the "Writing a plugin" wiki page."""
 import importlib
+from importlib.metadata import entry_points
 import logging
 import pkgutil
 from types import ModuleType
+import warnings
 
-from eddie.digitaltwin.utils import setup_logging
-
-setup_logging()
 log = logging.getLogger(__name__)
+
+ENTRY_POINT_GROUP = "eddie.plugins"
 
 
 def discover_plugins() -> dict[str, ModuleType]:
     """
-    Collate all plugin packages that start with 'eddie_' and return their information as a dict
+    Import every installed EDDIE plugin.
+    Plugins are declared under the "eddie.plugins" entry point group.
+    Packages named 'eddie_*' without an entry point are still found, but this is deprecated.
 
     Returns
     -------
     dict[str, ModuleType]
-        Dictionary of all packages found in the current environment starting with 'eddie_'.
-        The key is the package name, the value is the package module itself.
+        The key is the plugin's import name (e.g. 'eddie_otakaro'), the value is the imported plugin module.
+
+    Raises
+    ------
+    RuntimeError
+        If two entry points share a plugin name but point to different modules.
     """
-    plugins = {
-        name: importlib.import_module(name)
-        for _finder, name, _is_pkg in pkgutil.iter_modules() if name.startswith('eddie_')
-    }
+    module_names: dict[str, str] = {}  # entry point name -> module name
+    for entry_point in entry_points(group=ENTRY_POINT_GROUP):
+        previous = module_names.setdefault(entry_point.name, entry_point.module)
+        if previous != entry_point.module:
+            raise RuntimeError(f"Duplicate EDDIE plugin name {entry_point.name!r}: "
+                               f"provided by both {previous!r} and {entry_point.module!r}")
+    found = set(module_names.values())
+    # ponytail: deprecated 'eddie_' prefix fallback, delete one release after entry points ship
+    for module_info in pkgutil.iter_modules():
+        if module_info.name.startswith("eddie_") and module_info.name not in found:
+            message = (f"Plugin {module_info.name!r} was found only by its 'eddie_' prefix, which is deprecated. "
+                       f"Declare it under [project.entry-points.\"{ENTRY_POINT_GROUP}\"] in its pyproject.toml.")
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
+            log.warning(message)
+            found.add(module_info.name)
+    plugins = {name: importlib.import_module(name) for name in sorted(found)}
+    for name, plugin in plugins.items():
+        if hasattr(plugin, "resources"):
+            log.info(f"Plugin {name!r} defines 'resources', which is reserved for catchments and events and unused.")
     log.info(f"Plugins discovered: {plugins}")
     return plugins
+
+
+def plugin_contribution(plugin: ModuleType, name: str) -> object:
+    """
+    Get an optional plugin contribution, from the plugin's attribute or else its submodule of that name.
+
+    Parameters
+    ----------
+    plugin : ModuleType
+        The plugin module, as returned by discover_plugins.
+    name : str
+        The contribution name, e.g. "blueprint" or "tasks".
+
+    Returns
+    -------
+    object
+        The attribute or submodule, or None if the plugin does not provide it.
+
+    Raises
+    ------
+    ModuleNotFoundError
+        If the submodule exists but itself imports a module that is missing.
+    """
+    if not hasattr(plugin, name):
+        try:
+            importlib.import_module(f"{plugin.__name__}.{name}")  # importing sets the attribute on the package
+        except ModuleNotFoundError as e:
+            if e.name != f"{plugin.__name__}.{name}":
+                raise
+    return getattr(plugin, name, None)
