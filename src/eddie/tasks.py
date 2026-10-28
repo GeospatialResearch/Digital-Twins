@@ -18,7 +18,6 @@
 Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
 Allows the frontend to send tasks and retrieve status later.
 """
-import importlib
 import logging
 import traceback
 from typing import Dict, Tuple
@@ -32,7 +31,7 @@ import sqlalchemy.exc
 from eddie.config import EnvVariable
 from eddie.digitaltwin import retrieve_from_instructions
 from eddie.digitaltwin.utils import retry_function, setup_logging
-from eddie.discover_plugins import discover_plugins
+from eddie.discover_plugins import discover_plugins, plugin_contribution
 from eddie.digitaltwin.working_crs import to_working_crs_rectangle
 
 # Setup celery backend task management
@@ -115,5 +114,5 @@ def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
 
 # Plugins must be imported after app to remove a circular dependency
 eddie_plugins = discover_plugins()
-for name, module in eddie_plugins.items():
-    importlib.import_module(f"{name}.tasks")
+for plugin in eddie_plugins.values():
+    plugin_contribution(plugin, "tasks")  # Importing the plugin's tasks registers them with this Celery app

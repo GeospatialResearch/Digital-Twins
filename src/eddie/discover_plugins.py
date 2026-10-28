@@ -62,7 +62,7 @@ def discover_plugins() -> dict[str, ModuleType]:
     plugins = {name: importlib.import_module(name) for name in sorted(found)}
     for name, plugin in plugins.items():
         if hasattr(plugin, "resources"):
-            log.info(f"Plugin {name!r} defines 'resources', which is reserved for catchments and events and unused.")
+            log.info(f"Plugin {name!r} defines 'resources', which is reserved for catchments and events")
     log.info(f"Plugins discovered: {plugins}")
     return plugins
 
