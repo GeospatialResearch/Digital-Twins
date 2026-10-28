@@ -53,4 +53,4 @@ Each tiff must have a style file (`.sld`) with the same name beside it. You can 
 3. Set up the Digital Twin according to the main instructions at `Digital-Twins/README.md`.
 4. While inspecting the `celery_worker` logs as described in the README, wait for the following line (transient variables replaced with `x`):
 
-    ```celery_worker_digital_twin  | [202x-0x-0x xx:xx:xx,xxx: INFO/MainProcess] Task src.tasks.add_base_data_to_db[xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx] succeeded in xx.xxxxxxxxxxxxxxs: None```
+    ```celery_worker_digital_twin  | [202x-0x-0x xx:xx:xx,xxx: INFO/MainProcess] Task eddie.tasks.add_base_data_to_db[xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx] succeeded in xx.xxxxxxxxxxxxxxs: None```
