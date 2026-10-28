@@ -50,7 +50,6 @@ def discover_plugins() -> dict[str, ModuleType]:
             raise RuntimeError(f"Duplicate EDDIE plugin name {entry_point.name!r}: "
                                f"provided by both {previous!r} and {entry_point.module!r}")
     found = set(module_names.values())
-    # ponytail: deprecated 'eddie_' prefix fallback, delete one release after entry points ship
     for module_info in pkgutil.iter_modules():
         if module_info.name.startswith("eddie_") and module_info.name not in found:
             message = (f"Plugin {module_info.name!r} was found only by its 'eddie_' prefix, which is deprecated. "
