@@ -50,15 +50,15 @@ def discover_plugins() -> dict[str, ModuleType]:
         if previous != entry_point.module:
             raise RuntimeError(f"Duplicate EDDIE plugin name {entry_point.name!r}: "
                                f"provided by both {previous!r} and {entry_point.module!r}")
-    # 2. Also collect 'eddie_*' packages that have no entry point, with a deprecation warning
     found = set(module_names.values())
+    # 2. Also collect 'eddie_*' packages that have no entry point, with a deprecation warning
     for module_info in pkgutil.iter_modules():
         if module_info.name.startswith("eddie_") and module_info.name not in found:
             message = (f"Plugin {module_info.name!r} was found only by its 'eddie_' prefix, which is deprecated. "
                        f"Declare it under [project.entry-points.\"{ENTRY_POINT_GROUP}\"] in its pyproject.toml.")
             log.warning(message)
-            # 3. Import every plugin found, in a stable (alphabetical) order
             found.add(module_info.name)
+            # 3. Import every plugin found, in a stable (alphabetical) order
     plugins = {name: importlib.import_module(name) for name in sorted(found)}
     # 'resources' is a reserved contribution name: note it, but nothing uses it yet
     for name, plugin in plugins.items():
