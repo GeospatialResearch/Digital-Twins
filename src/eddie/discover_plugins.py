@@ -60,10 +60,6 @@ def discover_plugins() -> dict[str, ModuleType]:
             found.add(module_info.name)
             # 3. Import every plugin found, in a stable (alphabetical) order
     plugins = {name: importlib.import_module(name) for name in sorted(found)}
-    # 'resources' is a reserved contribution name: note it, but nothing uses it yet
-    for name, plugin in plugins.items():
-        if hasattr(plugin, "resources"):
-            log.info(f"Plugin {name!r} defines 'resources', which is reserved for catchments and events")
     log.info(f"Plugins discovered: {plugins}")
     return plugins
 
