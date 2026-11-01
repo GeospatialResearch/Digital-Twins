@@ -43,7 +43,7 @@ def get_workspace_vector_layers(workspace_name: str, data_store_name: str = MAIN
     ----------
     workspace_name : str
         The name of the geoserver workspace being queried.
-    data_store_name : str = src.geoserver.database_layers.MAIN_DB_STORE_NAME
+    data_store_name : str = eddie.geoserver.database_layers.MAIN_DB_STORE_NAME
         The name of the geoserver data store to query.
 
     Returns

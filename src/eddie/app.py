@@ -16,9 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """The main web application that serves the Digital Twin to the web through a Rest API."""
-import importlib
 import logging
 from http.client import OK
+from types import ModuleType
 
 from flask import Flask, jsonify, make_response, Response
 from flask_cors import CORS
@@ -26,8 +26,9 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 from eddie.check_celery_alive import check_celery_alive
 from eddie.config import EnvVariable
-from eddie.discover_plugins import discover_plugins
+from eddie.discover_plugins import plugin_contribution
 from eddie.geoserver import get_terria_catalog
+from eddie.tasks import eddie_plugins
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -43,10 +44,13 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
-eddie_plugins = discover_plugins()
-for name, module in eddie_plugins.items():
-    importlib.import_module(f"{name}.blueprint")
-    app.register_blueprint(module.blueprint.blueprint)
+for plugin in eddie_plugins.values():
+    blueprint = plugin_contribution(plugin, "blueprint")
+    if isinstance(blueprint, ModuleType):  # Older layout: <plugin>/blueprint.py holding a `blueprint` attribute
+        blueprint = blueprint.blueprint
+    if blueprint is None:
+        continue
+    app.register_blueprint(blueprint)
 
 
 @app.route('/', methods=['GET'])

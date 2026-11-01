@@ -38,6 +38,19 @@ Currently the best way to do this is by pip installing this github repository. E
 found within the [FReDT repository](https://github.com/GeospatialResearch/eddie_floodresilience). We aim to expand
 usage documentation in the near future.
 
+### Writing a plugin
+
+A plugin is a pip-installed package named `eddie_<name>` that declares itself in its `pyproject.toml`:
+
+```toml
+[project.entry-points."eddie.plugins"]
+otakaro = "eddie_otakaro"
+```
+
+EDDIE owns the Flask app, the Celery app and `/wps`. Plugins add optional contributions such as `blueprint`, `tasks`
+and `processes`. See [Writing a plugin](https://github.com/GeospatialResearch/Digital-Twins/wiki/Writing-a-plugin)
+on the wiki for the full contract.
+
 ### Unsupported Operating Systems
 
 We unfortunately do not support MacOS. Please see [#358](/../../issues/358) for updates or to contribute.
