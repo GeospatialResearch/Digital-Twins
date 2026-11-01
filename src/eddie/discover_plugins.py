@@ -58,7 +58,7 @@ def discover_plugins() -> dict[str, ModuleType]:
                        f"Declare it under [project.entry-points.\"{ENTRY_POINT_GROUP}\"] in its pyproject.toml.")
             log.warning(message)
             found.add(module_info.name)
-            # 3. Import every plugin found, in a stable (alphabetical) order
+    # 3. Import every plugin found, in a stable (alphabetical) order
     plugins = {name: importlib.import_module(name) for name in sorted(found)}
     log.info(f"Plugins discovered: {plugins}")
     return plugins
