@@ -60,7 +60,8 @@ def clean_fetched_vector_data(fetched_data: gpd.GeoDataFrame) -> gpd.GeoDataFram
     # Ensure consistent column naming convention by converting all column names to lowercase
     fetched_data.columns = fetched_data.columns.str.lower()
     # Move the 'geometry' column to the end, ensuring spatial columns are located at the end of database tables
-    fetched_data['geometry'] = fetched_data.pop('geometry')
+    ordered_cols = [col for col in fetched_data.columns if col != 'geometry'] + ['geometry']
+    fetched_data = fetched_data[ordered_cols]
     return fetched_data
 
 
