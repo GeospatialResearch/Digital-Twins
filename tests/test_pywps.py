@@ -183,7 +183,7 @@ class TestBuildService(unittest.TestCase):
         fake_service = object()
         with patch.object(wps, "discover_plugins", return_value={"eddie_otakaro": object()}), \
                 patch.object(wps, "plugin_contribution", return_value=[medusa]), \
-                patch.object(wps, "Service", return_value=fake_service) as mock_service:
+                patch.object(wps.pywps, "Service", return_value=fake_service) as mock_service:
             result = wps.build_service()
 
         self.assertIs(result, fake_service)
