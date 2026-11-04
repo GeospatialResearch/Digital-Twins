@@ -28,5 +28,13 @@ do
   # Overwrite original file.
   echo "$SUBBED" > "$FILE_TO_SUB"
 done
+# Fill allowProxyFor from the comma-separated TERRIA_ALLOW_PROXY_FOR, e.g. "example.com,example.org".
+# Always writes a list ([] when unset): terriajs-server proxies every domain when allowProxyFor is missing.
+node -e '
+const fs = require("fs");
+const config = JSON.parse(fs.readFileSync("serverconfig.json", "utf8"));
+config.allowProxyFor = (process.env.TERRIA_ALLOW_PROXY_FOR || "").split(",").map(s => s.trim()).filter(Boolean);
+fs.writeFileSync("serverconfig.json", JSON.stringify(config, null, 2));
+' || exit 1
 # Run original terria startup command
 node ./node_modules/terriajs-server/lib/app.js --config-file serverconfig.json
