@@ -1,36 +1,10 @@
 {
-  "homeCamera": {
-    "north": -43.35,
-    "east": 172.76,
-    "south": -43.42,
-    "west": 172.55
-  },
-  "catalog": [
-    {
-      "type": "wps",
-      "name": "Model a flood scenario",
-      "description": "Model a climate scenario that will impact the flood scenario",
-      "url": "$BACKEND_URL/wps",
-      "identifier": "fredt"
-    }
-  ],
+  "catalog": [],
   "baseMaps": {
-    "items": [
-      {
-        "item": {
-          "id": "basemap-linz-aerial",
-          "type": "wmts",
-          "url": "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/WMTSCapabilities.xml?api=c01k0qh9ca8rae7b5wm22g5b9eg",
-          "layer": "aerial"
-        },
-        "image": "https://basemaps.linz.govt.nz/favicon-32x32.png"
-      }
-    ],
     "enabledBaseMaps": [
-      "basemap-linz-aerial",
       "basemap-openstreetmap"
     ],
-    "defaultBaseMapId": "basemap-linz-aerial",
+    "defaultBaseMapId": "basemap-openstreetmap",
     "previewBaseMapId": "basemap-openstreetmap"
   }
 }

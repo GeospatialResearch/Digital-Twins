@@ -18,11 +18,16 @@ fi
 
 export GEOSERVER_URL
 
+# allowProxyFor as a JSON list from the comma-separated TERRIA_ALLOW_PROXY_FOR, e.g. "example.com,example.org".
+# Always a list ([] when unset): terriajs-server proxies every domain if serverconfig.json is invalid or has no list.
+TERRIA_ALLOW_PROXY_FOR_JSON=$(node -p 'JSON.stringify((process.env.TERRIA_ALLOW_PROXY_FOR || "").split(",").map(s => s.trim()).filter(Boolean))') || exit 1
+export TERRIA_ALLOW_PROXY_FOR_JSON
+
 # List of variables to substitute
-ENV_VARS_TO_FILL='$CESIUM_ACCESS_TOKEN,$LINZ_BASEMAPS_API_KEY,$BACKEND_URL,$GEOSERVER_URL'
+ENV_VARS_TO_FILL='$CESIUM_ACCESS_TOKEN,$BACKEND_URL,$GEOSERVER_URL,$TERRIA_ALLOW_PROXY_FOR_JSON'
 
 # Substitute variables and save whole file to variable, sponge is not available to buffer.
-for FILE_TO_SUB in "wwwroot/config.json" "wwwroot/init/catalog.json"
+for FILE_TO_SUB in "wwwroot/config.json" "wwwroot/init/catalog.json" "serverconfig.json"
 do
   SUBBED=$(envsubst "$ENV_VARS_TO_FILL" < "$FILE_TO_SUB")
   # Overwrite original file.
