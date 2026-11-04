@@ -16,8 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """Tests for terria_catalogs.py."""
+import sys
 import unittest
 from http import HTTPStatus
+from types import ModuleType
 from unittest.mock import MagicMock, patch
 
 from eddie.config import EnvVariable
@@ -39,6 +41,45 @@ class TerriaCatalogTest(unittest.TestCase):
         self.assertEqual(len(terria_catalogs.Workspaces), len(catalog))
         for group in catalog:
             self.assertEqual([], group["members"])
+
+
+class PluginCatalogTest(unittest.TestCase):
+    """Tests merging plugin catalog() groups into get_terria_catalog."""
+
+    PLUGIN_GROUP = {"type": "group", "name": "Plugin", "members": []}
+
+    def setUp(self) -> None:
+        """Create a fake plugin with a catalog() and one without, importable as real plugins are."""
+        self.plugin = ModuleType("eddie_fake")
+        self.plugin.catalog = lambda: [self.PLUGIN_GROUP]
+        self.plain_plugin = ModuleType("eddie_plain")
+        modules = patch.dict(sys.modules, {"eddie_fake": self.plugin, "eddie_plain": self.plain_plugin})
+        modules.start()
+        self.addCleanup(modules.stop)
+
+    @patch.object(EnvVariable, "EDDIE_AUTOSERVE_CATALOG", False)
+    @patch("eddie.geoserver.terria_catalogs.get_layers_as_terria_group")
+    def test_flag_off_serves_only_plugin_groups(self, mock_group: MagicMock) -> None:
+        """With EDDIE_AUTOSERVE_CATALOG false, GeoServer is not queried but plugin groups are still served."""
+        catalog = terria_catalogs.get_terria_catalog([self.plugin])["catalog"]
+        self.assertEqual([self.PLUGIN_GROUP], catalog)
+        mock_group.assert_not_called()
+
+    @patch.object(EnvVariable, "EDDIE_AUTOSERVE_CATALOG", True)
+    @patch("eddie.geoserver.terria_catalogs.get_layers_as_terria_group", side_effect=lambda ws: ws)
+    def test_flag_on_serves_geoserver_then_plugin_groups(self, _group: MagicMock) -> None:
+        """With EDDIE_AUTOSERVE_CATALOG true, the GeoServer workspace groups come first, then the plugin groups."""
+        catalog = terria_catalogs.get_terria_catalog([self.plugin])["catalog"]
+        self.assertEqual([*terria_catalogs.Workspaces, self.PLUGIN_GROUP], catalog)
+
+    @patch.object(EnvVariable, "EDDIE_AUTOSERVE_CATALOG", False)
+    def test_plugin_without_catalog_skipped(self) -> None:
+        """A plugin without a catalog contribution adds no groups; a `catalog` submodule's catalog() is used."""
+        submodule = ModuleType("eddie_fake.catalog")
+        submodule.catalog = lambda: [self.PLUGIN_GROUP]
+        self.plugin.catalog = submodule
+        catalog = terria_catalogs.get_terria_catalog([self.plain_plugin, self.plugin])["catalog"]
+        self.assertEqual([self.PLUGIN_GROUP], catalog)
 
 
 class RasterCatalogItemTest(unittest.TestCase):

@@ -15,11 +15,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Functions for handling creating TerriaJS catalog items by reading the geoserver workspaces."""
+"""Functions for handling creating TerriaJS catalog items by reading the geoserver workspaces and plugins."""
+import logging
 from enum import StrEnum
-from typing import Literal, TypeAlias
+from types import ModuleType
+from typing import Iterable, Literal, TypeAlias
 
 from eddie.config import EnvVariable
+from eddie.discover_plugins import plugin_contribution
 from .database_layers import get_workspace_vector_layers
 from .graticules import DEFAULT_GRATICULE_NAME
 from .raster_layers import get_raster_layer_crs, get_workspace_raster_layers
@@ -27,6 +30,8 @@ from .raster_layers import get_raster_layer_crs, get_workspace_raster_layers
 CatalogItem: TypeAlias = dict[str, str | int]
 CatalogGroup: TypeAlias = dict[str, str | bool | list[CatalogItem]]
 Catalog: TypeAlias = dict[Literal["catalog"], list[CatalogGroup]]
+
+log = logging.getLogger(__name__)
 
 
 class Workspaces(StrEnum):
@@ -155,21 +160,33 @@ def get_layers_as_terria_group(workspace_name: str) -> CatalogGroup:
     }
 
 
-def get_terria_catalog() -> Catalog:
+def get_terria_catalog(plugins: Iterable[ModuleType] = ()) -> Catalog:
     """
-    Query geoserver for available layers from key workspaces, and return a terria catalog to serve the data.
-    Returns an empty catalog if the EDDIE_AUTOSERVE_CATALOG environment variable is false.
+    Return a terria catalog of the layers in key GeoServer workspaces, followed by each plugin's catalog() groups.
+    The GeoServer groups are left out if the EDDIE_AUTOSERVE_CATALOG environment variable is false.
+
+    Parameters
+    ----------
+    plugins : Iterable[ModuleType] = ()
+        The plugin modules, as returned by discover_plugins. Each may provide `catalog() -> list[CatalogGroup]`.
 
     Returns
     -------
     Catalog
-        Represents the Terria JSON catalog items for each layer within the workspaces.
+        Represents the Terria JSON catalog items for each layer within the workspaces, then the plugin groups.
 
     Raises
     -------
     HTTPError
         If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
-    if not EnvVariable.EDDIE_AUTOSERVE_CATALOG:
-        return {"catalog": []}
-    return {"catalog": [get_layers_as_terria_group(workspace) for workspace in Workspaces]}
+    groups = []
+    if EnvVariable.EDDIE_AUTOSERVE_CATALOG:
+        groups = [get_layers_as_terria_group(workspace) for workspace in Workspaces]
+    for plugin in plugins:
+        catalog = plugin_contribution(plugin, "catalog")
+        if isinstance(catalog, ModuleType):  # <plugin>/catalog.py holding a `catalog` function
+            catalog = catalog.catalog
+        if catalog is not None:
+            groups += catalog()
+    return {"catalog": groups}

@@ -89,15 +89,15 @@ def health_check() -> Response:
 @app.route('/terria-catalog.json', methods=['GET'])
 def terria_catalog() -> Response:
     """
-    Return a terria catalog that includes entries for static files and input layers from geoserver.
+    Return a terria catalog of the GeoServer workspace layers and every plugin's catalog() groups.
     Supported methods: GET
 
     Returns
     -------
     Response
-        The HTTP Response. Expect OK if health check is successful
+        The HTTP Response. Expect OK with the Terria JSON catalog.
     """
-    catalog = get_terria_catalog()
+    catalog = get_terria_catalog(eddie_plugins.values())
     return make_response(jsonify(catalog), OK)
 
 
