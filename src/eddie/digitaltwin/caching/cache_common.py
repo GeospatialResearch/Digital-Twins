@@ -22,6 +22,7 @@ Generic process-result cache: table definition shared by `check_cache_results` a
 
 import hashlib
 import json
+import threading
 
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, DateTime, Integer, String, func
@@ -35,14 +36,25 @@ from ..tables import Base
 # something the cache infrastructure can safely assume for every process. It must be
 # declared explicitly, by process_id, by whoever owns that process's science.
 #
-# Add a process_id here only after confirming containment reuse is scientifically
-# valid for that process.
-SPATIAL_CONTAINMENT_OPT_IN: frozenset[str] = frozenset(
-    {
-        # This is explicitly empty, the modules and processes themselves should provide this functionality.
-        # See issue https://github.com/GeospatialResearch/Digital-Twins/issues/412
-    }
-)
+# Processes declare this themselves (e.g. a `pywps.Process` subclass setting `supports_spatial_containment = True`),
+# and `eddie.wps.build_processes` calls `register_spatial_containment`
+# for every process_id that opts in, at plugin-discovery time.
+_spatial_containment_lock = threading.Lock()
+_spatial_containment_opt_in: set[str] = set()
+
+
+def register_spatial_containment(process_id: str) -> None:
+    """
+    Declare that `process_id` opts in to spatial containment cache reuse.
+    Intended to be called once per process at plugin-discovery/registration time.
+
+    Parameters
+    ----------
+    process_id : str
+        The (namespaced) process identifier opting in, e.g. "otakaro.medusa".
+    """
+    with _spatial_containment_lock:
+        _spatial_containment_opt_in.add(process_id)
 
 
 def supports_spatial_containment(process_id: str) -> bool:
@@ -61,7 +73,7 @@ def supports_spatial_containment(process_id: str) -> bool:
     bool
         True if `process_id` is opted in to spatial containment reuse.
     """
-    return process_id in SPATIAL_CONTAINMENT_OPT_IN
+    return process_id in _spatial_containment_opt_in
 
 
 def canonicalise_parameters(value: dict) -> str:
@@ -114,7 +126,7 @@ class ProcessCache(Base):
     process_id : str
         Identifies which process/pin produced the result, e.g. "fredt.flood_model",
         "smart_ideas.site_suitability". Used both for lookups and to key the spatial
-        containment opt-in declared in SPATIAL_CONTAINMENT_OPT_IN.
+        containment opt-in registered via `register_spatial_containment`.
     params_hash : str
         SHA-256 hex digest of the canonicalised `process_parameters` dict. Indexed for
         fast equality lookups without having to compare JSONB blobs directly.

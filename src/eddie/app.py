@@ -23,12 +23,14 @@ from types import ModuleType
 from flask import Flask, jsonify, make_response, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from eddie.check_celery_alive import check_celery_alive
 from eddie.config import EnvVariable
 from eddie.discover_plugins import plugin_contribution
 from eddie.geoserver import get_terria_catalog
 from eddie.tasks import eddie_plugins
+from eddie.wps import build_service
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -51,6 +53,11 @@ for plugin in eddie_plugins.values():
     if blueprint is None:
         continue
     app.register_blueprint(blueprint)
+
+# Core owns the single PyWPS Service/`/wps` route; plugins only contribute `processes`
+# and must not define their own `/wps` route or Service.
+wps_service = build_service()
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/wps": wps_service})
 
 
 @app.route('/', methods=['GET'])
