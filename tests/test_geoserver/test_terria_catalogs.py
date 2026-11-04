@@ -67,10 +67,10 @@ class PluginCatalogTest(unittest.TestCase):
 
     @patch.object(EnvVariable, "EDDIE_AUTOSERVE_CATALOG", True)
     @patch("eddie.geoserver.terria_catalogs.get_layers_as_terria_group", side_effect=lambda ws: ws)
-    def test_flag_on_serves_geoserver_then_plugin_groups(self, _group: MagicMock) -> None:
-        """With EDDIE_AUTOSERVE_CATALOG true, the GeoServer workspace groups come first, then the plugin groups."""
+    def test_flag_on_serves_plugin_then_geoserver_groups(self, _group: MagicMock) -> None:
+        """With EDDIE_AUTOSERVE_CATALOG true, the plugin groups come first, then the GeoServer workspace groups."""
         catalog = terria_catalogs.get_terria_catalog([self.plugin])["catalog"]
-        self.assertEqual([*terria_catalogs.Workspaces, self.PLUGIN_GROUP], catalog)
+        self.assertEqual([self.PLUGIN_GROUP, *terria_catalogs.Workspaces], catalog)
 
     @patch.object(EnvVariable, "EDDIE_AUTOSERVE_CATALOG", False)
     def test_plugin_without_catalog_skipped(self) -> None:

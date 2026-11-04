@@ -1,19 +1,7 @@
 {
   "catalog": [],
   "baseMaps": {
-    "items": [
-      {
-        "item": {
-          "id": "basemap-linz-aerial",
-          "type": "wmts",
-          "url": "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/WMTSCapabilities.xml?api=$LINZ_BASEMAPS_API_KEY",
-          "layer": "aerial"
-        },
-        "image": "https://basemaps.linz.govt.nz/favicon-32x32.png"
-      }
-    ],
     "enabledBaseMaps": [
-      "basemap-linz-aerial",
       "basemap-openstreetmap"
     ],
     "defaultBaseMapId": "basemap-openstreetmap",
