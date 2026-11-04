@@ -219,7 +219,7 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     # CRS to reproject uploaded GeoTIFFs to for display, e.g. "EPSG:3857" for web mercator. Unset: copied as is.
     DISPLAY_CRS = _get_env_variable("DISPLAY_CRS", allow_empty=True)
 
-    # If False, get_terria_catalog returns an empty catalog instead of listing every GeoServer workspace
+    # If False, get_terria_catalog leaves out the GeoServer workspace groups. Plugin catalog() groups are always served
     EDDIE_AUTOSERVE_CATALOG = _get_bool_env_variable("EDDIE_AUTOSERVE_CATALOG", default=True)
 
     # CRS core processing runs in, e.g. "EPSG:32759". Unset: derived from the area of interest, else EPSG:4326.

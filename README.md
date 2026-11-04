@@ -47,9 +47,10 @@ A plugin is a pip-installed package named `eddie_<name>` that declares itself in
 otakaro = "eddie_otakaro"
 ```
 
-EDDIE owns the Flask app, the Celery app and `/wps`. Plugins add optional contributions such as `blueprint`, `tasks`
-and `processes`. See [Writing a plugin](https://github.com/GeospatialResearch/Digital-Twins/wiki/Writing-a-plugin)
-on the wiki for the full contract.
+EDDIE owns the Flask app, the Celery app and `/wps`. Plugins add optional contributions such as `blueprint`, `tasks`,
+`processes` and `catalog()`. See
+[Writing a plugin](https://github.com/GeospatialResearch/Digital-Twins/wiki/Writing-a-plugin) on the wiki for the full
+contract.
 
 ### Unsupported Operating Systems
 
