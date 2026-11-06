@@ -75,10 +75,9 @@ jobs:
           cache-environment: true
           cache-downloads: false
       - run: |
-          conda info
-          conda list
-          conda config --show-sources
-          conda config --show
+          micromamba info
+          micromamba list
+          micromamba config list
 
       - name: Install Eddie library
         run: |
