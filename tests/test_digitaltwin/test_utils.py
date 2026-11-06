@@ -29,7 +29,7 @@ class GetAreaOfInterestTest(unittest.TestCase):
     def test_reprojects_to_requested_crs(self):
         christchurch = gpd.GeoDataFrame(geometry=[shapely.box(172.5, -43.6, 172.7, -43.4)], crs=4326)
         result = get_area_of_interest(christchurch, 2193)
-        self.assertEqual(result.crs.to_epsg(), 2193)
+        self.assertEqual(2193, result.crs.to_epsg())
         self.assertTrue(result.geometry[0].equals_exact(christchurch.to_crs(2193).geometry[0], 1e-6))
 
 
