@@ -49,6 +49,17 @@ class ResolveWorkingCrsTest(unittest.TestCase):
         self.assertEqual(resolve_working_crs(), 4326)
         self.assertEqual(resolve_working_crs(gpd.GeoDataFrame(geometry=[], crs=4326)), 4326)
 
+
+def triangle(lon: float, lat: float, size: float) -> gpd.GeoDataFrame:
+    """Build a non-rectangular WGS84 area of interest, so its bounding rectangle differs from it."""
+    return gpd.GeoDataFrame(index=[0], crs=4326, geometry=[
+        shapely.Polygon([(lon, lat), (lon + size, lat), (lon + size / 2, lat + size)])])
+
+
+@mock.patch.object(EnvVariable, "WORKING_CRS", None)
+class ToWorkingCrsRectangleTest(unittest.TestCase):
+    """Tests for to_working_crs_rectangle."""
+
     def test_rectangle_in_working_crs(self):
         triangle = gpd.GeoDataFrame(index=[0], crs=4326,
                                     geometry=[shapely.Polygon([(172.5, -43.6), (172.7, -43.6), (172.6, -43.4)])])
@@ -57,6 +68,30 @@ class ResolveWorkingCrsTest(unittest.TestCase):
         geometry = rectangle.geometry[0]
         self.assertAlmostEqual(geometry.area, geometry.envelope.area)
         self.assertTrue(geometry.contains(triangle.to_crs(32759).geometry[0]))
+
+    def test_rectangle_in_configured_2193(self):
+        christchurch = triangle(172.5, -43.6, 0.2)
+        with mock.patch.object(EnvVariable, "WORKING_CRS", "EPSG:2193"):
+            rectangle = to_working_crs_rectangle(christchurch)
+        self.assertEqual(rectangle.crs.to_epsg(), 2193)
+        expected = shapely.box(*christchurch.to_crs(2193).total_bounds)
+        self.assertTrue(rectangle.geometry[0].equals_exact(expected, 1e-6))
+
+    def test_rectangle_in_3031_for_antarctic_area(self):
+        ross_island = triangle(166.0, -78.0, 1.0)
+        rectangle = to_working_crs_rectangle(ross_island)
+        self.assertEqual(rectangle.crs.to_epsg(), 3031)
+        geometry = rectangle.geometry[0]
+        self.assertAlmostEqual(geometry.area, geometry.envelope.area)
+        self.assertTrue(geometry.contains(ross_island.to_crs(3031).geometry[0]))
+
+    def test_multi_row_area_becomes_one_rectangle(self):
+        two_boxes = gpd.GeoDataFrame(crs=4326, geometry=[shapely.box(172.5, -43.6, 172.55, -43.55),
+                                                          shapely.box(172.65, -43.45, 172.7, -43.4)])
+        rectangle = to_working_crs_rectangle(two_boxes)
+        self.assertEqual(len(rectangle), 1)
+        expected = shapely.box(*two_boxes.to_crs(32759).total_bounds)
+        self.assertTrue(rectangle.geometry[0].equals_exact(expected, 1e-6))
 
 
 if __name__ == "__main__":
