@@ -21,10 +21,13 @@ Unit tests for the spatial-containment opt-in registry in
 `supports_spatial_containment`. These replace the old hardcoded
 `SPATIAL_CONTAINMENT_OPT_IN` frozenset (PR #458) with a registry that processes
 populate themselves at discovery time (see `eddie.wps.build_processes`).
+Also covers `canonicalise_parameters` and `compute_params_hash`.
 """
 
+import hashlib
 import threading
 import unittest
+from datetime import datetime
 
 from eddie.digitaltwin.caching import cache_common
 
@@ -97,6 +100,42 @@ class TestSpatialContainmentRegistry(unittest.TestCase):
 
         for pid in process_ids:
             self.assertTrue(cache_common.supports_spatial_containment(pid))
+
+
+class CanonicaliseParametersTest(unittest.TestCase):
+    """Tests for canonicalise_parameters."""
+
+    def test_key_order_is_ignored_at_every_level(self):
+        first = {"b": {"d": 4, "c": 3}, "a": 1}
+        second = {"a": 1, "b": {"c": 3, "d": 4}}
+        self.assertEqual(cache_common.canonicalise_parameters(first), cache_common.canonicalise_parameters(second))
+
+    def test_is_sorted_compact_json(self):
+        self.assertEqual(cache_common.canonicalise_parameters({"b": {"c": 2}, "a": 1}), '{"a":1,"b":{"c":2}}')
+
+    def test_non_json_values_fall_back_to_str(self):
+        value = {"start": datetime(2026, 3, 4, 5, 6, 7)}
+        self.assertEqual(cache_common.canonicalise_parameters(value), '{"start":"2026-03-04 05:06:07"}')
+
+    def test_list_order_matters(self):
+        self.assertNotEqual(cache_common.canonicalise_parameters({"ids": [1, 2]}),
+                            cache_common.canonicalise_parameters({"ids": [2, 1]}))
+
+
+class ComputeParamsHashTest(unittest.TestCase):
+    """Tests for compute_params_hash."""
+
+    def test_is_sha256_of_canonical_form(self):
+        expected = hashlib.sha256(b'{"depth":7,"rain":{"mm":120}}').hexdigest()
+        self.assertEqual(cache_common.compute_params_hash({"rain": {"mm": 120}, "depth": 7}), expected)
+
+    def test_key_order_gives_same_hash(self):
+        self.assertEqual(cache_common.compute_params_hash({"x": 1, "y": 2}),
+                         cache_common.compute_params_hash({"y": 2, "x": 1}))
+
+    def test_different_values_give_different_hashes(self):
+        self.assertNotEqual(cache_common.compute_params_hash({"depth": 7}),
+                            cache_common.compute_params_hash({"depth": 8}))
 
 
 if __name__ == "__main__":

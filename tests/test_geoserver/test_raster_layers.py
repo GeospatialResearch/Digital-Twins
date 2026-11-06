@@ -19,10 +19,12 @@
 import pathlib
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from http import HTTPStatus
 from unittest.mock import MagicMock, patch
 
 import numpy as np
+import pytest
 import rasterio as rio
 import requests
 from rasterio.coords import BoundingBox
@@ -172,6 +174,20 @@ class GtiffNativeCrsTest(_TmpDirTestCase):
         with self.assertRaises(ValueError):
             raster_layers.get_gtiff_native_crs(gtiff)
 
+    def test_reads_utm_and_polar_crs(self) -> None:
+        """East/north projected CRSs are read with their own EPSG code, not a default."""
+        for epsg, bounds in ((32759, (600000, 5170000, 610000, 5180000)),
+                             (3031, (-500000, -500000, 500000, 500000))):
+            gtiff = _write_gtiff(self.tmp_dir / f"{epsg}.tif", f"EPSG:{epsg}", bounds)
+            with self.subTest(epsg=epsg):
+                self.assertEqual(f"EPSG:{epsg}", raster_layers.get_gtiff_native_crs(gtiff))
+
+    def test_crs_without_epsg_raises(self) -> None:
+        """A custom CRS with no EPSG code is refused, naming the file, rather than returned as 'EPSG:None'."""
+        gtiff = _write_gtiff(self.tmp_dir / "custom.tif", "+proj=tmerc +lon_0=101.3 +ellps=GRS80", (0, 0, 10, 10))
+        with self.assertRaisesRegex(ValueError, "custom.tif"):
+            raster_layers.get_gtiff_native_crs(gtiff)
+
 
 class CheckDisplayCrsTest(_TmpDirTestCase):
     """Tests check_display_crs."""
@@ -211,6 +227,23 @@ class CheckDisplayCrsTest(_TmpDirTestCase):
         with self.assertRaises(ValueError):
             raster_layers.check_display_crs(gtiff, "+proj=merc +lon_0=100 +datum=WGS84")
 
+    def test_3857_refused_beyond_southern_max_lat(self) -> None:
+        """Web mercator is refused for rasters beyond its maximum latitude in the southern hemisphere."""
+        gtiff = self._gtiff((0, -86, 10, -80))
+        with self.assertRaisesRegex(ValueError, "a.tif"):
+            raster_layers.check_display_crs(gtiff, "EPSG:3857")
+
+    def test_3857_alias_is_guarded(self) -> None:
+        """Web mercator spelled differently is still guarded, since the check compares EPSG codes."""
+        gtiff = self._gtiff((0, 80, 10, 86))
+        with self.assertRaises(ValueError):
+            raster_layers.check_display_crs(gtiff, "epsg:3857")
+
+    def test_polar_raster_allowed_in_3031(self) -> None:
+        """A raster enclosing the pole may be displayed in a polar CRS."""
+        gtiff = self._gtiff((-500000, -500000, 500000, 500000), "EPSG:3031")
+        raster_layers.check_display_crs(gtiff, "EPSG:3031")
+
 
 class ReprojectRasterTest(_TmpDirTestCase):
     """Tests reproject_raster."""
@@ -245,6 +278,44 @@ class ReadCoverageDimensionsTest(_TmpDirTestCase):
         double = _write_gtiff(self.tmp_dir / "b.tif", "EPSG:4326", (0, 0, 1, 1), count=2)
         self.assertEqual(["lyr_1", "lyr_2"],
                          [dim.band_name for dim in raster_layers.read_coverage_dimensions(double, "lyr")])
+
+    def test_dtype_mapping(self) -> None:
+        """Each band data type maps to GeoServer's dimensionType name."""
+        for dtype, expected in (("int16", "SIGNED_16BITS"), ("float64", "REAL_64BITS")):
+            gtiff = _write_gtiff(self.tmp_dir / f"{dtype}.tif", "EPSG:4326", (0, 0, 1, 1), dtype=dtype)
+            with self.subTest(dtype=dtype):
+                self.assertEqual([raster_layers.CoverageDimension("lyr", "", expected)],
+                                 raster_layers.read_coverage_dimensions(gtiff, "lyr"))
+
+
+class FormatCoverageDimensionsTest(unittest.TestCase):
+    """Tests format_coverage_dimensions."""
+
+    @staticmethod
+    def _parse(coverage_dimensions: list) -> list[tuple[str, str, str]]:
+        """Format the dimensions and parse them back to (name, unit, dimensionType name) per element."""
+        root = ET.fromstring(f"<r>{raster_layers.format_coverage_dimensions(coverage_dimensions)}</r>")
+        return [(dim.findtext("name"), dim.findtext("unit"), dim.findtext("dimensionType/name"))
+                for dim in root.findall("coverageDimension")]
+
+    def test_empty_raises(self) -> None:
+        """An empty list is refused rather than producing a coverage with no bands."""
+        with self.assertRaises(ValueError):
+            raster_layers.format_coverage_dimensions([])
+
+    def test_one_element_per_dimension_in_order(self) -> None:
+        """Each dimension becomes one coverageDimension element, in band order."""
+        dims = [raster_layers.CoverageDimension("depth", "m", "REAL_32BITS"),
+                raster_layers.CoverageDimension("velocity", "m/s", "SIGNED_16BITS")]
+        self.assertEqual([("depth", "m", "REAL_32BITS"), ("velocity", "m/s", "SIGNED_16BITS")], self._parse(dims))
+
+    @pytest.mark.xfail(raises=ET.ParseError, strict=True,
+                       reason="BUG: band names and units are not XML-escaped, so a band description containing '&' "
+                              "makes the GeoServer payload malformed. Remove when fixed.")
+    def test_escapes_xml_special_characters(self) -> None:
+        """Band names from file descriptions may contain XML special characters, which must be escaped."""
+        dims = [raster_layers.CoverageDimension("rain & hail", "<mm>", "REAL_32BITS")]
+        self.assertEqual([("rain & hail", "<mm>", "REAL_32BITS")], self._parse(dims))
 
 
 @patch(f"{MODULE}.get_workspace_raster_layers", return_value=[])
@@ -316,6 +387,25 @@ class AddGtiffToGeoserverTest(_TmpDirTestCase):
             raster_layers.add_gtiff_to_geoserver(source, "ws", "lyr", display_crs="EPSG:3857")
         delete_mock.assert_not_called()
         requests_mock.post.assert_not_called()
+
+    def test_explicit_dimensions_used(self, requests_mock: MagicMock, _url: MagicMock, _layers: MagicMock) -> None:
+        """Coverage dimensions passed in are used instead of those read from the file."""
+        dims = [raster_layers.CoverageDimension("flood_depth", "mm", "REAL_64BITS")]
+        _, coverage_post = self._publish(requests_mock, coverage_dimensions=dims)
+        payload = coverage_post.kwargs["data"]
+        self.assertIn("<name>flood_depth</name>", payload)
+        self.assertIn("<unit>mm</unit>", payload)
+        self.assertIn("<name>REAL_64BITS</name>", payload)
+        self.assertNotIn("<name>depth</name>", payload)
+
+    def test_display_crs_from_env(self, requests_mock: MagicMock, _url: MagicMock, _layers: MagicMock) -> None:
+        """With no display_crs argument, EnvVariable.DISPLAY_CRS decides the served CRS."""
+        with patch.object(EnvVariable, "DISPLAY_CRS", "EPSG:3857"):
+            published, coverage_post = self._publish(requests_mock)
+        with rio.open(self.tmp_dir / "data" / "ws" / "lyr.tif") as served:
+            self.assertEqual(3857, served.crs.to_epsg())
+        self.assertEqual("EPSG:3857", published.crs)
+        self.assertIn("<srs>EPSG:3857</srs>", coverage_post.kwargs["data"])
 
 
 if __name__ == '__main__':

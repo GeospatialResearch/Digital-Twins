@@ -34,7 +34,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.sql import text
 
 from eddie.digitaltwin.instructions_records_to_db import FetchMode, GeospatialLayers, parse_cache_length
-from eddie.digitaltwin.provider_registry import get_provider
+from eddie.digitaltwin.provider_registry import get_provider, registered_providers
 from eddie.digitaltwin.tables import UserLogInfo, check_table_exists, create_table
 import eddie.geoserver as gs
 
@@ -283,6 +283,11 @@ def full_geospatial_layers_data_to_db(
         if table_exists and expired:
             log.info(f"'{table_name}' data has passed its 'refresh_after' expiry date. Re-fetching.")
 
+        if data_provider not in registered_providers():
+            # Skip rather than abort, so one misconfigured layer does not block every other layer
+            log.error(f"Skipping '{table_name}': no data provider registered under '{data_provider}'. "
+                      f"Registered providers: {registered_providers()}.")
+            continue
         # Fetch vector data using the registered provider for this layer's 'data_provider'
         log.info(f"Fetching '{table_name}' data ({data_provider} {layer_id}).")
         vector_data = get_provider(data_provider)(layer_id, None, crs)
@@ -523,6 +528,11 @@ def aoi_geospatial_layers_data_to_db(
             log.info(error)
             continue
 
+        if data_provider not in registered_providers():
+            # Skip rather than abort, so one misconfigured layer does not block every other layer
+            log.error(f"Skipping '{table_name}': no data provider registered under '{data_provider}'. "
+                      f"Registered providers: {registered_providers()}.")
+            continue
         # Check if the table already exists in the database
         if check_table_exists(conn, table_name):
             # Process existing AOI geospatial layers
