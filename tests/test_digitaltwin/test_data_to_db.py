@@ -224,7 +224,7 @@ class ProviderDispatchTest(unittest.TestCase):
     def test_unknown_provider_does_not_block_later_layers(self):
         fake, to_postgis, update_mock = self._run("nope", "acme")
         fake.assert_called_once_with("https://example.com/wfs/1", None, 32759)
-        self.assertEqual("layer_1", to_postgis.call_args.args[1])
+        self.assertEqual(to_postgis.call_args.args[1], "layer_1")
         update_mock.assert_called_once_with(mock.ANY, "acme", "https://example.com/wfs/1", None)
 
 
@@ -362,8 +362,9 @@ class NonIntersectionAreaTest(unittest.TestCase):
         for crs, (lon, lat) in AOI_LOCATIONS.items():
             with self.subTest(crs=crs):
                 aoi = _box_in_crs(lon, lat, crs)
+                logged_wkt = aoi.to_crs(4326).geometry[0].wkt
                 with self.assertRaises(data_to_db.NoNonIntersectionError):
-                    self._non_intersection(aoi, aoi.to_crs(4326).geometry[0].wkt)
+                    self._non_intersection(aoi, logged_wkt)
 
     def test_partial_overlap_returned_in_aoi_crs(self):
         for crs, (lon, lat) in AOI_LOCATIONS.items():
