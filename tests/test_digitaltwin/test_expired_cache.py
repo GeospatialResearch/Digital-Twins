@@ -38,6 +38,15 @@ class DeleteExpiredFullLayerTablesTest(unittest.TestCase):
         update_mock.assert_not_called()
         conn.execute.assert_called_once()
 
+    def test_select_filters_full_and_expired(self):
+        conn = mock.MagicMock()
+        conn.execute.side_effect = [[]]
+        expired_cache.delete_expired_full_layer_tables(conn)
+        select_sql = " ".join(str(conn.execute.call_args_list[0].args[0]).split())
+        self.assertIn("FROM geospatial_layers", select_sql)
+        self.assertIn("fetch_mode = 'full'", select_sql)
+        self.assertIn("refresh_after IS NOT NULL AND refresh_after <= now()", select_sql)
+
 
 class DeleteExpiredUserLogEntriesTest(unittest.TestCase):
     """Tests for delete_expired_user_log_entries."""
@@ -58,6 +67,15 @@ class DeleteExpiredUserLogEntriesTest(unittest.TestCase):
         self.assertEqual(result, 5)
         delete_mock.assert_called_once_with(expired_cache.UserLogInfo)
         conn.execute.assert_called_once_with(delete_mock.return_value.where.return_value)
+
+    def test_delete_filters_expired(self):
+        conn = mock.MagicMock()
+        with mock.patch.object(expired_cache, "check_table_exists", return_value=True):
+            expired_cache.delete_expired_user_log_entries(conn)
+        delete_sql = " ".join(str(conn.execute.call_args.args[0].compile()).split())
+        self.assertIn("DELETE FROM user_log_information", delete_sql)
+        self.assertIn("user_log_information.refresh_after IS NOT NULL", delete_sql)
+        self.assertIn("user_log_information.refresh_after <= now()", delete_sql)
 
 
 class DeleteExpiredCacheTest(unittest.TestCase):
