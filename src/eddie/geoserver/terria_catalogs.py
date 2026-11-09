@@ -181,10 +181,9 @@ def get_terria_catalog(plugins: Iterable[ModuleType] = ()) -> Catalog:
     """
     groups = []
     for plugin in plugins:
-        catalog_func: Callable = plugin_contribution(plugin, "catalog")
-        catalog = catalog_func()
+        catalog = plugin_contribution(plugin, "catalog")
         if isinstance(catalog, ModuleType):  # <plugin>/catalog.py holding a `catalog` function
-            catalog = catalog.catalog
+            catalog: Callable = catalog.catalog
         if catalog is not None:
             groups += catalog()
     if EnvVariable.EDDIE_AUTOSERVE_CATALOG:
