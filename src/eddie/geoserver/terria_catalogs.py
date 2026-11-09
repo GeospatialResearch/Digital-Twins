@@ -19,7 +19,7 @@
 import logging
 from enum import StrEnum
 from types import ModuleType
-from typing import Iterable, Literal, TypeAlias
+from typing import Callable, Iterable, Literal, TypeAlias
 
 from eddie.config import EnvVariable
 from eddie.discover_plugins import plugin_contribution
