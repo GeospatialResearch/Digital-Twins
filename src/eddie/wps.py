@@ -115,4 +115,4 @@ def build_service() -> pywps.Service:
         The configured PyWPS service, ready to be mounted as a WSGI app at '/wps'.
     """
     log.info("EDDIE_INSTANCE_TITLE=%s - building core WPS service", EnvVariable.EDDIE_INSTANCE_TITLE)
-    return pywps.Service(processes=build_processes(), cfgfiles=["pywps.cfg"])
+    return pywps.Service(processes=build_processes(), cfgfiles=["src/pywps.cfg"])
