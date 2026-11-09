@@ -31,7 +31,6 @@ These earlier applications were built with EDDIE components but are not EDDIE mo
 
 You can find a template repository for creating new applications and plugins [in the EDDIE Template repository](https://github.com/GeospatialResearch/eddie_template).
 
-<!-- See our [draft paper for Journal of Open Source Software](paper/paper.pdf) for more details. -->
 
 ## Basic running instructions
 
