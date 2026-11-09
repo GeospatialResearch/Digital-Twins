@@ -88,11 +88,15 @@ def _make_nz_provider(data_provider: str) -> Callable[[str, gpd.GeoDataFrame | N
     Raises
     ------
     ValueError
-        If an unsupported 'data_provider' value is given.
+        If an unsupported 'data_provider' value is given, or API key environment variable missing.
     """
     if data_provider not in _NZ_PROVIDER_KEYS:
         raise ValueError(f"Unsupported NZ data_provider: '{data_provider}'")
     api_key = _NZ_PROVIDER_KEYS[data_provider]
+    if api_key is None:
+        env_var_name = f"{data_provider.upper()}_API_KEY"
+        raise ValueError(f"API key environment variable missing for: '{data_provider}'. "
+                         f"Please add environment variable {env_var_name}")
 
     def provider(layer_id: str, bbox: gpd.GeoDataFrame | None, crs: int) -> gpd.GeoDataFrame:
         """
