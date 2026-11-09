@@ -61,7 +61,7 @@ def check_celery_alive(f: Callable[..., Response]) -> Callable[..., Response]:
             SERVICE_UNAVAILABLE if Celery workers are down, otherwise response from function `f`.
         """
         try:
-            ping_celery_response = tasks.app.control.ping()
+            ping_celery_response = tasks.app.control.ping(limit=1)
             if len(ping_celery_response) == 0:
                 logging.warning("Celery workers not active, may indicate a fault")
                 return make_response("Celery workers not active", SERVICE_UNAVAILABLE)
