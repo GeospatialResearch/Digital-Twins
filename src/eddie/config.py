@@ -187,10 +187,6 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
         """
         return _get_bool_env_variable_func(var_name, default)
 
-    STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY")
-    LINZ_API_KEY = _get_env_variable("LINZ_API_KEY")
-    MFE_API_KEY = _get_env_variable("MFE_API_KEY")
-
     DATA_DIR_GEOSERVER = pathlib.Path(_get_env_variable("DATA_DIR_GEOSERVER"))
 
     POSTGRES_HOST = _get_env_variable("POSTGRES_HOST", default="localhost")
@@ -226,3 +222,8 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     WORKING_CRS = _get_env_variable("EDDIE_WORKING_CRS", allow_empty=True)
 
     IS_ON_GITHUB_ACTIONS = _get_bool_env_variable("GITHUB_ACTIONS", default=False)
+
+    # Optional NZ data provider APIs from `eddie.digitaltwin.nz_providers
+    STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY", allow_empty=True)
+    LINZ_API_KEY = _get_env_variable("LINZ_API_KEY", allow_empty=True)
+    MFE_API_KEY = _get_env_variable("MFE_API_KEY", allow_empty=True)

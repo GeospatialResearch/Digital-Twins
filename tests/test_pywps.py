@@ -190,7 +190,7 @@ class TestBuildService(unittest.TestCase):
         mock_service.assert_called_once()
         _, kwargs = mock_service.call_args
         self.assertEqual([p.identifier for p in kwargs["processes"]], ["otakaro.medusa"])
-        self.assertEqual(kwargs["cfgfiles"], ["pywps.cfg"])
+        self.assertEqual(kwargs["cfgfiles"], ["src/pywps.cfg"])
 
 
 if __name__ == "__main__":

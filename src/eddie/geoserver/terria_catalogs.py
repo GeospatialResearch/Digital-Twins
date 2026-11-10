@@ -19,7 +19,7 @@
 import logging
 from enum import StrEnum
 from types import ModuleType
-from typing import Iterable, Literal, TypeAlias
+from typing import Callable, Iterable, Literal, TypeAlias
 
 from eddie.config import EnvVariable
 from eddie.discover_plugins import plugin_contribution
@@ -183,7 +183,7 @@ def get_terria_catalog(plugins: Iterable[ModuleType] = ()) -> Catalog:
     for plugin in plugins:
         catalog = plugin_contribution(plugin, "catalog")
         if isinstance(catalog, ModuleType):  # <plugin>/catalog.py holding a `catalog` function
-            catalog = catalog.catalog
+            catalog: Callable = catalog.catalog
         if catalog is not None:
             groups += catalog()
     if EnvVariable.EDDIE_AUTOSERVE_CATALOG:
