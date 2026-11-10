@@ -21,6 +21,7 @@ import pathlib
 import sys
 import unittest
 from importlib.metadata import EntryPoint
+from pkgutil import ModuleInfo
 from unittest import mock
 
 from eddie import discover_plugins
@@ -40,9 +41,19 @@ class DiscoverPluginsTest(unittest.TestCase):
         cls.addClassCleanup(sys.path.remove, path)
 
     def setUp(self):
-        patcher = mock.patch("eddie.discover_plugins.entry_points", return_value=[])
-        self.entry_points = patcher.start()
-        self.addCleanup(patcher.stop)
+        entry_points_patcher = mock.patch("eddie.discover_plugins.entry_points", return_value=[])
+        self.entry_points = entry_points_patcher.start()
+        self.addCleanup(entry_points_patcher.stop)
+
+        # Isolate the prefix-scan step from whatever plugins happen to be
+        # installed in the real environment (e.g. eddie_template), so tests
+        # only ever see the fake "eddie_mock_plugin" module.
+        fake_module_info = ModuleInfo(module_finder=None, name="eddie_mock_plugin", ispkg=False)
+        iter_modules_patcher = mock.patch(
+            "eddie.discover_plugins.pkgutil.iter_modules", return_value=[fake_module_info]
+        )
+        self.iter_modules = iter_modules_patcher.start()
+        self.addCleanup(iter_modules_patcher.stop)
 
     def test_discover_mock_plugin_name_exists(self):
         plugins = discover_plugins.discover_plugins()
