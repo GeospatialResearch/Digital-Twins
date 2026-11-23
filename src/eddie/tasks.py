@@ -18,8 +18,8 @@
 Runs backend tasks using Celery. Allowing for multiple long-running tasks to complete in the background.
 Allows the frontend to send tasks and retrieve status later.
 """
-import importlib
 import logging
+import pathlib
 import traceback
 from typing import Dict, Tuple
 
@@ -32,7 +32,7 @@ import sqlalchemy.exc
 from eddie.config import EnvVariable
 from eddie.digitaltwin import retrieve_from_instructions
 from eddie.digitaltwin.utils import retry_function, setup_logging
-from eddie.discover_plugins import discover_plugins
+from eddie.discover_plugins import discover_plugins, plugin_contribution
 from eddie.digitaltwin.working_crs import to_working_crs_rectangle
 
 # Setup celery backend task management
@@ -69,7 +69,7 @@ class OnFailureStateTask(app.Task):
 
 
 @app.task(base=OnFailureStateTask)
-def add_base_data_to_db(selected_polygon_wkt: str, base_data_parameters: Dict[str, str]) -> None:
+def add_base_data_to_db(selected_polygon_wkt: str, instruction_json_path: pathlib.Path | str | None = None) -> None:
     """
     Task to ensure static base data for the given area is added to the database.
 
@@ -77,8 +77,11 @@ def add_base_data_to_db(selected_polygon_wkt: str, base_data_parameters: Dict[st
     ----------
     selected_polygon_wkt : str
         The polygon defining the selected area to add base data for. Defined in WKT form.
-    base_data_parameters : Dict[str, str]
-        The parameters from DEFAULT_MODULES_TO_PARAMETERS[retrieve_from_instructions] for the particular module.
+    instruction_json_path : pathlib.Path | str | None
+        The path to the instruction json file that specifies the geospatial data to be retrieved.
+        Can be a string to allow crossing over interfaces that only allow more primitive types.
+        If this is None, then no new data will be downloaded from the internet but meta tables and geoserver will still
+        be initialised.
     """
     selected_polygon = wkt_to_gdf(selected_polygon_wkt)
     # Set up retry/timeout controls
@@ -90,7 +93,7 @@ def add_base_data_to_db(selected_polygon_wkt: str, base_data_parameters: Dict[st
                    delay_seconds,
                    sqlalchemy.exc.IntegrityError,
                    selected_polygon,
-                   **base_data_parameters)
+                   instruction_json_path)
 
 
 def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
@@ -115,5 +118,5 @@ def wkt_to_gdf(wkt: str) -> gpd.GeoDataFrame:
 
 # Plugins must be imported after app to remove a circular dependency
 eddie_plugins = discover_plugins()
-for name, module in eddie_plugins.items():
-    importlib.import_module(f"{name}.tasks")
+for plugin in eddie_plugins.values():
+    plugin_contribution(plugin, "tasks")  # Importing the plugin's tasks registers them with this Celery app

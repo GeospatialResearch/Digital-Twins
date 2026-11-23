@@ -187,10 +187,6 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
         """
         return _get_bool_env_variable_func(var_name, default)
 
-    STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY")
-    LINZ_API_KEY = _get_env_variable("LINZ_API_KEY")
-    MFE_API_KEY = _get_env_variable("MFE_API_KEY")
-
     DATA_DIR_GEOSERVER = pathlib.Path(_get_env_variable("DATA_DIR_GEOSERVER"))
 
     POSTGRES_HOST = _get_env_variable("POSTGRES_HOST", default="localhost")
@@ -219,10 +215,15 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     # CRS to reproject uploaded GeoTIFFs to for display, e.g. "EPSG:3857" for web mercator. Unset: copied as is.
     DISPLAY_CRS = _get_env_variable("DISPLAY_CRS", allow_empty=True)
 
-    # If False, get_terria_catalog returns an empty catalog instead of listing every GeoServer workspace
+    # If False, get_terria_catalog leaves out the GeoServer workspace groups. Plugin catalog() groups are always served
     EDDIE_AUTOSERVE_CATALOG = _get_bool_env_variable("EDDIE_AUTOSERVE_CATALOG", default=True)
 
     # CRS core processing runs in, e.g. "EPSG:32759". Unset: derived from the area of interest, else EPSG:4326.
     WORKING_CRS = _get_env_variable("EDDIE_WORKING_CRS", allow_empty=True)
 
     IS_ON_GITHUB_ACTIONS = _get_bool_env_variable("GITHUB_ACTIONS", default=False)
+
+    # Optional NZ data provider APIs from `eddie.digitaltwin.nz_providers
+    STATSNZ_API_KEY = _get_env_variable("STATSNZ_API_KEY", allow_empty=True)
+    LINZ_API_KEY = _get_env_variable("LINZ_API_KEY", allow_empty=True)
+    MFE_API_KEY = _get_env_variable("MFE_API_KEY", allow_empty=True)

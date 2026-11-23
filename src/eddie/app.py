@@ -16,18 +16,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """The main web application that serves the Digital Twin to the web through a Rest API."""
-import importlib
 import logging
 from http.client import OK
+from types import ModuleType
 
 from flask import Flask, jsonify, make_response, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from eddie.check_celery_alive import check_celery_alive
 from eddie.config import EnvVariable
-from eddie.discover_plugins import discover_plugins
+from eddie.discover_plugins import plugin_contribution
 from eddie.geoserver import get_terria_catalog
+from eddie.tasks import eddie_plugins
+from eddie.wps import build_service
 
 # Initialise flask server object
 app = Flask(__name__)
@@ -43,10 +46,18 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
-eddie_plugins = discover_plugins()
-for name, module in eddie_plugins.items():
-    importlib.import_module(f"{name}.blueprint")
-    app.register_blueprint(module.blueprint.blueprint)
+for plugin in eddie_plugins.values():
+    blueprint = plugin_contribution(plugin, "blueprint")
+    if isinstance(blueprint, ModuleType):  # Older layout: <plugin>/blueprint.py holding a `blueprint` attribute
+        blueprint = blueprint.blueprint
+    if blueprint is None:
+        continue
+    app.register_blueprint(blueprint)
+
+# Core owns the single PyWPS Service/`/wps` route; plugins only contribute `processes`
+# and must not define their own `/wps` route or Service.
+wps_service = build_service()
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/wps": wps_service})
 
 
 @app.route('/', methods=['GET'])
@@ -85,15 +96,15 @@ def health_check() -> Response:
 @app.route('/terria-catalog.json', methods=['GET'])
 def terria_catalog() -> Response:
     """
-    Return a terria catalog that includes entries for static files and input layers from geoserver.
+    Return a terria catalog of the GeoServer workspace layers and every plugin's catalog() groups.
     Supported methods: GET
 
     Returns
     -------
     Response
-        The HTTP Response. Expect OK if health check is successful
+        The HTTP Response. Expect OK with the Terria JSON catalog.
     """
-    catalog = get_terria_catalog()
+    catalog = get_terria_catalog(eddie_plugins.values())
     return make_response(jsonify(catalog), OK)
 
 
