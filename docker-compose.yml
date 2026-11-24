@@ -114,6 +114,7 @@ services:
       - ROOT_WEBAPP_REDIRECT=true
       - GEOSERVER_ADMIN_USER=$GEOSERVER_ADMIN_NAME
       - GEOSERVER_ADMIN_PASSWORD=$GEOSERVER_ADMIN_PASSWORD
+      - JAVA_TOOL_OPTIONS=-XX:-UseBASE64Intrinsics
     ports:
       - "${GEOSERVER_PORT}:8080"
     restart: always
