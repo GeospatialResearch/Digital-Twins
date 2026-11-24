@@ -22,7 +22,7 @@ process registration drives in `eddie.digitaltwin.caching.cache_common`.
 """
 
 import unittest
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 from eddie import wps
@@ -101,6 +101,16 @@ class TestBuildProcesses(unittest.TestCase):
 
         identifiers = {p.identifier for p in processes}
         self.assertEqual(identifiers, {"otakaro.medusa", "fredt.flood_model"})
+
+    def test_processes_submodule_is_unwrapped_to_its_list(self):
+        # A plugin with no `processes` attribute gets its `<plugin>.processes` submodule back from plugin_contribution.
+        processes_module = ModuleType("eddie_otakaro.processes")
+        processes_module.processes = [_make_process("medusa")]
+        with patch.object(wps, "discover_plugins", return_value={"eddie_otakaro": object()}), \
+                patch.object(wps, "plugin_contribution", return_value=processes_module):
+            processes = wps.build_processes()
+
+        self.assertEqual([p.identifier for p in processes], ["otakaro.medusa"])
 
     def test_plugin_with_no_processes_contribution_is_skipped(self):
         with patch.object(wps, "discover_plugins", return_value={"eddie_otakaro": object()}), \

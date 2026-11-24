@@ -29,6 +29,7 @@ so it is stable and must not be changed once a plugin has cached results under i
 """
 
 import logging
+from types import ModuleType
 
 import pywps
 
@@ -85,6 +86,9 @@ def build_processes() -> list[pywps.Process]:
 
     for module_name, plugin in discover_plugins().items():
         plugin_processes = plugin_contribution(plugin, "processes") or []
+        # <plugin>/processes.py holding a `processes` list
+        if isinstance(plugin_processes, ModuleType):
+            plugin_processes = plugin_processes.processes
         short_name = _plugin_short_name(module_name)
 
         for process in plugin_processes:
@@ -106,13 +110,13 @@ def build_processes() -> list[pywps.Process]:
 def build_service() -> pywps.Service:
     """
     Build the single core `pywps.Service`, from every discovered plugin's processes.
-    This is the only `pywps.Service` instance for the whole application; it is mounted
-    at '/wps' by the Flask app (see `eddie.app`).
+    This is the only `pywps.Service` instance for the whole application; it is served
+    at '/wps' by a Flask route (see `eddie.app`).
 
     Returns
     -------
     pywps.Service
-        The configured PyWPS service, ready to be mounted as a WSGI app at '/wps'.
+        The configured PyWPS service, a WSGI app that the '/wps' route returns.
     """
     log.info("EDDIE_INSTANCE_TITLE=%s - building core WPS service", EnvVariable.EDDIE_INSTANCE_TITLE)
     return pywps.Service(processes=build_processes(), cfgfiles=["src/pywps.cfg"])
