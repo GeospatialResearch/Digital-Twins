@@ -73,7 +73,7 @@ def with_cors(wsgi_app: Callable, origins: Iterable[str] = ("*",)) -> Callable:
     Callable
         A WSGI app that serves `wsgi_app` with CORS headers.
     """
-    origins = set(origins)
+    origins = {origin.lower() for origin in origins}  # Origins are case-insensitive, as in flask-cors
 
     def cors_app(environ: dict, start_response: Callable) -> Iterable[bytes]:
         """
@@ -92,7 +92,7 @@ def with_cors(wsgi_app: Callable, origins: Iterable[str] = ("*",)) -> Callable:
             The response body.
         """
         origin = environ.get("HTTP_ORIGIN")
-        if not origin or not ("*" in origins or origin in origins):
+        if not origin or not ("*" in origins or origin.lower() in origins):
             return wsgi_app(environ, start_response)
         cors_headers = [("Access-Control-Allow-Origin", origin), ("Vary", "Origin")]
         if environ["REQUEST_METHOD"] == "OPTIONS":

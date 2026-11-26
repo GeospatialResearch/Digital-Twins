@@ -90,3 +90,25 @@ class TestSwaggerUnderPrefix(unittest.TestCase):
         page = _client(cors_origins=[]).get("/swagger/").get_data(as_text=True)
         self.assertIn('href="./swagger-ui.css"', page)
         self.assertIn('"url": "../static/api_documentation.yml"', page)
+
+
+class TestWpsCorsAllowList(unittest.TestCase):
+    """Only origins in EDDIE_CORS_ORIGINS get CORS headers from `/wps`, matched like flask-cors does for Flask."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.client = _client(cors_origins=["HTTPS://Terria.Example"])
+
+    def test_listed_origin_matches_in_any_case(self):
+        response = self.client.get("/wps", headers={"Origin": ORIGIN})
+        self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), ORIGIN)
+
+    def test_other_origin_gets_no_cors_header(self):
+        for url in ("/", "/wps"):
+            response = self.client.get(url, headers={"Origin": "https://evil.example"})
+            self.assertNotIn("Access-Control-Allow-Origin", response.headers)
+
+    def test_preflight_allows_the_requested_headers(self):
+        response = self.client.options("/wps", headers={
+            "Origin": ORIGIN, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "content-type"})
+        self.assertEqual(response.headers.get("Access-Control-Allow-Headers"), "content-type")
