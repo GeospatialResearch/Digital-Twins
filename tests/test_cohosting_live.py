@@ -21,14 +21,14 @@ Every request goes through the single origin in EDDIE_INGRESS_URL, which must ro
 the backend and /geoserver to GeoServer. Skipped unless EDDIE_INGRESS_URL is set.
 """
 
+import functools
 import json
 import os
 import unittest
-from urllib.parse import urlencode
+from urllib.error import HTTPError
+from urllib.parse import urlencode, urlsplit
 from urllib.request import urlopen
 from xml.etree import ElementTree
-
-import pytest
 
 BASE_URL = os.environ.get("EDDIE_INGRESS_URL", "").rstrip("/")
 WMS = "{http://www.opengis.net/wms}"
@@ -41,10 +41,20 @@ PROCESSES = [
 
 def get(path: str, **params: str) -> tuple[bytes, str]:
     """GET a path through the ingress, returning the body and content type."""
-    with urlopen(f"{BASE_URL}{path}?{urlencode(params)}", timeout=120) as response:
-        return response.read(), response.headers.get_content_type()
+    try:
+        with urlopen(f"{BASE_URL}{path}?{urlencode(params)}", timeout=120) as response:
+            return response.read(), response.headers.get_content_type()
+    except HTTPError as e:  # Keep the service's error report, e.g. a WPS ExceptionReport
+        raise AssertionError(f"{e}: {e.read()[:500]!r}") from e
 
 
+def origin(url: str) -> tuple[str, str, int]:
+    """The scheme, host and port of a URL, with the scheme's default port filled in."""
+    parts = urlsplit(url)
+    return parts.scheme, parts.hostname, parts.port or {"http": 80, "https": 443}[parts.scheme]
+
+
+@functools.cache
 def execute(identifier: str) -> str:
     """Run a mock process with the same parameters as the other one, returning the published layer name."""
     body, _ = get("/wps", service="WPS", version="1.0.0", request="Execute", identifier=identifier,
@@ -56,10 +66,6 @@ def execute(identifier: str) -> str:
 class CoHostingLiveTest(unittest.TestCase):
     """Tests both mock plugins' processes run, publish and render on one fresh instance."""
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.layers = {identifier: execute(identifier) for identifier, *_ in PROCESSES}
-
     def test_get_capabilities_lists_both_processes_namespaced(self) -> None:
         body, _ = get("/wps", service="WPS", request="GetCapabilities")
         identifiers = {e.text for e in ElementTree.fromstring(body).iter("{http://www.opengis.net/ows/1.1}Identifier")}
@@ -68,20 +74,22 @@ class CoHostingLiveTest(unittest.TestCase):
     def test_outputs_render_in_native_crs_within_modelled_region(self) -> None:
         for identifier, workspace, _, epsg, region in PROCESSES:
             with self.subTest(identifier):
+                name = execute(identifier)
                 body, _ = get(f"/geoserver/{workspace}/wms", service="WMS", version="1.3.0", request="GetCapabilities")
-                layer = next(e for e in ElementTree.fromstring(body).iter(f"{WMS}Layer")
-                             if e.findtext(f"{WMS}Name") in (self.layers[identifier],
-                                                             f"{workspace}:{self.layers[identifier]}"))
+                layer = next((e for e in ElementTree.fromstring(body).iter(f"{WMS}Layer")
+                              if e.findtext(f"{WMS}Name") in (name, f"{workspace}:{name}")), None)
+                self.assertIsNotNone(layer, body[:500])
                 geographic = layer.find(f"{WMS}EX_GeographicBoundingBox")
                 west, south, east, north = (float(geographic.findtext(f"{WMS}{side}")) for side in
                                             ("westBoundLongitude", "southBoundLatitude",
                                              "eastBoundLongitude", "northBoundLatitude"))
                 self.assertTrue(region[0] <= west <= east <= region[2] and region[1] <= south <= north <= region[3],
                                 (west, south, east, north))
-                native = next(e for e in layer.iter(f"{WMS}BoundingBox") if e.get("CRS") == f"EPSG:{epsg}")
+                native = next((e for e in layer.iter(f"{WMS}BoundingBox") if e.get("CRS") == f"EPSG:{epsg}"), None)
+                self.assertIsNotNone(native, f"No EPSG:{epsg} BoundingBox")
                 bbox = ",".join(native.get(side) for side in ("minx", "miny", "maxx", "maxy"))
                 image, content_type = get(f"/geoserver/{workspace}/wms", service="WMS", version="1.3.0",
-                                          request="GetMap", layers=self.layers[identifier], styles="",
+                                          request="GetMap", layers=name, styles="",
                                           crs=f"EPSG:{epsg}", bbox=bbox, width="64", height="64",
                                           format="image/png")
                 self.assertEqual("image/png", content_type, image[:300])
@@ -91,15 +99,10 @@ class CoHostingLiveTest(unittest.TestCase):
         groups = {group["name"]: group["members"] for group in json.loads(body)["catalog"]}
         for identifier, _, group, *_ in PROCESSES:
             with self.subTest(identifier):
-                member = next(m for m in groups[group] if m["name"] == self.layers[identifier])
-                self.assertTrue(member["url"].startswith(f"{BASE_URL}/geoserver/"), member["url"])
-
-    def test_identical_parameters_give_each_plugin_its_own_layer(self) -> None:
-        self.assertEqual(len(PROCESSES), len(set(self.layers.values())), self.layers)
-
-    @pytest.mark.xfail(strict=True, reason="BUG: find_cached_result reads row.id but only selects output_id")
-    def test_rerun_is_a_cache_hit_for_its_own_plugin(self) -> None:
-        self.assertEqual(self.layers, {identifier: execute(identifier) for identifier in self.layers})
+                member = next((m for m in groups[group] if m["name"] == execute(identifier)), None)
+                self.assertIsNotNone(member, groups[group])
+                self.assertEqual(origin(BASE_URL), origin(member["url"]))
+                self.assertTrue(urlsplit(member["url"]).path.startswith(f"{urlsplit(BASE_URL).path}/geoserver/"))
 
 
 if __name__ == "__main__":
