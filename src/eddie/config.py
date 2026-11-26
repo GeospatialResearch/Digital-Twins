@@ -208,6 +208,10 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     GEOSERVER_ADMIN_NAME = _get_env_variable("GEOSERVER_ADMIN_NAME", default="admin")
     GEOSERVER_ADMIN_PASSWORD = _get_env_variable("GEOSERVER_ADMIN_PASSWORD", default="geoserver")
 
+    # The twin's one public origin behind an ingress, e.g. "https://twin.example.org": browsers then reach the backend
+    # at <url>/api and GeoServer at <url>/geoserver. Unset: BACKEND_HOST:BACKEND_PORT and GEOSERVER_HOST:GEOSERVER_PORT.
+    EDDIE_PUBLIC_URL = (_get_env_variable("EDDIE_PUBLIC_URL", allow_empty=True) or "").rstrip("/")
+
     EDDIE_INSTANCE_TITLE = _get_env_variable(
         "EDDIE_INSTANCE_TITLE", default="Environmental Digital Data Intelligence Engine (EDDIE) Core"
     )

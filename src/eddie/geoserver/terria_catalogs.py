@@ -140,7 +140,8 @@ def get_layers_as_terria_group(workspace_name: str) -> CatalogGroup:
         If geoserver responds with anything but OK or NOT_FOUND, raises it as an exception since it is unexpected.
     """
     catalog_group = []
-    workspace_url = f"{EnvVariable.GEOSERVER_HOST}:{EnvVariable.GEOSERVER_PORT}/geoserver/{workspace_name}"
+    geoserver_url = EnvVariable.EDDIE_PUBLIC_URL or f"{EnvVariable.GEOSERVER_HOST}:{EnvVariable.GEOSERVER_PORT}"
+    workspace_url = f"{geoserver_url}/geoserver/{workspace_name}"
     vector_layers = get_workspace_vector_layers(workspace_name)
     if workspace_name == Workspaces.STATIC_FILES_WORKSPACE:
         # Add the Graticules (lat/lon gridline display) datastore, which is separate from the database datastore

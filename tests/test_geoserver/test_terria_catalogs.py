@@ -104,6 +104,15 @@ class RasterCatalogItemTest(unittest.TestCase):
                 group = terria_catalogs.get_layers_as_terria_group("ws")
                 self.assertEqual(expected, group["members"][0]["crs"])
 
+    @patch.object(EnvVariable, "EDDIE_PUBLIC_URL", "https://twin.example.org")
+    @patch("eddie.geoserver.terria_catalogs.get_raster_layer_crs", return_value="EPSG:4326")
+    @patch("eddie.geoserver.terria_catalogs.get_workspace_raster_layers", return_value=["lyr"])
+    @patch("eddie.geoserver.terria_catalogs.get_workspace_vector_layers", return_value=[])
+    def test_group_links_geoserver_at_its_public_url(self, *_mocks: MagicMock) -> None:
+        """Behind an ingress, catalogue WMS URLs point at EDDIE_PUBLIC_URL/geoserver, not GeoServer's host and port."""
+        group = terria_catalogs.get_layers_as_terria_group("ws")
+        self.assertEqual("https://twin.example.org/geoserver/ws/wms", group["members"][0]["url"])
+
 
 if __name__ == '__main__':
     unittest.main()
