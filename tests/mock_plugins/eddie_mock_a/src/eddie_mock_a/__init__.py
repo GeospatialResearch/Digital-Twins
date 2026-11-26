@@ -78,7 +78,7 @@ def _vector(request: WPSRequest, response: ExecuteResponse) -> ExecuteResponse:
     ExecuteResponse
         The response, with the published layer name as the "layer" output.
     """
-    process_id = response.process.identifier  # Namespaced by core, e.g. "mock_a.vector"
+    process_id = response.process.identifier  # Namespaced by core: "mock_a.model"
     params = {"size": request.inputs["size"][0].data}
     aoi = REGION.to_crs(4326)
     layer = find_cached_result(process_id, params, aoi)
@@ -92,7 +92,7 @@ def _vector(request: WPSRequest, response: ExecuteResponse) -> ExecuteResponse:
     return response
 
 
-processes = [Process(_vector, "vector", "Mock vector",
+processes = [Process(_vector, "model", "Mock vector",
                      inputs=[LiteralInput("size", "Buffer distance (m)", data_type="float")],
                      outputs=[LiteralOutput("layer", "Published layer", data_type="string")])]
 processes[0].supports_spatial_containment = True

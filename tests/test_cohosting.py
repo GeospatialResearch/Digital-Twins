@@ -24,6 +24,7 @@ tests/mock_plugins. GeoServer, PostGIS and the cache table are faked; test_cohos
 import contextlib
 import importlib
 import pathlib
+import pkgutil
 import sys
 import tempfile
 import tomllib
@@ -33,7 +34,9 @@ from importlib.metadata import EntryPoint
 from unittest import mock
 from xml.etree import ElementTree
 
+import celery
 import geopandas as gpd
+from pywps import configuration
 import rasterio
 import shapely
 
@@ -91,11 +94,17 @@ class CoHostingTest(unittest.TestCase):
                     vars(eddie)[name] = module
 
         stack.callback(restore)
-        # PyWPS writes logs and outputs relative to the working directory
+        # Importing eddie.tasks again makes its new Celery app current, and PyWPS reloads its global config
+        stack.callback(celery.current_app._get_current_object().set_current)  # pylint: disable=protected-access
+        stack.enter_context(mock.patch.object(configuration, "CONFIG", configuration.CONFIG))
+        # PyWPS writes logs and outputs relative to the working directory; from src/ it would load src/pywps.cfg
         stack.enter_context(contextlib.chdir(stack.enter_context(tempfile.TemporaryDirectory())))
         src_dirs = [str(MOCK_PLUGINS / plugin / "src") for plugin in PLUGINS]
         stack.enter_context(mock.patch.object(sys, "path", sys.path + src_dirs))
-        stack.enter_context(mock.patch("eddie.discover_plugins.entry_points", return_value=declared_entry_points()))
+        stack.enter_context(mock.patch.object(discover_plugins, "entry_points", return_value=declared_entry_points()))
+        # Only scan the mock plugins for 'eddie_' packages, so a plugin installed in this environment is not loaded
+        stack.enter_context(mock.patch.object(discover_plugins.pkgutil, "iter_modules",
+                                              return_value=list(pkgutil.iter_modules(src_dirs))))
         stack.enter_context(mock.patch.object(cache_common, "_spatial_containment_opt_in", set()))
         cls.discovery_warning = stack.enter_context(mock.patch.object(discover_plugins.log, "warning"))
 
@@ -126,7 +135,7 @@ class CoHostingTest(unittest.TestCase):
         plugin = self.mock_a if identifier.startswith("mock_a.") else self.mock_b
         with mock.patch.object(plugin, "find_cached_result", side_effect=find), \
                 mock.patch.object(plugin, "store_cached_result", side_effect=store), \
-                mock.patch.object(plugin, "geoserver") as geoserver, \
+                mock.patch.object(plugin, "geoserver", autospec=True) as geoserver, \
                 mock.patch.object(setup_environment, "get_database"), \
                 mock.patch.object(gpd.GeoDataFrame, "to_postgis", autospec=True) as to_postgis:
             geoserver.add_gtiff_to_geoserver.side_effect = read_gtiff
@@ -146,17 +155,17 @@ class CoHostingTest(unittest.TestCase):
         self.assertEqual(HTTPStatus.OK, response.status_code)
         identifiers = {element.text for element in
                        ElementTree.fromstring(response.data).iterfind(".//wps:Process/ows:Identifier", WPS_NS)}
-        self.assertEqual({"mock_a.vector", "mock_b.raster"}, identifiers)
+        self.assertEqual({"mock_a.model", "mock_b.model"}, identifiers)
 
     def test_vector_process_publishes_nztm_layer_in_region(self) -> None:
-        layer, geoserver, (frame,) = self.execute("mock_a.vector", 250, {})
+        layer, geoserver, (frame,) = self.execute("mock_a.model", 250, {})
         self.assertEqual(2193, frame.crs.to_epsg())
         self.assertTrue(NZ.contains(shapely.box(*frame.to_crs(4326).total_bounds)))
         geoserver.create_datastore_layer.assert_called_once_with(
             "mock_a", geoserver.create_main_db_store.return_value, layer)
 
     def test_raster_process_publishes_polar_layer_in_region(self) -> None:
-        layer, geoserver, ((epsg, bounds),) = self.execute("mock_b.raster", 250, {})
+        layer, geoserver, ((epsg, bounds),) = self.execute("mock_b.model", 250, {})
         self.assertEqual(3031, epsg)
         region = gpd.GeoSeries([shapely.box(*bounds)], crs=epsg).to_crs(4326)
         self.assertTrue(SOUTH_OF_60.contains(shapely.box(*region.total_bounds)))
@@ -167,11 +176,12 @@ class CoHostingTest(unittest.TestCase):
 
     def test_identical_parameters_do_not_collide_in_cache(self) -> None:
         cache = {}
-        layer_a, _, _ = self.execute("mock_a.vector", 250, cache)
-        layer_b, _, _ = self.execute("mock_b.raster", 250, cache)
-        self.assertEqual({"mock_a.vector", "mock_b.raster"}, {process_id for process_id, _ in cache})
+        layer_a, _, _ = self.execute("mock_a.model", 250, cache)
+        layer_b, _, _ = self.execute("mock_b.model", 250, cache)
+        # Both plugins name their process "model", so only core's namespacing keeps these keys apart
+        self.assertEqual({"mock_a.model", "mock_b.model"}, {process_id for process_id, _ in cache})
         # Second runs are cache hits, each returning its own plugin's layer without publishing again
-        for identifier, layer in (("mock_a.vector", layer_a), ("mock_b.raster", layer_b)):
+        for identifier, layer in (("mock_a.model", layer_a), ("mock_b.model", layer_b)):
             with self.subTest(identifier):
                 hit, geoserver, written = self.execute(identifier, 250, cache)
                 self.assertEqual(layer, hit)
@@ -179,20 +189,16 @@ class CoHostingTest(unittest.TestCase):
                 self.assertEqual([], geoserver.mock_calls)
 
     def test_only_mock_a_opts_in_to_spatial_reuse(self) -> None:
-        self.assertTrue(cache_common.supports_spatial_containment("mock_a.vector"))
-        self.assertFalse(cache_common.supports_spatial_containment("mock_b.raster"))
+        self.assertTrue(cache_common.supports_spatial_containment("mock_a.model"))
+        self.assertFalse(cache_common.supports_spatial_containment("mock_b.model"))
 
-    def test_blueprints_and_routes_do_not_collide(self) -> None:
-        self.assertLessEqual({"eddie_mock_a", "eddie_mock_b"}, self.app.blueprints.keys())
-        rules = [rule.rule for rule in self.app.url_map.iter_rules()]
-        self.assertEqual(len(rules), len(set(rules)), rules)
+    def test_each_plugin_serves_its_own_route(self) -> None:
+        # A blueprint name collision would already raise in setUpClass; a shadowed route answers with the other body
         for path, body in (("/mock-a", "mock_a"), ("/mock-b", "mock_b")):
             with self.subTest(path):
                 self.assertEqual(body, self.client.get(path).text)
 
     @mock.patch.object(EnvVariable, "EDDIE_AUTOSERVE_CATALOG", False)
-    @mock.patch("eddie.geoserver.raster_layers.get_geoserver_url", return_value="http://geoserver")
-    @mock.patch("eddie.geoserver.database_layers.get_geoserver_url", return_value="http://geoserver")
     @mock.patch("requests.get", return_value=fake_response(HTTPStatus.NOT_FOUND))
     def test_terria_catalog_contains_both_plugins(self, *_mocks: mock.MagicMock) -> None:
         catalog = self.client.get("/terria-catalog.json").get_json()["catalog"]

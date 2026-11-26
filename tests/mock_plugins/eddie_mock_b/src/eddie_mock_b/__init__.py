@@ -82,7 +82,7 @@ def _raster(request: WPSRequest, response: ExecuteResponse) -> ExecuteResponse:
     ExecuteResponse
         The response, with the published layer name as the "layer" output.
     """
-    process_id = response.process.identifier  # Namespaced by core, e.g. "mock_b.raster"
+    process_id = response.process.identifier  # Namespaced by core: "mock_b.model"
     params = {"size": request.inputs["size"][0].data}
     aoi = REGION.to_crs(4326)
     layer = find_cached_result(process_id, params, aoi)
@@ -90,7 +90,7 @@ def _raster(request: WPSRequest, response: ExecuteResponse) -> ExecuteResponse:
         layer = f"raster_{compute_params_hash(params)[:8]}"
         gtiff_path = pathlib.Path(response.process.workdir) / f"{layer}.tif"
         with rasterio.open(gtiff_path, "w", driver="GTiff", width=2, height=2, count=1, dtype="float32",
-                           crs="EPSG:3031", transform=from_bounds(*REGION.total_bounds, 2, 2)) as raster:
+                           crs=REGION.crs, transform=from_bounds(*REGION.total_bounds, 2, 2)) as raster:
             raster.write(np.full((1, 2, 2), params["size"], dtype="float32"))
         geoserver.create_workspace_if_not_exists(WORKSPACE)
         geoserver.add_gtiff_to_geoserver(gtiff_path, WORKSPACE, layer, display_crs="EPSG:3031")
@@ -99,6 +99,6 @@ def _raster(request: WPSRequest, response: ExecuteResponse) -> ExecuteResponse:
     return response
 
 
-processes = [Process(_raster, "raster", "Mock raster",
+processes = [Process(_raster, "model", "Mock raster",
                      inputs=[LiteralInput("size", "Raster value", data_type="float")],
                      outputs=[LiteralOutput("layer", "Published layer", data_type="string")])]

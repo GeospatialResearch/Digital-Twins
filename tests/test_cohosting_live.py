@@ -34,8 +34,8 @@ BASE_URL = os.environ.get("EDDIE_INGRESS_URL", "").rstrip("/")
 WMS = "{http://www.opengis.net/wms}"
 # (process, GeoServer workspace, Terria group, native EPSG, modelled region as lon/lat min/max)
 PROCESSES = [
-    ("mock_a.vector", "mock_a", "Mock A", 2193, (166, -48, 179, -34)),  # New Zealand
-    ("mock_b.raster", "mock_b", "Mock B", 3031, (-180, -90, 180, -60)),  # Antarctica
+    ("mock_a.model", "mock_a", "Mock A", 2193, (166, -48, 179, -34)),  # New Zealand
+    ("mock_b.model", "mock_b", "Mock B", 3031, (-180, -90, 180, -60)),  # Antarctica
 ]
 
 
