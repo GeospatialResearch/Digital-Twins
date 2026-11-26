@@ -53,6 +53,9 @@ EDDIE owns the Flask app, the Celery app and `/wps`. Plugins add optional contri
 [Writing a plugin](https://github.com/GeospatialResearch/Digital-Twins/wiki/Writing-a-plugin) on the wiki for the full
 contract.
 
+To serve a twin from one public web address, set `EDDIE_PUBLIC_URL` and `EDDIE_CORS_ORIGINS` in `.env`; see
+[Running a twin on a public web address](https://github.com/GeospatialResearch/Digital-Twins/wiki/Writing-a-plugin#running-a-twin-on-a-public-web-address).
+
 ### Unsupported Operating Systems
 
 We unfortunately do not support MacOS. Please see [#358](/../../issues/358) for updates or to contribute.

@@ -7,8 +7,12 @@
 # Default matches EnvVariable.EDDIE_INSTANCE_TITLE in src/eddie/config.py
 export EDDIE_INSTANCE_TITLE="${EDDIE_INSTANCE_TITLE:-Environmental Digital Data Intelligence Engine (EDDIE) Core}"
 
+# The backend's public root: <EDDIE_PUBLIC_URL>/api behind an ingress, else BACKEND_HOST[:BACKEND_PORT]
+PUBLIC_API=${EDDIE_PUBLIC_URL:+${EDDIE_PUBLIC_URL%/}/api}
+export BACKEND_URL=${PUBLIC_API:-$BACKEND_HOST${BACKEND_PORT:+:$BACKEND_PORT}}
+
 # List of variables to substitute
-ENV_VARS_TO_FILL='$BACKEND_HOST,$BACKEND_PORT,$EDDIE_INSTANCE_TITLE'
+ENV_VARS_TO_FILL='$BACKEND_URL,$EDDIE_INSTANCE_TITLE'
 
 # Substitute variables and save whole file to variable, sponge is not available to buffer.
 SUBBED=`envsubst "$ENV_VARS_TO_FILL" < src/pywps.cfg`

@@ -19,6 +19,7 @@
 import logging
 from http.client import OK
 from types import ModuleType
+from typing import Callable, Iterable
 
 from flask import Flask, jsonify, make_response, Response
 from flask_cors import CORS
@@ -34,13 +35,13 @@ from eddie.wps import build_service
 
 # Initialise flask server object
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=EnvVariable.EDDIE_CORS_ORIGINS)
 
-# Serve API documentation
+# Serve API documentation. The page's links are relative to /swagger/, so they also work under a path prefix.
 SWAGGER_URL = "/swagger"
-API_URL = "/static/api_documentation.yml"
+API_URL = "../static/api_documentation.yml"
 swagger_ui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
+    ".",
     API_URL,
     config={"app_name": EnvVariable.EDDIE_INSTANCE_TITLE}
 )
@@ -54,10 +55,64 @@ for plugin in eddie_plugins.values():
         continue
     app.register_blueprint(blueprint)
 
+
+def with_cors(wsgi_app: Callable, origins: Iterable[str] = ("*",)) -> Callable:
+    """
+    Add CORS headers to a WSGI app that runs outside Flask, so `CORS(app)` never sees its responses.
+    Echoes an allowed `Origin` back, like flask-cors does, and answers the browser's OPTIONS preflight itself.
+
+    Parameters
+    ----------
+    wsgi_app : Callable
+        The WSGI app to wrap, here the PyWPS Service.
+    origins : Iterable[str]
+        The origins allowed to read responses; "*" allows any.
+
+    Returns
+    -------
+    Callable
+        A WSGI app that serves `wsgi_app` with CORS headers.
+    """
+    origins = {origin.lower() for origin in origins}  # Origins are case-insensitive, as in flask-cors
+
+    def cors_app(environ: dict, start_response: Callable) -> Iterable[bytes]:
+        """
+        Serve one request through `wsgi_app`, adding CORS headers when the request's origin is allowed.
+
+        Parameters
+        ----------
+        environ : dict
+            The WSGI environment of the request.
+        start_response : Callable
+            The WSGI `start_response` callable.
+
+        Returns
+        -------
+        Iterable[bytes]
+            The response body.
+        """
+        origin = environ.get("HTTP_ORIGIN")
+        if not origin or not ("*" in origins or origin.lower() in origins):
+            return wsgi_app(environ, start_response)
+        cors_headers = [("Access-Control-Allow-Origin", origin), ("Vary", "Origin")]
+        if environ["REQUEST_METHOD"] == "OPTIONS":
+            start_response("200 OK", cors_headers + [
+                ("Access-Control-Allow-Methods", "GET, POST"),
+                ("Access-Control-Allow-Headers", environ.get("HTTP_ACCESS_CONTROL_REQUEST_HEADERS", "")),
+            ])
+            return [b""]
+        return wsgi_app(environ, lambda status, headers, exc_info=None: start_response(
+            status, headers + cors_headers, exc_info))
+
+    return cors_app
+
+
 # Core owns the single PyWPS Service/`/wps` route; plugins only contribute `processes`
 # and must not define their own `/wps` route or Service.
+# Mounted beside Flask, so PyWPS sees its own paths (/wps/processes reaches it as /processes); `with_cors` adds
+# the CORS headers that `CORS(app)` can't, so browser clients such as TerriaJS on another origin can read /wps.
 wps_service = build_service()
-app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/wps": wps_service})
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/wps": with_cors(wps_service, EnvVariable.EDDIE_CORS_ORIGINS)})
 
 
 @app.route('/', methods=['GET'])

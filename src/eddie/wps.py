@@ -29,6 +29,7 @@ so it is stable and must not be changed once a plugin has cached results under i
 """
 
 import logging
+from types import ModuleType
 
 import pywps
 
@@ -85,6 +86,9 @@ def build_processes() -> list[pywps.Process]:
 
     for module_name, plugin in discover_plugins().items():
         plugin_processes = plugin_contribution(plugin, "processes") or []
+        # <plugin>/processes.py holding a `processes` list
+        if isinstance(plugin_processes, ModuleType):
+            plugin_processes = plugin_processes.processes
         short_name = _plugin_short_name(module_name)
 
         for process in plugin_processes:

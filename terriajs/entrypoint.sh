@@ -18,6 +18,11 @@ fi
 
 export GEOSERVER_URL
 
+# Behind an ingress the twin is one origin: the backend at <EDDIE_PUBLIC_URL>/api, GeoServer at <EDDIE_PUBLIC_URL>/geoserver
+if [[ -n "$EDDIE_PUBLIC_URL" ]]; then
+  export BACKEND_URL=${EDDIE_PUBLIC_URL%/}/api GEOSERVER_URL=${EDDIE_PUBLIC_URL%/}
+fi
+
 # allowProxyFor as a JSON list from the comma-separated TERRIA_ALLOW_PROXY_FOR, e.g. "example.com,example.org".
 # Always a list ([] when unset): terriajs-server proxies every domain if serverconfig.json is invalid or has no list.
 TERRIA_ALLOW_PROXY_FOR_JSON=$(node -p 'JSON.stringify((process.env.TERRIA_ALLOW_PROXY_FOR || "").split(",").map(s => s.trim()).filter(Boolean))') || exit 1

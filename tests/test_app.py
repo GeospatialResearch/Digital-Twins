@@ -1,0 +1,114 @@
+# -*- coding: utf-8 -*-
+# Copyright © 2021-2026 Geospatial Research Institute Toi Hangarau
+# LICENSE: https://github.com/GeospatialResearch/Digital-Twins/blob/master/LICENSE
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+"""Unit tests for `eddie.app`: CORS follows EDDIE_CORS_ORIGINS, on Flask and on `/wps` mounted beside it."""
+
+import importlib
+import sys
+import unittest
+from unittest.mock import patch
+
+from eddie.config import EnvVariable
+
+ORIGIN = "https://terria.example"
+
+
+def _fake_wps_service(environ: dict, start_response: callable) -> list[bytes]:
+    """Stand in for the PyWPS Service: reply with the path it was given."""
+    start_response("200 OK", [("Content-Type", "text/plain")])
+    return [environ["PATH_INFO"].encode()]
+
+
+def _client(cors_origins: list[str]):
+    """Import `eddie.app` afresh with EDDIE_CORS_ORIGINS and a stand-in WPS service, and return a test client."""
+    sys.modules.pop("eddie.app", None)
+    with patch("eddie.wps.build_service", return_value=_fake_wps_service), \
+            patch.object(EnvVariable, "EDDIE_CORS_ORIGINS", cors_origins):
+        return importlib.import_module("eddie.app").app.test_client()
+
+
+class TestWpsCors(unittest.TestCase):
+    """`/wps` is mounted outside Flask, so PyWPS sees its own paths, and a wrapper adds the CORS headers."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.client = _client(cors_origins=[ORIGIN])
+
+    def test_get_is_served_with_cors_header(self):
+        response = self.client.get("/wps?service=WPS&request=GetCapabilities", headers={"Origin": ORIGIN})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), ORIGIN)
+
+    def test_post_is_served_with_cors_header(self):
+        response = self.client.post("/wps", data=b"<wps:Execute/>", headers={"Origin": ORIGIN})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), ORIGIN)
+
+    def test_preflight_is_answered(self):
+        response = self.client.options("/wps", headers={
+            "Origin": ORIGIN, "Access-Control-Request-Method": "POST"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), ORIGIN)
+        self.assertIn("POST", response.headers.get("Access-Control-Allow-Methods"))
+
+    def test_subpaths_reach_pywps_without_the_prefix(self):
+        response = self.client.get("/wps/processes?service=WPS", headers={"Origin": ORIGIN})
+        self.assertEqual(response.data, b"/processes")
+        self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), ORIGIN)
+
+
+class TestCorsOrigins(unittest.TestCase):
+    """CORS is off unless EDDIE_CORS_ORIGINS allow-lists the browser's origin."""
+
+    def test_off_by_default(self):
+        client = _client(cors_origins=[])
+        for url in ("/", "/wps?service=WPS&request=GetCapabilities"):
+            response = client.get(url, headers={"Origin": ORIGIN})
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn("Access-Control-Allow-Origin", response.headers)
+
+
+class TestSwaggerUnderPrefix(unittest.TestCase):
+    """The Swagger page links its files relatively, so it also loads behind an ingress at /api/swagger/."""
+
+    def test_swagger_links_are_relative(self):
+        page = _client(cors_origins=[]).get("/swagger/").get_data(as_text=True)
+        self.assertIn('href="./swagger-ui.css"', page)
+        self.assertIn('"url": "../static/api_documentation.yml"', page)
+
+
+class TestWpsCorsAllowList(unittest.TestCase):
+    """Only origins in EDDIE_CORS_ORIGINS get CORS headers from `/wps`, matched like flask-cors does for Flask."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.client = _client(cors_origins=["HTTPS://Terria.Example"])
+
+    def test_listed_origin_matches_in_any_case(self):
+        response = self.client.get("/wps", headers={"Origin": ORIGIN})
+        self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), ORIGIN)
+
+    def test_other_origin_gets_no_cors_header(self):
+        for url in ("/", "/wps"):
+            response = self.client.get(url, headers={"Origin": "https://evil.example"})
+            self.assertNotIn("Access-Control-Allow-Origin", response.headers)
+
+    def test_preflight_allows_the_requested_headers(self):
+        response = self.client.options("/wps", headers={
+            "Origin": ORIGIN, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "content-type"})
+        self.assertEqual(response.headers.get("Access-Control-Allow-Headers"), "content-type")
