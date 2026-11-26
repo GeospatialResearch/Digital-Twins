@@ -35,7 +35,7 @@ from eddie.wps import build_service
 
 # Initialise flask server object
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=EnvVariable.EDDIE_CORS_ORIGINS)
 
 # Serve API documentation
 SWAGGER_URL = "/swagger"
@@ -112,7 +112,7 @@ def with_cors(wsgi_app: Callable, origins: Iterable[str] = ("*",)) -> Callable:
 # Mounted beside Flask, so PyWPS sees its own paths (/wps/processes reaches it as /processes); `with_cors` adds
 # the CORS headers that `CORS(app)` can't, so browser clients such as TerriaJS on another origin can read /wps.
 wps_service = build_service()
-app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/wps": with_cors(wps_service)})
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/wps": with_cors(wps_service, EnvVariable.EDDIE_CORS_ORIGINS)})
 
 
 @app.route('/', methods=['GET'])

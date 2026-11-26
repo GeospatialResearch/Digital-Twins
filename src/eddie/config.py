@@ -212,6 +212,10 @@ class EnvVariable:  # pylint: disable=too-few-public-methods
     # at <url>/api and GeoServer at <url>/geoserver. Unset: BACKEND_HOST:BACKEND_PORT and GEOSERVER_HOST:GEOSERVER_PORT.
     EDDIE_PUBLIC_URL = (_get_env_variable("EDDIE_PUBLIC_URL", allow_empty=True) or "").rstrip("/")
 
+    # Comma-separated origins of browser apps hosted elsewhere that may call the backend, e.g. Terria on
+    # http://localhost:3001 in development. Unset: CORS is off, as a twin behind one ingress needs no CORS.
+    EDDIE_CORS_ORIGINS = (_get_env_variable("EDDIE_CORS_ORIGINS", allow_empty=True) or "").replace(",", " ").split()
+
     EDDIE_INSTANCE_TITLE = _get_env_variable(
         "EDDIE_INSTANCE_TITLE", default="Environmental Digital Data Intelligence Engine (EDDIE) Core"
     )

@@ -16,12 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-"""Unit tests for `eddie.app`: `/wps` stays mounted beside Flask, and still sends CORS headers."""
+"""Unit tests for `eddie.app`: CORS follows EDDIE_CORS_ORIGINS, on Flask and on `/wps` mounted beside it."""
 
 import importlib
 import sys
 import unittest
 from unittest.mock import patch
+
+from eddie.config import EnvVariable
 
 ORIGIN = "https://terria.example"
 
@@ -32,10 +34,11 @@ def _fake_wps_service(environ: dict, start_response: callable) -> list[bytes]:
     return [environ["PATH_INFO"].encode()]
 
 
-def _client():
-    """Import `eddie.app` afresh with a stand-in WPS service, and return a test client."""
+def _client(cors_origins: list[str]):
+    """Import `eddie.app` afresh with EDDIE_CORS_ORIGINS and a stand-in WPS service, and return a test client."""
     sys.modules.pop("eddie.app", None)
-    with patch("eddie.wps.build_service", return_value=_fake_wps_service):
+    with patch("eddie.wps.build_service", return_value=_fake_wps_service), \
+            patch.object(EnvVariable, "EDDIE_CORS_ORIGINS", cors_origins):
         return importlib.import_module("eddie.app").app.test_client()
 
 
@@ -44,7 +47,7 @@ class TestWpsCors(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = _client()
+        cls.client = _client(cors_origins=[ORIGIN])
 
     def test_get_is_served_with_cors_header(self):
         response = self.client.get("/wps?service=WPS&request=GetCapabilities", headers={"Origin": ORIGIN})
@@ -67,3 +70,14 @@ class TestWpsCors(unittest.TestCase):
         response = self.client.get("/wps/processes?service=WPS", headers={"Origin": ORIGIN})
         self.assertEqual(response.data, b"/processes")
         self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), ORIGIN)
+
+
+class TestCorsOrigins(unittest.TestCase):
+    """CORS is off unless EDDIE_CORS_ORIGINS allow-lists the browser's origin."""
+
+    def test_off_by_default(self):
+        client = _client(cors_origins=[])
+        for url in ("/", "/wps?service=WPS&request=GetCapabilities"):
+            response = client.get(url, headers={"Origin": ORIGIN})
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn("Access-Control-Allow-Origin", response.headers)
