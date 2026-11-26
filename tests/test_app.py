@@ -81,3 +81,12 @@ class TestCorsOrigins(unittest.TestCase):
             response = client.get(url, headers={"Origin": ORIGIN})
             self.assertEqual(response.status_code, 200)
             self.assertNotIn("Access-Control-Allow-Origin", response.headers)
+
+
+class TestSwaggerUnderPrefix(unittest.TestCase):
+    """The Swagger page links its files relatively, so it also loads behind an ingress at /api/swagger/."""
+
+    def test_swagger_links_are_relative(self):
+        page = _client(cors_origins=[]).get("/swagger/").get_data(as_text=True)
+        self.assertIn('href="./swagger-ui.css"', page)
+        self.assertIn('"url": "../static/api_documentation.yml"', page)

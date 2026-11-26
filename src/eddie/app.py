@@ -37,11 +37,11 @@ from eddie.wps import build_service
 app = Flask(__name__)
 CORS(app, origins=EnvVariable.EDDIE_CORS_ORIGINS)
 
-# Serve API documentation
+# Serve API documentation. The page's links are relative to /swagger/, so they also work under a path prefix.
 SWAGGER_URL = "/swagger"
-API_URL = "/static/api_documentation.yml"
+API_URL = "../static/api_documentation.yml"
 swagger_ui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
+    ".",
     API_URL,
     config={"app_name": EnvVariable.EDDIE_INSTANCE_TITLE}
 )
