@@ -174,6 +174,8 @@ class CoHostingTest(unittest.TestCase):
         path = geoserver.add_gtiff_to_geoserver.call_args.args[0]
         self.assertEqual(f"{layer}.tif", path.name)
         geoserver.add_gtiff_to_geoserver.assert_called_once_with(path, "mock_b", layer, display_crs="EPSG:3031")
+        # The catalog item asks for a style named after the layer
+        self.assertEqual(f"{layer}.sld", geoserver.add_style.call_args.args[0].name)
 
     def test_identical_parameters_do_not_collide_in_cache(self) -> None:
         cache = {}

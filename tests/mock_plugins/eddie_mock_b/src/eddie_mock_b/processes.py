@@ -35,6 +35,13 @@ from eddie.digitaltwin.caching.store_cached_result import store_cached_result
 
 WORKSPACE = "mock_b"
 REGION = gpd.GeoDataFrame(geometry=[shapely.box(250000, -1350000, 350000, -1250000)], crs=3031)  # Ross Island
+# Core's catalog item asks GeoServer for a style named after the layer, so each layer gets one
+STYLE = """<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc">
+  <NamedLayer><Name>{layer}</Name><UserStyle><FeatureTypeStyle><Rule><RasterSymbolizer/></Rule></FeatureTypeStyle>
+  </UserStyle></NamedLayer>
+</StyledLayerDescriptor>
+"""
 
 
 def _raster(request: WPSRequest, response: ExecuteResponse) -> ExecuteResponse:
@@ -65,6 +72,9 @@ def _raster(request: WPSRequest, response: ExecuteResponse) -> ExecuteResponse:
             raster.write(np.full((1, 2, 2), params["size"], dtype="float32"))
         geoserver.create_workspace_if_not_exists(WORKSPACE)
         geoserver.add_gtiff_to_geoserver(gtiff_path, WORKSPACE, layer, display_crs="EPSG:3031")
+        style_path = gtiff_path.with_suffix(".sld")
+        style_path.write_text(STYLE.format(layer=layer))
+        geoserver.add_style(style_path, replace=True)
         store_cached_result(process_id, params, layer, aoi)
     response.outputs["layer"].data = layer
     return response

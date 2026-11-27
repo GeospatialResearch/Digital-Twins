@@ -97,12 +97,24 @@ class CoHostingLiveTest(unittest.TestCase):
     def test_terria_catalog_serves_both_outputs_from_the_same_origin(self) -> None:
         body, _ = get("/terria-catalog.json")
         groups = {group["name"]: group["members"] for group in json.loads(body)["catalog"]}
-        for identifier, _, group, *_ in PROCESSES:
+        for identifier, _, group, _, region in PROCESSES:
             with self.subTest(identifier):
                 member = next((m for m in groups[group] if m["name"] == execute(identifier)), None)
                 self.assertIsNotNone(member, groups[group])
                 self.assertEqual(origin(BASE_URL), origin(member["url"]))
                 self.assertTrue(urlsplit(member["url"]).path.startswith(f"{urlsplit(BASE_URL).path}/geoserver/"))
+                # Fetch exactly what Terria asks for: features for a WFS item, a map with its style for a WMS item
+                path = urlsplit(member["url"]).path
+                if member["type"] == "wfs":
+                    body, _ = get(path, service="WFS", version="2.0.0", request="GetFeature",
+                                  typeNames=member["typeNames"], count="1", outputFormat="application/json")
+                    self.assertTrue(json.loads(body)["features"], body[:300])
+                else:
+                    image, content_type = get(path, service="WMS", version="1.1.1", request="GetMap",
+                                              layers=member["layers"], styles=member.get("styles", ""),
+                                              srs="EPSG:4326", bbox=",".join(map(str, region)),
+                                              width="64", height="64", format="image/png")
+                    self.assertEqual("image/png", content_type, image[:300])
 
 
 if __name__ == "__main__":
