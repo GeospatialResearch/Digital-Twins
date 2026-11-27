@@ -79,7 +79,8 @@ class CoHostingTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         stack = contextlib.ExitStack()
         cls.addClassCleanup(stack.close)
-        fresh = ("eddie.tasks", "eddie.app", *PLUGINS)
+        fresh = ("eddie.tasks", "eddie.app", *PLUGINS,
+                 *(f"{plugin}.{module}" for plugin in PLUGINS for module in ("blueprint", "catalog", "processes")))
         saved_modules = {name: sys.modules.pop(name, None) for name in fresh}
         saved_attrs = {name: vars(eddie).pop(name, None) for name in ("tasks", "app")}
 
@@ -109,7 +110,7 @@ class CoHostingTest(unittest.TestCase):
         cls.discovery_warning = stack.enter_context(mock.patch.object(discover_plugins.log, "warning"))
 
         cls.app = importlib.import_module("eddie.app").app
-        cls.mock_a, cls.mock_b = (sys.modules[plugin] for plugin in PLUGINS)
+        cls.mock_a, cls.mock_b = (sys.modules[f"{plugin}.processes"] for plugin in PLUGINS)
         cls.client = cls.app.test_client()
 
     def execute(self, identifier: str, size: float, cache: dict) -> tuple[str, mock.MagicMock, list]:
