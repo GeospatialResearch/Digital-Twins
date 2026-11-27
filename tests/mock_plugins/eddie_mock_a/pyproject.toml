@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eddie-mock-a"
+version = "0.0.1"
+description = "Mock EDDIE plugin, for testing co-hosting two plugins in one instance."
+requires-python = ">=3.11"
+
+[project.entry-points."eddie.plugins"]
+mock_a = "eddie_mock_a"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["eddie_mock_a"]
